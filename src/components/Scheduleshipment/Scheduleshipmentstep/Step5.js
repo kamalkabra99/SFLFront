@@ -70,6 +70,7 @@ class Scheduleshipment extends React.Component {
       ipLocation: "",
       simpleSelect: "",
       getratedomain: parseFloat(localStorage.getItem("getRate")),
+      //  getratedomain: 17.64,
       Loading: false,
       saleslead: localStorage.getItem("sealsleadid"),
       AccountNumber: "",
@@ -103,6 +104,7 @@ class Scheduleshipment extends React.Component {
       info_PackageLength: "",
       info_PackageWeight: "",
       info_PackageWidth: "",
+      info_getratePakagedata: [],
       desgin: false,
       code: false,
       develop: false,
@@ -294,11 +296,13 @@ class Scheduleshipment extends React.Component {
           nextProps.allStates.packagedetails.PackageDetails[0].PackageWeight,
         info_PackageWidth:
           nextProps.allStates.packagedetails.PackageDetails[0].PackageWidth,
+        info_getratePakagedata:
+          nextProps.allStates.packagedetails.PackageDetails,
       });
-      // console.log(
-      //   "test....",
-      //   nextProps.allStates.packagedetails.PackageDetails[0].PackageLength
-      // );
+      console.log(
+        "test....2",
+        nextProps.allStates.packagedetails.PackageDetails
+      );
     }
     if (!CommonConfig.isEmpty(nextProps.allStates.senderinformation)) {
       this.setState({
@@ -337,7 +341,7 @@ class Scheduleshipment extends React.Component {
         info_ToEmail: nextProps.allStates.recipientinformation.toEmail,
         info_ToPhone: nextProps.allStates.recipientinformation.toPhone1,
       });
-      console.log("test....", nextProps.allStates.recipientinformation);
+      console.log("test....1", nextProps.allStates.recipientinformation);
     }
 
     // if (
@@ -1586,6 +1590,50 @@ class Scheduleshipment extends React.Component {
     return this.state;
   }
 
+  packagerow() {
+    // if (!CommonConfig.isEmpty(nextProps.allStates.packagedetails)) {
+    console.log("nextProps..........", this.state.info_getratePakagedata);
+    // }
+    if (this.state.info_getratePakagedata.length > 0) {
+      return this.state.info_getratePakagedata.map((service, idx) => {
+        const {
+          Number = 0,
+          PackageChargableWeight,
+          PackageHeight,
+          PackageInsuredValue,
+          PackageLength,
+          PackageNumber,
+          PackageWeight,
+          PackageWidth,
+        } = service;
+        return (
+          <tr>
+            <td>{idx + 1}</td>
+            <td>{PackageNumber}</td>
+            <td>
+              {PackageWeight} {this.state.info_WeightType}
+            </td>
+            <td>
+              {PackageLength} X {PackageHeight} X {PackageWidth}
+              {this.state.info_WeightType === "LBS" ? " Inches" : " CM"}
+            </td>
+            <td>
+              {PackageChargableWeight} {this.state.info_WeightType}
+            </td>
+          </tr>
+        );
+      });
+    }
+    // return (
+    //   <tr>
+    //     <td>1</td>
+    //     <td>1</td>
+    //     <td>10Lbs</td>
+    //     <td>12X12X12 Inches</td>
+    //     <td>12Lbs</td>
+    //   </tr>
+    // );
+  }
   render() {
     const {
       simpleSelect,
@@ -1721,15 +1769,42 @@ class Scheduleshipment extends React.Component {
                   </p>
                   <p className="spl">
                     <GridContainer>
-                      <GridItem xs={12} sm={6} md={6} className="border-right">
-                        <font className="relative">
-                          <span>Package Details:</span>
-                          {info_Packagetype} {info_PackageNumber}{" "}
+                      <GridItem xs={12} sm={12} md={12}>
+                        <h6 className="mb-20">Package Details:</h6>
+
+                        {/* {info_Packagetype} {info_PackageNumber}{" "}
                           {info_WeightType},{info_PackageLength}x
-                          {info_PackageWidth}x{info_PackageWeight}
-                        </font>
+                          {info_PackageWidth}x{info_PackageWeight} */}
+                        <div className="package-table">
+                          <table>
+                            <thead>
+                              <tr>
+                                <th>Package Number</th>
+                                <th>Package Count</th>
+                                <th>Weight</th>
+                                <th>Dimensions</th>
+                                <th>Cahargeable Weight</th>
+                              </tr>
+                            </thead>
+                            <tbody>{this.packagerow()}</tbody>
+                            {/* <tr>
+                              <td>1</td>
+                              <td>1</td>
+                              <td>10Lbs</td>
+                              <td>12X12X12 Inches</td>
+                              <td>12Lbs</td>
+                            </tr> */}
+                            {/* <tr>
+                              <td>2</td>
+                              <td>2</td>
+                              <td>12Lbs</td>
+                              <td>18X18X24 Inches</td>
+                              <td>112Lbs</td>
+                            </tr> */}
+                          </table>
+                        </div>
                       </GridItem>
-                      <GridItem xs={12} sm={6} md={6}>
+                      {/* <GridItem xs={12} sm={6} md={6}>
                         <font className="relative">
                           <span>Shipment Type:</span>
                           {info_servicename}, {info_Subservicename}
@@ -1738,12 +1813,13 @@ class Scheduleshipment extends React.Component {
                           <span>Sub Service Type:</span>
                           {info_Subservicename}
                         </font> */}
-                      </GridItem>
+                      {/* </GridItem>  */}
                     </GridContainer>
                   </p>
                   <p className="last">
                     <span>Amount: </span>
-                    <b> $ {this.state.getratedomain}</b>
+                    <b> $ {this.state.getratedomain}</b> | Shipment Type:{" "}
+                    {info_servicename}, {info_Subservicename}{" "}
                   </p>
                 </div>
               ) : null}

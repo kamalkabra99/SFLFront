@@ -682,9 +682,11 @@ class Step1 extends React.Component {
     // console.log("this.state.GetRate.FromCountry.CountryCode = ",this.state.GetRate.FromCountry.CountryCode);
     // console.log("this.state.FromSelectedCountry = ",this.state.FromSelectedCountry);
     // alert("this.state.FromSelectedCountry.label = ",this.state.GetRate.FromCountry.CountryCode)
-    console.log("this.state.FromSelectedCountry = ", this.state.FromSelectedCountry.label)
-    if( this.state.FromSelectedCountry.label !="Argentina"){
-
+    console.log(
+      "this.state.FromSelectedCountry = ",
+      this.state.FromSelectedCountry.label
+    );
+    if (this.state.FromSelectedCountry.label != "Argentina") {
       if (zip.length) {
         if (zip.length) {
           this.showLoader();
@@ -697,9 +699,12 @@ class Step1 extends React.Component {
             FromUPSSelectedCity: SelectedCity,
             FromSelectedCity: SelectedCity,
           });
-  
+
           fetch(
-            CommonConfig.zipCodeAPIKey(zip, this.state.FromSelectedCountry.label)
+            CommonConfig.zipCodeAPIKey(
+              zip,
+              this.state.FromSelectedCountry.label
+            )
           )
             .then((result) => result.json())
             .then((data) => {
@@ -718,7 +723,7 @@ class Step1 extends React.Component {
                       }
                     }
                   );
-  
+
                   var CityData2 = _.filter(
                     data["results"][0]["address_components"],
                     function(data) {
@@ -727,7 +732,7 @@ class Step1 extends React.Component {
                       }
                     }
                   );
-  
+
                   var CityData3 = _.filter(
                     data["results"][0]["address_components"],
                     function(data) {
@@ -736,7 +741,7 @@ class Step1 extends React.Component {
                       }
                     }
                   );
-  
+
                   var CityData4 = _.filter(
                     data["results"][0]["address_components"],
                     function(data) {
@@ -745,7 +750,7 @@ class Step1 extends React.Component {
                       }
                     }
                   );
-  
+
                   var CityData5 = _.filter(
                     data["results"][0]["address_components"],
                     function(data) {
@@ -754,7 +759,7 @@ class Step1 extends React.Component {
                       }
                     }
                   );
-  
+
                   if (CityData.length > 0) {
                     CityData = CityData[0].long_name;
                     FinalCity.push({
@@ -806,7 +811,7 @@ class Step1 extends React.Component {
                       label: FinalCity[0].Name,
                     };
                   }
-  
+
                   this.setState({ FromCityList: FinalCity });
                   let fromStatename = "";
                   if (
@@ -823,7 +828,7 @@ class Step1 extends React.Component {
                         return data.types[0] === "administrative_area_level_1";
                       }
                     )[0].short_name;
-  
+
                     fromStatename = _.filter(
                       data["results"][0]["address_components"],
                       function(data) {
@@ -831,7 +836,7 @@ class Step1 extends React.Component {
                       }
                     )[0].long_name;
                   }
-  
+
                   var GetRate = this.state.GetRate;
                   GetRate.FromCity =
                     FinalCity.length > 0 ? FinalCity[0].City_code : "";
@@ -839,7 +844,7 @@ class Step1 extends React.Component {
                   GetRate.FromUPSCity = null;
                   GetRate.FromState = state && state.length === 2 ? state : "";
                   GetRate.FromZipCode = zip;
-  
+
                   if (GetRate.FromCountry.CountryCode === "CN") {
                     var SelectedCity =
                       FinalCity.length > 0
@@ -896,7 +901,7 @@ class Step1 extends React.Component {
                   var FinalCity = [];
                   var city = "";
                   var state = "";
-  
+
                   if (
                     city == "" &&
                     _.filter(data["results"][0]["address_components"], function(
@@ -999,7 +1004,7 @@ class Step1 extends React.Component {
                         return data.types[0] === "administrative_area_level_1";
                       }
                     )[0].short_name;
-  
+
                     fromStatename = _.filter(
                       data["results"][0]["address_components"],
                       function(data) {
@@ -1007,12 +1012,12 @@ class Step1 extends React.Component {
                       }
                     )[0].long_name;
                   }
-  
+
                   FinalCity.push({
                     Citycode: city,
                     CityName: city,
                   });
-  
+
                   this.setState({
                     FromCityList: [
                       {
@@ -1024,14 +1029,14 @@ class Step1 extends React.Component {
                     FromState: state,
                     fromStateName: fromStatename,
                   });
-  
+
                   var GetRate = this.state.GetRate;
                   GetRate.FromCity = FinalCity[0].Citycode;
                   GetRate.FromFedExCity = null;
                   GetRate.FromUPSCity = null;
                   GetRate.FromState = state && state.length === 2 ? state : "";
                   GetRate.FromZipCode = zip;
-  
+
                   if (GetRate.FromCountry.CountryCode === "CN") {
                     var SelectedCity =
                       FinalCity.length > 0
@@ -1114,7 +1119,7 @@ class Step1 extends React.Component {
         } else {
           var GetRate = this.state.GetRate;
           GetRate.FromCity = null;
-  
+
           GetRate.FromZipCode = zip;
           this.setState({ GetRate: GetRate });
         }
@@ -1123,9 +1128,8 @@ class Step1 extends React.Component {
         GetRate.FromZipCode = zip;
         this.setState({ GetRate: GetRate, FromFedExSelectedCity: {} });
       }
-
     }
-    
+
     this.setState({ disableBtn: 1 });
   };
 
@@ -2751,9 +2755,11 @@ class Step1 extends React.Component {
                     IsResidential: this.state.IsResidential,
                     RateType: "Hub",
                   };
+                  debugger;
                   api
                     .post("salesLead/sendGetRateEmail", emailData)
                     .then((response) => {
+                      debugger;
                       this.hideLoader();
                       if (response.success) {
                         cogoToast.success(response.data.message);
@@ -2975,7 +2981,7 @@ class Step1 extends React.Component {
             </FormControl>
           </GridItem>
         ) : (
-          <GridItem xs={12} sm={12} md={4} className = "mt-15from">
+          <GridItem xs={12} sm={12} md={4} className="mt-15from">
             <FormControl fullWidth>
               <TextField
                 id="FromZipCode"

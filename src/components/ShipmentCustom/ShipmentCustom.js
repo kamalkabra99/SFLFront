@@ -408,6 +408,17 @@ class ShipmentCustom extends React.Component {
           DocumentCreatedOn: moment().format(CommonConfig.dateFormat.dateOnly),
           DocumentCreatedBy: "Auto",
         },
+        {
+          Index: 4,
+          FileName: "",
+          DocumentType: "HBL",
+          isGenerated: false,
+          Status: "Active",
+          AttachmentName: "",
+          TrackingNumber: "4",
+          DocumentCreatedOn: moment().format(CommonConfig.dateFormat.dateOnly),
+          DocumentCreatedBy: "Auto",
+        },
       ],
       Loading: false,
       objAttachment: {
@@ -1978,6 +1989,24 @@ class ShipmentCustom extends React.Component {
               ),
               DocumentCreatedBy: "Auto",
             },
+            // (CommonConfig.loggedInUserData().PersonID == 1 ||
+            //   CommonConfig.loggedInUserData().PersonID == 18) &&
+            !CommonConfig.isEmpty(this.state.ContainerName.value) ||
+            this.state.ContainerName == ""
+              ? {
+                  Index: 4,
+                  FileName: "",
+                  DocumentType: "HBL",
+                  isGenerated: false,
+                  Status: "Active",
+                  AttachmentName: "",
+                  TrackingNumber: "4",
+                  DocumentCreatedOn: moment().format(
+                    CommonConfig.dateFormat.dateOnly
+                  ),
+                  DocumentCreatedBy: "Auto",
+                }
+              : {},
           ];
 
           if (this.state.ShipmentType.value !== "Ocean") {
@@ -10978,6 +11007,12 @@ class ShipmentCustom extends React.Component {
     }
   };
 
+  GenrateHBL = () => {
+    window.open(
+      "https://hub.sflworldwide.com/auth/HBL/" + this.state.TrackingNumber,
+      "_blank"
+    );
+  };
   render() {
     const {
       AllClear,
@@ -11181,6 +11216,23 @@ class ShipmentCustom extends React.Component {
                     </a>
                   </div>
                 )
+              ) : record.original.DocumentType === "HBL" &&
+                // (CommonConfig.loggedInUserData().PersonID == 1 ||
+                //   CommonConfig.loggedInUserData().PersonID == 18) &&
+                (this.state.ContainerName.value !== "" ||
+                  this.state.ContainerName.value !== null) ? (
+                <Button
+                  disabled={
+                    record.original.DocumentType === "HBL" &&
+                    this.state.ShipmentType.value === "Ocean"
+                      ? false
+                      : true
+                  }
+                  className="normal-btn sm-orange"
+                  onClick={() => this.GenrateHBL()}
+                >
+                  Generate
+                </Button>
               ) : record.original.TrackingNumber &&
                 record.original.Index !== 3 ? (
                 <Button

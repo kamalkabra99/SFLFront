@@ -71,6 +71,7 @@ import AllInputs from "components/SalesLeads/AllInputs";
 import SalesLeadNavigation from "components/SalesLeads/SalesLeadNavigation";
 import ShipmentNavigation from "components/Shipment/ShipmentNavigation";
 import Proposal_client from "./components/Proposal/Proposal_client";
+import HBL_client from "../src/components/ShipmentCustom/HBL";
 import esign_employee from "components/Esign/esign_employee";
 // import esign_client from "components/Esign/esign_client";
 import esign_client_v3 from "components/Esign/Esign_Client_v3";
@@ -851,6 +852,13 @@ var dashRoutes = [
     path: "/Proposal_client/:id/:uuid/:next",
     name: "Proposal_client",
     component: Proposal_client,
+    layout: "/auth",
+    invisible: false,
+  },
+  {
+    path: "/HBL/:id",
+    name: "HBL_client",
+    component: HBL_client,
     layout: "/auth",
     invisible: false,
   },

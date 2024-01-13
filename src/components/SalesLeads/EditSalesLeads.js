@@ -5134,9 +5134,11 @@ class EditSalesLeads extends Component {
               RateType: "Hub",
               ToEmail: this.state.NewEmailAddress,
             };
+            debugger;
             api
               .post("salesLead/sendGetRateEmail", emailData)
               .then((response) => {
+                debugger;
                 this.hideLoader();
                 if (response.success) {
                   this.reCallApi();
