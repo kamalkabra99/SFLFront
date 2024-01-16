@@ -7,7 +7,7 @@ import styles from "assets/jss/material-dashboard-pro-react/views/validationForm
 import { makeStyles } from "@material-ui/core/styles";
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
-import { saveAs } from "file-saver";
+// import { saveAs } from "file-saver";
 import stamp from "../../assets/img/HBL/stamp.png";
 import pshah from "../../assets/img/HBL/pshah.png";
 import SimpleBackdrop from "../../utils/general";
@@ -72,12 +72,37 @@ class HBL extends React.Component {
       Addressline1: "C 732 733 Siddhi Vinayak Towers",
       Addressline2: "Behind DCP Office, Near DAV Intl. School",
       company: "SFL Worldwide Logistics Private Limited",
+
+      ConsigneeDetails: "",
+      ConsignedTo: "",
+      ShipperExportor: "",
+      APPLYTO: "",
     };
   }
 
   async componentDidMount() {
     var TrackingNumber = this.props.match.params.id;
     this.GetHBLdetails(TrackingNumber);
+    this.setState({
+      ConsigneeDetails:
+        this.state.company +
+        "\n" +
+        this.state.Addressline1 +
+        "\n" +
+        this.state.Addressline2 +
+        "\n" +
+        this.state.STREET +
+        "," +
+        this.state.CITY +
+        "," +
+        this.state.COUNTRY +
+        "\n" +
+        this.state.PHONE +
+        "-" +
+        this.state.EMAIL +
+        " GST:" +
+        this.state.GST,
+    });
   }
 
   GetHBLdetails = (input) => {
@@ -137,6 +162,33 @@ class HBL extends React.Component {
               toZipCode: this.state.DocumentData[0].toZipCode,
               toAddress: toAddress,
               fromAddress: fromAddress,
+            });
+            this.setState({
+              ConsignedTo:
+                this.state.toCustomerName +
+                "\n" +
+                this.state.toAddress +
+                "\n" +
+                this.state.toCity +
+                "\n" +
+                this.state.toState +
+                " " +
+                this.state.toZipCode +
+                "\n" +
+                this.state.toCountry,
+              ShipperExportor:
+                this.state.fromCustomerName +
+                "\n" +
+                this.state.fromAddress +
+                "\n" +
+                this.state.fromCity +
+                "\n" +
+                this.state.fromState +
+                "\n" +
+                " " +
+                this.state.fromZipCode +
+                "\n" +
+                this.state.fromCountry,
             });
           } else {
             cogoToast.error("Something went wrong");
@@ -216,6 +268,14 @@ class HBL extends React.Component {
   selectChange = (event, value) => {
     if (value === "BookingNumber") {
       this.setState({ BookingNumber: event.target.value });
+    } else if (value === "ConsigneeDetails") {
+      this.setState({ ConsigneeDetails: event.target.value });
+    } else if (value === "ShipperExportor") {
+      this.setState({ ShipperExportor: event.target.value });
+    } else if (value === "APPLYTO") {
+      this.setState({ APPLYTO: event.target.value });
+    } else if (value === "ConsignedTo") {
+      this.setState({ ConsignedTo: event.target.value });
     } else if (value === "ContainerNumber") {
       this.setState({ ContainerNumber: event.target.value });
     } else if (value === "TrackingNumber") {
@@ -347,7 +407,16 @@ class HBL extends React.Component {
                 <tr>
                   <td rowSpan={3} className="t-50">
                     SHIPPER/EXPORTER COMPLETE NAME AND ADDRESS<br></br>
-                    <input
+                    <textarea
+                      name="Body"
+                      style={{ width: "100%", height: "120px" }}
+                      labelText="Body"
+                      //KRUTIU
+                      value={this.state.ShipperExportor}
+                      onChange={(e) => this.selectChange(e, "ShipperExportor")}
+                      //onChange={(event) => this.ChangeMailBody(event, "Body")}
+                    ></textarea>
+                    {/* <input
                       style={{ width: "400px" }}
                       value={fromCustomerName}
                       onChange={(e) => this.selectChange(e, "fromCustomerName")}
@@ -378,7 +447,7 @@ class HBL extends React.Component {
                     <input
                       value={fromCountry}
                       onChange={(e) => this.selectChange(e, "fromCountry")}
-                    />
+                    /> */}
                   </td>
                   <td className="t-25">
                     BOOKING NUMBER<br></br>
@@ -418,7 +487,16 @@ class HBL extends React.Component {
                 <tr>
                   <td rowSpan={2} className="t-50">
                     CONSIGNED TO<br></br>
-                    <input
+                    <textarea
+                      name="Body"
+                      style={{ width: "100%", height: "100px" }}
+                      labelText="Body"
+                      //KRUTIU
+                      value={this.state.ConsignedTo}
+                      onChange={(e) => this.selectChange(e, "ConsignedTo")}
+                      //onChange={(event) => this.ChangeMailBody(event, "Body")}
+                    ></textarea>
+                    {/* <input
                       style={{ width: "400px" }}
                       value={toCustomerName}
                       onChange={(e) => this.selectChange(e, "toCustomerName")}
@@ -448,7 +526,7 @@ class HBL extends React.Component {
                     <input
                       value={toCountry}
                       onChange={(e) => this.selectChange(e, "toCountry")}
-                    />
+                    /> */}
                   </td>
                   <td className="t-50">FORWARDING AGENT FMC NO.</td>
                 </tr>
@@ -465,68 +543,92 @@ class HBL extends React.Component {
                 <tr>
                   <td className="t-50">
                     NOTIFY PARTY/INTERMEDIATE CONSIGNEE<br></br>
+                    <div className="hbl-textarea">
+                      <textarea
+                        name="Body"
+                        style={{ width: "100%", height: "100px" }}
+                        labelText="Body"
+                        //KRUTIU
+                        value={this.state.ConsigneeDetails}
+                        onChange={(e) =>
+                          this.selectChange(e, "ConsigneeDetails")
+                        }
+                        //onChange={(event) => this.ChangeMailBody(event, "Body")}
+                      ></textarea>
+                    </div>
                     {/* SFL Worldwide Logistics Private Limited  */}
-                    <input
+                    {/* <input
                       style={{ width: "240px" }}
                       value={company}
                       onChange={(e) => this.selectChange(e, "company")}
-                    />
-                    <br></br>
+                    /> */}
+                    {/* <br></br>
                     <input
                       style={{ width: "210px" }}
                       value={Addressline1}
                       onChange={(e) => this.selectChange(e, "Addressline1")}
-                    />
+                    /> */}
                     {/* C 732 733 Siddhi
                     Vinayak Towers */}
-                    <br></br>
+                    {/* <br></br> */}
                     {/* Behind DCP Office, Near DAV Intl. School */}
-                    <input
+                    {/* <input
                       style={{ width: "270px" }}
                       value={Addressline2}
                       onChange={(e) => this.selectChange(e, "Addressline2")}
-                    />
-                    <br></br>
+                    /> */}
+                    {/* <br></br>
                     <input
                       value={STREET}
                       onChange={(e) => this.selectChange(e, "STREET")}
-                    />
+                    /> */}
                     {/* Off S. G. Highway, Makarba */}
-                    ,
+                    {/* ,
                     <input
                       style={{ width: "80px" }}
                       value={CITY}
                       onChange={(e) => this.selectChange(e, "CITY")}
-                    />
+                    /> */}
                     {/* Ahmedabad */}
-                    ,
+                    {/* ,
                     <input
                       style={{ width: "100px" }}
                       value={COUNTRY}
                       onChange={(e) => this.selectChange(e, "COUNTRY")}
-                    />
+                    /> */}
                     {/* India */}
-                    <br></br>
+                    {/* <br></br>
                     <input
                       style={{ width: "110px" }}
                       value={PHONE}
                       onChange={(e) => this.selectChange(e, "PHONE")}
-                    />
+                    /> */}
                     {/* +91 98250 13411  */}
-                    -
+                    {/* -
                     <input
                       value={EMAIL}
                       onChange={(e) => this.selectChange(e, "EMAIL")}
-                    />
+                    /> */}
                     {/* saumins@sflworldwide.com  */}
-                    GST :
+                    {/* GST :
                     <input
                       value={GST}
                       onChange={(e) => this.selectChange(e, "GST")}
-                    />
+                    /> */}
                     {/* 24AABCN9389H1Z2 */}
                   </td>
-                  <td className="t-50">FOR DELIVERY PLEASE APPLY TO</td>
+                  <td className="t-50">
+                    FOR DELIVERY PLEASE APPLY TO <br />
+                    <textarea
+                      name="Body"
+                      style={{ width: "100%", height: "100px" }}
+                      labelText="Body"
+                      //KRUTIU
+                      value={this.state.APPLYTO}
+                      onChange={(e) => this.selectChange(e, "APPLYTO")}
+                      //onChange={(event) => this.ChangeMailBody(event, "Body")}
+                    ></textarea>
+                  </td>
                 </tr>
               </table>
               <table className="hbl-table">

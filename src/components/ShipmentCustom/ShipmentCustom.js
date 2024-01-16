@@ -11271,7 +11271,8 @@ class ShipmentCustom extends React.Component {
                         "California Console"))) ||
                 (this.state.ServiceName.value === "SFL" &&
                   this.state.ShipmentType.value === "Air" &&
-                  this.state.SubServiceName.value === "SFL Saver") ? (
+                  this.state.SubServiceName.value === "SFL Saver" &&
+                  record.original.DocumentType === "Prepaid Labels") ? (
                 <Button
                   className="normal-btn sm-orange"
                   // disabled={this.state.isFromCountryCanada ? true : false}
