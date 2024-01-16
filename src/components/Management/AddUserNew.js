@@ -84,6 +84,30 @@ class Step1 extends React.Component {
           value: "Inactive",
         },
       ],
+      userTimeZone:"",
+
+      UserTimeZoneList: [
+        {
+          label: "IST",
+          value: "IST",
+        },
+        {
+          label: "CST",
+          value: "CST",
+        },
+        {
+          label: "EST",
+          value: "EST",
+        },
+        {
+          label: "GMT",
+          value: "GMT",
+        },
+        {
+          label: "PST",
+          value: "PST",
+        },
+      ],
       uploadedfilename: "",
       fullName: "",
       userName: "",
@@ -460,6 +484,14 @@ class Step1 extends React.Component {
                       value: userData.UserData[0].Status,
                       label: userData.UserData[0].Status,
                     }
+                  : "",
+                  userTimeZone: !CommonConfig.isEmpty(this.props.location.state)
+                  ? 
+                    {
+                      value: userData.UserData[0].userTimeZone,
+                      label: userData.UserData[0].userTimeZone,
+                    }
+                  
                   : "",
                 fullName: !CommonConfig.isEmpty(this.props.location.state)
                   ? userData.UserData[0].Name
@@ -1031,6 +1063,10 @@ class Step1 extends React.Component {
     return IsFormValid;
   }
 
+  setUserTimeZone = (e) =>{
+     this.setState({ userTimeZone: e });
+  }
+
   activeInactiveUser = (e) => {
     this.setState({ Status: e });
     // let data = {
@@ -1099,6 +1135,7 @@ class Step1 extends React.Component {
           CountryID: this.state.Country.value,
           UserDetailID: this.state.UserDetailID,
           Status: this.state.Status.value,
+          userTimeZone:this.state.userTimeZone.value,
         };
 
         var data = {};
@@ -1130,6 +1167,7 @@ class Step1 extends React.Component {
             Phone2ID: this.state.Mobile1ID,
             SelectedPaperSize: this.state.PaperSize.value,
             Status: this.state.Status.value,
+            userTimeZone:this.state.userTimeZone.value,
             DocumentList: finalAttachment,
           };
         } else {
@@ -1151,6 +1189,7 @@ class Step1 extends React.Component {
             EmailID: this.state.EmailID,
             PhoneID: this.state.MobileID,
             Status: this.state.Status.value,
+            userTimeZone:this.state.userTimeZone.value,
             SelectedPaperSize: this.state.PaperSize.value,
             DocumentList: finalAttachment,
           };
@@ -1878,6 +1917,11 @@ class Step1 extends React.Component {
     const userstatus = this.state.UserStatusList.map((type) => {
       return { value: type.value, label: type.label };
     });
+
+    const userTimeZone = this.state.UserTimeZoneList.map((type) => {
+      return { value: type.value, label: type.label };
+    });
+
 
     const CityOptions = this.state.GoogleAPICityList.map((city) => {
       return { value: city.City_code, label: city.Name };
@@ -2623,6 +2667,21 @@ class Step1 extends React.Component {
                           getOptionLabel={(option) => option.label}
                           renderInput={(params) => (
                             <TextField {...params} label="User Status" />
+                          )}
+                        />
+                      </GridItem>
+
+                      <GridItem xs={12} sm={12} md={3}>
+                        <Autocomplete
+                          id="combo-box-demo"
+                          options={userTimeZone}
+                          value={this.state.userTimeZone}
+                          onChange={(event, value) =>
+                            this.setUserTimeZone(value)
+                          }
+                          getOptionLabel={(option) => option.label}
+                          renderInput={(params) => (
+                            <TextField {...params} label="Time Zone" />
                           )}
                         />
                       </GridItem>

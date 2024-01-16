@@ -56,6 +56,30 @@ class TimeManagement extends React.Component {
       ProposalData: [],
       finalLength: 0,
       open: false,
+      userTimeZone:"",
+
+      UserTimeZoneList: [
+        {
+          label: "IST",
+          value: "IST",
+        },
+        {
+          label: "CST",
+          value: "CST",
+        },
+        {
+          label: "EST",
+          value: "EST",
+        },
+        {
+          label: "GMT",
+          value: "GMT",
+        },
+        {
+          label: "PST",
+          value: "PST",
+        },
+      ],
       requestStatus: [
         { label: "15 minutes", value: "15", IsSelected: false, Index: 0 },
         { label: "30 minutes", value: "30", IsSelected: false, Index: 1 },
@@ -67,15 +91,53 @@ class TimeManagement extends React.Component {
   }
 
   componentDidMount() {
-    var dates = moment().tz("America/Chicago").format("DD-MM-YYYY")
+    console.log("UserID: CommonConfig.loggedInUserData() = " , CommonConfig.loggedInUserData().userTimeZone);
+    // var dates = moment().tz("America/Chicago").format("DD-MM-YYYY")
 
-    console.log("Datest = ", dates);
-    this.setState({ curDate: dates });
+    // console.log("Datest = ", dates);
+    // this.setState({ curDate: dates });
 
-    console.log(CommonConfig.getUserAccess("Time Booking").WriteAccess);
+    // console.log(CommonConfig.getUserAccess("Time Booking").WriteAccess);
     // this.checkUserLoginToday();
+
+    this.setState({
+      userTimeZone: {
+                      value: CommonConfig.loggedInUserData().userTimeZone,
+                      label: CommonConfig.loggedInUserData().userTimeZone,
+                    }
+                  
+                  ,
+    })
+
+    if(CommonConfig.loggedInUserData().userTimeZone == "IST"){
+      var dates = moment().tz("Asia/Kolkata").format("DD-MM-YYYY")
+      this.setState({ curDate: dates });
+    }
+
+    if(CommonConfig.loggedInUserData().userTimeZone == "CST"){
+      var dates = moment().tz("America/Chicago").format("DD-MM-YYYY")
+      this.setState({ curDate: dates });
+    }
+
+    if(CommonConfig.loggedInUserData().userTimeZone == "EST"){
+      var dates = moment().tz("America/New_York").format("DD-MM-YYYY")
+      this.setState({ curDate: dates });
+    }
+
+    if(CommonConfig.loggedInUserData().userTimeZone == "PST"){
+      var dates = moment().tz("America/Los_Angeles").format("DD-MM-YYYY")
+      this.setState({ curDate: dates });
+    }
+
+    if(CommonConfig.loggedInUserData().userTimeZone == "GMT"){
+      var dates = moment().tz("Europe/London").format("DD-MM-YYYY")
+      this.setState({ curDate: dates });
+    }
+    
+
     this.checkUserBreakToday();
-    this.getTmsUserName();
+    console.log("UserLogin = " , this.state.userTimeZone)
+    this.getTmsUserName(CommonConfig.loggedInUserData().userTimeZone);
 
   }
 
@@ -87,7 +149,7 @@ class TimeManagement extends React.Component {
     this.setState({ Loading: false });
   };
 
-  getTmsUserName = () => {
+  getTmsUserName = (values) => {
     console.log(CommonConfig.getUserAccess("Time Booking").AllAccess);
     var userdata = 0
     if (CommonConfig.getUserAccess("Time Booking").AllAccess == 1) {
@@ -97,7 +159,8 @@ class TimeManagement extends React.Component {
     }
 
     var pData = {
-      puserdata: userdata
+      puserdata: userdata,
+      userTimeZonedata:values,
     }
 
     api.post("contactus/getTmsUserList", pData).then((res) => {
@@ -138,10 +201,13 @@ class TimeManagement extends React.Component {
   }
 
   checkUserBreakToday = () => {
+    debugger
 
+   
     this.showLoador();
     var pData = {
-      UserID: CommonConfig.loggedInUserData().PersonID
+      UserID: CommonConfig.loggedInUserData().PersonID,
+      userTimeZonedata:this.state.userTimeZone.value == undefined ? CommonConfig.loggedInUserData().userTimeZone : this.state.userTimeZone.value,
     }
     api.post("contactus/CheckUserLoginBreak", pData).then((res) => {
       console.log("Res = ", res);
@@ -172,7 +238,8 @@ class TimeManagement extends React.Component {
 
     this.showLoador();
     var pData = {
-      UserID: CommonConfig.loggedInUserData().PersonID
+      UserID: CommonConfig.loggedInUserData().PersonID,
+      userTimeZonedata:this.state.userTimeZone.value,
     }
     api.post("contactus/CheckUserLogin", pData).then((res) => {
       console.log("Res = ", res);
@@ -200,7 +267,9 @@ class TimeManagement extends React.Component {
 
     this.showLoador();
     var pData = {
-      UserID: CommonConfig.loggedInUserData().PersonID
+      UserID: CommonConfig.loggedInUserData().PersonID,
+      userTimeZonedata:this.state.userTimeZone.value,
+
     }
     api.post("contactus/UserLogin", pData).then((res) => {
       console.log("Res = ", res);
@@ -209,7 +278,7 @@ class TimeManagement extends React.Component {
         this.hideLoador();
         this.setState({ loggedUser: 1 })
         cogoToast.success("Login Successfully");
-        this.getTmsUserName();
+        this.getTmsUserName(this.state.userTimeZone.value);
 
 
 
@@ -226,7 +295,8 @@ class TimeManagement extends React.Component {
 
     this.showLoador();
     var pData = {
-      UserID: CommonConfig.loggedInUserData().PersonID
+      UserID: CommonConfig.loggedInUserData().PersonID,
+      userTimeZonedata:this.state.userTimeZone.value,
     }
     api.post("contactus/UserBreakResume", pData).then((res) => {
       console.log("Res = ", res);
@@ -236,7 +306,7 @@ class TimeManagement extends React.Component {
         this.setState({ loggedUserBreak: 0 })
         this.setState({ loggedUser: 1 })
         cogoToast.success("Break Updated Successfully");
-        this.getTmsUserName();
+        this.getTmsUserName(this.state.userTimeZone.value);
 
 
 
@@ -288,7 +358,8 @@ class TimeManagement extends React.Component {
     this.showLoador();
     var pData = {
       UserID: CommonConfig.loggedInUserData().PersonID,
-      BreakDur: localStorage.getItem("breakType")
+      BreakDur: localStorage.getItem("breakType"),
+      userTimeZonedata:this.state.userTimeZone.value,
     }
     api.post("contactus/UserBreak", pData).then((res) => {
       console.log("Res = ", res);
@@ -301,7 +372,7 @@ class TimeManagement extends React.Component {
         setTimeout(() => {
           window.location.reload();
         }, 1000);
-        this.getTmsUserName();
+        this.getTmsUserName(this.state.userTimeZone.value);
 
 
 
@@ -321,13 +392,50 @@ class TimeManagement extends React.Component {
     this.setState({ close: true, open: false });
   };
 
+  setUserTimeZone = (e) =>{
+    this.setState({ userTimeZone: e });
+
+    var dates = moment().tz("America/Chicago").format("DD-MM-YYYY")
+
+    console.log("Datest = ", e);
+    if(e.value == "IST"){
+      var dates = moment().tz("Asia/Kolkata").format("DD-MM-YYYY")
+      this.setState({ curDate: dates });
+    }
+
+    if(e.value == "CST"){
+      var dates = moment().tz("America/Chicago").format("DD-MM-YYYY")
+      this.setState({ curDate: dates });
+    }
+
+    if(e.value == "EST"){
+      var dates = moment().tz("America/Cancun").format("DD-MM-YYYY")
+      this.setState({ curDate: dates });
+    }
+
+    if(e.value == "PST"){
+      var dates = moment().tz("America/Ensenada").format("DD-MM-YYYY")
+      this.setState({ curDate: dates });
+    }
+
+    if(e.value == "GMT"){
+      var dates = moment().tz("Africa/Abidjan").format("DD-MM-YYYY")
+      this.setState({ curDate: dates });
+    }
+
+    this.getTmsUserName(e.value);
+    
+
+  }
+
   handleLogout = () => {
 
     console.log("UserID: CommonConfig.loggedInUserData().PersonID = ", CommonConfig.loggedInUserData().PersonID,);
 
     this.showLoador();
     var pData = {
-      UserID: CommonConfig.loggedInUserData().PersonID
+      UserID: CommonConfig.loggedInUserData().PersonID,
+      userTimeZonedata:this.state.userTimeZone.value,
     }
     api.post("contactus/UserLogout", pData).then((res) => {
       console.log("Res = ", res);
@@ -336,7 +444,7 @@ class TimeManagement extends React.Component {
         this.hideLoador();
         this.setState({ loggedUser: 0 })
         cogoToast.success("Logout Successfully");
-        this.getTmsUserName();
+        this.getTmsUserName(this.state.userTimeZone.value);
         this.setState({ open: false });
 
 
@@ -353,7 +461,8 @@ class TimeManagement extends React.Component {
   handleLogincheck = () => {
     this.showLoador();
     var pData = {
-      UserID: CommonConfig.loggedInUserData().PersonID
+      UserID: CommonConfig.loggedInUserData().PersonID,
+      userTimeZonedata:this.state.userTimeZone.value,
     }
     api.post("contactus/CheckUserLogin", pData).then((res) => {
       console.log("Res = ", res);
@@ -470,6 +579,10 @@ class TimeManagement extends React.Component {
       ProposalData
     } = this.state;
 
+    const userTimeZone = this.state.UserTimeZoneList.map((type) => {
+      return { value: type.value, label: type.label };
+    });
+
     return (
       <GridContainer className="UserList-outer">
         {this.state.Loading === true ? (
@@ -484,6 +597,22 @@ class TimeManagement extends React.Component {
                 <HeadsetMic />
               </CardIcon>
               <h4 className="margin-right-auto text-color-black">Time Booking ({this.state.curDate})</h4>
+              <GridContainer>
+                <GridItem xs={12} sm={12} md={3}>
+                    <Autocomplete
+                      id="combo-box-demo"
+                      options={userTimeZone}
+                      value={this.state.userTimeZone}
+                      onChange={(event, value) =>
+                        this.setUserTimeZone(value)
+                      }
+                      getOptionLabel={(option) => option.label}
+                      renderInput={(params) => (
+                        <TextField {...params} label="Time Zone" />
+                      )}
+                    />
+                </GridItem>
+              </GridContainer>
 
               {this.state.loggedUser === 0 && CommonConfig.getUserAccess("Time Booking").WriteAccess == 1 ? (
                 <div className="buttonW">
