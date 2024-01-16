@@ -162,6 +162,7 @@ class TimeManagement extends React.Component {
       puserdata: userdata,
       userTimeZonedata:values,
     }
+    this.setState({ ProposalData: [] });
 
     api.post("contactus/getTmsUserList", pData).then((res) => {
       if (res.success) {
