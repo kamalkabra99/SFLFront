@@ -78,6 +78,12 @@ class HBL extends React.Component {
       ConsignedTo: "",
       ShipperExportor: "",
       APPLYTO: "",
+
+      description: " USED HOUSE HOLD GOODS AND PERSONAL EFFECTS ",
+      PackageNumber: "",
+      WEIGHT: "",
+      MEASUREMENT: "",
+      Sequencelist: [],
     };
   }
 
@@ -121,6 +127,11 @@ class HBL extends React.Component {
                 DocumentData: res.data[0],
                 PackageData: res.data[1],
                 SequenceData: res.data[2],
+              });
+              this.setState({
+                PackageNumber: this.state.PackageData[0].totalPackage,
+                WEIGHT: this.state.PackageData[0].totalWeight + " Kgs",
+                MEASUREMENT: this.state.PackageData[0].totalCFT + " CBM",
               });
             }
             var toAddress = "";
@@ -191,6 +202,13 @@ class HBL extends React.Component {
                 "\n" +
                 this.state.fromCountry,
             });
+            var Sequencelist = this.rendertable();
+            console.log("seqqqqq", Sequencelist);
+            // const myArray = [1, 2, 3, 4, 5];
+            // // Convert array to a string without a separator
+            // const resultWithoutSeparator = Sequencelist.toString();
+            // console.log("resultWithoutSeparator", resultWithoutSeparator); // Output: "1,2,3,4,5"
+            this.setState({ Sequencelist: Sequencelist });
           } else {
             cogoToast.error("Something went wrong");
           }
@@ -214,7 +232,7 @@ class HBL extends React.Component {
   rendertable = () => {
     return this.state.SequenceData.map((service, idx) => {
       const { Range_Data } = service;
-      return <tr>{Range_Data}</tr>;
+      return Range_Data;
     });
   };
 
@@ -235,6 +253,37 @@ class HBL extends React.Component {
 
     document.getElementById("pointState").style.display = "none";
     document.getElementById("pointStatediv").style.display = "block";
+
+    document.getElementById("APPLYTO").style.display = "none";
+    document.getElementById("APPLYTOdiv").style.display = "block";
+    document.getElementById("TypeOfMove").style.display = "none";
+    document.getElementById("TypeOfMovediv").style.display = "block";
+    document.getElementById("Vessel").style.display = "none";
+    document.getElementById("Vesseldiv").style.display = "block";
+    document.getElementById("develiverd").style.display = "none";
+    document.getElementById("develiverddiv").style.display = "block";
+    document.getElementById("Unloading").style.display = "none";
+    document.getElementById("Unloadingdiv").style.display = "block";
+    document.getElementById("Export").style.display = "none";
+    document.getElementById("Exportdiv").style.display = "block";
+
+    document.getElementById("TrackingNumber").style.display = "none";
+    document.getElementById("TrackingNumberdiv").style.display = "block";
+    document.getElementById("BLNumber").style.display = "none";
+    document.getElementById("BLNumberdiv").style.display = "block";
+    document.getElementById("ContainerNumber").style.display = "none";
+    document.getElementById("ContainerNumberdiv").style.display = "block";
+
+    document.getElementById("description").style.display = "none";
+    document.getElementById("descriptiondiv").style.display = "block";
+    document.getElementById("PackageNumber").style.display = "none";
+    document.getElementById("PackageNumberdiv").style.display = "block";
+    document.getElementById("WEIGHT").style.display = "none";
+    document.getElementById("WEIGHTdiv").style.display = "block";
+    document.getElementById("MEASUREMENT").style.display = "none";
+    document.getElementById("MEASUREMENTdiv").style.display = "block";
+    document.getElementById("Sequencelist").style.display = "none";
+    document.getElementById("Sequencelistdiv").style.display = "block";
 
     const element = document.getElementById("HBL");
 
@@ -302,8 +351,8 @@ class HBL extends React.Component {
     if (value === "BookingNumber") {
       this.setState({ BookingNumber: event.target.value });
     } else if (value === "ConsigneeDetails") {
-      const updatedText = event.target.value.replace(/\n/g, "<br>");
-      this.setState({ ConsigneeDetails: updatedText });
+      // const updatedText = event.target.value.replace(/\n/g, "<br>");
+      this.setState({ ConsigneeDetails: event.target.value });
     } else if (value === "ShipperExportor") {
       this.setState({ ShipperExportor: event.target.value });
     } else if (value === "APPLYTO") {
@@ -374,10 +423,24 @@ class HBL extends React.Component {
       this.setState({ Addressline2: event.target.value });
     } else if (value === "company") {
       this.setState({ company: event.target.value });
+    } else if (value === "description") {
+      this.setState({ description: event.target.value });
+    } else if (value === "PackageNumber") {
+      this.setState({ PackageNumber: event.target.value });
+    } else if (value === "WEIGHT") {
+      this.setState({ WEIGHT: event.target.value });
+    } else if (value === "MEASUREMENT") {
+      this.setState({ MEASUREMENT: event.target.value });
+    } else if (value === "Sequencelist") {
+      this.setState({ Sequencelist: event.target.value });
     }
   };
   render() {
     const {
+      PackageNumber,
+      description,
+      WEIGHT,
+      MEASUREMENT,
       BookingNumber,
       fromCustomerName,
       TrackingNumber,
@@ -538,8 +601,19 @@ class HBL extends React.Component {
                   <td className="t-25">
                     CONTAINER NUMBER<br></br>
                     <input
+                      id="ContainerNumber"
+                      style={{
+                        display: "block",
+                      }}
                       value={ContainerNumber}
                       onChange={(e) => this.selectChange(e, "ContainerNumber")}
+                    />
+                    <div
+                      id="ContainerNumberdiv"
+                      dangerouslySetInnerHTML={{
+                        __html: ContainerNumber,
+                      }}
+                      style={{ display: "none", whiteSpace: "pre-line" }}
                     />
                   </td>
                 </tr>
@@ -547,8 +621,19 @@ class HBL extends React.Component {
                   <td colSpan={2} className="t-50">
                     BILL OF LANDING NUMBER<br></br>
                     <input
+                      id="BLNumber"
+                      style={{
+                        display: "block",
+                      }}
                       value={BLNumber}
                       onChange={(e) => this.selectChange(e, "BLNumber")}
+                    />
+                    <div
+                      id="BLNumberdiv"
+                      dangerouslySetInnerHTML={{
+                        __html: BLNumber,
+                      }}
+                      style={{ display: "none", whiteSpace: "pre-line" }}
                     />
                   </td>
                 </tr>
@@ -556,8 +641,19 @@ class HBL extends React.Component {
                   <td colSpan={2} className="t-50">
                     EXPORT REFERENCES<br></br>
                     <input
+                      id="TrackingNumber"
+                      style={{
+                        display: "block",
+                      }}
                       value={TrackingNumber}
                       onChange={(e) => this.selectChange(e, "TrackingNumber")}
+                    />
+                    <div
+                      id="TrackingNumberdiv"
+                      dangerouslySetInnerHTML={{
+                        __html: TrackingNumber,
+                      }}
+                      style={{ display: "none", whiteSpace: "pre-line" }}
                     />
                   </td>
                 </tr>
@@ -744,6 +840,7 @@ class HBL extends React.Component {
                   <td className="t-50">
                     FOR DELIVERY PLEASE APPLY TO <br />
                     <textarea
+                      id="APPLYTO"
                       name="Body"
                       style={{ width: "100%", height: "100px" }}
                       labelText="Body"
@@ -752,6 +849,13 @@ class HBL extends React.Component {
                       onChange={(e) => this.selectChange(e, "APPLYTO")}
                       //onChange={(event) => this.ChangeMailBody(event, "Body")}
                     ></textarea>
+                    <div
+                      id="APPLYTOdiv"
+                      dangerouslySetInnerHTML={{
+                        __html: this.state.APPLYTO,
+                      }}
+                      style={{ display: "none", whiteSpace: "pre-line" }}
+                    />
                   </td>
                 </tr>
               </table>
@@ -759,44 +863,139 @@ class HBL extends React.Component {
                 <tr>
                   <td className="t-25">
                     VESSEL<br></br>
-                    <input
+                    <textarea
+                      id="Vessel"
+                      name="Body"
+                      style={{
+                        width: "100%",
+                        height: "50px",
+                        display: "block",
+                      }}
+                      labelText="Body"
                       value={Vessel}
                       onChange={(e) => this.selectChange(e, "Vessel")}
-                    />{" "}
+                    ></textarea>
+                    <div
+                      id="Vesseldiv"
+                      dangerouslySetInnerHTML={{
+                        __html: Vessel,
+                      }}
+                      style={{ display: "none", whiteSpace: "pre-line" }}
+                    />
+                    {/* <input
+                      value={Vessel}
+                      onChange={(e) => this.selectChange(e, "Vessel")}
+                    />{" "} */}
                     {/* MAERSK SELETAR 343E */}
                   </td>
                   <td className="t-25">
                     PORT OF LOADING/EXPORT<br></br>
-                    <input
+                    <textarea
+                      id="Export"
+                      name="Body"
+                      style={{
+                        width: "100%",
+                        height: "50px",
+                        display: "block",
+                      }}
+                      labelText="Body"
                       value={Export}
                       onChange={(e) => this.selectChange(e, "Export")}
-                    />{" "}
+                    ></textarea>
+                    <div
+                      id="Exportdiv"
+                      dangerouslySetInnerHTML={{
+                        __html: Export,
+                      }}
+                      style={{ display: "none", whiteSpace: "pre-line" }}
+                    />
+                    {/* <input
+                      value={Export}
+                      onChange={(e) => this.selectChange(e, "Export")}
+                    />{" "} */}
                     {/* Dallas, Texas */}
                   </td>
                   <td className="t-50">
                     TYPE OF MOVE<br></br>
-                    <input
+                    <textarea
+                      id="TypeOfMove"
+                      name="Body"
+                      style={{
+                        width: "100%",
+                        height: "50px",
+                        display: "block",
+                      }}
+                      labelText="Body"
                       value={TypeOfMove}
                       onChange={(e) => this.selectChange(e, "TypeOfMove")}
-                    />{" "}
+                    ></textarea>
+                    <div
+                      id="TypeOfMovediv"
+                      dangerouslySetInnerHTML={{
+                        __html: TypeOfMove,
+                      }}
+                      style={{ display: "none", whiteSpace: "pre-line" }}
+                    />
+                    {/* <input
+                      value={TypeOfMove}
+                      onChange={(e) => this.selectChange(e, "TypeOfMove")}
+                    />{" "} */}
                     {/* Console */}
                   </td>
                 </tr>
                 <tr>
                   <td className="t-25">
                     FOREIGN PORT OF UNLOADING<br></br>
-                    <input
+                    <textarea
+                      id="Unloading"
+                      name="Body"
+                      style={{
+                        width: "100%",
+                        height: "50px",
+                        display: "block",
+                      }}
+                      labelText="Body"
                       value={Unloading}
                       onChange={(e) => this.selectChange(e, "Unloading")}
-                    />{" "}
+                    ></textarea>
+                    <div
+                      id="Unloadingdiv"
+                      dangerouslySetInnerHTML={{
+                        __html: Unloading,
+                      }}
+                      style={{ display: "none", whiteSpace: "pre-line" }}
+                    />
+                    {/* <input
+                      value={Unloading}
+                      onChange={(e) => this.selectChange(e, "Unloading")}
+                    />{" "} */}
                     {/* Nhava Sheva, India */}
                   </td>
                   <td className="t-25">
                     PLACE OF DELIVERY BY ON-CARRIER<br></br>
-                    <input
+                    <textarea
+                      id="develiverd"
+                      name="Body"
+                      style={{
+                        width: "100%",
+                        height: "50px",
+                        display: "block",
+                      }}
+                      labelText="Body"
                       value={develiverd}
                       onChange={(e) => this.selectChange(e, "develiverd")}
-                    />{" "}
+                    ></textarea>
+                    <div
+                      id="develiverddiv"
+                      dangerouslySetInnerHTML={{
+                        __html: develiverd,
+                      }}
+                      style={{ display: "none", whiteSpace: "pre-line" }}
+                    />
+                    {/* <input
+                      value={develiverd}
+                      onChange={(e) => this.selectChange(e, "develiverd")}
+                    />{" "} */}
                     {/* Nhava Sheva, India */}
                   </td>
                   <td className="t-50"></td>
@@ -817,11 +1016,117 @@ class HBL extends React.Component {
                   <th>MEASUREMENT</th>
                 </tr>
                 <tr>
-                  <td>{this.rendertable()}</td>
-                  <td>{this.state.PackageData[0].totalPackage}</td>
-                  <td>USED HOUSE HOLD GOODS AND PERSONAL EFFECTS</td>
-                  <td>{this.state.PackageData[0].totalWeight} Kgs</td>
-                  <td>{this.state.PackageData[0].totalCFT} CBM</td>
+                  {/* <td>{this.state.Sequencelist}</td> */}
+                  <td>
+                    <textarea
+                      id="Sequencelist"
+                      name="Body"
+                      style={{
+                        width: "100%",
+                        height: "50px",
+                        display: "block",
+                      }}
+                      labelText="Body"
+                      value={this.state.Sequencelist}
+                      onChange={(e) => this.selectChange(e, "Sequencelist")}
+                    ></textarea>
+                    <div
+                      id="Sequencelistdiv"
+                      dangerouslySetInnerHTML={{
+                        __html: this.state.Sequencelist,
+                      }}
+                      style={{ display: "none", whiteSpace: "pre-line" }}
+                    />
+                    {/* USED HOUSE HOLD GOODS AND PERSONAL EFFECTS */}
+                  </td>
+                  <td>
+                    <textarea
+                      id="PackageNumber"
+                      name="Body"
+                      style={{
+                        width: "100%",
+                        height: "50px",
+                        display: "block",
+                      }}
+                      labelText="Body"
+                      value={PackageNumber}
+                      onChange={(e) => this.selectChange(e, "PackageNumber")}
+                    ></textarea>
+                    <div
+                      id="PackageNumberdiv"
+                      dangerouslySetInnerHTML={{
+                        __html: PackageNumber,
+                      }}
+                      style={{ display: "none", whiteSpace: "pre-line" }}
+                    />
+                    {/* {this.state.PackageData[0].totalPackage} */}
+                  </td>
+                  <td>
+                    <textarea
+                      id="description"
+                      name="Body"
+                      style={{
+                        width: "100%",
+                        height: "50px",
+                        display: "block",
+                      }}
+                      labelText="Body"
+                      value={description}
+                      onChange={(e) => this.selectChange(e, "description")}
+                    ></textarea>
+                    <div
+                      id="descriptiondiv"
+                      dangerouslySetInnerHTML={{
+                        __html: description,
+                      }}
+                      style={{ display: "none", whiteSpace: "pre-line" }}
+                    />
+                    {/* USED HOUSE HOLD GOODS AND PERSONAL EFFECTS */}
+                  </td>
+                  <td>
+                    <textarea
+                      id="WEIGHT"
+                      name="Body"
+                      style={{
+                        width: "100%",
+                        height: "50px",
+                        display: "block",
+                      }}
+                      labelText="Body"
+                      value={WEIGHT}
+                      onChange={(e) => this.selectChange(e, "WEIGHT")}
+                    ></textarea>
+                    <div
+                      id="WEIGHTdiv"
+                      dangerouslySetInnerHTML={{
+                        __html: WEIGHT,
+                      }}
+                      style={{ display: "none", whiteSpace: "pre-line" }}
+                    />
+                    {/* {this.state.PackageData[0].totalWeight} Kgs */}
+                  </td>
+                  <td>
+                    <textarea
+                      id="MEASUREMENT"
+                      name="Body"
+                      style={{
+                        width: "100%",
+                        height: "50px",
+                        display: "block",
+                      }}
+                      labelText="Body"
+                      value={MEASUREMENT}
+                      onChange={(e) => this.selectChange(e, "MEASUREMENT")}
+                    ></textarea>
+                    <div
+                      id="MEASUREMENTdiv"
+                      dangerouslySetInnerHTML={{
+                        __html: MEASUREMENT,
+                      }}
+                      style={{ display: "none", whiteSpace: "pre-line" }}
+                    />
+                    {/* {this.state.PackageData[0].totalCFT} CBM */}
+                  </td>
                 </tr>
 
                 <tr>
