@@ -11,6 +11,7 @@ import html2canvas from "html2canvas";
 import stamp from "../../assets/img/HBL/stamp.png";
 import pshah from "../../assets/img/HBL/pshah.png";
 import SimpleBackdrop from "../../utils/general";
+import html2pdf from "html2pdf.js";
 
 const useStyles = () => makeStyles(styles);
 const classes = useStyles();
@@ -219,57 +220,90 @@ class HBL extends React.Component {
 
   generatePDF = () => {
     this.showLoader();
-    var input = document.getElementById("HBL");
+    //var input = document.getElementById("HBL");
+    document.getElementById("border-hide").style.display = "none";
+    document.getElementById("border-hidediv").style.display = "block";
 
-    html2canvas(input).then((canvas) => {
-      var options = {
-        compressPdf: true,
-      };
-      var pdf = new jsPDF("a4");
-      var imgData = canvas.toDataURL("image/jpeg", 1.0);
-      pdf.addImage(imgData, "JPEG", 5, 5, 200, 150);
-      var doc = btoa(pdf.output());
+    document.getElementById("ShipperExportor").style.display = "none";
+    document.getElementById("ShipperExportordiv").style.display = "block";
 
-      const pdfFile = new File(
-        [pdf.output("blob")],
-        this.state.BLNumber + ".pdf",
-        { type: "application/pdf" }
-      );
+    document.getElementById("ConsignedTo").style.display = "none";
+    document.getElementById("ConsignedTodiv").style.display = "block";
 
-      let data = {
-        dateTime: new Date().getTime(),
-        ShippingID: this.state.ShippingID,
-        BLNumber: this.state.BLNumber,
-      };
-      var formData = new FormData();
-      formData.append("data", JSON.stringify(data));
-      formData.append("Attachments", pdfFile);
+    document.getElementById("BookingNumber").style.display = "none";
+    document.getElementById("BookingNumberdiv").style.display = "block";
 
-      api
-        .post("scheduleshipment/downloadHBLpdf", formData)
-        .then((res) => {
-          if (res.success) {
-            this.hideLoader();
-            cogoToast.success("HBL Generated");
-            window.close();
-          } else {
-            this.hideLoader();
-            cogoToast.error("HBL Generation Error");
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+    document.getElementById("pointState").style.display = "none";
+    document.getElementById("pointStatediv").style.display = "block";
 
-      //pdf.save(this.state.BLNumber + ".pdf");
+    const element = document.getElementById("HBL");
+
+    // Configuration for html2pdf
+    const options = {
+      margin: 10,
+      filename: "converted-document.pdf",
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+    };
+
+    // Use html2pdf to convert HTML to PDF
+    html2pdf(element, options).then((pdf) => {
+      // Trigger the download of the PDF
+      pdf.save();
     });
+    this.hideLoader();
+
+    // html2canvas(input).then((canvas) => {
+    //   var options = {
+    //     compressPdf: true,
+    //   };
+    //   var pdf = new jsPDF("a4");
+    //   var imgData = canvas.toDataURL("image/jpeg", 1.0);
+    //   pdf.addImage(imgData, "JPEG", 5, 5, 200, 150);
+    //   var doc = btoa(pdf.output());
+
+    //   const pdfFile = new File(
+    //     [pdf.output("blob")],
+    //     this.state.BLNumber + ".pdf",
+    //     { type: "application/pdf" }
+    //   );
+
+    //   let data = {
+    //     dateTime: new Date().getTime(),
+    //     ShippingID: this.state.ShippingID,
+    //     BLNumber: this.state.BLNumber,
+    //   };
+    //   var formData = new FormData();
+    //   formData.append("data", JSON.stringify(data));
+    //   formData.append("Attachments", pdfFile);
+
+    //   api
+    //     .post("scheduleshipment/downloadHBLpdf", formData)
+    //     .then((res) => {
+    //       if (res.success) {
+    //         this.hideLoader();
+    //         cogoToast.success("HBL Generated");
+    //         window.close();
+    //       } else {
+    //         this.hideLoader();
+    //         cogoToast.error("HBL Generation Error");
+    //       }
+    //     })
+    //     .catch((err) => {
+    //       console.log(err);
+    //     });
+
+    //   //pdf.save(this.state.BLNumber + ".pdf");
+    // });
   };
 
   selectChange = (event, value) => {
     if (value === "BookingNumber") {
       this.setState({ BookingNumber: event.target.value });
     } else if (value === "ConsigneeDetails") {
-      this.setState({ ConsigneeDetails: event.target.value });
+      const updatedText = event.target.value.replace(/\n/g, "<br>");
+      this.setState({ ConsigneeDetails: updatedText });
     } else if (value === "ShipperExportor") {
       this.setState({ ShipperExportor: event.target.value });
     } else if (value === "APPLYTO") {
@@ -408,14 +442,26 @@ class HBL extends React.Component {
                   <td rowSpan={3} className="t-50">
                     SHIPPER/EXPORTER COMPLETE NAME AND ADDRESS<br></br>
                     <textarea
+                      id="ShipperExportor"
                       name="Body"
-                      style={{ width: "100%", height: "120px" }}
+                      style={{
+                        width: "100%",
+                        height: "120px",
+                        display: "block",
+                      }}
                       labelText="Body"
                       //KRUTIU
                       value={this.state.ShipperExportor}
                       onChange={(e) => this.selectChange(e, "ShipperExportor")}
                       //onChange={(event) => this.ChangeMailBody(event, "Body")}
                     ></textarea>
+                    <div
+                      id="ShipperExportordiv"
+                      dangerouslySetInnerHTML={{
+                        __html: this.state.ShipperExportor,
+                      }}
+                      style={{ display: "none", whiteSpace: "pre-line" }}
+                    />
                     {/* <input
                       style={{ width: "400px" }}
                       value={fromCustomerName}
@@ -451,9 +497,42 @@ class HBL extends React.Component {
                   </td>
                   <td className="t-25">
                     BOOKING NUMBER<br></br>
-                    <input
+                    {/* <textarea
+                      id="BookingNumber"
+                      name="Body"
+                      style={{
+                        width: "100%",
+                        height: "120px",
+                        display: "block",
+                      }}
+                      labelText="Body"
+                      //KRUTIU
                       value={BookingNumber}
                       onChange={(e) => this.selectChange(e, "BookingNumber")}
+                      //onChange={(event) => this.ChangeMailBody(event, "Body")}
+                    ></textarea>
+                    <div
+                      id="BookingNumberdiv"
+                      dangerouslySetInnerHTML={{
+                        __html: BookingNumber,
+                      }}
+                      style={{ display: "none", whiteSpace: "pre-line" }}
+                    /> */}
+                    <input
+                      id="BookingNumber"
+                      name="Body"
+                      style={{
+                        display: "block",
+                      }}
+                      value={BookingNumber}
+                      onChange={(e) => this.selectChange(e, "BookingNumber")}
+                    />
+                    <div
+                      id="BookingNumberdiv"
+                      dangerouslySetInnerHTML={{
+                        __html: BookingNumber,
+                      }}
+                      style={{ display: "none", whiteSpace: "pre-line" }}
                     />
                   </td>
                   <td className="t-25">
@@ -488,14 +567,26 @@ class HBL extends React.Component {
                   <td rowSpan={2} className="t-50">
                     CONSIGNED TO<br></br>
                     <textarea
+                      id="ConsignedTo"
                       name="Body"
-                      style={{ width: "100%", height: "100px" }}
+                      style={{
+                        width: "100%",
+                        height: "100px",
+                        display: "block",
+                      }}
                       labelText="Body"
                       //KRUTIU
                       value={this.state.ConsignedTo}
                       onChange={(e) => this.selectChange(e, "ConsignedTo")}
                       //onChange={(event) => this.ChangeMailBody(event, "Body")}
                     ></textarea>
+                    <div
+                      id="ConsignedTodiv"
+                      dangerouslySetInnerHTML={{
+                        __html: this.state.ConsignedTo,
+                      }}
+                      style={{ display: "none", whiteSpace: "pre-line" }}
+                    />
                     {/* <input
                       style={{ width: "400px" }}
                       value={toCustomerName}
@@ -533,9 +624,30 @@ class HBL extends React.Component {
                 <tr>
                   <td colSpan={2} className="t-50">
                     POINT (STATE) OF ORIGIN OR FTZ NUMBER<br></br>
-                    <input
+                    <textarea
+                      name="Body"
+                      style={{
+                        width: "100%",
+                        height: "60px",
+                        display: "block",
+                      }}
+                      labelText="Body"
+                      id="pointState"
                       value={pointState}
                       onChange={(e) => this.selectChange(e, "pointState")}
+                    ></textarea>
+                    {/* <input
+                    id="pointState"
+                    style={{display:"block"}}
+                      value={pointState}
+                      onChange={(e) => this.selectChange(e, "pointState")}
+                    /> */}
+                    <div
+                      id="pointStatediv"
+                      dangerouslySetInnerHTML={{
+                        __html: pointState,
+                      }}
+                      style={{ display: "none", whiteSpace: "pre-line" }}
                     />
                     {/* Dallas, Texas */}
                   </td>
@@ -545,8 +657,13 @@ class HBL extends React.Component {
                     NOTIFY PARTY/INTERMEDIATE CONSIGNEE<br></br>
                     <div className="hbl-textarea">
                       <textarea
+                        id="border-hide"
                         name="Body"
-                        style={{ width: "100%", height: "100px" }}
+                        style={{
+                          width: "100%",
+                          height: "100px",
+                          display: "block",
+                        }}
                         labelText="Body"
                         //KRUTIU
                         value={this.state.ConsigneeDetails}
@@ -555,6 +672,13 @@ class HBL extends React.Component {
                         }
                         //onChange={(event) => this.ChangeMailBody(event, "Body")}
                       ></textarea>
+                      <div
+                        id="border-hidediv"
+                        dangerouslySetInnerHTML={{
+                          __html: this.state.ConsigneeDetails,
+                        }}
+                        style={{ display: "none", whiteSpace: "pre-line" }}
+                      />
                     </div>
                     {/* SFL Worldwide Logistics Private Limited  */}
                     {/* <input
