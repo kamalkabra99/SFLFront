@@ -2201,7 +2201,7 @@ class editContainer extends Component {
                           <Datetime
                             dateFormat={"MM/DD/YYYY"}
                             timeFormat={false}
-                            value={moment(HBLDate)}
+                            value={HBLDate}
                             inputProps={{ placeholder: "HBL Date" }}
                             onChange={(date) => this.handleDate(date, "hbl")}
                             closeOnSelect={true}
@@ -2227,7 +2227,7 @@ class editContainer extends Component {
                           <Datetime
                             dateFormat={"MM/DD/YYYY"}
                             timeFormat={false}
-                            value={moment(LoadDate)}
+                            value={LoadDate}
                             inputProps={{ placeholder: "Load Date" }}
                             onChange={(date) => this.handleDate(date, "load")}
                             closeOnSelect={true}
@@ -2253,7 +2253,7 @@ class editContainer extends Component {
                           <Datetime
                             dateFormat={"MM/DD/YYYY"}
                             timeFormat={false}
-                            value={moment(SailingDate)}
+                            value={SailingDate}
                             inputProps={{ placeholder: "Sailing Date" }}
                             onChange={(date) =>
                               this.handleDate(date, "sailing")
@@ -2281,7 +2281,7 @@ class editContainer extends Component {
                           <Datetime
                             dateFormat={"MM/DD/YYYY"}
                             timeFormat={false}
-                            value={moment(ArrivalDate)}
+                            value={ArrivalDate}
                             inputProps={{ placeholder: "Arrival Date" }}
                             onChange={(date) =>
                               this.handleDate(date, "arrival")
