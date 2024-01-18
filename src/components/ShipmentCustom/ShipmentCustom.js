@@ -9283,7 +9283,7 @@ class ShipmentCustom extends React.Component {
     // } else {
     console.log("commercialList = ", this.state.commercialList);
     let count = 0;
-    if (this.state.PackageType === "Package") {
+    // if (this.state.PackageType === "Package") {
       for (let index = 0; index < this.state.commercialList.length; index++) {
         const element = this.state.commercialList[index].PackageNumber;
         if (
@@ -9294,7 +9294,7 @@ class ShipmentCustom extends React.Component {
           break;
         }
       }
-    }
+    // }
     if (count == 1) {
       console.log("In IF");
       cogoToast.error(
