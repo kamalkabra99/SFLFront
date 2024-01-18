@@ -9324,9 +9324,12 @@ class ShipmentCustom extends React.Component {
             let recipientobj = this.state.ToAddress;
             let commercialData = this.state.commercialList;
             let comList1 = [];
+            
             for (let index = 0; index < commercialData.length; index++) {
               const element = commercialData[index];
-              if(commercialData[index].Status == "Active"){
+              if(commercialData[index].Status == "Inactive" && commercialData[index].ShippingCommercialInvoiceID == null){
+                
+              }else{
                 comList1.push(commercialData[index])
               }
               
