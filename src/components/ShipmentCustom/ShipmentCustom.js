@@ -5714,6 +5714,7 @@ class ShipmentCustom extends React.Component {
   }
 
   removeCommercialInvoice = (index) => {
+
     var commercialList = this.state.commercialList;
     let Index = this.state.commercialList.findIndex((x) => x.Index === index);
     if (Index !== -1) {
@@ -5726,6 +5727,21 @@ class ShipmentCustom extends React.Component {
           isComInvoiceVisible: false,
         });
       }
+
+      var comList = []
+      for (let index = 0; index < commercialList.length; index++) {
+        const element = commercialList[index];
+        if(commercialList[index].Status == "Active"){
+          comList.push(commercialList[index])
+        }
+        
+      }
+      console.log("commercialList = ", comList)
+
+      this.state.commercialList = comList;
+
+      console.log("commercialList = ", commercialList)
+
     }
   };
 
@@ -9236,6 +9252,30 @@ class ShipmentCustom extends React.Component {
   };
 
   handleSave = (redirect) => {
+   
+
+    // console.log("this.package = ",packobj)
+
+    var countsec = 0;
+
+    console.log("this.state.commercialList.length = " , this.state.commercialList)
+
+    if (this.state.PackageType === "Package" && this.state.ShipmentType.value == "Ocean") {
+      debugger
+      for (let index = 0; index < this.state.commercialList.length; index++) {
+        if(this.state.commercialList[index].Status == "Active"){
+          const elementsecond = this.state.commercialList[index].PackageNumber;
+          for (let indexsecond = index+1; indexsecond < this.state.commercialList.length; indexsecond++) {
+            if((this.state.commercialList[indexsecond].PackageNumber == elementsecond) && this.state.commercialList[indexsecond].Status == "Active"){
+              countsec = 1
+              break;
+            }
+          }
+        }
+      }
+    }
+
+
     // if (this.props.history.location.state.createDup == "1") {
     //   cogoToast.error(
     //     "Please re-open the shipment to Save. It was duplicated created"
@@ -9260,6 +9300,12 @@ class ShipmentCustom extends React.Component {
       cogoToast.error(
         "Please enter valid package number for commercial invoice"
       );
+    } else if(countsec == 1){
+      console.log("In IF");
+      cogoToast.error(
+        "Please enter unique package number for commercial invoice"
+      );
+
     } else {
       if (
         this.state.Moveupdatetozip === true &&
@@ -9277,6 +9323,18 @@ class ShipmentCustom extends React.Component {
             let senderobj = this.state.FromAddress;
             let recipientobj = this.state.ToAddress;
             let commercialData = this.state.commercialList;
+            let comList1 = [];
+            for (let index = 0; index < commercialData.length; index++) {
+              const element = commercialData[index];
+              if(commercialData[index].Status == "Active"){
+                comList1.push(commercialData[index])
+              }
+              
+            }
+            commercialData = comList1;
+            console.log("commercialListin Loop = ", commercialData)
+
+
             console.log(
               "This.state.this.state.commercialList = ",
               this.state.commercialList

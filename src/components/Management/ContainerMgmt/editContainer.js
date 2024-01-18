@@ -71,6 +71,9 @@ class editContainer extends Component {
       containernumberHelperText: "",
 
       SealNumber: "",
+      TotalPackagesCount: 0,
+      TotalCFTCount: 0,
+      TotalTVCount: 0,
       sealnumberErr: false,
       sealnumberHelperText: "",
 
@@ -273,6 +276,8 @@ class editContainer extends Component {
         .post("container/getShipmentsByContainer", data)
         .then((res) => {
           if (res.success) {
+
+            console.log("Packages = " , res.data)
             res.data.Packages.map((OBJ) => {
               var i = 1;
               OBJ.map((obj) => {
@@ -287,6 +292,25 @@ class editContainer extends Component {
               ShipmentList: res.data.Shipments,
               Sequence: res.data.Packages,
             });
+
+            var counts = 0
+            var tvcount = 0
+            var cftCount = 0
+
+            for (let index = 0; index < res.data.Shipments.length; index++) {
+
+              counts = counts + res.data.Shipments[index].TotalPackages
+              tvcount = tvcount + res.data.Shipments[index].TV
+              cftCount = cftCount + res.data.Shipments[index].CFT
+              //const element = array[index];
+              
+            }
+            this.state.TotalTVCount = tvcount
+            this.state.TotalCFTCount = cftCount
+
+            this.state.TotalPackagesCount = counts
+            console.log("counts = ", counts)
+
           } else {
             cogoToast.error("Something went wrong");
           }
@@ -1643,6 +1667,15 @@ class editContainer extends Component {
       },
       {
         Header: "PC",
+        Footer: (
+          <span>
+            {CommonConfig.isEmpty(this.state.TotalPackagesCount)
+              ? ""
+              : 
+                parseFloat(this.state.TotalPackagesCount)
+                 }
+          </span>
+        ),
         accessor: "TotalPackages",
         width: 35,
       },
@@ -1673,12 +1706,32 @@ class editContainer extends Component {
       {
         Header: "TV",
         accessor: "TV",
+        Footer: (
+          <span>
+            {CommonConfig.isEmpty(this.state.TotalTVCount)
+              ? ""
+              : 
+                parseFloat(this.state.TotalTVCount)
+                 }
+          </span>
+        ),
         width: 30,
       },
       {
         Header: "CFT",
         accessor: "CFT",
-        width: 45,
+        Footer: (
+          <span>
+            {CommonConfig.isEmpty(this.state.TotalCFTCount)
+              ? ""
+              : 
+                parseFloat(this.state.TotalCFTCount).toFixed(2)
+                .toString()
+                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                 }
+          </span>
+        ),
+        width: 75,
       },
       {
         Header: "Status",
