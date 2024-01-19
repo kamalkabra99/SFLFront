@@ -9331,16 +9331,16 @@ class ShipmentCustom extends React.Component {
     console.log("commercialList = ", this.state.commercialList);
     let count = 0;
     // if (this.state.PackageType === "Package") {
-      for (let index = 0; index < this.state.commercialList.length; index++) {
-        const element = this.state.commercialList[index].PackageNumber;
-        if (
-          element > this.state.TotalPackages &&
-          this.state.commercialList[index].Status == "Active"
-        ) {
-          count = 1;
-          break;
-        }
+    for (let index = 0; index < this.state.commercialList.length; index++) {
+      const element = this.state.commercialList[index].PackageNumber;
+      if (
+        element > this.state.TotalPackages &&
+        this.state.commercialList[index].Status == "Active"
+      ) {
+        count = 1;
+        break;
       }
+    }
     // }
     if (count == 1) {
       console.log("In IF");
@@ -9370,18 +9370,15 @@ class ShipmentCustom extends React.Component {
             let recipientobj = this.state.ToAddress;
             let commercialData = this.state.commercialList;
             let comList1 = [];
-            
+
             for (let index = 0; index < commercialData.length; index++) {
               const element = commercialData[index];
-
-              if (commercialData[index].Status == "Active") {
+              if (
+                commercialData[index].Status == "Inactive" &&
+                commercialData[index].ShippingCommercialInvoiceID == null
+              ) {
+              } else {
                 comList1.push(commercialData[index]);
-
-              if(commercialData[index].Status == "Inactive" && commercialData[index].ShippingCommercialInvoiceID == null){
-                
-              }else{
-                comList1.push(commercialData[index])
-
               }
             }
             commercialData = comList1;

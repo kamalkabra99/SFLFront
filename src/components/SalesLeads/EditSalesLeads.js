@@ -911,7 +911,7 @@ class EditSalesLeads extends Component {
           continue;
         }
       }
-
+      debugger;
       FinalGetRate.PackageNumber = PackageNumber;
       FinalGetRate.Weight = Weight;
       FinalGetRate.DimeL = DimeL;
@@ -952,8 +952,14 @@ class EditSalesLeads extends Component {
       FinalGetRate.ShipDate = new Date().toISOString();
       FinalGetRate.PackageDetails = PackageDetails;
       FinalGetRate.AgentCode = CommonConfig.loggedInUserData().PersonID;
+      if (PackageDetails.length === 1) {
+        FinalGetRate.PackageType =
+          PackageDetails[0].PackageType == "2"
+            ? "Envelope"
+            : FinalGetRate.PackageType;
+      }
       this.setState({ FinalGetRate: FinalGetRate });
-
+      debugger;
       var data = JSON.stringify({ quoteData: FinalGetRate });
       let res = await api.post("getQuote/getRates", data);
       if (res.success) {
