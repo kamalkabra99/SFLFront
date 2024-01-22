@@ -187,6 +187,7 @@ class ShipmentCustom extends React.Component {
       successOpened: false,
       CountryList: [],
       AllClearStatusList: [],
+      AllClearYes: false,
       MailOpenPopup: false,
       MailDelivered: false,
 
@@ -570,7 +571,7 @@ class ShipmentCustom extends React.Component {
       Unloading: "Nhava Sheva, India",
       develiverd: "Nhava Sheva, India",
       TypeOfMove: "Console",
-      FMCnumber: "Dallas, Texas",
+      FMCnumber: "",
       pointState: "Dallas, Texas",
       BookingNumber: "",
       GST: "24AABCN9389H1Z2",
@@ -2325,6 +2326,13 @@ class ShipmentCustom extends React.Component {
               this.setState({ IsChanged: false });
 
               cogoToast.error("Invoice and Payment Received does not match");
+            } else if (
+              value.value === "Yes" &&
+              this.state.AllClearYes === false
+            ) {
+              this.setState({ IsChanged: false });
+
+              cogoToast.error("Please open accounts tab to enable this field");
             } else {
               this.setState({
                 AllClear: value,
@@ -2669,6 +2677,7 @@ class ShipmentCustom extends React.Component {
         this.getServiceDescription();
         this.getpaymentType();
         this.getPaymentStatus();
+        this.setState({ AllClearYes: true });
       }
       if (name == "Tracking" && this.state.TrackingdtatsCount == 0) {
         this.state.TrackingdtatsCount = 1;
@@ -11121,6 +11130,7 @@ class ShipmentCustom extends React.Component {
     // );
     debugger;
     this.setState({ HBLdocOpen: true });
+    this.showLoader();
     this.GetHBLdetails(this.state.TrackingNumber);
     this.setState({
       ConsigneeDetails:
@@ -11186,21 +11196,21 @@ class ShipmentCustom extends React.Component {
     } else if (value === "fromAddress") {
       this.setState({ fromAddress: event.target.value });
     } else if (value === "Vessel") {
-      this.setState({ fromAddress: event.target.value });
+      this.setState({ Vessel: event.target.value });
     } else if (value === "Export") {
-      this.setState({ fromAddress: event.target.value });
+      this.setState({ Export: event.target.value });
     } else if (value === "Unloading") {
-      this.setState({ fromAddress: event.target.value });
+      this.setState({ Unloading: event.target.value });
     } else if (value === "develiverd") {
-      this.setState({ fromAddress: event.target.value });
+      this.setState({ develiverd: event.target.value });
     } else if (value === "TypeOfMove") {
-      this.setState({ fromAddress: event.target.value });
+      this.setState({ TypeOfMove: event.target.value });
     } else if (value === "FMCnumber") {
-      this.setState({ fromAddress: event.target.value });
+      this.setState({ FMCnumber: event.target.value });
     } else if (value === "pointState") {
-      this.setState({ fromAddress: event.target.value });
+      this.setState({ pointState: event.target.value });
     } else if (value === "deliveryApply") {
-      this.setState({ fromAddress: event.target.value });
+      this.setState({ deliveryApply: event.target.value });
     } else if (value === "GST") {
       this.setState({ GST: event.target.value });
     } else if (value === "EMAIL") {
@@ -11330,7 +11340,9 @@ class ShipmentCustom extends React.Component {
             var Sequencelist = this.rendertable();
             console.log("seqqqqq", Sequencelist);
             this.setState({ Sequencelist: Sequencelist });
+            this.hideLoader();
           } else {
+            this.hideLoader();
             cogoToast.error("Something went wrong");
           }
         })
@@ -11344,7 +11356,7 @@ class ShipmentCustom extends React.Component {
   generatePDF = () => {
     debugger;
     console.log("in pdf......");
-    this.showLoader();
+
     //var input = document.getElementById("HBL");
     document.getElementById("border-hide").style.display = "none";
     document.getElementById("border-hidediv").style.display = "block";
@@ -11361,6 +11373,8 @@ class ShipmentCustom extends React.Component {
     document.getElementById("pointState").style.display = "none";
     document.getElementById("pointStatediv").style.display = "block";
 
+    document.getElementById("FMCnumber").style.display = "none";
+    document.getElementById("FMCnumberdiv").style.display = "block";
     document.getElementById("APPLYTO").style.display = "none";
     document.getElementById("APPLYTOdiv").style.display = "block";
     document.getElementById("TypeOfMove").style.display = "none";
@@ -11393,55 +11407,62 @@ class ShipmentCustom extends React.Component {
     document.getElementById("Sequencelistdiv").style.display = "block";
 
     const element = document.getElementById("HBL");
-
+    //   const htmlContent = element.innerHTML;
     console.log("in pdf......", element);
     // Configuration for html2pdf
     const options = {
       margin: 10,
-      filename: "converted-document.pdf",
+      filename: this.state.BLNumber + ".pdf",
       image: { type: "jpeg", quality: 0.98 },
       html2canvas: { scale: 2 },
       jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
     };
-
-    // Trigger the download of the PDF
+    debugger;
     html2pdf(element, options).then((pdf) => {
-      // Convert the PDF to a blob
-      var pdfFile = new File();
-      pdf.output("blob").then((blob) => {
-        pdfFile = new File([blob], this.state.BLNumber + ".pdf", {
-          type: "application/pdf",
-        });
-      });
-      let data = {
-        dateTime: new Date().getTime(),
-        ShippingID: this.state.ShippingID,
-        BLNumber: this.state.BLNumber,
-      };
-      var formData = new FormData();
-      formData.append("data", JSON.stringify(data));
-      formData.append("Attachments", pdfFile, "generated-document.pdf");
-
-      api
-        .post("scheduleshipment/downloadHBLpdf", formData)
-        .then((res) => {
-          if (res.success) {
-            this.hideLoader();
-            cogoToast.success("HBL Generated");
-            //window.close();
-            this.setState({
-              HBLdocOpen: false,
-            });
-            this.getDocumentation();
-          } else {
-            this.hideLoader();
-            cogoToast.error("HBL Generation Error");
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      // Trigger the download of the PDF
+      pdf.save();
     });
+    this.setState({ HBLdocOpen: false });
+    this.hideLoader();
+    cogoToast.success("HBL Download successfully");
+    //  html2pdf(element, options).then((pdf) => {
+    // Convert the PDF to a blob
+
+    // var pdfFile = new File();
+    // pdf.output("blob").then((blob) => {
+    //   pdfFile = new File([blob], this.state.BLNumber + ".pdf", {
+    //     type: "application/pdf",
+    //   });
+    // });
+    // let data = {
+    //   dateTime: new Date().getTime(),
+    //   ShippingID: this.state.ShippingID,
+    //   BLNumber: this.state.BLNumber,
+    // };
+    // var formData = new FormData();
+    // formData.append("data", JSON.stringify(data));
+    // formData.append("Attachments", pdfFile, "generated-document.pdf");
+
+    //   api
+    //     .post("scheduleshipment/downloadHBLpdf", formData)
+    //     .then((res) => {
+    //       if (res.success) {
+    //         this.hideLoader();
+    //         cogoToast.success("HBL Generated");
+    //         //window.close();
+    //         this.setState({
+    //           HBLdocOpen: false,
+    //         });
+    //         this.getDocumentation();
+    //       } else {
+    //         this.hideLoader();
+    //         cogoToast.error("HBL Generation Error");
+    //       }
+    //     })
+    //     .catch((err) => {
+    //       console.log(err);
+    //     });
+    // });
     // Use html2pdf to convert HTML to PDF
     // html2pdf(element, options).then((pdf) => {
     // pdf.save();
@@ -11567,6 +11588,7 @@ class ShipmentCustom extends React.Component {
       develiverd,
       TypeOfMove,
       pointState,
+      FMCnumber,
     } = this.state;
 
     const shipmentType = this.state.shipmentTypeList.map((type) => {
@@ -16138,7 +16160,24 @@ class ShipmentCustom extends React.Component {
                             style={{ display: "none", whiteSpace: "pre-line" }}
                           />
                         </td>
-                        <td className="t-50">FORWARDING AGENT FMC NO.</td>
+                        <td className="t-50">
+                          FORWARDING AGENT FMC NO.
+                          <input
+                            id="FMCnumber"
+                            style={{
+                              display: "block",
+                            }}
+                            value={FMCnumber}
+                            onChange={(e) => this.HselectChange(e, "FMCnumber")}
+                          />
+                          <div
+                            id="FMCnumberdiv"
+                            dangerouslySetInnerHTML={{
+                              __html: FMCnumber,
+                            }}
+                            style={{ display: "none", whiteSpace: "pre-line" }}
+                          />
+                        </td>
                       </tr>
                       <tr>
                         <td colSpan={2} className="t-50">
@@ -16360,7 +16399,7 @@ class ShipmentCustom extends React.Component {
                             name="Body"
                             style={{
                               width: "100%",
-                              height: "50px",
+                              height: "150px",
                               display: "block",
                             }}
                             labelText="Body"
@@ -16383,7 +16422,7 @@ class ShipmentCustom extends React.Component {
                             name="Body"
                             style={{
                               width: "100%",
-                              height: "50px",
+                              height: "150px",
                               display: "block",
                             }}
                             labelText="Body"
@@ -16406,7 +16445,7 @@ class ShipmentCustom extends React.Component {
                             name="Body"
                             style={{
                               width: "100%",
-                              height: "50px",
+                              height: "150px",
                               display: "block",
                             }}
                             labelText="Body"
@@ -16429,7 +16468,7 @@ class ShipmentCustom extends React.Component {
                             name="Body"
                             style={{
                               width: "100%",
-                              height: "50px",
+                              height: "150px",
                               display: "block",
                             }}
                             labelText="Body"
@@ -16450,7 +16489,7 @@ class ShipmentCustom extends React.Component {
                             name="Body"
                             style={{
                               width: "100%",
-                              height: "50px",
+                              height: "150px",
                               display: "block",
                             }}
                             labelText="Body"
@@ -16515,7 +16554,7 @@ class ShipmentCustom extends React.Component {
                       <tr>
                         <td className="t-50">
                           DATE (MM/DD/YYYY)<br></br>
-                          {this.state.CreatedDate}
+                          {this.state.HCreatedDate}
                         </td>
                         <td className="t-50">TOTAL COLLECT</td>
                       </tr>

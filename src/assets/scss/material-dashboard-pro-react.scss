@@ -6288,7 +6288,9 @@ a.edit-icon-wrp.refresh {
   border-collapse: collapse;
   border-spacing: 0px;
 }
-
+.hbl-table textarea{
+  height: 150px;
+}
 .hbl-table td, .hbl-table th {
   text-align: left;
   border: 1px solid #000;
