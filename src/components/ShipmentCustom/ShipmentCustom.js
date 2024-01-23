@@ -73,7 +73,7 @@ import momentTimezoneWithData20122022 from "moment-timezone/builds/moment-timezo
 ////////////HBL///////////////////////////
 import stamp from "../../assets/img/HBL/stamp.png";
 import pshah from "../../assets/img/HBL/pshah.png";
-import html2pdf from "html2pdf.js";
+// import html2pdf from "html2pdf.js";
 
 var creditCardType = require("credit-card-type");
 var valid = require("card-validator");
@@ -11418,10 +11418,10 @@ class ShipmentCustom extends React.Component {
       jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
     };
     debugger;
-    html2pdf(element, options).then((pdf) => {
-      // Trigger the download of the PDF
-      pdf.save();
-    });
+    // html2pdf(element, options).then((pdf) => {
+    //   // Trigger the download of the PDF
+    //   pdf.save();
+    // });
     this.setState({ HBLdocOpen: false });
     this.hideLoader();
     cogoToast.success("HBL Download successfully");
