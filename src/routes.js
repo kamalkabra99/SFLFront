@@ -63,6 +63,7 @@ import BulkShipmentImport from "components/Reports/BulkShipmentImport";
 import UserLoginReport from "components/Reports/UserLoginReport";
 import TMSReport from "components/Reports/TMSReport";
 import ConsoleSplitInvoice from "components/Reports/ConsoleSplitInvoice";
+import InvoiceUpload from "components/Reports/InvoiceUpload";
 import AllSalesReports from "components/Reports/AllSalesReports";
 import ShipmentReport from "components/Reports/ShipmentReport";
 import PrintCommercialInvoice from "components/ShipmentDocumentation/PrintCommercialInvoice";
@@ -411,6 +412,14 @@ var dashRoutes = [
     name: "Console Split Invoice",
     icon: User,
     component: ConsoleSplitInvoice,
+    layout: "/admin",
+    invisible: true,
+  },
+  {
+    path: "/InvoiceUpload",
+    name: "Invoice Upload",
+    icon: User,
+    component: InvoiceUpload,
     layout: "/admin",
     invisible: true,
   },

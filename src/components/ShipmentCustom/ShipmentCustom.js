@@ -2330,7 +2330,9 @@ class ShipmentCustom extends React.Component {
               value.value === "Yes" &&
               this.state.AllClearYes === false
             ) {
-              this.setState({ IsChanged: false });
+              this.setState({
+                IsChanged: false,
+              });
 
               cogoToast.error("Please open accounts tab to enable this field");
             } else {

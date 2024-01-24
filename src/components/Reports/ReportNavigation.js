@@ -101,6 +101,11 @@ class Reports extends Component {
           stepId: "ConsoleSplitInvoice",
           classname: "inactive",
         },
+        {
+          stepName: "Invoice Upload",
+          stepId: "InvoiceUpload",
+          classname: "inactive",
+        },
       ],
       navigate: "",
     };
@@ -114,6 +119,7 @@ class Reports extends Component {
     this.lockShowHide();
     this.reviewShowHide();
     this.consolesplitinvoicelist();
+    this.InvoiceUploadlist();
   }
 
   activeInactive = () => {
@@ -292,6 +298,18 @@ class Reports extends Component {
         let currentSteps = this.state.FedExSteps;
         let index = this.state.FedExSteps.findIndex(
           (x) => x.stepId === "ConsoleSplitInvoice"
+        );
+        currentSteps.splice(index, 1);
+        this.setState({ FedExSteps: currentSteps });
+      }
+    }
+  };
+  InvoiceUploadlist = () => {
+    if (CommonConfig.getUserAccess("Invoice Upload")) {
+      if (CommonConfig.getUserAccess("Invoice Upload").AllAccess === 0) {
+        let currentSteps = this.state.FedExSteps;
+        let index = this.state.FedExSteps.findIndex(
+          (x) => x.stepId === "InvoiceUpload"
         );
         currentSteps.splice(index, 1);
         this.setState({ FedExSteps: currentSteps });
@@ -507,6 +525,13 @@ class Reports extends Component {
       } else if (step.stepId === "ConsoleSplitInvoice") {
         this.props.history.push({
           pathname: "ConsoleSplitInvoice",
+          state: {
+            id: step.stepId,
+          },
+        });
+      } else if (step.stepId === "InvoiceUpload") {
+        this.props.history.push({
+          pathname: "InvoiceUpload",
           state: {
             id: step.stepId,
           },

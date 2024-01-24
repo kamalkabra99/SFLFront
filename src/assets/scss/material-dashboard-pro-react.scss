@@ -6315,3 +6315,44 @@ a.edit-icon-wrp.refresh {
   background-color: "#ff0000";
 }
 // .hbl-table input{ border: none;}
+
+.shipment-submit.invoiceUpload button {
+  margin-bottom: 0;
+  margin-top: 0;
+}
+.mt-30{
+  margin-top: 30px;
+}
+.shipment-submit.invoiceUpload {
+  display: flex;
+  width: 100%;
+  padding: 17px 0 0 0;
+}
+
+.file-ipt-with-btn {
+  width: 100%;
+  position: relative;
+  border-bottom: 1px solid #d2d2d2;
+  margin-top: 28px;
+  padding: 4px 0;
+}
+
+.file-ipt-with-btn .custom-file-browse.fedex-upload {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: auto;
+  margin: 0;
+}
+
+.file-ipt-with-btn .custom-file-browse.fedex-upload span {
+  padding: 3px 10px;
+  width: auto;
+  margin: 0;
+}
+
+.file-ipt-with-btn label.filename {
+  min-height: 16px;
+  display: inline-block;
+  vertical-align: top;
+}
