@@ -22,6 +22,11 @@ import { makeStyles } from "@material-ui/core/styles";
 import styles from "assets/jss/material-dashboard-pro-react/views/validationFormsStyle.js";
 import SimpleBackdrop from "../../utils/general";
 import ReactTable from "react-table";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogContent from "@material-ui/core/DialogContent";
 
 const useStyles = () => makeStyles(styles);
 const classes = useStyles();
@@ -48,23 +53,65 @@ class InvoiceUpload extends Component {
       fileName: "",
       file: "",
       InvoiceData: [],
-      Steps: [
-        {
-          stepName: "Invoice List",
-          stepId: "InvoiceList",
-          classname: "active",
-        },
-        {
-          stepName: "Add Invoice",
-          stepId: "AddInvoice",
-          classname: "inactive",
-        },
-      ],
+      deletePopUp: false,
+      deleteInvoiceID: "",
+      deleteAttechment: "",
+      DeleteAccess: 0,
+      AllAccess: 0,
+      ReadAccess: 0,
+      WriteAccess: 0,
+      Steps: [],
     };
   }
 
   componentDidMount() {
+    debugger;
+    console.log("first", CommonConfig.getUserAccess("Vendor Invoice Upload"));
+    this.setState({
+      DeleteAccess: CommonConfig.getUserAccess("Vendor Invoice Upload")
+        .DeleteAccess,
+      AllAccess: CommonConfig.getUserAccess("Vendor Invoice Upload").AllAccess,
+      ReadAccess: CommonConfig.getUserAccess("Vendor Invoice Upload")
+        .ReadAccess,
+      WriteAccess: CommonConfig.getUserAccess("Vendor Invoice Upload")
+        .WriteAccess,
+    });
+    var WriteAccess = CommonConfig.getUserAccess("Vendor Invoice Upload")
+      .WriteAccess;
+
+    var AllAccess = CommonConfig.getUserAccess("Vendor Invoice Upload")
+      .AllAccess;
+
+    debugger;
+    if (WriteAccess == 1 || AllAccess == 1) {
+      this.setState({
+        Steps: [
+          {
+            stepName: "Invoice List",
+            stepId: "InvoiceList",
+            classname: "active",
+          },
+          {
+            stepName: "Add Invoice",
+            stepId: "AddInvoice",
+            classname: "inactive",
+          },
+        ],
+      });
+    } else {
+      this.setState({
+        Steps: [
+          {
+            stepName: "Invoice List",
+            stepId: "InvoiceList",
+            classname: "active",
+          },
+        ],
+      });
+    }
+
     document.getElementById("AddInvoice").style.display = "none";
+
     this.getVendorName();
   }
   fileUpload = (e) => {
@@ -76,6 +123,8 @@ class InvoiceUpload extends Component {
       this.setState({
         file: e.target.files[0],
         fileName: e.target.files[0] ? e.target.files[0].name : "",
+        FileErr: false,
+        FileErrText: "",
       });
     }
   };
@@ -103,17 +152,29 @@ class InvoiceUpload extends Component {
   selectChange = (event, value, type) => {
     if (value != null) {
       if (type === "VendorName") {
-        this.setState({ vendorName: value });
+        this.setState({
+          vendorName: value,
+          vendorNameErr: false,
+          vendorNameErrText: "",
+        });
       } else if (type === "SearchVendorName") {
         this.setState({ SearchVendorName: value });
       }
     }
     if (value === "InvoiceNumber") {
-      this.setState({ InvoiceNumber: event.target.value });
+      this.setState({
+        InvoiceNumber: event.target.value,
+        InvoiceNumberErr: false,
+        InvoiceNumberErrText: "",
+      });
     } else if (value === "SearchInvoiceNumber") {
       this.setState({ SearchInvoiceNumber: event.target.value });
     } else if (value === "InvoiceAmount") {
-      this.setState({ InvoiceAmount: event.target.value });
+      this.setState({
+        InvoiceAmount: event.target.value,
+        InvoiceAmountErr: false,
+        InvoiceAmountErrText: "",
+      });
     }
   };
 
@@ -225,14 +286,15 @@ class InvoiceUpload extends Component {
       }
     }
   }
-  SearchReset() {
-    this.showLoader();
+
+  Handledelete(record) {
+    debugger;
+    console.log("innnnnn", record.original.InvoiceUpload);
     this.setState({
-      SearchInvoiceNumber: "",
-      SearchVendorName: "",
-      InvoiceData: [],
+      deletePopUp: true,
+      deleteInvoiceID: record.original.InvoiceID,
+      deleteAttechment: record.original.InvoiceUpload,
     });
-    this.hideLoader();
   }
   viewInvoice(record) {
     debugger;
@@ -242,11 +304,61 @@ class InvoiceUpload extends Component {
       "_blank"
     );
   }
+  deleteInvoice = () => {
+    var data = {
+      InvoiceID: this.state.deleteInvoiceID,
+      Attachment: this.state.deleteAttechment,
+      SearchVendorName: this.state.SearchVendorName.value,
+      SearchInvoiceNumber: this.state.SearchInvoiceNumber,
+    };
+    this.hideLoader();
+    api
+      .post("reports/DeleteInvoice", data)
+      .then((res) => {
+        debugger; //lkj
+        if (res.success) {
+          this.showLoader();
+          this.setState({
+            deletePopUp: false,
+            InvoiceData: res.data[0],
+          });
+          this.hideLoader();
+          cogoToast.success("Invoice Delete successfully");
+          //}
+        }
+      })
+      .catch((err) => {
+        console.log("error....", err);
+        this.hideLoader();
+        cogoToast.error("Something Went Wrong");
+      });
+  };
+
+  canceldelete = () => {
+    this.setState({
+      deletePopUp: false,
+      deleteInvoiceID: "",
+      deleteAttechment: "",
+    });
+  };
+  SearchReset() {
+    this.showLoader();
+    this.setState({
+      SearchInvoiceNumber: "",
+      SearchVendorName: "",
+      InvoiceData: [],
+    });
+    this.hideLoader();
+  }
   SearchInvoice() {
     debugger;
-    // if (this.state.InvoiceAmount === "") {
-    //   return cogoToast.error("please enter Invoice Amount");
-    // }
+    if (
+      this.state.SearchVendorName === "" &&
+      this.state.SearchInvoiceNumber == ""
+    ) {
+      return cogoToast.error("please fill any one field");
+    }
+
     var input = {
       InvoiceNumber: this.state.SearchInvoiceNumber,
       VendorName: this.state.SearchVendorName.value,
@@ -270,102 +382,166 @@ class InvoiceUpload extends Component {
     }
   }
   render() {
-    const column = [
-      {
-        Header: "Vendor Name",
-        id: "VendorName",
-        width: 95,
-        maxWidth: 95,
-        filterable: true,
-        sortable: true,
-        accessor: "VendorName",
-      },
-      {
-        Header: "Invoice Number",
-        id: "InvoiceNumber",
-        width: 65,
-        maxWidth: 65,
-        filterable: true,
-        sortable: true,
-        accessor: "InvoiceNumber",
-      },
-      {
-        Header: "Invoice Date",
-        id: "InvoiceDate",
-        maxWidth: 92,
-        filterable: true,
-        sortable: true,
-        width: 92,
-        accessor: "InvoiceDate",
-      },
-      {
-        Header: "Amount",
-        id: "Amount",
-        maxWidth: 96,
-        filterable: true,
-        sortable: true,
-        width: 96,
-        accessor: "InvoiceAmount",
-      },
-      {
-        Header: "Invoice",
-        accessor: "Invoice",
-        width: 45,
-        maxWidth: 50,
-        sortable: false,
-        filterable: false,
-        Cell: (record) => {
-          return (
-            <div className="table-common-btn">
-              <Button
-                justIcon
-                color="info"
-                onClick={() => this.viewInvoice(record)}
-              >
-                <i className="fas fa-edit"></i>
-              </Button>
-            </div>
-          );
-        },
-      },
-      {
-        Header: "Actions",
-        accessor: "Actions",
-        width: 45,
-        maxWidth: 50,
-        filterable: false,
-        Cell: (record) => {
-          return this.state.isEdit ? (
-            <div className="table-common-btn">
-              <Button
-                justIcon
-                color="info"
-                onClick={() => this.handleEdit(record)}
-              >
-                <i className="fas fa-edit"></i>
-              </Button>
-            </div>
-          ) : record.original.ManagedBy === this.state.loggedUser ? (
-            <div className="table-common-btn">
-              <Button
-                justIcon
-                color="info"
-                onClick={() => this.handleEdit(record)}
-              >
-                <i className="fas fa-edit"></i>
-              </Button>
-            </div>
-          ) : (
-            <div className="table-common-btn">
-              <Button justIcon color="danger" disabled>
-                <i className="fas fa-edit"></i>
-              </Button>
-            </div>
-          );
-        },
-        sortable: false,
-      },
-    ];
+    const column =
+      this.state.DeleteAccess == 1 || this.state.AllAccess == 1
+        ? [
+            {
+              Header: "Vendor Name",
+              id: "VendorName",
+              width: 180,
+              maxWidth: 180,
+              filterable: true,
+              sortable: true,
+              accessor: "VendorName",
+            },
+            {
+              Header: "Invoice Number",
+              id: "InvoiceNumber",
+              width: 95,
+              maxWidth: 95,
+              filterable: true,
+              sortable: true,
+              accessor: "InvoiceNumber",
+            },
+            {
+              Header: "Invoice Date",
+              id: "InvoiceDate",
+              maxWidth: 92,
+              filterable: true,
+              sortable: true,
+              width: 92,
+              accessor: (data) => {
+                if (CommonConfig.isEmpty(data.InvoiceDate)) {
+                  return moment().format("MM/DD/YYYY");
+                } else {
+                  return moment(data.InvoiceDate).format(
+                    CommonConfig.dateFormat.dateOnly
+                  );
+                }
+              },
+              // accessor: "InvoiceDate",
+            },
+            {
+              Header: "Amount",
+              id: "Amount",
+              maxWidth: 96,
+              filterable: true,
+              sortable: true,
+              width: 96,
+              accessor: "InvoiceAmount",
+            },
+            {
+              Header: "Invoice",
+              accessor: "Invoice",
+              width: 50,
+              maxWidth: 50,
+              sortable: false,
+              filterable: false,
+              Cell: (record) => {
+                return (
+                  <div className="table-common-btn">
+                    <Button
+                      justIcon
+                      color="info"
+                      onClick={() => this.viewInvoice(record)}
+                    >
+                      <i className="fa fa-file"></i>
+                    </Button>
+                  </div>
+                );
+              },
+            },
+
+            {
+              Header: "Actions",
+              accessor: "Actions",
+              width: 42,
+              maxWidth: 42,
+              filterable: false,
+              Cell: (record) => {
+                return (
+                  <div className="table-common-btn">
+                    <Button
+                      justIcon
+                      color="danger"
+                      onClick={() => this.Handledelete(record)}
+                    >
+                      <i className="fas fa-trash"></i>
+                    </Button>
+                  </div>
+                );
+              },
+              sortable: false,
+            },
+          ]
+        : [
+            {
+              Header: "Vendor Name",
+              id: "VendorName",
+              width: 180,
+              maxWidth: 180,
+              filterable: true,
+              sortable: true,
+              accessor: "VendorName",
+            },
+            {
+              Header: "Invoice Number",
+              id: "InvoiceNumber",
+              width: 95,
+              maxWidth: 95,
+              filterable: true,
+              sortable: true,
+              accessor: "InvoiceNumber",
+            },
+            {
+              Header: "Invoice Date",
+              id: "InvoiceDate",
+              maxWidth: 92,
+              filterable: true,
+              sortable: true,
+              width: 92,
+              accessor: (data) => {
+                if (CommonConfig.isEmpty(data.InvoiceDate)) {
+                  return moment().format("MM/DD/YYYY");
+                } else {
+                  return moment(data.InvoiceDate).format(
+                    CommonConfig.dateFormat.dateOnly
+                  );
+                }
+              },
+              // accessor: "InvoiceDate",
+            },
+            {
+              Header: "Amount",
+              id: "Amount",
+              maxWidth: 96,
+              filterable: true,
+              sortable: true,
+              width: 96,
+              accessor: "InvoiceAmount",
+            },
+            {
+              Header: "Invoice",
+              accessor: "Invoice",
+              width: 50,
+              maxWidth: 50,
+              sortable: false,
+              filterable: false,
+              Cell: (record) => {
+                return (
+                  <div className="table-common-btn">
+                    <Button
+                      justIcon
+                      color="info"
+                      onClick={() => this.viewInvoice(record)}
+                    >
+                      <i className="fa fa-file"></i>
+                    </Button>
+                  </div>
+                );
+              },
+            },
+          ];
     const {
       SearchInvoiceNumber,
       SearchVendorName,
@@ -512,7 +688,7 @@ class InvoiceUpload extends Component {
                       <></>
                     )}
                   </div>
-
+                  {/* {this.state.AllAccess == 1 || this.state.WriteAccess == 1 ? ( */}
                   <div className="shipment-pane" id="AddInvoice">
                     <GridContainer>
                       {this.state.Loading === true ? (
@@ -615,6 +791,12 @@ class InvoiceUpload extends Component {
                               inputProps={{}}
                             />
                           </div>
+                          <span
+                            id="FileErr"
+                            style={{ color: "red", fontSize: "12px" }}
+                          >
+                            {this.state.FileErrText}
+                          </span>
                         </div>
                       </GridItem>
                       {/* <GridItem xs={12} sm={6} md={6}>
@@ -650,11 +832,38 @@ class InvoiceUpload extends Component {
                       </GridItem>
                     </GridContainer>
                   </div>
+                  {/* //   ) : (
+                //     <></>
+                //   )} */}
                 </div>
               </CardBody>
             </Card>
           </GridItem>
         </GridContainer>
+        <div>
+          <Dialog
+            open={this.state.deletePopUp}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <DialogTitle id="alert-dialog-title">
+              {"Confirm Delete"}
+            </DialogTitle>
+            <DialogContent>
+              <DialogContentText id="alert-dialog-description">
+                Are you sure want to delete?
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={this.canceldelete} color="primary">
+                Cancel
+              </Button>
+              <Button onClick={this.deleteInvoice} color="primary" autoFocus>
+                Delete
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </div>
       </div>
     );
   }

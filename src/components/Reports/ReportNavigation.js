@@ -306,7 +306,7 @@ class Reports extends Component {
   };
   InvoiceUploadlist = () => {
     if (CommonConfig.getUserAccess("Invoice Upload")) {
-      if (CommonConfig.getUserAccess("Invoice Upload").AllAccess === 0) {
+      if (CommonConfig.getUserAccess("Invoice Upload").ReadAccess === 0) {
         let currentSteps = this.state.FedExSteps;
         let index = this.state.FedExSteps.findIndex(
           (x) => x.stepId === "InvoiceUpload"
