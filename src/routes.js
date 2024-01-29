@@ -64,6 +64,9 @@ import UserLoginReport from "components/Reports/UserLoginReport";
 import TMSReport from "components/Reports/TMSReport";
 import ConsoleSplitInvoice from "components/Reports/ConsoleSplitInvoice";
 import InvoiceUpload from "components/Reports/InvoiceUpload";
+import zebraPrint from "components/Reports/zebraPrint";
+import zebraPrintOutput from "./components/Reports/zebraPrintOutput";
+import zebraPrintOut from "./components/Reports/zebraPrintout";
 import AllSalesReports from "components/Reports/AllSalesReports";
 import ShipmentReport from "components/Reports/ShipmentReport";
 import PrintCommercialInvoice from "components/ShipmentDocumentation/PrintCommercialInvoice";
@@ -413,6 +416,33 @@ var dashRoutes = [
     icon: User,
     component: ConsoleSplitInvoice,
     layout: "/admin",
+    invisible: true,
+  },
+
+  {
+    path: "/LabelPrinting",
+    name: "Label Printing",
+    icon: User,
+    component: zebraPrint,
+    layout: "/admin",
+    invisible: true,
+  },
+
+  {
+    path: "/zebraPrintOutput/:start/:end/:name",
+    // path: "/zebraPrintOutput",
+    name: "zebra Print Output",
+    icon: User,
+    component: zebraPrintOutput,
+    layout: "/auth",
+    invisible: true,
+  },
+  {
+    path: "/zebraPrintOut/:end/:name",
+    name: "zebra Print Out",
+    icon: User,
+    component: zebraPrintOut,
+    layout: "/auth",
     invisible: true,
   },
   {

@@ -5,6 +5,7 @@ import GridItem from "components/Grid/GridItem.js";
 import { makeStyles } from "@material-ui/core/styles";
 import CardBody from "components/Card/CardBody.js";
 // import withStyles from "@material-ui/core/styles/withStyles";
+import AttachFileIcon from "@material-ui/icons/AttachFile";
 import styles from "assets/jss/material-dashboard-pro-react/views/validationFormsStyle.js";
 import Card from "components/Card/Card";
 import CardIcon from "components/Card/CardIcon.js";
@@ -14,6 +15,7 @@ import cogoToast from "cogo-toast";
 import AssignmentIcon from "@material-ui/icons/Assignment";
 import SalesLeadIcon from "@material-ui/icons/Assessment";
 import EqualizerIcon from "@material-ui/icons/Equalizer";
+import { Icon } from "@material-ui/core";
 
 const useStyles = () => makeStyles(styles);
 const classes = useStyles();
@@ -69,41 +71,55 @@ class Reports extends Component {
         {
           stepName: "FedEx Invoice Upload",
           stepId: "uploadreport",
+          Icon: "fas fa-file",
           classname: "active",
         },
         {
           stepName: "Standard Invoice Upload",
           stepId: "standarduploadreport",
+          Icon: "fas fa-file",
           classname: "inactive",
         },
         {
           stepName: "Locked Shipment Report",
           stepId: "lockedshipmentreport",
+          Icon: "fas fa-lock",
           classname: "inactive",
         },
         {
           stepName: "Review Report",
           stepId: "ReviewReport",
+          Icon: "	fas fa-star",
           classname: "active",
         },
         {
           stepName: "User Login Report",
           stepId: "UserLoginReport",
+          Icon: "fas fa-power-off",
           classname: "inactive",
         },
         {
           stepName: "Time Booking Report",
           stepId: "TMSReport",
+          Icon: "fas fa-clipboard-check",
           classname: "inactive",
         },
         {
           stepName: "Console Split Invoice",
           stepId: "ConsoleSplitInvoice",
+          Icon: "fas fa-calculator",
           classname: "inactive",
         },
         {
           stepName: "Invoice Upload",
           stepId: "InvoiceUpload",
+          Icon: "fas fa-upload",
+          classname: "inactive",
+        },
+        {
+          stepName: "Label printing",
+          stepId: "LabelPrinting",
+          Icon: "	fas fa-print",
           classname: "inactive",
         },
       ],
@@ -120,6 +136,7 @@ class Reports extends Component {
     this.reviewShowHide();
     this.consolesplitinvoicelist();
     this.InvoiceUploadlist();
+    this.LabelPrintingList();
   }
 
   activeInactive = () => {
@@ -304,6 +321,18 @@ class Reports extends Component {
       }
     }
   };
+  LabelPrintingList = () => {
+    if (CommonConfig.getUserAccess("Label printing")) {
+      if (CommonConfig.getUserAccess("Label printing").WriteAccess === 0) {
+        let currentSteps = this.state.FedExSteps;
+        let index = this.state.FedExSteps.findIndex(
+          (x) => x.stepId === "LabelPrinting"
+        );
+        currentSteps.splice(index, 1);
+        this.setState({ FedExSteps: currentSteps });
+      }
+    }
+  };
   InvoiceUploadlist = () => {
     if (CommonConfig.getUserAccess("Invoice Upload")) {
       if (CommonConfig.getUserAccess("Invoice Upload").ReadAccess === 0) {
@@ -449,7 +478,8 @@ class Reports extends Component {
             onClick={(e) => this.reportNavigate(e, "FedExReport", step)}
           >
             <span className="rp-icon">
-              <EqualizerIcon />
+              <i class={step.Icon}></i>
+              {/* <Icon>{step.Icon}</Icon> */}
             </span>
             <p>{step.stepName}</p>
           </div>
@@ -536,6 +566,13 @@ class Reports extends Component {
             id: step.stepId,
           },
         });
+      } else if (step.stepId === "LabelPrinting") {
+        this.props.history.push({
+          pathname: "LabelPrinting",
+          state: {
+            id: step.stepId,
+          },
+        });
       } else {
         this.props.history.push({
           pathname: "FedExReport",
@@ -586,7 +623,7 @@ class Reports extends Component {
         <Card>
           <CardHeader className="btn-right-outer" color="primary" icon>
             <CardIcon color="primary">
-              <SalesLeadIcon />
+              <AttachFileIcon />
             </CardIcon>
             <h4 className="margin-right-auto text-color-black">
               Utilities and Services

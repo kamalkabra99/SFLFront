@@ -13,6 +13,8 @@ export class CommonConfig {
     }
   };
 
+  static BaseUrl = "https://hub.sflworldwide.com/";
+
   static FedexExpressStarttime = [
     { value: "08:00:00", label: 1, view: "08:00 am" },
     { value: "08:30:00", label: 2, view: "08:30 am" },

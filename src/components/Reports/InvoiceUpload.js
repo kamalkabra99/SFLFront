@@ -361,7 +361,9 @@ class InvoiceUpload extends Component {
 
     var input = {
       InvoiceNumber: this.state.SearchInvoiceNumber,
-      VendorName: this.state.SearchVendorName.value,
+      VendorName: this.state.SearchVendorName.value
+        ? this.state.SearchVendorName.value
+        : "",
     };
     this.showLoader();
     try {
@@ -799,6 +801,18 @@ class InvoiceUpload extends Component {
                           </span>
                         </div>
                       </GridItem>
+                      <GridItem xs={12} sm={12} md={4}>
+                        <div className="shipment-submit invoice-sub">
+                          <div className="right">
+                            <Button
+                              color="rose"
+                              onClick={() => this.uploadInvoice()}
+                            >
+                              Add Invoice
+                            </Button>
+                          </div>
+                        </div>
+                      </GridItem>
                       {/* <GridItem xs={12} sm={6} md={6}>
                         <div className="custom-file-browse fedex-upload">
                           <span>Select File</span>
@@ -813,7 +827,7 @@ class InvoiceUpload extends Component {
                         </div>
                       </GridItem> */}
                     </GridContainer>
-                    <GridContainer>
+                    {/* <GridContainer>
                       <GridItem xs={12} sm={12} md={12}>
                         <div className="">
                           <FormControl fullWidth>
@@ -830,7 +844,7 @@ class InvoiceUpload extends Component {
                           </FormControl>
                         </div>
                       </GridItem>
-                    </GridContainer>
+                    </GridContainer> */}
                   </div>
                   {/* //   ) : (
                 //     <></>
