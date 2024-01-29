@@ -114,6 +114,7 @@ import AddUpdateBombinoRates from "components/Management/AddUpdateBombinoRates";
 import AddUpdateSFLfetcherRates from "components/Management/AddUpdateSFLfetcherRates";
 import VendorListIcon from "@material-ui/icons/FormatListBulleted";
 import ReferredBy from "components/Management/ReferredBy";
+import invoiceservice from "components/Management/invoiceservice";
 import SearchBar from "components/SearchBar/SearchBar";
 import ReSearchBar from "components/SearchBar/ReSearchBar";
 import ArchiveIcon from "@material-ui/icons/Archive";
@@ -748,6 +749,14 @@ var dashRoutes = [
     name: "Referred Management",
     icon: EditSalesLeadIcon,
     component: ReferredBy,
+    layout: "/admin",
+    invisible: false,
+  },
+  {
+    path: "/invoiceservices",
+    name: "Referred Management",
+    icon: EditSalesLeadIcon,
+    component: invoiceservice,
     layout: "/admin",
     invisible: false,
   },

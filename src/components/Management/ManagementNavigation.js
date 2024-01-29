@@ -144,6 +144,14 @@ export class ManagementNavigation extends Component {
           Icon: People,
           classname: "inactive",
         },
+        {
+          stepName: "Invoices services",
+          stepId: "Invoices services",
+          IsAccess: 0,
+          path: "invoiceservices",
+          Icon: People,
+          classname: "inactive",
+        },
       ],
       navigate: "",
     };
