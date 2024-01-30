@@ -19,7 +19,7 @@ class zebraPrintOut extends Component {
 
   async componentDidMount() {
     // var Startnumber = this.props.match.params.start;
-    var Endnumber = this.props.match.params.end;
+    var Endnumber = parseInt(this.props.match.params.end);
     var customerName = this.props.match.params.name;
 
     var arr = [];
@@ -38,7 +38,7 @@ class zebraPrintOut extends Component {
       return (
         <div className="label-print-box">
           <p>{item.name}</p>
-          <h3>{item.id}</h3>
+          {/* <h3>{item.id}</h3> */}
         </div>
       );
     });

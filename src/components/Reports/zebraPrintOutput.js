@@ -43,8 +43,9 @@ class zebraPrintOutput extends Component {
   }
 
   async componentDidMount() {
-    var Startnumber = this.props.match.params.start;
-    var Endnumber = this.props.match.params.end;
+    debugger;
+    var Startnumber = parseInt(this.props.match.params.start);
+    var Endnumber = parseInt(this.props.match.params.end);
     var customerName = this.props.match.params.name;
 
     var arr = [];
