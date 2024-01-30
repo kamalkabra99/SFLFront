@@ -323,7 +323,7 @@ class Reports extends Component {
   };
   LabelPrintingList = () => {
     if (CommonConfig.getUserAccess("Label printing")) {
-      if (CommonConfig.getUserAccess("Label printing").WriteAccess === 0) {
+      if (CommonConfig.getUserAccess("Label printing").ReadAccess === 0) {
         let currentSteps = this.state.FedExSteps;
         let index = this.state.FedExSteps.findIndex(
           (x) => x.stepId === "LabelPrinting"
