@@ -289,7 +289,7 @@ class zebraPrint extends Component {
                           <div className="mt-15">
                             <FormControl fullWidth>
                               <TextField
-                                label="customer Name"
+                                label="Customer Name"
                                 value={customerName}
                                 error={this.state.customerNameErr}
                                 helperText={this.state.customerNameErrText}
@@ -373,7 +373,7 @@ class zebraPrint extends Component {
                               <div id="showTextBox" className="pt-14">
                                 <TextField
                                   fullWidth
-                                  label="customer Name"
+                                  label="Customer Name"
                                   value={TextcustomerName}
                                   error={this.state.SelectOneErr}
                                   helperText={this.state.SelectOneErrText}

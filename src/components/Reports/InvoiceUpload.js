@@ -121,10 +121,10 @@ class InvoiceUpload extends Component {
       return false;
     } else {
       this.setState({
-        file: e.target.files[0],
-        fileName: e.target.files[0] ? e.target.files[0].name : "",
         FileErr: false,
         FileErrText: "",
+        file: e.target.files[0],
+        fileName: e.target.files[0] ? e.target.files[0].name : "",
       });
     }
   };
@@ -390,8 +390,8 @@ class InvoiceUpload extends Component {
             {
               Header: "Vendor Name",
               id: "VendorName",
-              width: 180,
-              maxWidth: 180,
+              width: 120,
+              maxWidth: 120,
               filterable: true,
               sortable: true,
               accessor: "VendorName",
@@ -399,8 +399,8 @@ class InvoiceUpload extends Component {
             {
               Header: "Invoice Number",
               id: "InvoiceNumber",
-              width: 95,
-              maxWidth: 95,
+              width: 155,
+              maxWidth: 155,
               filterable: true,
               sortable: true,
               accessor: "InvoiceNumber",
@@ -412,16 +412,16 @@ class InvoiceUpload extends Component {
               filterable: true,
               sortable: true,
               width: 92,
-              accessor: (data) => {
-                if (CommonConfig.isEmpty(data.InvoiceDate)) {
-                  return moment().format("MM/DD/YYYY");
-                } else {
-                  return moment(data.InvoiceDate).format(
-                    CommonConfig.dateFormat.dateOnly
-                  );
-                }
-              },
-              // accessor: "InvoiceDate",
+              // accessor: (data) => {
+              //   if (CommonConfig.isEmpty(data.InvoiceDate)) {
+              //     return moment().format("MM/DD/YYYY");
+              //   } else {
+              //     return moment(data.InvoiceDate).format(
+              //       CommonConfig.dateFormat.dateOnly
+              //     );
+              //   }
+              // },
+              accessor: "InvoiceDate",
             },
             {
               Header: "Amount",
@@ -431,6 +431,32 @@ class InvoiceUpload extends Component {
               sortable: true,
               width: 96,
               accessor: "InvoiceAmount",
+            },
+            {
+              Header: "Uploaded Date",
+              id: "UploadedDate",
+              maxWidth: 92,
+              filterable: true,
+              sortable: true,
+              width: 92,
+              accessor: (data) => {
+                if (CommonConfig.isEmpty(data.CreatedOn)) {
+                  return moment().format("MM/DD/YYYY");
+                } else {
+                  return moment(data.CreatedOn).format(
+                    CommonConfig.dateFormat.dateOnly
+                  );
+                }
+              },
+            },
+            {
+              Header: "Uploaded By",
+              id: "UploadBy",
+              maxWidth: 92,
+              filterable: true,
+              sortable: true,
+              width: 92,
+              accessor: "createdby",
             },
             {
               Header: "Invoice",
@@ -521,6 +547,32 @@ class InvoiceUpload extends Component {
               sortable: true,
               width: 96,
               accessor: "InvoiceAmount",
+            },
+            {
+              Header: "Uploaded Date",
+              id: "UploadedDate",
+              maxWidth: 92,
+              filterable: true,
+              sortable: true,
+              width: 92,
+              accessor: (data) => {
+                if (CommonConfig.isEmpty(data.CreatedOn)) {
+                  return moment().format("MM/DD/YYYY");
+                } else {
+                  return moment(data.CreatedOn).format(
+                    CommonConfig.dateFormat.dateOnly
+                  );
+                }
+              },
+            },
+            {
+              Header: "Uploaded By",
+              id: "UploadBy",
+              maxWidth: 92,
+              filterable: true,
+              sortable: true,
+              width: 92,
+              accessor: "createdby",
             },
             {
               Header: "Invoice",
@@ -683,7 +735,7 @@ class InvoiceUpload extends Component {
                           columns={column}
                           defaultPageSize={10}
                           showPaginationBottom={true}
-                          className=" -striped -highlight all-account-react mt-30"
+                          className=" -striped -highlight mt-30"
                         />
                       </GridContainer>
                     ) : (
@@ -785,8 +837,8 @@ class InvoiceUpload extends Component {
                               type="file"
                               name="selectedfile"
                               id="file"
-                              error={this.state.FileErr}
-                              helperText={this.state.FileErrText}
+                              // error={this.state.FileErr}
+                              // helperText={this.state.FileErrText}
                               accept=".pdf"
                               className="normal-btn sm-orange"
                               onChange={(event) => this.fileUpload(event)}
