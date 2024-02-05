@@ -85,7 +85,7 @@
     // let hostURL = "https://hubuatapi.sflworldwide.com/"; // cloud production
     setTimeout(() => {
       if (!window.location.href.includes("get-quote")) {
-        // openRequestModal();  // Comment By Anshul For slow performance
+        openRequestModal();  // Comment By Anshul For slow performance
       }
 
     }, 3000);
@@ -241,11 +241,14 @@
           // console.log("Access = ",sessionData.userModuleAccess[31]);
 
           // if(sessionData.IsAllChatAccess == 1 && !localStorage.getItem("alreadyActiveChatData")) {
-
+            debugger
           if (localStorage.getItem("UserBreakData") > 0) {
             console.log("You are on Break");
             setTimeout(() => {
-              openResumeModel();
+              if (localStorage.getItem("UserBreakData") != 0) {
+                openResumeModel();
+              }
+
             }, 5000)
 
           } else {
@@ -267,8 +270,9 @@
       setTimeout(() => {
         openRequestModal();
       }, 4000);
-    }
+}
 
+   
     function openChatActiveModel() {
       var modal = document.getElementById("myModalForChat");
       modal.style.display = "block";
@@ -295,6 +299,7 @@
     }
 
     function resumeBreak() {
+      
       localStorage.setItem("UserBreakData", "0");
 
       var chatActiveData = {

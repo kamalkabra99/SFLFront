@@ -143,7 +143,8 @@ class LoginPage extends Component {
               });
 
               var pData = {
-                UserID: res.Data.PersonID
+                UserID: res.Data.PersonID,
+                userTimeZonedata:res.Data.userTimeZone
               }
               api.post("contactus/CheckUserLoginBreak", pData).then((res) => {
                 console.log("Res = ", res);

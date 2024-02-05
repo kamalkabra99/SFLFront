@@ -75,6 +75,8 @@ class TMSReport extends Component {
             KeywordListAllData: [],
             Loading: false,
             ProposalData: [],
+            setweekendsCount:0,
+            setTimeOff:0,
             isCommitted: false,
             committedLength: 0,
             notCommitedLength: 0,
@@ -83,6 +85,7 @@ class TMSReport extends Component {
             FromDate: new Date(),
             ToDate: new Date(),
             ManagedBy: "",
+            setWeekandTimeoff: 0,
             isPreviewClicked: false,
             ManagedBy: "",
             managedByList: [],
@@ -131,6 +134,9 @@ class TMSReport extends Component {
 
 
     getUserTMSReport() {
+        this.state.ProposalData = []
+        this.setState({ ProposalData: []});
+        var setArr = [];
 
         debugger
 
@@ -149,7 +155,7 @@ class TMSReport extends Component {
             cogoToast.error("Please Select Data Type");
         }
         else{
-
+            
             var pData = {
                 fromDate: moment(this.state.FromDate)
                     .format(CommonConfig.dateFormat.dbDateOnly)
@@ -161,16 +167,71 @@ class TMSReport extends Component {
                 puserdata: managedByValue,
                 logintypes:this.state.LoginTypeValue.label
             }
+
+            var daysArr = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+
+            var d1 = new Date(this.state.FromDate);   
+            var d2 = new Date(this.state.ToDate);   
+                
+            var diff = d2.getTime() - d1.getTime();   
+                
+            var daydiff = diff / (1000 * 60 * 60 * 24);   
     
-            console.log(pData);
+            console.log(daydiff);
+
+            for (let index = 0; index <= daydiff; index++) {
+                // const element = array[index];
+
+                // console.log("I = ",index);
+
+                const ds = new Date(this.state.FromDate);
+                ds.setDate(ds.getDate() + index);
+
+                // console.log("ds = ",ds);
+                
+                const d = new Date(ds);
+                let day = d.getDay();
+
+                var weekends = ""
+                if(daysArr[day] == "Sunday" || daysArr[day] == "Saturday"){
+                    weekends = "Weekends"
+                }
+
+                // console.log("day = ", day);
+
+                // console.log("DayName = " , daysArr[day] )
+                setArr.push({
+                    Date: moment(d)
+                    .format(CommonConfig.dateFormat.dateOnly),
+                    Day: daysArr[day],
+                    IPDetails:weekends,
+                    IpAddress:"",
+                    LoginDate:moment(d)
+                    .format(CommonConfig.dateFormat.dateOnly),
+                    LoginID:"",
+                    LoginLogOff:"",
+                    LoginTime:"",
+                    LogoutTime:"",
+                    UserID:"",
+                    totalBreak:"",
+                    totalWorking:"",
+                    
+                   
+                  });
+
+
+                
+            }
     
             api.post("contactus/getTmsUserReport", pData).then((res) => {
                 if (res.success) {
-                    this.state.ProposalData = []
+                    
                     // this.setState({ ProposalData: requestData });
-                    console.log("res14 = ", res);
+                    // console.log("res14 = ", res);
                     let requestData = res.Data[0];
                     if (requestData.length > 0) {
+
+                        // console.log("setArr = " , setArr);
 
                         
     
@@ -188,9 +249,9 @@ class TMSReport extends Component {
                                 // duration in minutes
                                 var minutes = parseInt(duration.asMinutes()) % 60;
                                 var seconds  = parseInt((duration.asSeconds() * 0.001)) 
-                                console.log("SECS = ",seconds);
-                                console.log(requestData[index]);
-                                console.log("Hours = ", hours, ":", minutes);
+                                // console.log("SECS = ",seconds);
+                                // console.log(requestData[index]);
+                                // console.log("Hours = ", hours, ":", minutes);
                                 var totalTome =""
                                 if(requestData[index].LoginLogOff == null){
                                     totalTome = "NA"
@@ -200,9 +261,71 @@ class TMSReport extends Component {
                                     totalTome = hours + ":" + minutes  + ":" + seconds + " hours"
                                 }
                                 requestData[index].totalWorking = totalTome;
+
+                                for (let dayindex = 0; dayindex < setArr.length; dayindex++) {
+                                    if(requestData[index].LoginDate == setArr[dayindex].Date){
+                                        // requestData[index].DayName = setArr[dayindex].Day;
+                                        
+                                        setArr[dayindex].IPDetails=requestData[index].IPDetails;
+                                        setArr[dayindex].IpAddress=requestData[index].IpAddress;
+                                        
+                                        setArr[dayindex].LoginID=requestData[index].LoginID;
+                                        setArr[dayindex].LoginLogOff=requestData[index].LoginLogOff;
+                                        setArr[dayindex].LoginTime=requestData[index].LoginTime;
+                                        setArr[dayindex].LogoutTime=requestData[index].LogoutTime;
+                                        setArr[dayindex].UserID=requestData[index].UserID;
+                                        setArr[dayindex].totalBreak=requestData[index].totalBreak;
+                                        setArr[dayindex].totalWorking=requestData[index].totalWorking;
+    
+                                        break;
+    
+                                    }
+                                    
+                                }
+    
+                                var weekendsCount = 0
+                                var TimeOffCount = 0
+                                for (let indesSet = 0; indesSet < setArr.length; indesSet++) {
+                                    // const element = array[indesSet];
+                                    if(setArr[indesSet].IPDetails == "Weekends"){
+                                        weekendsCount = weekendsCount + 1
+                                    }
+    
+                                    if(setArr[indesSet].IPDetails == ""){
+                                        // TimeOffCount = TimeOffCount + 1
+                                        setArr[indesSet].IPDetails = "TimeOff"
+                                        
+                                    }
+                                }
+    
+                                for (let indesSetTime = 0; indesSetTime < setArr.length; indesSetTime++) {
+                                    // const element = array[indesSetTime];
+                                   
+    
+                                    if(setArr[indesSetTime].IPDetails == "TimeOff"){
+                                        TimeOffCount = TimeOffCount + 1
+                                        // setArr[indesSetTime].IPDetails = "TimeOff"
+                                        console.log("TimeOffCount = " , TimeOffCount)
+                                        
+                                    }
+                                }
+    
+                                
+    
+                                this.setState({setTimeOff : TimeOffCount});
+                                console.log("TimeOff = " , TimeOffCount)
+                                this.setState({setweekendsCount : weekendsCount});
+    
+    
         
                             }else{
+                                for (let dayindex = 0; dayindex < setArr.length; dayindex++) {
+                                    if(requestData[index].LoginDate == setArr[dayindex].Date){
+                                        requestData[index].Day =  setArr[dayindex].Day
+                                    }
+                                }
                                 requestData[index].totalBreak = "N/A";
+
                             }
 
 
@@ -210,8 +333,16 @@ class TMSReport extends Component {
                             // alert(hours + ' hour and ' + minutes + ' minutes.');
     
                         }
+                        if(this.state.LoginTypeValue.label == "Break"){
+                            setArr =  requestData
+                            this.setState({setWeekandTimeoff : 0});
+                        }else{
+                            this.setState({setWeekandTimeoff : 1});
+                            
+                        }
+                        console.log("requestData = ",setArr);
                         this.setState({ fileSetName: fileNameSet });
-                        this.setState({ ProposalData: requestData });
+                        this.setState({ ProposalData: setArr});
                     }
                 } else {
     
@@ -276,6 +407,13 @@ class TMSReport extends Component {
             },
 
             {
+                Header: "Login Day",
+                accessor: "Day",
+                width: 100,
+                
+            },
+
+            {
                 Header: "Ip Address",
                 accessor: "IpAddress",
                 width: 100,
@@ -285,6 +423,15 @@ class TMSReport extends Component {
                 Header: "Location",
                 accessor: "IPDetails",
                 width: 160,
+                Footer: (
+                    <span><b>
+                      {this.state.setWeekandTimeoff == 0 
+                        ? ""
+                        : "Weekend:- " + this.state.setweekendsCount
+                          }
+                          </b>
+                    </span>
+                  ),
             },
 
 
@@ -292,6 +439,15 @@ class TMSReport extends Component {
                 Header: "Start Time",
                 accessor: "LoginTime",
                 width: 100,
+                Footer: (
+                    <span><b>
+                      {this.state.setWeekandTimeoff == 0 
+                        ? ""
+                        : "TimeOff:- " + this.state.setTimeOff
+                          }
+                          </b>
+                    </span>
+                  ),
             },
             {
                 Header: "End Time",
