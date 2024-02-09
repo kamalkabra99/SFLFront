@@ -253,6 +253,7 @@ class RegisterPage extends Component {
     if (type === "username") {
       this.setState({ checkUserName: true });
       let usernameVal = event.target.value;
+      console.log("s.indexOf(' ') >= 0 = " ,usernameVal.indexOf(' '))
       // console.log("checkusernameerr", event.target.value.splice(0, 5));
       if (CommonConfig.isEmpty(usernameVal)) {
         this.setState({
@@ -267,6 +268,14 @@ class RegisterPage extends Component {
           specialcharacter: false,
           usernameHelperText: "Please enter User Name",
         });
+      }else if(usernameVal.indexOf(' ') >= 0){
+        this.setState({
+          username: usernameVal,
+          userCheckLetter: false,
+          usernameErr: false,
+          usernameHelperText: "",
+        });
+
       } else if (usernameVal) {
         if (usernameVal.match(CommonConfig.RegExp.regExpLowerCase)) {
           this.setState({
