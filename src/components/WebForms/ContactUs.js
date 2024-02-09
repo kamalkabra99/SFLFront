@@ -118,8 +118,9 @@ class ContactUs extends React.Component {
       }
       try {
         this.showLoador();
+        //    getContactUsListNEW
         api
-          .post("contactus/getContactUsListNEW", data)
+          .post("contactus/getContactUsList", data)
           .then((result) => {
             if (result.success) {
               this.hideLoador();

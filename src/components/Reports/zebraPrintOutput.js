@@ -39,6 +39,7 @@ class zebraPrintOutput extends Component {
       list: [],
       Startnumber: "",
       Endnumber: "",
+      classDiv: "label-print-box",
     };
   }
 
@@ -47,6 +48,25 @@ class zebraPrintOutput extends Component {
     var Startnumber = parseInt(this.props.match.params.start);
     var Endnumber = parseInt(this.props.match.params.end);
     var customerName = this.props.match.params.name;
+    var PageSize = localStorage.getItem("PageSize")
+      ? localStorage.getItem("PageSize")
+      : "";
+    localStorage.removeItem("PageSize");
+    if (PageSize == "4 X 6") {
+      this.setState({ classDiv: "label-print-box4-6" });
+    } else if (PageSize == "8.5 X 11") {
+      this.setState({ classDiv: "label-print-box85-11" });
+    } else if (PageSize == "4 X 6.75") {
+      this.setState({ classDiv: "label-print-box4-675" });
+    } else if (PageSize == "4 X 8") {
+      this.setState({ classDiv: "label-print-box4-8" });
+    } else if (PageSize == "4 X 9") {
+      this.setState({ classDiv: "label-print-box4-9" });
+    } else {
+      this.setState({ classDiv: "label-print-box" });
+    }
+
+    // classDiv = "label-print-boxportrait";
 
     var arr = [];
     for (var i = Startnumber; i <= Endnumber; i++) {
@@ -62,7 +82,7 @@ class zebraPrintOutput extends Component {
     //kruti
     return this.state.list.map((item, idx) => {
       return (
-        <div className="label-print-box">
+        <div className={this.state.classDiv}>
           <p>{item.name}</p>
           <h3>{item.id}</h3>
         </div>

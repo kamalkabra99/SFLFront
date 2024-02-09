@@ -58,12 +58,23 @@ class zebraPrint extends Component {
         { value: "CRATING", label: "CRATING" },
         { value: "SHRINK WRAPPING", label: "SHRINK WRAPPING" },
       ],
+
+      PageSizeList: [
+        { value: "8.5 X 11", label: "8.5 X 11" },
+        { value: "4 X 6", label: "4 X 6" },
+        { value: "4 X 6.75", label: "4 X 6.75" },
+        { value: "4 X 8", label: "4 X 8" },
+        { value: "4 X 9", label: "4 X 9" },
+      ],
+
+      // PageSize: "",
+      //Loading: true,
     };
   }
 
   componentDidMount() {
     this.setState({ Base: CommonConfig.BaseUrl });
-    // this.setState({ Base: "http://localhost:3000/" });
+    //this.setState({ Base: "http://localhost:3000/" });
 
     document.getElementById("showTextBox").style.display = "none";
     document.getElementById("showAutocomplete").style.display = "block";
@@ -115,6 +126,14 @@ class zebraPrint extends Component {
           SelectOneErrText: "",
         });
       }
+    } else if (type === "PageSize") {
+      if (value != null) {
+        this.setState({
+          PageSize: value,
+          PageSizeErr: false,
+          PageSizeErrText: "",
+        });
+      }
     }
   };
   validate(type) {
@@ -163,6 +182,21 @@ class zebraPrint extends Component {
 
     return IsFormValid;
   }
+  SequenceReset = () => {
+    this.setState({
+      customerName: "",
+      StartNumber: "",
+      EndNumber: "",
+      PageSize: "",
+    });
+  };
+  customReset = () => {
+    this.setState({
+      SelectOne: "",
+      NumberPrints: "",
+      PageSize: "",
+    });
+  };
   SequenceGenrate(type) {
     if (type === "Text") {
       window.open(
@@ -175,8 +209,10 @@ class zebraPrint extends Component {
         "_blank"
       );
     } else if (type === "Label") {
-      debugger;
       if (this.validate("custom")) {
+        if (CommonConfig.isEmpty(this.state.PageSize)) {
+          localStorage.setItem("PageSize", this.state.PageSize.value);
+        }
         var text = this.state.SelectOne.value
           ? this.state.SelectOne.value
           : this.state.TextcustomerName;
@@ -192,6 +228,9 @@ class zebraPrint extends Component {
       }
     } else if (type === "Sequence") {
       if (this.validate("sequence")) {
+        if (!CommonConfig.isEmpty(this.state.PageSize)) {
+          localStorage.setItem("PageSize", this.state.PageSize.value);
+        }
         window.open(
           this.state.Base +
             "auth/zebraPrintOutput/" +
@@ -203,6 +242,7 @@ class zebraPrint extends Component {
             this.state.customerName,
           "_blank"
         );
+        //  window.location.reload();
       }
     }
   }
@@ -244,7 +284,6 @@ class zebraPrint extends Component {
     this.setState({ TextcustomerName: "" });
   };
   handleManual = () => {
-    debugger;
     document.getElementById("showTextBox").style.display = "block";
     document.getElementById("showAutocomplete").style.display = "none";
     this.setState({ SelectOne: "" });
@@ -259,6 +298,8 @@ class zebraPrint extends Component {
       TextNumberPrints,
       TextcustomerName,
       SelectOneList,
+      PageSizeList,
+      PageSize,
     } = this.state;
 
     return (
@@ -285,7 +326,7 @@ class zebraPrint extends Component {
                   <CardBody>
                     <div className="shipment-pane">
                       <GridContainer>
-                        <GridItem xs={12} sm={12} md={12}>
+                        <GridItem xs={12} sm={12} md={6}>
                           <div className="mt-15">
                             <FormControl fullWidth>
                               <TextField
@@ -296,6 +337,31 @@ class zebraPrint extends Component {
                                 onChange={(event) =>
                                   this.selectChange(event, "customerName")
                                 }
+                              />
+                            </FormControl>
+                          </div>
+                        </GridItem>
+                        <GridItem xs={12} sm={12} md={6}>
+                          <div>
+                            <FormControl fullWidth>
+                              <Autocomplete
+                                id="Page_Size"
+                                options={PageSizeList}
+                                value={PageSize}
+                                getOptionLabel={(option) => option.label}
+                                onChange={(event, value) =>
+                                  this.selectChange(event, value, "PageSize")
+                                }
+                                renderInput={(params) => (
+                                  <TextField
+                                    {...params}
+                                    label="Page Size"
+                                    margin="normal"
+                                    fullWidth
+                                    error={this.state.PageSizeErr}
+                                    helperText={this.state.PageSizeErrText}
+                                  />
+                                )}
                               />
                             </FormControl>
                           </div>
@@ -335,6 +401,12 @@ class zebraPrint extends Component {
                             <FormControl fullWidth>
                               <div className="shipment-submit invoiceUpload">
                                 <div className="right">
+                                  <Button
+                                    color="secondory"
+                                    onClick={() => this.SequenceReset()}
+                                  >
+                                    Reset
+                                  </Button>
                                   <Button
                                     color="rose"
                                     onClick={() =>
@@ -508,6 +580,12 @@ class zebraPrint extends Component {
                             <FormControl fullWidth>
                               <div className="shipment-submit invoiceUpload">
                                 <div className="right">
+                                  <Button
+                                    color="secondory"
+                                    onClick={() => this.customReset()}
+                                  >
+                                    Reset
+                                  </Button>
                                   <Button
                                     color="rose"
                                     onClick={() =>

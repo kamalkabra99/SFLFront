@@ -133,8 +133,8 @@ class EditContactUs extends Component {
         ContactUsID: this.props.match.params.id,
       };
 
-      api
-        .post("contactus/getContanctUsDetailsByIdNEW/", data)
+      api //getContanctUsDetailsByIdNEW
+        .post("contactus/getContanctUsDetailsById/", data)
         .then((result) => {
           if (result.data.success) {
             this.setState({ Loading: false });
@@ -630,7 +630,8 @@ class EditContactUs extends Component {
       let data = {
         ContactUsID: this.state.ContactUsID,
       };
-      api.post("contactus/deleteContactUsByIdNEW", data).then((result) => {
+      //deleteContactUsByIdNEW
+      api.post("contactus/deleteContactUsById", data).then((result) => {
         if (result) {
           this.hideLoader();
           cogoToast.success("Deleted Successfully");

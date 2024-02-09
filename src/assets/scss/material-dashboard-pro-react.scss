@@ -6367,9 +6367,10 @@ a.edit-icon-wrp.refresh {
 }
 
 .label-print-outer {
-  max-width: 400px;
+  max-width: 100%;
   margin: 20px auto 0 auto;
   width: 100%;
+  padding: 0 20px;
 }
 
 .label-print-box {
@@ -6384,7 +6385,86 @@ a.edit-icon-wrp.refresh {
   flex-direction: column;
   justify-content: center;
 }
+.label-print-box85-11 {
+  width: 100%;
+  height: 970px;
+  background: #fff;
+  border: 1px solid #000;
+  margin-bottom: 20px;
+  text-align: center;
+  padding: 50px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-weight: 300;
+  font-size: 40px;
+  page-break-before: always;
+}
+.label-print-box4-675 {
+  width: 100%;
+  height: 550px;
+  background: #fff;
+  border: 1px solid #000;
+  margin-bottom: 20px;
+  text-align: center;
+  padding: 50px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-weight: 300;
+  font-size: 40px;
+  page-break-before: always;
+}
 
+  .label-print-box4-6 {
+    width: 100%;
+    height: 500px;
+    background: #fff;
+    border: 1px solid #000;
+    margin-bottom: 20px;
+    text-align: center;
+    padding: 50px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 40px;
+    text-decoration: underline;
+    page-break-before: always;
+}
+
+.label-print-box4-8 {
+  width: 100%;
+  height: 640px;
+  background: #fff;
+  border: 1px solid #000;
+  margin-bottom: 20px;
+  text-align: center;
+  padding: 50px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 60px;
+  text-decoration: underline;
+  page-break-before: always;
+}
+.label-print-box4-9 {
+  width: 100%;
+  height: 770px;
+  background: #fff;
+  border: 1px solid #000;
+  margin-bottom: 20px;
+  text-align: center;
+  padding: 50px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-size: 40px;
+  font-weight: 600;
+  text-decoration: underline;
+  page-break-before: always;
+}
 .label-print-box p {
   font-size: 40px;
 }
