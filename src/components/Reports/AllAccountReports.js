@@ -2176,12 +2176,15 @@ class AllAccountReports extends Component {
 
                         <div className="shipment-submit  mt-20">
                           <div className="right">
-                            <Button
+                            {CommonConfig.getUserAccess("Account Payable").WriteAccess == 1 ?(
+                              <Button
                               color="rose"
                               onClick={() => this.handleSaveAccountIssued()}
                             >
                               Update
                             </Button>
+                            ): null }
+                            
                             <Button
                               color="secondary"
                               onClick={() => this.resetReport()}
