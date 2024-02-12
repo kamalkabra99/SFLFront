@@ -73,7 +73,7 @@ import momentTimezoneWithData20122022 from "moment-timezone/builds/moment-timezo
 ////////////HBL///////////////////////////
 import stamp from "../../assets/img/HBL/stamp.png";
 import pshah from "../../assets/img/HBL/pshah.png";
-// import html2pdf from "html2pdf.js";
+import html2pdf from "html2pdf.js";
 
 var creditCardType = require("credit-card-type");
 var valid = require("card-validator");
@@ -11357,6 +11357,7 @@ class ShipmentCustom extends React.Component {
   };
   generatePDF = () => {
     debugger;
+    this.showLoader();
     console.log("in pdf......");
 
     //var input = document.getElementById("HBL");
@@ -11409,8 +11410,9 @@ class ShipmentCustom extends React.Component {
     document.getElementById("Sequencelistdiv").style.display = "block";
 
     const element = document.getElementById("HBL");
+    const elementdata = document.getElementById("HBL").innerHTML;
     //   const htmlContent = element.innerHTML;
-    console.log("in pdf......", element);
+    console.log("in pdf......", elementdata);
     // Configuration for html2pdf
     const options = {
       margin: 10,
@@ -11420,13 +11422,13 @@ class ShipmentCustom extends React.Component {
       jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
     };
     debugger;
-    // html2pdf(element, options).then((pdf) => {
-    //   // Trigger the download of the PDF
-    //   pdf.save();
-    // });
+    html2pdf(element, options).then((pdf) => {
+      // Trigger the download of the PDF
+      pdf.save();
+    });
     this.setState({ HBLdocOpen: false });
-    this.hideLoader();
-    cogoToast.success("HBL Download successfully");
+    // this.hideLoader();
+    // cogoToast.success("HBL Download successfully");
     //  html2pdf(element, options).then((pdf) => {
     // Convert the PDF to a blob
 
@@ -11436,34 +11438,33 @@ class ShipmentCustom extends React.Component {
     //     type: "application/pdf",
     //   });
     // });
-    // let data = {
-    //   dateTime: new Date().getTime(),
-    //   ShippingID: this.state.ShippingID,
-    //   BLNumber: this.state.BLNumber,
-    // };
-    // var formData = new FormData();
-    // formData.append("data", JSON.stringify(data));
-    // formData.append("Attachments", pdfFile, "generated-document.pdf");
-
-    //   api
-    //     .post("scheduleshipment/downloadHBLpdf", formData)
-    //     .then((res) => {
-    //       if (res.success) {
-    //         this.hideLoader();
-    //         cogoToast.success("HBL Generated");
-    //         //window.close();
-    //         this.setState({
-    //           HBLdocOpen: false,
-    //         });
-    //         this.getDocumentation();
-    //       } else {
-    //         this.hideLoader();
-    //         cogoToast.error("HBL Generation Error");
-    //       }
-    //     })
-    //     .catch((err) => {
-    //       console.log(err);
-    //     });
+    var HtmlData = "<html>" + elementdata + "</html>";
+    let data = {
+      dateTime: new Date().getTime(),
+      ShippingID: this.state.ShippingID,
+      BLNumber: this.state.BLNumber,
+      HtmlData:HtmlData
+    };
+    
+      api
+        .post("scheduleshipment/downloadHBLpdf", data)
+        .then((res) => {
+          if (res.success) {
+            this.hideLoader();
+            cogoToast.success("HBL Generated");
+            //window.close();
+            this.setState({
+              HBLdocOpen: false,
+            });
+            this.getDocumentation();
+          } else {
+            this.hideLoader();
+            cogoToast.error("HBL Generation Error");
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     // });
     // Use html2pdf to convert HTML to PDF
     // html2pdf(element, options).then((pdf) => {
