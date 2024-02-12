@@ -92,6 +92,10 @@ class EditSalesLeads extends Component {
     this.state = {
       proposalclick: false,
       // getrateClick: false,
+      cancelationReasonList: [],
+      CancelationReason: "",
+      CancelationReasonErr: false,
+      CancelationReasonHelperText: "",
       ProposalLog: [],
       OpenproposalLog: false,
       showProposallist: [],
@@ -553,7 +557,7 @@ class EditSalesLeads extends Component {
 
   async GetRateData() {
     //kruti
-    debugger;
+
     for (var i = 0; i < this.state.PackageList.length; i++) {
       if (this.state.PackageList[i].Quantity === 0) {
         return cogoToast.error("Please enter valid package count");
@@ -692,7 +696,7 @@ class EditSalesLeads extends Component {
 
     var PackageDetails = [];
     // for (var i = 0; i < this.state.PackageList.length; i++) {
-    debugger;
+
     PackageDetails = this.state.PackageList.filter(
       (feature) => feature.Status === "Active"
     ).map((feature) => {
@@ -892,7 +896,7 @@ class EditSalesLeads extends Component {
         }
       }
     }
-    debugger;
+
     this.Calculate();
     if (propsalType === "Air") {
       if (this.state.checkTotalChWeight === 0) {
@@ -911,7 +915,7 @@ class EditSalesLeads extends Component {
           continue;
         }
       }
-      debugger;
+
       FinalGetRate.PackageNumber = PackageNumber;
       FinalGetRate.Weight = Weight;
       FinalGetRate.DimeL = DimeL;
@@ -959,7 +963,7 @@ class EditSalesLeads extends Component {
             : FinalGetRate.PackageType;
       }
       this.setState({ FinalGetRate: FinalGetRate });
-      debugger;
+
       var data = JSON.stringify({ quoteData: FinalGetRate });
       let res = await api.post("getQuote/getRates", data);
       if (res.success) {
@@ -993,7 +997,7 @@ class EditSalesLeads extends Component {
         this.hideLoader();
         return cogoToast.error("CFT zero does not exits");
       }
-      debugger;
+
       var PackageDetails = [];
       var newarray = [];
       newarray = this.state.PackageList.concat(TVDetails);
@@ -1241,6 +1245,8 @@ class EditSalesLeads extends Component {
         ProposalStatus: value,
         proposalstatusHelperText: "",
         proposalstatusErr: false,
+        CancelationReasonErr: false,
+        CancelationReasonHelperText: "",
       });
       if (
         value !== "New" &&
@@ -1267,6 +1273,8 @@ class EditSalesLeads extends Component {
           ProposalTypeErr: false,
           Followuprror: "",
           Followuprr: false,
+          CancelationReasonErr: false,
+          CancelationReasonHelperText: "",
         });
         document.getElementById("referrederror").style.display = "none";
         document.getElementById("followuprror").style.display = "none";
@@ -1284,6 +1292,8 @@ class EditSalesLeads extends Component {
       this.setState({ PickupState: value });
     } else if (type === "referredby") {
       this.setState({ ReferredBy: value.props.value });
+    } else if (type === "CancelationReason") {
+      this.setState({ CancelationReason: value });
     }
   }
 
@@ -1622,9 +1632,27 @@ class EditSalesLeads extends Component {
       await this.getCommunicationList();
     }
     this.getReferredSite();
+    this.getCancellationReason();
     //  await this.getSalesLeadData();
   }
+  getCancellationReason() {
+    try {
+      let data = {
+        stringMapType: "CancellationReason",
+      };
 
+      api
+        .post("stringMap/getstringMap", data)
+        .then((result) => {
+          this.setState({ cancelationReasonList: result.data });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (err) {
+      console.log("error", err);
+    }
+  }
   reCallApi = async () => {
     if (this.props.history.location.state.id !== "") {
       await this.getCommunicationList();
@@ -1710,6 +1738,21 @@ class EditSalesLeads extends Component {
             value: managedBY.PersonID,
             label: managedBY.Name,
           };
+        }
+        debugger;
+        //jk
+        if (
+          result.data.data.CancelReason !== undefined &&
+          result.data.data.CancelReason !== null
+        ) {
+          var cancelReason = this.state.cancelationReasonList.find(
+            (x) => x.StringMapID === result.data.data.CancelReason
+          );
+          var sortedReason = {
+            value: cancelReason.Description,
+            label: cancelReason.StringMapID,
+          };
+          this.setState({ CancelationReason: sortedReason });
         }
         this.setState({
           newurl: result.data.data.newurl,
@@ -4144,6 +4187,14 @@ class EditSalesLeads extends Component {
         proposalstatusErr: true,
         proposalstatusHelperText: "Please Enter Proposal Status",
       });
+    } else if (
+      this.state.ProposalStatus === "Cancelled" &&
+      !this.state.CancelationReason
+    ) {
+      this.setState({
+        CancelationReasonErr: true,
+        CancelationReasonHelperText: "Please Enter Cancellation Reason",
+      });
     }
 
     if (
@@ -4674,6 +4725,9 @@ class EditSalesLeads extends Component {
             PackageList: PackageList,
             weightType: this.state.SelectedWeightType,
             NoteList: FinalNotes,
+            CancelationReason: this.state.CancelationReason.label
+              ? this.state.CancelationReason.label
+              : this.state.CancelationReason,
           };
           let packagetype;
           // for(var i = 0; i< PackageList.length;i++){
@@ -5210,6 +5264,7 @@ class EditSalesLeads extends Component {
   }
   render() {
     const {
+      CancelationReason,
       ReferredBy,
       WriteAccess,
       DeleteAccess,
@@ -5235,7 +5290,11 @@ class EditSalesLeads extends Component {
       CommuncationList,
       finalGetResults,
     } = this.state;
-
+    const cancelationReasonList = this.state.cancelationReasonList.map(
+      (type) => {
+        return { value: type.Description, label: type.StringMapID };
+      }
+    );
     const createProposal = this.state.CreateProposal;
 
     const correspondenceColumns = [
@@ -5866,6 +5925,13 @@ class EditSalesLeads extends Component {
               <h4 className="margin-right-auto text-color-black">
                 Sales Lead Information
               </h4>
+
+              {this.state.newurl !== "" ? (
+                <div className="lead-info-side">
+                  <label>Lead From:</label>
+                  <TextField disabled={true} value={this.state.newurl} />
+                </div>
+              ) : null}
             </CardHeader>
             <CardBody>
               <GridContainer justify="center">
@@ -5905,26 +5971,26 @@ class EditSalesLeads extends Component {
                   </div>
                 </GridItem>
                 <GridItem xs={12} sm={12} md={3}>
-                  <FormControl className={classes.formControl} fullWidth>
-                    <Autocomplete
-                      {...proposalstatus}
-                      id="Proposal Status"
-                      value={ProposalStatus}
-                      onChange={(event, value) =>
-                        this.requestChange(event, value, "proposalstatus")
-                      }
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          error={this.state.proposalstatusErr}
-                          helperText={this.state.proposalstatusHelperText}
-                          label="Proposal Status"
-                          fullWidth
-                        />
-                      )}
-                    />
-                  </FormControl>
+                  <div className="date-input">
+                    <InputLabel className={classes.label}>
+                      Tentative Date
+                    </InputLabel>
+                    <FormControl fullWidth>
+                      <Datetime
+                        //dateFormat={"DD/MM/YYYY"}
+                        inputProps={{ placeholder: "" }}
+                        calendarIcon="true"
+                        selected={moment(this.state.TentativeDate)}
+                        value={moment(this.state.TentativeDate)}
+                        timeFormat={false}
+                        onChange={(date) => this.handleTentativeDate(date)}
+                        closeOnSelect={true}
+                      />
+                      <Icon className="date-icon">date_range</Icon>
+                    </FormControl>
+                  </div>
                 </GridItem>
+
                 <GridItem xs={12} sm={12} md={3}>
                   <FormControl fullWidth>
                     <Autocomplete
@@ -6069,27 +6135,53 @@ class EditSalesLeads extends Component {
                 </GridItem>
 
                 <GridItem xs={12} sm={12} md={3}>
-                  <div className="date-input">
-                    <InputLabel className={classes.label}>
-                      Tentative Date
-                    </InputLabel>
-                    <FormControl fullWidth>
-                      <Datetime
-                        //dateFormat={"DD/MM/YYYY"}
-                        inputProps={{ placeholder: "" }}
-                        calendarIcon="true"
-                        selected={moment(this.state.TentativeDate)}
-                        value={moment(this.state.TentativeDate)}
-                        timeFormat={false}
-                        onChange={(date) => this.handleTentativeDate(date)}
-                        closeOnSelect={true}
-                      />
-                      <Icon className="date-icon">date_range</Icon>
-                    </FormControl>
-                  </div>
+                  <FormControl className={classes.formControl} fullWidth>
+                    <Autocomplete
+                      {...proposalstatus}
+                      id="Proposal Status"
+                      value={ProposalStatus}
+                      onChange={(event, value) =>
+                        this.requestChange(event, value, "proposalstatus")
+                      }
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          error={this.state.proposalstatusErr}
+                          helperText={this.state.proposalstatusHelperText}
+                          label="Proposal Status"
+                          fullWidth
+                        />
+                      )}
+                    />
+                  </FormControl>
                 </GridItem>
-
-                <GridItem xs={12} sm={12} md={3}>
+                {this.state.ProposalStatus === "Cancelled" ? (
+                  <GridItem xs={12} sm={12} md={3}>
+                    <FormControl className={classes.formControl} fullWidth>
+                      <Autocomplete
+                        options={cancelationReasonList}
+                        id="Cancelation Reason"
+                        value={CancelationReason}
+                        getOptionLabel={(option) => option.value}
+                        onChange={(event, value) =>
+                          this.requestChange(event, value, "CancelationReason")
+                        }
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            error={this.state.CancelationReasonErr}
+                            helperText={this.state.CancelationReasonHelperText}
+                            label="Cancellation Reason"
+                            fullWidth
+                          />
+                        )}
+                      />
+                    </FormControl>
+                  </GridItem>
+                ) : (
+                  <GridItem xs={12} sm={12} md={3}></GridItem>
+                )}
+                {/* <GridItem xs={12} sm={12} md={3}>
                   <FormControl fullWidth>
                     <CustomInput
                       labelText="Lead From"
@@ -6107,7 +6199,7 @@ class EditSalesLeads extends Component {
                       }}
                     />
                   </FormControl>
-                </GridItem>
+                </GridItem> */}
               </GridContainer>
             </CardBody>
           </Card>

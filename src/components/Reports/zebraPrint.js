@@ -29,6 +29,7 @@ class zebraPrint extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      CustomPageSize: "",
       Base: "",
       customerName: "",
       customerNameErr: "",
@@ -73,8 +74,8 @@ class zebraPrint extends Component {
   }
 
   componentDidMount() {
-    this.setState({ Base: CommonConfig.BaseUrl });
-    //this.setState({ Base: "http://localhost:3000/" });
+    //this.setState({ Base: CommonConfig.BaseUrl });
+    this.setState({ Base: "http://localhost:3000/" });
 
     document.getElementById("showTextBox").style.display = "none";
     document.getElementById("showAutocomplete").style.display = "block";
@@ -132,6 +133,12 @@ class zebraPrint extends Component {
           PageSize: value,
           PageSizeErr: false,
           PageSizeErrText: "",
+        });
+      }
+    } else if (type === "CustomPageSize") {
+      if (value != null) {
+        this.setState({
+          CustomPageSize: value,
         });
       }
     }
@@ -198,20 +205,13 @@ class zebraPrint extends Component {
     });
   };
   SequenceGenrate(type) {
-    if (type === "Text") {
-      window.open(
-        this.state.Base +
-          "auth/zebraPrintout/" +
-          // "http://localhost:3000/auth/zebraPrintout/" +
-          this.state.TextNumberPrints +
-          "/" +
-          this.state.TextcustomerName,
-        "_blank"
-      );
-    } else if (type === "Label") {
+    if (type === "Label") {
       if (this.validate("custom")) {
-        if (CommonConfig.isEmpty(this.state.PageSize)) {
-          localStorage.setItem("PageSize", this.state.PageSize.value);
+        if (!CommonConfig.isEmpty(this.state.CustomPageSize)) {
+          localStorage.setItem(
+            "CustomPageSize",
+            this.state.CustomPageSize.value
+          );
         }
         var text = this.state.SelectOne.value
           ? this.state.SelectOne.value
@@ -219,7 +219,6 @@ class zebraPrint extends Component {
         window.open(
           this.state.Base +
             "auth/zebraPrintout/" +
-            //  "http://localhost:3000/auth/zebraPrintout/" +
             this.state.NumberPrints +
             "/" +
             text,
@@ -290,6 +289,7 @@ class zebraPrint extends Component {
   };
   render() {
     const {
+      CustomPageSize,
       customerName,
       EndNumber,
       StartNumber,
@@ -559,7 +559,7 @@ class zebraPrint extends Component {
                             {/* </div> */}
                           </div>
                         </GridItem>
-                        <GridItem xs={12} sm={12} md={12}>
+                        <GridItem xs={12} sm={12} md={6}>
                           <div className="mt-15">
                             <FormControl fullWidth>
                               <TextField
@@ -574,7 +574,33 @@ class zebraPrint extends Component {
                             </FormControl>
                           </div>
                         </GridItem>
-
+                        <GridItem xs={12} sm={12} md={6}>
+                          <div>
+                            <FormControl fullWidth>
+                              <Autocomplete
+                                id="Page_Size"
+                                options={PageSizeList}
+                                value={CustomPageSize}
+                                getOptionLabel={(option) => option.label}
+                                onChange={(event, value) =>
+                                  this.selectChange(
+                                    event,
+                                    value,
+                                    "CustomPageSize"
+                                  )
+                                }
+                                renderInput={(params) => (
+                                  <TextField
+                                    {...params}
+                                    label="Page Size"
+                                    margin="normal"
+                                    fullWidth
+                                  />
+                                )}
+                              />
+                            </FormControl>
+                          </div>
+                        </GridItem>
                         <GridItem xs={12} sm={12} md={12}>
                           <div className="">
                             <FormControl fullWidth>
@@ -667,30 +693,6 @@ class zebraPrint extends Component {
                   </div>
                 </CardBody>
               </Card> */}
-
-            <Card className="z-index-9">
-              <CardHeader className="btn-right-outer" color="primary" icon>
-                <CardIcon color="primary">
-                  <AssignmentIcon />
-                </CardIcon>
-                <h4 className="margin-right-auto text-color-black">
-                  Sequence Printing Process
-                </h4>
-              </CardHeader>
-
-              <CardBody>
-                <p>1. Right Click on Screen you want to Print.</p>
-                <p>2. Click on 'Print Preview' on pop-up. </p>
-                <p>3. Click on Page Setup - 4th button on toolbar.</p>
-                <p>4. Change page size to 4.00" x 6.00".</p>
-                <p>5. Change to Landscape.</p>
-                <p>6. Hit OK and close Page setup pop-up window.</p>
-                <p>
-                  7. Click on Print Document button (1st button) on toolbar.
-                </p>
-                <p>8. Select "Zebra ZP 500(ZPL)" Printer and hit print.</p>
-              </CardBody>
-            </Card>
           </GridItem>
         </GridContainer>
       </div>
