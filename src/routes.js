@@ -67,6 +67,8 @@ import InvoiceUpload from "components/Reports/InvoiceUpload";
 import zebraPrint from "components/Reports/zebraPrint";
 import zebraPrintOutput from "./components/Reports/zebraPrintOutput";
 import zebraPrintOut from "./components/Reports/zebraPrintout";
+import DownloadForms from "./components/Reports/DownloadForms";
+import AddDownloadForms from "./components/Reports/AddDownloadForms";
 import AllSalesReports from "components/Reports/AllSalesReports";
 import ShipmentReport from "components/Reports/ShipmentReport";
 import PrintCommercialInvoice from "components/ShipmentDocumentation/PrintCommercialInvoice";
@@ -419,7 +421,22 @@ var dashRoutes = [
     layout: "/admin",
     invisible: true,
   },
-
+  {
+    path: "/DownloadForms",
+    name: "Download Forms",
+    icon: User,
+    component: DownloadForms,
+    layout: "/admin",
+    invisible: true,
+  },
+  {
+    path: "/AddDownloadForms",
+    name: "Add Download Forms",
+    icon: User,
+    component: AddDownloadForms,
+    layout: "/admin",
+    invisible: true,
+  },
   {
     path: "/LabelPrinting",
     name: "Label Printing",

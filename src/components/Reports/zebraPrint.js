@@ -74,8 +74,8 @@ class zebraPrint extends Component {
   }
 
   componentDidMount() {
-    //this.setState({ Base: CommonConfig.BaseUrl });
-    this.setState({ Base: "http://localhost:3000/" });
+    this.setState({ Base: CommonConfig.BaseUrl });
+    //this.setState({ Base: "http://localhost:3000/" });
 
     document.getElementById("showTextBox").style.display = "none";
     document.getElementById("showAutocomplete").style.display = "block";

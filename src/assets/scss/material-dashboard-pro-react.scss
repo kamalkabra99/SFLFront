@@ -6375,54 +6375,7 @@ a.edit-icon-wrp.refresh {
 
 .label-print-box {
   width: 100%;
-  // height: 400px;
-  height: 100%;
-  background: #fff;
-  border: 1px solid #000;
-  margin-bottom: 20px;
-  text-align: center;
-  padding: 50px 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-.label-print-box85-11 {
-  width: 100%;
-  // height: 970px;
-  height: 100%;
-  background: #fff;
-  border: 1px solid #000;
-  margin-bottom: 20px;
-  text-align: center;
-  padding: 50px 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  font-weight: 300;
-  font-size: 40px;
-  page-break-before: always;
-}
-.label-print-box4-675 {
-  width: 100%;
-  // height: 550px;
-  height: 100%;
-  background: #fff;
-  border: 1px solid #000;
-  margin-bottom: 20px;
-  text-align: center;
-  padding: 50px 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  font-weight: 300;
-  font-size: 40px;
-  page-break-before: always;
-}
-
-  .label-print-box4-6 {
-    width: 100%;
-    // height: 500px;
-     height: 100%;
+    height: 93vh;
     background: #fff;
     border: 1px solid #000;
     margin-bottom: 20px;
@@ -6431,33 +6384,28 @@ a.edit-icon-wrp.refresh {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    font-weight: 600;
     font-size: 40px;
-    text-decoration: underline;
     page-break-before: always;
+    margin-top: 20px;
 }
-
-.label-print-box4-8 {
+.label-print-box85-11 {
   width: 100%;
-  // height: 640px;
-  height: 100%;
-  background: #fff;
-  border: 1px solid #000;
-  margin-bottom: 20px;
-  text-align: center;
-  padding: 50px 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  font-weight: 600;
-  font-size: 60px;
-  text-decoration: underline;
-  page-break-before: always;
+    height: 93vh;
+    background: #fff;
+    border: 1px solid #000;
+    margin-bottom: 20px;
+    text-align: center;
+    padding: 50px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-size: 40px;
+    page-break-before: always;
+    margin-top: 20px;
 }
-.label-print-box4-9 {
+.label-print-box4-675 {
   width: 100%;
-  // height: 770px;
-  height: 100%;
+  height: 93vh;
   background: #fff;
   border: 1px solid #000;
   margin-bottom: 20px;
@@ -6467,9 +6415,55 @@ a.edit-icon-wrp.refresh {
   flex-direction: column;
   justify-content: center;
   font-size: 40px;
-  font-weight: 600;
-  text-decoration: underline;
   page-break-before: always;
+  margin-top: 20px;
+}
+
+  .label-print-box4-6 {
+    width: 100%;
+    height: 93vh;
+    background: #fff;
+    border: 1px solid #000;
+    margin-bottom: 20px;
+    text-align: center;
+    padding: 50px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-size: 40px;
+    page-break-before: always;
+    margin-top: 20px;
+}
+
+.label-print-box4-8 {
+  width: 100%;
+  height: 93vh;
+  background: #fff;
+  border: 1px solid #000;
+  margin-bottom: 20px;
+  text-align: center;
+  padding: 50px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-size: 40px;
+  page-break-before: always;
+  margin-top: 20px;
+}
+.label-print-box4-9 {
+  width: 100%;
+    height: 93vh;
+    background: #fff;
+    border: 1px solid #000;
+    margin-bottom: 20px;
+    text-align: center;
+    padding: 50px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-size: 40px;
+    page-break-before: always;
+    margin-top: 20px;
 }
 .label-print-box p {
   font-size: 40px;
@@ -6523,4 +6517,8 @@ a.edit-icon-wrp.refresh {
   margin-right: 10px;
 }
 
-.lead-info-side input.MuiInputBase-input {font-size: 16px;color: #222;}
+.lead-info-side input.MuiInputBase-input {
+  font-size: 14px!important;
+  color: #222;
+  font-family: "Open Sans", sans-serif;
+}

@@ -55,7 +55,7 @@ class zebraPrintOut extends Component {
     return this.state.list.map((item, idx) => {
       return (
         <div className={this.state.classDiv}>
-          <p>{item.name}</p>
+          <h3>{item.name}</h3>
           {/* <h3>{item.id}</h3> */}
         </div>
       );

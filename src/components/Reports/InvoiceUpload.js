@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import * as XLSX from "xlsx";
 import GridItem from "components/Grid/GridItem.js";
-import CustomInput from "components/CustomInput/CustomInput.js";
 import GridContainer from "components/Grid/GridContainer.js";
 import CardBody from "components/Card/CardBody.js";
 import Card from "components/Card/Card.js";
