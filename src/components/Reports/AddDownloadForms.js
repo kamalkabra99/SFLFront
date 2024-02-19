@@ -243,8 +243,8 @@ class AddDownloadForms extends Component {
     console.log("FilesSizes = ", file.length);
     let arrobj = [];
     let flag = 0;
-    if (file.length > 1) {
-      cogoToast.error("only allowed 1 files to upload.");
+    if (file.length > 5) {
+      cogoToast.error("only allowed 5 files to upload.");
     } else {
       for (let i = 0; i < file.length; i++) {
         console.log("FilesSizes = ", file[i].size);
