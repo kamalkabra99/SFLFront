@@ -14,7 +14,7 @@ class zebraPrintOut extends Component {
       list: [],
       Startnumber: "",
       Endnumber: "",
-      classDiv: "label-print-box",
+      classDiv: "label-Customprint-box",
     };
   }
 
@@ -37,7 +37,7 @@ class zebraPrintOut extends Component {
     } else if (PageSize == "4 X 9") {
       this.setState({ classDiv: "label-print-box4-9" });
     } else {
-      this.setState({ classDiv: "label-print-box" });
+      this.setState({ classDiv: "label-Customprint-box" });
     }
 
     var arr = [];
