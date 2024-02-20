@@ -920,9 +920,18 @@ var dashRoutes = [
     layout: "/auth",
     invisible: false,
   },
+  // {
+  //   path: "/HBL/:id",
+  //   name: "HBL_client",
+  //   component: HBL_client,
+  //   layout: "/auth",
+  //   invisible: false,
+  // },
+
   {
-    path: "/HBL/:id",
+    path: "/HBL/:shipId/:contId",
     name: "HBL_client",
+    icon: ScheduleShipmentIcon,
     component: HBL_client,
     layout: "/auth",
     invisible: false,

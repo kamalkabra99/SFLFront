@@ -54,6 +54,8 @@ class editContainer extends Component {
 
       ContainerSize: "",
       ContainerSizeList: [],
+      SetShiprecordHBL: false,
+      ShipmentListHBL: [],
       containersizeErr: false,
       containersizeHelperText: "",
 
@@ -74,6 +76,9 @@ class editContainer extends Component {
       TotalPackagesCount: 0,
       TotalCFTCount: 0,
       TotalTVCount: 0,
+      TotalPackagesCountHBL: 0,
+      TotalCFTCountHBL: 0,
+      TotalTVCountHBL: 0,
       sealnumberErr: false,
       sealnumberHelperText: "",
 
@@ -84,6 +89,8 @@ class editContainer extends Component {
       BOLNumber: "",
       BOLnumberErr: false,
       BOLnumberHelperText: "",
+      ShippingIDDel:"",
+      DeleteRequest:false,
 
       PointOfOrigin: "",
       pointoforiginErr: false,
@@ -130,6 +137,11 @@ class editContainer extends Component {
       CarrierList: [],
       carrierErr: false,
       carrierHelperText: "",
+      RemoveShipID: "",
+      HBLYesNOREC:[],
+      UpdateShipID:"",
+      UpdateShipIDHBLSET:"",
+      SetShiprecord:false,
 
       NotifyParty: "",
       NotifyPartyList: [],
@@ -171,6 +183,11 @@ class editContainer extends Component {
           classname: "inactive",
         },
         {
+          stepName: "HBL",
+          stepId: "hblShipping",
+          classname: "inactive",
+        },
+        {
           stepName: "Documentation",
           stepId: "documentations",
           classname: "inactive",
@@ -183,6 +200,8 @@ class editContainer extends Component {
       ],
       trackingManualList: [],
       ShipmentList: [],
+      HBLShipmentList: [],
+      serviceNameData:[],
       Sequence: [],
       filterProps: [],
       sortProps: [],
@@ -262,6 +281,7 @@ class editContainer extends Component {
   showHide() {
     document.getElementById("containerdetails").style.display = "block";
     document.getElementById("shipments").style.display = "none";
+    document.getElementById("hblShipping").style.display = "none";
     document.getElementById("sequencenumber").style.display = "none";
     document.getElementById("documentations").style.display = "none";
     document.getElementById("tracking").style.display = "none";
@@ -272,6 +292,17 @@ class editContainer extends Component {
       let data = {
         ContainerID: this.props.history.location.state.containerId,
       };
+      var dataMer = []
+      api.get("container/getMergedShipments")
+            .then((resultHBL) => {
+              console.log("Result = ",resultHBL)
+              // this.setState({ managedByList: result.data });
+              dataMer = resultHBL.data 
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+
       api
         .post("container/getShipmentsByContainer", data)
         .then((res) => {
@@ -287,10 +318,53 @@ class editContainer extends Component {
               });
               return OBJ;
             });
+           
+            
+            var setHblShipment = []
+            // var YesNO=[]
+
+            var setCountShip = []
+
+            for (let hblindex = 0; hblindex < res.data.Shipments.length; hblindex++) {
+              // const element = array[hblindex];
+              if(res.data.Shipments[hblindex].hblshipment == 0){
+                res.data.Shipments[hblindex].setsc = 1
+                res.data.Shipments[hblindex].setPack = res.data.Shipments[hblindex].TotalPackages
+                setHblShipment.push(res.data.Shipments[hblindex])
+              }else{
+                setCountShip.push(res.data.Shipments[hblindex])
+              }
+              
+            }
+
+            console.log("setCountShip = ",setCountShip)
+
+            for (let setind = 0; setind < setHblShipment.length; setind++) {
+              for (let HBLSETING = 0; HBLSETING < dataMer.length; HBLSETING++) {
+                
+                  if(dataMer[HBLSETING].hblshipment == setHblShipment[setind].ShippingID){
+                    setHblShipment[setind].setsc = setHblShipment[setind].setsc + dataMer[HBLSETING].totalShipment
+                    setHblShipment[setind].setPack = setHblShipment[setind].setPack+  dataMer[HBLSETING].totalPack
+                  }
+                
+              }
+              
+            }
+
+
+            console.log("yesno = ",setHblShipment )
+            
+
+            
+
+
 
             this.setState({
               ShipmentList: res.data.Shipments,
+              HBLShipmentList: setHblShipment,
               Sequence: res.data.Packages,
+
+              // serviceNameData:YesNO,
             });
 
             var counts = 0
@@ -455,6 +529,8 @@ class editContainer extends Component {
       cogoToast.error("Something Went Wrong");
     }
   };
+
+ 
 
   vendorList = () => {
     try {
@@ -1084,10 +1160,10 @@ class editContainer extends Component {
 
   fileUpload = (event, record) => {
     const files = event.target.files[0];
-    var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.pdf)$/i;
+    var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.pdf|\.xlsx)$/i;
     if (!allowedExtensions.exec(files.name)) {
       cogoToast.error(
-        "Please upload file having extensions .jpeg/.jpg/.png/.pdf only."
+        "Please upload file having extensions .jpeg/.jpg/.png/.pdf/.xlsx only."
       );
     } else {
       if (files.size > 5000000) {
@@ -1489,6 +1565,347 @@ class editContainer extends Component {
     });
   };
 
+  closeDiv = () =>{
+    this.setState({
+      SetShiprecord: false,
+      RemoveShipID: "",
+    })
+  }
+
+   closeDivHBL = () =>{
+    this.setState({
+      SetShiprecordHBL: false,
+      // RemoveShipID: "",
+    })
+  }
+
+  UpdateHBLShipID = (record) =>{
+
+    // if(this.state.UpdateShipID == ""){
+    //   cogoToast.error("Please select Tracking Number");
+    // }else{
+      var datatosend = {
+        shippingID : this.state.RemoveShipID,
+        UpdateShipping: record.original.ShippingID,
+      }
+
+      api.post("contactus/UpdateHBL", datatosend).then((res) => {
+        this.hideLoader();
+        if (res.success) {
+          this.setState({
+            SetShiprecord: false,
+            RemoveShipID: "",
+          })
+          cogoToast.success("Shipment merged for HBL");
+          this.reCallApi();
+        } else {
+          cogoToast.error("Something went wrong");
+        }
+      });
+    // }
+
+  }
+
+
+  handleSelectChange = (datasets) =>{
+    console.log(datasets)
+    var shipID = datasets.value;
+    this.state.UpdateShipIDHBLSET = datasets
+
+    // this.setState({
+    //   // SetShiprecord: true,
+    //   UpdateShipID: shipID,
+    // });
+
+    this.state.UpdateShipID = shipID
+    console.log(this.state.UpdateShipID)
+
+
+  }
+
+  generateHBL = (record) => {
+    console.log("Records = ",record);
+
+    localStorage.setItem("ContainerNumber",this.state.ContainerNumber)
+    localStorage.setItem("BookingNumber",this.state.BookingNumber)
+    localStorage.setItem("BOLNumber",this.state.BOLNumber)
+    localStorage.setItem("PointOfOrigin",this.state.PointOfOrigin)
+    localStorage.setItem("PortOfLoading",this.state.PortOfLoading)
+    localStorage.setItem("PortOfUnloading",this.state.PortOfUnloading)
+    localStorage.setItem("PlaceOfDeliveryByOnCarrier",this.state.PlaceOfDeliveryByOnCarrier)
+    localStorage.setItem("VesselNumber",this.state.VesselNumber)
+    localStorage.setItem("NotifyParty",this.state.NotifyParty)
+    localStorage.setItem("TrackNO", record.original.TrackingNumber)
+
+    var fromadd1 =  record.original.FromAdd1
+    var fromadd2 = record.original.FromAdd2
+    var fromadd3 = record.original.FromAdd3
+
+    var FromAddress = ""
+    if(fromadd1 != ""){
+      FromAddress = FromAddress + fromadd1
+    }
+    if(fromadd2 != ""){
+      FromAddress = FromAddress + ", " + fromadd2
+    }
+    if(fromadd3 != ""){
+      FromAddress = FromAddress + ", " + fromadd3
+    }
+
+    var fromCity = record.original.FromCity
+    var fromState = record.original.FromState
+    var fromZipCo = record.original.fromZip
+
+    var fromCitys = fromCity + ", " + fromState + " - " + fromZipCo
+
+    localStorage.setItem("FromAddress", FromAddress)
+    localStorage.setItem("fromCitys", fromCitys)
+    localStorage.setItem("fromContact", record.original.ContactName)
+
+    //   To Contact Name
+
+
+    var TOadd1 =  record.original.ToAdd1
+    var TOadd2 = record.original.ToAdd2
+    var TOadd3 = record.original.ToAdd3
+
+    var TOAddress = ""
+    if(TOadd1 != ""){
+      TOAddress = TOAddress + TOadd1
+    }
+    if(TOadd2 != ""){
+      TOAddress = TOAddress + ", " + TOadd2
+    }
+    if(TOadd3 != ""){
+      TOAddress = TOAddress + ", " + TOadd3
+    }
+
+    var TOCity = record.original.ToCity
+    var TOState = record.original.ToState
+    var TOZipCo = record.original.toZip
+
+    var TOCitys = TOCity + ", " + TOState + " - " + TOZipCo
+
+    localStorage.setItem("TOAddress", TOAddress)
+    localStorage.setItem("TOCitys", TOCitys)
+    localStorage.setItem("TOContact", record.original.ToContactName)
+    let data = {
+      ContainerID: this.props.history.location.state.containerId,
+      shipmentID: record.original.ShippingID,
+    };
+
+    var TotalcftH = 0
+    var totalPackH = 0
+    var TotalChargableWeightHBL = 0
+    api
+      .post("container/getShipmentsByContainerForHBL", data)
+      .then((res) => {
+        if (res.success) {
+
+          console.log("Res = ",res);
+
+          var packdata = res.data.Packages
+          var packset = []
+
+          for (let index = 0; index < packdata.length; index++) {
+            // const element = array[index];
+            if(packdata[index].length > 1){
+              console.log("packdata[index] = ",packdata[index][0]["Sequence"]);
+              console.log("packdata[index] = " ,packdata[index][0]["Sequence"] + " - " + packdata[index][packdata[index].length -1]["Sequence"]  )
+              
+              var packseq = packdata[index][0]["Sequence"] + " - " + packdata[index][packdata[index].length -1]["Sequence"]
+              var packLen = packdata[index].length
+              var Shippingid = packdata[index][0]["ShippingID"]
+              var pushdata = {
+                packseq:packseq,
+                packLen:packLen,
+                Shippingid:Shippingid
+              }
+
+              packset.push(pushdata)
+
+
+            }else{
+
+              var packseq = packdata[index][0]["Sequence"]
+              var packLen = packdata[index].length
+              var Shippingid = packdata[index][0]["ShippingID"]
+              var pushdata = {
+                packseq:packseq,
+                packLen:packLen,
+                Shippingid:Shippingid
+              }
+
+              packset.push(pushdata)
+
+
+
+            }
+          }
+
+          for (let indexship = 0; indexship < res.data.Shipments.length; indexship++) {
+            // const element = array[indexship];
+              totalPackH = totalPackH + res.data.Shipments[indexship].TotalPackages
+              // tvcount = tvcount + res.data.Shipments[indexship].TV
+              TotalChargableWeightHBL = TotalChargableWeightHBL + res.data.Shipments[indexship].TotalChargableWeight
+              TotalcftH = TotalcftH + res.data.Shipments[indexship].CFT
+
+              for (let indexset = 0; indexset < packset.length; indexset++) {
+                  if(packset[indexset].Shippingid == res.data.Shipments[indexship].ShippingID){
+                    packset[indexset].cft = res.data.Shipments[indexship].CFT
+                    packset[indexset].TotalPackages = res.data.Shipments[indexship].TotalPackages
+                    packset[indexset].TotalChargableWeight = res.data.Shipments[indexship].TotalChargableWeight
+                  }
+                
+              }
+            
+          }
+          var dataHtml = ""
+          for (let indexpack = 0; indexpack < packset.length; indexpack++) {
+            // const element = array[indexpack];
+
+            dataHtml = dataHtml +  "<tr><td><label>"+ packset[indexpack].packseq +"</label></td> <td><label>"+ packset[indexpack].packLen +"</label></td><td><label>*USED HOUSE HOLD GOODS AND PERSONAL EFFECTS*</label></td><td><label>"+packset[indexpack].TotalChargableWeight+"</label></td><td><label>"+ packset[indexpack].cft +"</label></td></tr>"
+
+          }
+
+          var TotalCBM = (TotalcftH/35.315).toFixed(4);
+        
+          dataHtml = dataHtml + " <tr><td></td><td>"+totalPackH+"</td><td></td><td>"+TotalChargableWeightHBL+" Lbs.</td><td>"+TotalcftH+" CFT</td></tr>  <tr><td></td><td></td><td></td><td></td><td>"+TotalCBM+" CBM</td></tr>"
+          
+
+
+          console.log("packset = ",packset)
+
+
+          localStorage.setItem("dataHtml", dataHtml)
+
+          window.open(
+            // this.state.Base +
+            "http://localhost:3000/auth/HBL/" + record.original.ShippingID + "/"+this.props.history.location.state.containerId,
+              // "auth/HBL/",
+            "_blank"
+          );
+
+          
+         
+        } else {
+          cogoToast.error("Something went wrong");
+        }
+      })
+      .catch((err) => {
+        console.log("error.....", err);
+      });
+
+  }
+  
+
+  getShipmentByContainerMergeHBL = (record) => {
+    try {
+      let data = {
+        ContainerID: this.props.history.location.state.containerId,
+        shipmentID: record.original.ShippingID,
+      };
+      api
+        .post("container/getShipmentsByContainerForHBL", data)
+        .then((res) => {
+          if (res.success) {
+
+            var counts = 0
+            var tvcount = 0
+            var cftCount = 0
+
+            for (let index = 0; index < res.data.Shipments.length; index++) {
+
+              counts = counts + res.data.Shipments[index].TotalPackages
+              tvcount = tvcount + res.data.Shipments[index].TV
+              cftCount = cftCount + res.data.Shipments[index].CFT
+              //const element = array[index];
+              
+            }
+            this.state.TotalTVCountHBL = tvcount
+            this.state.TotalCFTCountHBL = cftCount
+
+            this.state.TotalPackagesCountHBL = counts
+            console.log("counts = ", counts)
+
+            
+            this.setState({
+              ShipmentListHBL: res.data.Shipments,
+              SetShiprecordHBL: true,
+              // Sequence: res.data.Packages,
+            });
+
+           
+          } else {
+            cogoToast.error("Something went wrong");
+          }
+        })
+        .catch((err) => {
+          console.log("error.....", err);
+        });
+    } catch (err) {}
+  };
+
+  openDeleteRequestModal(record) {
+    console.log(record);
+    this.setState({ DeleteRequest: true, ShippingIDDel: record.original.ShippingID });
+  }
+
+  confirmShipStatusHBLData = () =>{
+
+    var datatosend = {
+      shippingID : 0,
+      UpdateShipping: this.state.ShippingIDDel,
+    }
+
+    api.post("contactus/UpdateHBL", datatosend).then((res) => {
+      this.hideLoader();
+      if (res.success) {
+        this.setState({
+          DeleteRequest: false,
+          ShippingIDDel: "",
+          SetShiprecordHBL:false
+        })
+        cogoToast.success("Shipment removed");
+        this.reCallApi();
+      } else {
+        cogoToast.error("Something went wrong");
+      }
+    });
+
+  }
+
+
+  handleEditHBL(record) {
+    console.log(record);
+    var shipID = record.original.ShippingID
+    var YesNO = [];
+    
+    for (let hblindexauto = 0; hblindexauto < this.state.HBLShipmentList.length; hblindexauto++) {
+      // const element = array[hblindexauto];
+      // var dataSets = []
+        if(this.state.HBLShipmentList[hblindexauto].ShippingID != shipID){
+          
+          YesNO.push(this.state.HBLShipmentList[hblindexauto])
+        }
+        
+      
+      
+    }
+
+    // console.log("yesno = ",YesNO )
+    // this.setState({
+    //   serviceNameData:YesNO,
+    // });
+
+    this.setState({
+      SetShiprecord: true,
+      RemoveShipID: shipID,
+      HBLYesNOREC: YesNO
+    });
+
+  }
+
   editShipment = (record) => {
     const { history } = this.props;
     history.push({
@@ -1502,6 +1919,9 @@ class editContainer extends Component {
   };
 
   render() {
+    // const serviceNameDataHBL = this.state.HBLShipmentList.map((type) => {
+    //   return { value: type.ShippingID, label: type.TrackingNumber };
+    // });
     const columns = [
       {
         Header: "Document Name",
@@ -1621,6 +2041,189 @@ class editContainer extends Component {
         },
       },
     ];
+
+    const HBLColums = [
+      {
+        Header: "Tracking",
+        accessor: "TrackingNumber",
+        width: 85,
+        style: {
+          cursor: "pointer",
+          textDecorationLine: "underline",
+          fontWeight: "bold",
+        },
+        Cell: (record) => {
+          return (
+            <href onClick={() => this.editShipment(record)}>
+              {record.original.TrackingNumber}
+            </href>
+          );
+        },
+      },
+      {
+        Header: "Sender",
+        accessor: "ContactName",
+        width: 85,
+      },
+     
+      {
+        Header: "From State",
+        accessor: "FromState",
+        width: 70,
+      },
+      
+      {
+        Header: "To State",
+        accessor: "ToState",
+        width: 75,
+      },
+      {
+        Header: "SC",
+        accessor: "setsc",
+        width: 70,
+      },
+      {
+        Header: "PC",
+        // Footer: (
+        //   <span>
+        //     {CommonConfig.isEmpty(this.state.TotalPackagesCount)
+        //       ? ""
+        //       : 
+        //         parseFloat(this.state.TotalPackagesCount)
+        //          }
+        //   </span>
+        // ),
+        accessor: "setPack",
+        width: 35,
+      },
+     
+      {
+        Header: "CFT",
+        accessor: "CFT",
+        Footer: (
+          <span>
+            {CommonConfig.isEmpty(this.state.TotalCFTCount)
+              ? ""
+              : 
+                parseFloat(this.state.TotalCFTCount).toFixed(2)
+                .toString()
+                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                 }
+          </span>
+        ),
+        width: 75,
+      },
+      {
+        Header: "Status",
+        accessor: "ShipmentStatus",
+        width: 65,
+      },
+      {
+        Header: "Managed By",
+        accessor: "ManagedBy",
+        width: 61,
+      },
+      {
+        Header: "Actions",
+        accessor: "Actions",
+        width: 40,
+        maxWidth: 50,
+        filterable: false,
+        Cell: (record) => {
+          return (
+            <div className="table-common-btn">
+              <Button
+                justIcon
+                color="facebook"
+                onClick={() => this.handleEditHBL(record)}
+                className="Plus-btn "
+              >
+                <i className="fas fa-plus"></i>
+              </Button>
+
+             
+            </div>
+
+          );
+            
+          
+        },
+        sortable: false,
+      },
+
+
+      {
+        Header: "View",
+        accessor: "View",
+        width: 40,
+        maxWidth: 50,
+        filterable: false,
+        Cell: (record) => {
+          return (
+            <div className="table-common-btn">
+              {/* <Button
+                justIcon
+                color="info"
+                onClick={() => this.getShipmentByContainerMergeHBL(record)}
+              >
+                <i className="fas fa-plus"></i>
+              </Button> */}
+
+              <Button
+                  justIcon
+                  color="info"
+                  onClick={() => this.getShipmentByContainerMergeHBL(record)}
+                  className="Plus-btn "
+                >
+                  <i className={"fas fa-eye"} />
+                </Button>
+            </div>
+
+          );
+            
+          
+        },
+        sortable: false,
+      },
+
+      {
+        Header: "Generate",
+        accessor: "Generate",
+        width: 40,
+        maxWidth: 50,
+        filterable: false,
+        Cell: (record) => {
+          return (
+            <div className="table-common-btn">
+              {/* <Button
+                justIcon
+                color="info"
+                onClick={() => this.getShipmentByContainerMergeHBL(record)}
+              >
+                <i className="fas fa-plus"></i>
+              </Button> */}
+
+                  <Button
+                    justIcon
+                    color="success"
+                    className="Plus-btn"
+                    onClick={() =>
+                      this.generateHBL(record)
+                    }
+                  >
+                    <i className={"fas fa-check"} />
+                  </Button>
+            </div>
+
+          );
+            
+          
+        },
+        sortable: false,
+      },
+      
+    ];
+
 
     const shipColums = [
       {
@@ -1750,6 +2353,241 @@ class editContainer extends Component {
       },
     ];
 
+    const shipColumsHBL = [
+      {
+        Header: "Tracking",
+        accessor: "TrackingNumber",
+        width: 85,
+        style: {
+          cursor: "pointer",
+          textDecorationLine: "underline",
+          fontWeight: "bold",
+        },
+        Cell: (record) => {
+          return (
+            <href onClick={() => this.editShipment(record)}>
+              {record.original.TrackingNumber}
+            </href>
+          );
+        },
+      },
+      {
+        Header: "Sender",
+        accessor: "ContactName",
+        width: 85,
+      },
+      {
+        Header: "From City",
+        accessor: "FromCity",
+        width: 60,
+      },
+      {
+        Header: "From State",
+        accessor: "FromState",
+        width: 70,
+      },
+      {
+        Header: "To City",
+        accessor: "ToCity",
+        width: 70,
+      },
+      {
+        Header: "To State",
+        accessor: "ToState",
+        width: 75,
+      },
+      {
+        Header: "PC",
+        Footer: (
+          <span>
+            {CommonConfig.isEmpty(this.state.TotalPackagesCountHBL)
+              ? ""
+              : 
+                parseFloat(this.state.TotalPackagesCountHBL)
+                 }
+          </span>
+        ),
+        accessor: "TotalPackages",
+        width: 35,
+      },
+      {
+        Header: "MovingBackToIndia",
+        id: "TR",
+        accessor: (data) => {
+          return !CommonConfig.isEmpty(data.MovingBackToIndia)
+            ? data.MovingBackToIndia.data[0] === 0
+              ? "No"
+              : "Yes"
+            : "";
+        },
+        width: 38,
+      },
+      {
+        Header: "Passport?",
+        id: "passport",
+        accessor: (data) => {
+          return !CommonConfig.isEmpty(data.AbleToProvidePassport)
+            ? data.AbleToProvidePassport.data[0] === 0
+              ? "No"
+              : "Yes"
+            : "";
+        },
+        width: 42,
+      },
+      {
+        Header: "TV",
+        accessor: "TV",
+        Footer: (
+          <span>
+            {CommonConfig.isEmpty(this.state.TotalTVCountHBL)
+              ? ""
+              : 
+                parseFloat(this.state.TotalTVCountHBL)
+                 }
+          </span>
+        ),
+        width: 30,
+      },
+      {
+        Header: "CFT",
+        accessor: "CFT",
+        Footer: (
+          <span>
+            {CommonConfig.isEmpty(this.state.TotalCFTCountHBL)
+              ? ""
+              : 
+                parseFloat(this.state.TotalCFTCountHBL).toFixed(2)
+                .toString()
+                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                 }
+          </span>
+        ),
+        width: 75,
+      },
+      {
+        Header: "Status",
+        accessor: "ShipmentStatus",
+        width: 65,
+      },
+      {
+        Header: "Managed By",
+        accessor: "ManagedBy",
+        width: 61,
+      },
+      {
+        Header: "Is Clear",
+        accessor: "AllClear",
+        width: 70,
+      },
+      {
+        Header: "Delete",
+        accessor: "delete",
+        sortable: false,
+        width: 50,
+        maxWidth: 80,
+        Cell: (record) => {
+          return (
+            <div className="table-common-btn">
+              <Button
+                justIcon
+                onClick={() => this.openDeleteRequestModal(record)}
+                color="danger"
+              >
+                <i class="fas fa-trash"></i>
+              </Button>
+            </div>
+          );
+        },
+        filterable: false,
+      },
+    ];
+    
+    const shipColumsDataHBL = [
+      {
+        Header: "Tracking",
+        accessor: "TrackingNumber",
+        width: 85,
+        style: {
+          cursor: "pointer",
+          textDecorationLine: "underline",
+          fontWeight: "bold",
+        },
+        Cell: (record) => {
+          return (
+            <href onClick={() => this.editShipment(record)}>
+              {record.original.TrackingNumber}
+            </href>
+          );
+        },
+      },
+      {
+        Header: "Sender",
+        accessor: "ContactName",
+        width: 85,
+      },
+      
+      {
+        Header: "From State",
+        accessor: "FromState",
+        width: 70,
+      },
+      
+      {
+        Header: "To State",
+        accessor: "ToState",
+        width: 75,
+      },
+      {
+        Header: "PC",
+        accessor: "TotalPackages",
+        width: 35,
+      },
+      
+      
+     
+      {
+        Header: "CFT",
+        accessor: "CFT",
+      
+        width: 75,
+      },
+      {
+        Header: "ADD",
+        accessor: "ADD",
+        width: 40,
+        maxWidth: 50,
+        filterable: false,
+        Cell: (record) => {
+          return (
+            <div className="table-common-btn">
+              {/* <Button
+                justIcon
+                color="info"
+                onClick={() => this.getShipmentByContainerMergeHBL(record)}
+              >
+                <i className="fas fa-plus"></i>
+              </Button> */}
+
+              <Button
+                  justIcon
+                  color="facebook"
+                  onClick={() => this.UpdateHBLShipID(record)}
+                  className="Plus-btn "
+                >
+                  <i className={"fas fa-plus"} />
+                </Button>
+            </div>
+
+          );
+            
+          
+        },
+        sortable: false,
+      },
+      
+      
+    ];
+
     const {
       ShipmentStatus,
       ContainerName,
@@ -1780,6 +2618,7 @@ class editContainer extends Component {
       pointoforiginErr,
       pointoforiginHelperText,
       PortOfLoading,
+      UpdateShipIDHBLSET,
       portofloadingErr,
       portofloadingHelperText,
       PortOfUnloading,
@@ -1818,7 +2657,11 @@ class editContainer extends Component {
       customsbrokerErr,
       customsbrokerHelperText,
       Access,
+      serviceNameData,
     } = this.state;
+    
+
+   
 
     return (
       <GridContainer className="UserList-outer">
@@ -2558,6 +3401,30 @@ class editContainer extends Component {
               </CardBody>
             </Card>
           </div>
+          <div className="shipment-pane" id="hblShipping">
+            <Card>
+              <CardBody>
+                <GridContainer justify="center">
+                  <GridItem xs={12} sm={12} md={12}>
+                  <div className="select-reacttable">
+                      <ReactTable
+                        data={this.state.HBLShipmentList}
+                        defaultFilterMethod={CommonConfig.filterCaseInsensitive}
+                        sortable={true}
+                        filterable={true}
+                        resizable={false}
+                        minRows={2}
+                        columns={HBLColums}
+                        defaultPageSize={10}
+                        align="center"
+                        className="-striped -highlight"
+                      />
+                    </div>
+                  </GridItem>
+                </GridContainer>
+              </CardBody>
+            </Card>
+          </div>
           <div className="shipment-pane" id="documentations">
             <Card>
               <CardBody>
@@ -2644,6 +3511,135 @@ class editContainer extends Component {
               </Button>
             </DialogActions>
           </Dialog>
+
+          <Dialog
+            open={this.state.SetShiprecord}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+            // width="lg"
+            className="large-Modal"
+          >
+            <DialogTitle id="alert-dialog-titleHBL">Shipment Move to HBL</DialogTitle>
+            <DialogContent>
+              <DialogContentText id="alert-dialog-descriptionHBL">
+              <div className="package-select">
+                
+              <GridItem xs={12} sm={12} md={12}>
+                    <div className="select-reacttable">
+                      <ReactTable
+                        data={this.state.HBLYesNOREC}
+                        defaultFilterMethod={CommonConfig.filterCaseInsensitive}
+                        sortable={true}
+                        filterable={true}
+                        resizable={false}
+                        minRows={2}
+                        columns={shipColumsDataHBL}
+                        defaultPageSize={10}
+                        align="center"
+                        className="-striped -highlight"
+                      />
+                    </div>
+                  </GridItem>
+              </div>
+                
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button
+                onClick={() => this.closeDiv()}
+                color="secondary"
+              >
+                Cancel
+              </Button>
+              {/* <Button
+                onClick={() => this.UpdateHBLShipID()}
+                color="primary"
+                autoFocus
+              >
+                Confirm
+              </Button> */}
+            </DialogActions>
+          </Dialog>
+
+          <Dialog
+            open={this.state.SetShiprecordHBL}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+            className="large-Modal"
+          >
+            <DialogTitle id="alert-dialog-titleHBL">Shipment for HBL</DialogTitle>
+            <DialogContent>
+              <DialogContentText id="alert-dialog-descriptionHBL">
+
+              <GridItem xs={12} sm={12} md={12}>
+                    <div className="select-reacttable">
+                      <ReactTable
+                        data={this.state.ShipmentListHBL}
+                        defaultFilterMethod={CommonConfig.filterCaseInsensitive}
+                        sortable={true}
+                        filterable={true}
+                        resizable={false}
+                        minRows={2}
+                        columns={shipColumsHBL}
+                        defaultPageSize={10}
+                        align="center"
+                        className="-striped -highlight"
+                      />
+                    </div>
+                  </GridItem>
+              
+                
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button
+                onClick={() => this.closeDivHBL()}
+                color="secondary"
+              >
+                Cancel
+              </Button>
+              
+            </DialogActions>
+          </Dialog>
+
+
+          <Dialog
+            open={this.state.DeleteRequest}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <DialogTitle id="alert-dialog-title">Remove Shipment</DialogTitle>
+            <DialogContent>
+              <DialogContentText id="alert-dialog-description">
+                Are you sure want to remove the shipment?
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button
+                onClick={() =>
+                  this.setState({
+                    DeleteRequest: false,
+                    // confirmStatus: false,
+                    ShippingIDDel: "",
+                  })
+                }
+                color="secondary"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={() => {
+                  this.state.confirmStatus = true;
+                  this.confirmShipStatusHBLData();
+                }}
+                color="primary"
+                autoFocus
+              >
+                Confirm
+              </Button>
+            </DialogActions>
+          </Dialog>
+
         </div>
 
         <Card>
