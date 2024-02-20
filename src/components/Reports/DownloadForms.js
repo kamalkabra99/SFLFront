@@ -60,8 +60,11 @@ class DownloadForms extends Component {
         .post("reports/getDownloadFormList", data)
         .then((result) => {
           debugger;
-          if (result.data[0][0].AttachmentName !== null) {
+          //   result.data[0][0].AttachmentName !== null ||
+          if (result.data[0].length > 0) {
             this.setState({ FormList: result.data[0] });
+          } else {
+            this.setState({ FormList: [] });
           }
         })
         .catch((err) => {
@@ -89,7 +92,6 @@ class DownloadForms extends Component {
   hideLoader() {
     this.setState({ Loading: false });
   }
-
   canceldelete = () => {
     this.setState({
       deletePopUp: false,
@@ -321,22 +323,22 @@ class DownloadForms extends Component {
                 </div>
               </CardHeader>
               <CardBody>
-                {FormList.length > 0 ? (
-                  <div className="shipment-content">
-                    <GridContainer justify="center">
-                      <ReactTable
-                        data={FormList}
-                        minRows={2}
-                        filterable
-                        resizable={false}
-                        columns={column}
-                        defaultPageSize={10}
-                        showPaginationBottom={true}
-                        className=" -striped -highlight"
-                      />
-                    </GridContainer>
-                  </div>
-                ) : null}
+                {/* {FormList.length > 0 ? ( */}
+                <div className="shipment-content">
+                  <GridContainer justify="center">
+                    <ReactTable
+                      data={FormList}
+                      minRows={2}
+                      filterable
+                      resizable={false}
+                      columns={column}
+                      defaultPageSize={10}
+                      showPaginationBottom={true}
+                      className=" -striped -highlight"
+                    />
+                  </GridContainer>
+                </div>
+                {/* ) : null} */}
               </CardBody>
             </Card>
           </GridItem>

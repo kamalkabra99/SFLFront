@@ -30,6 +30,7 @@ import api from "../../utils/apiClient";
 import cogoToast from "cogo-toast";
 import SimpleBackdrop from "../../utils/general";
 import { cardTitle } from "assets/jss/material-dashboard-pro-react.js";
+import FindInPageIcon from "@material-ui/icons/FindInPage";
 
 const styles = {
   cardIconTitle: {
@@ -210,14 +211,24 @@ class AddDownloadForms extends Component {
     console.log("this.state.fileArray", this.state.fileArray);
 
     return this.state.fileArray.map((file) => {
+      debugger;
       return (
         <div>
           <span className="img-box-outer">
             {file.url.includes("blob") ? (
               <img alt="Preview" key={file.preview} src={file.url} />
+            ) : file.fileName.endsWith(".doc") ||
+              file.fileName.endsWith(".docx") ? (
+              <i className="fa fa-file-word iconaddform"></i>
+            ) : file.fileName.endsWith(".pdf") ? (
+              <i className="fa fa-file-pdf iconaddform"></i>
+            ) : file.fileName.endsWith(".xlsx") ||
+              file.fileName.endsWith(".xls") ? (
+              <i className="fa fa-file-excel iconaddform"></i>
             ) : (
-              <Icon>picture_as_pdf</Icon>
-            )}
+              <i className="fa fa-file-alt iconaddform"></i>
+            ) //fileName
+            }
             <button
               className="delete-image"
               onClick={(event) => this.deleteSelected(event, file)}

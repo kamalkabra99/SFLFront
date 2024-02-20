@@ -1059,11 +1059,13 @@ section.dropzone-outer {
   width: 100px;
   height: 100px;
   margin-bottom: 10px;
-  display: inline-block;
+  display: flex;
   margin-right: 10px;
   background: #dfdfdf;
   position: relative;
   text-align: center;
+  align-items: center;
+  justify-content: center;
 }
 
 button.delete-image {
@@ -1285,6 +1287,10 @@ button.expand-icon {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
+}
+
+.img-box-outer i.fa {
+  font-size: 64px;
 }
 
 .ReactTable .-pagination {
@@ -6557,7 +6563,6 @@ button.file-doc {
   max-width: 1110px;
   width: 100%;
 }
-
 
 
 
