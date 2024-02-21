@@ -142,6 +142,7 @@ class editContainer extends Component {
       UpdateShipID:"",
       UpdateShipIDHBLSET:"",
       SetShiprecord:false,
+      Base: "",
 
       NotifyParty: "",
       NotifyPartyList: [],
@@ -214,6 +215,8 @@ class editContainer extends Component {
   }
 
   async componentDidMount() {
+    this.setState({ Base: CommonConfig.BaseUrl });
+    //  this.setState({ Base: "http://localhost:3000/" });
     await this.showHide();
     await this.stringMapSize();
     await this.stringmapStatus();
@@ -1760,17 +1763,27 @@ class editContainer extends Component {
               }
             
           }
-          var dataHtml = ""
+          var dataHtml = "";
+          var packSeqList = "";
           for (let indexpack = 0; indexpack < packset.length; indexpack++) {
             // const element = array[indexpack];
 
-            dataHtml = dataHtml +  "<tr><td><label>"+ packset[indexpack].packseq +"</label></td> <td><label>"+ packset[indexpack].packLen +"</label></td><td><label>*USED HOUSE HOLD GOODS AND PERSONAL EFFECTS*</label></td><td><label>"+packset[indexpack].TotalChargableWeight+"</label></td><td><label>"+ packset[indexpack].cft +"</label></td></tr>"
+            // if(packset.length > 1){
+
+              packSeqList = packSeqList + packset[indexpack].packseq + ", "
+
+
+            // }
+
+            // dataHtml = dataHtml +  "<tr><td><label>"+ packset[indexpack].packseq +"</label></td> <td><label>"+ packset[indexpack].packLen +"</label></td><td><label>*USED HOUSE HOLD GOODS AND PERSONAL EFFECTS*</label></td><td><label>"+packset[indexpack].TotalChargableWeight+"</label></td><td><label>"+ packset[indexpack].cft +"</label></td></tr>"
 
           }
 
+          packSeqList = packSeqList.substring(0, packSeqList.length-2);
+
           var TotalCBM = (TotalcftH/35.315).toFixed(4);
         
-          dataHtml = dataHtml + " <tr><td></td><td>"+totalPackH+"</td><td></td><td>"+TotalChargableWeightHBL+" Lbs.</td><td>"+TotalcftH+" CFT</td></tr>  <tr><td></td><td></td><td></td><td></td><td>"+TotalCBM+" CBM</td></tr>"
+          dataHtml = dataHtml + " <tr><td>"+packSeqList+"</td><td>"+totalPackH+"</td><td>USED HOUSE HOLD GOODS AND PERSONAL EFFECTS</td><td>"+TotalChargableWeightHBL+" Lbs.</td><td>"+TotalcftH+" CFT</td></tr>  <tr><td></td><td></td><td></td><td></td><td>"+TotalCBM+" CBM</td></tr>"
           
 
 
@@ -1780,9 +1793,9 @@ class editContainer extends Component {
           localStorage.setItem("dataHtml", dataHtml)
 
           window.open(
-            // this.state.Base +
-            "http://localhost:3000/auth/HBL/" + record.original.ShippingID + "/"+this.props.history.location.state.containerId,
-              // "auth/HBL/",
+            this.state.Base + "auth/HBL/" + 
+             record.original.ShippingID + "/"+this.props.history.location.state.containerId,
+              
             "_blank"
           );
 
