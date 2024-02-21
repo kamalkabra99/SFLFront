@@ -187,8 +187,8 @@ class DownloadForms extends Component {
       {
         Header: "File Name",
         id: "FileName",
-        width: 90,
-        maxWidth: 90,
+        width: 200,
+        maxWidth: 200,
         filterable: true,
         sortable: true,
         accessor: "FileName",
@@ -196,8 +196,8 @@ class DownloadForms extends Component {
       {
         Header: "File Description",
         id: "FileDescription",
-        width: 155,
-        maxWidth: 155,
+        width: 255,
+        maxWidth: 255,
         filterable: true,
         sortable: true,
         accessor: "FileDescription",
@@ -205,8 +205,8 @@ class DownloadForms extends Component {
       {
         Header: "Uploaded By",
         id: "UploadedBy",
-        width: 95,
-        maxWidth: 95,
+        width: 92,
+        maxWidth: 90,
         filterable: true,
         sortable: true,
         accessor: "Name",

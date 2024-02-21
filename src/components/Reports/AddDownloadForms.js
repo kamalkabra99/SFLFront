@@ -407,7 +407,7 @@ class AddDownloadForms extends Component {
                     onDropAccepted={(file, event) =>
                       this.acceptedFiles(file, event)
                     }
-                    accept="image/*,.xls,.xlsx,.doc,.docx,.odt,.pdf,.png,.pptx,.ppt,.rtf"
+                    accept="image/*,.xls,.xlsx,.doc,.docx,.odt,.pdf,.png,.pptx,.ppt,.rtf,.txt"
                     onDrop={(e) => this.onPreviewDrop(e)}
                   >
                     {({ getRootProps, getInputProps }) => (
@@ -421,7 +421,7 @@ class AddDownloadForms extends Component {
                           </p>
                           <small>
                             Only this extensions are supported
-                            .bmp,.gif,.jpeg,.jpg,.tex,.xls,.xlsx,.doc,.docx,.odt,.pdf,.png,.pptx,.ppt,.rtf
+                            .bmp,.gif,.jpeg,.jpg,.tex,.xls,.xlsx,.doc,.docx,.odt,.pdf,.png,.pptx,.ppt,.rtf,.txt
                           </small>
                         </div>
                       </section>
