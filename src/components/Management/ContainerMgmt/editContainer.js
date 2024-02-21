@@ -78,6 +78,7 @@ class editContainer extends Component {
       TotalTVCount: 0,
       TotalPackagesCountHBL: 0,
       TotalCFTCountHBL: 0,
+      PrimaryID:0,
       TotalTVCountHBL: 0,
       sealnumberErr: false,
       sealnumberHelperText: "",
@@ -1827,6 +1828,8 @@ class editContainer extends Component {
             var tvcount = 0
             var cftCount = 0
 
+            this.state.PrimaryID = record.original.ShippingID
+
             for (let index = 0; index < res.data.Shipments.length; index++) {
 
               counts = counts + res.data.Shipments[index].TotalPackages
@@ -2501,13 +2504,17 @@ class editContainer extends Component {
         Cell: (record) => {
           return (
             <div className="table-common-btn">
-              <Button
+              {record.original.ShippingID != this.state.PrimaryID ?(
+                <Button
                 justIcon
                 onClick={() => this.openDeleteRequestModal(record)}
                 color="danger"
               >
                 <i class="fas fa-trash"></i>
               </Button>
+
+              ):null}
+              
             </div>
           );
         },
