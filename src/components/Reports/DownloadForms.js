@@ -19,6 +19,7 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
+import Tooltip from "@material-ui/core/Tooltip";
 
 class DownloadForms extends Component {
   constructor(props) {
@@ -136,46 +137,64 @@ class DownloadForms extends Component {
     const Attahment_PathList = Attahment_Path.split(",").map((item) =>
       item.trim()
     );
-
+    function getStringAfterDot(item) {
+      var dotIndex = item.indexOf(".");
+      if (dotIndex !== -1) {
+        return item.substring(dotIndex + 1);
+      } else {
+        return null;
+      }
+    }
     return Attahment_PathList.map((item, idx) => {
+      var result = getStringAfterDot(item);
+      console.log("clg...", result);
+      debugger;
       return (
         <div>
           {item.endsWith(".doc") || item.endsWith(".docx") ? (
-            <Button
-              justIcon
-              color="primary"
-              onClick={() => this.viewFile(item)}
-              className="file-doc"
-            >
-              <i className="fa fa-file-word"></i>
-            </Button>
+            <Tooltip title={result} arrow>
+              <Button
+                justIcon
+                color="primary"
+                onClick={() => this.viewFile(item)}
+                className="file-doc"
+              >
+                <i className="fa fa-file-word"></i>
+              </Button>
+            </Tooltip>
           ) : item.endsWith(".pdf") ? (
-            <Button
-              justIcon
-              color="danger"
-              onClick={() => this.viewFile(item)}
-              className="file-pdf"
-            >
-              <i className="fa fa-file-pdf"></i>
-            </Button>
+            <Tooltip title={result} arrow>
+              <Button
+                justIcon
+                color="danger"
+                onClick={() => this.viewFile(item)}
+                className="file-pdf"
+              >
+                <i className="fa fa-file-pdf"></i>
+              </Button>
+            </Tooltip>
           ) : item.endsWith(".xlsx") || item.endsWith(".xls") ? (
-            <Button
-              justIcon
-              color="success"
-              onClick={() => this.viewFile(item)}
-              className="file-excel"
-            >
-              <i className="fa fa-file-excel"></i>
-            </Button>
+            <Tooltip title={result} arrow>
+              <Button
+                justIcon
+                color="success"
+                onClick={() => this.viewFile(item)}
+                className="file-excel"
+              >
+                <i className="fa fa-file-excel"></i>
+              </Button>
+            </Tooltip>
           ) : (
-            <Button
-              justIcon
-              color="primary"
-              onClick={() => this.viewFile(item)}
-              className="file-xtra"
-            >
-              <i className="fa fa-file-alt"></i>
-            </Button>
+            <Tooltip title={result} arrow>
+              <Button
+                justIcon
+                color="primary"
+                onClick={() => this.viewFile(item)}
+                className="file-xtra"
+              >
+                <i className="fa fa-file-alt"></i>
+              </Button>
+            </Tooltip>
           )}
         </div>
       );
