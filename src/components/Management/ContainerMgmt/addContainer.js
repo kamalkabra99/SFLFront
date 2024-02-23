@@ -46,6 +46,10 @@ class addContainer extends Component {
       containernameErr: false,
       containernameHelperText: "",
 
+      ContainerShortName: "",
+      containershortnameErr: false,
+      containershortnameHelperText: "",
+
       ContainerSize: "",
       ContainerSizeList: [],
       containersizeErr: false,
@@ -255,7 +259,11 @@ class addContainer extends Component {
     let Val = event.target.value;
     if (type === "containername") {
       this.setState({ ContainerName: Val });
-    } else if (type === "containernumber") {
+    } else if (type === "containershortname") {
+      this.setState({ ContainerShortName: Val });
+    }
+    
+    else if (type === "containernumber") {
       this.setState({ ContainerNumber: Val });
     } else if (type === "sealnumber") {
       this.setState({ SealNumber: Val });
@@ -282,6 +290,14 @@ class addContainer extends Component {
       this.setState({
         containernameErr: true,
         containernameHelperText: "Please enter container name",
+      });
+      IsFormValid = false;
+    }
+
+    if (CommonConfig.isEmpty(this.state.ContainerShortName)) {
+      this.setState({
+        containershortnameErr: true,
+        containershortnameHelperText: "Please enter container short name",
       });
       IsFormValid = false;
     }
@@ -328,7 +344,26 @@ class addContainer extends Component {
           containernameHelperText: "",
         });
       }
-    } else if (type === "containersize") {
+    }
+
+    else if (type === "containershortname") {
+      if (CommonConfig.isEmpty(this.state.ContainerShortName)) {
+        this.setState({
+          ContainerShortName: Val,
+          containershortnameErr: true,
+          containershortnameHelperText: "Please enter container short name",
+        });
+      } else {
+        this.setState({
+          ContainerShortName: Val,
+          containershortnameErr: false,
+          containershortnameHelperText: "",
+        });
+      }
+    }
+    
+    
+    else if (type === "containersize") {
       if (CommonConfig.isEmpty(this.state.ContainerSize)) {
         this.setState({
           ContainerSize: Val,
@@ -404,6 +439,7 @@ class addContainer extends Component {
         userId: CommonConfig.loggedInUserData().PersonID,
         ContainerID: null,
         ContainerName: this.state.ContainerName,
+        containershortname: this.state.ContainerShortName,
         ContainerSize: this.state.ContainerSize,
         CurrentStatus: this.state.CurrentStatus,
         ContainerStatus: this.state.ContainerStatus,
@@ -861,6 +897,9 @@ class addContainer extends Component {
       ContainerName,
       containernameErr,
       containernameHelperText,
+      ContainerShortName,
+      containershortnameHelperText,
+      containershortnameErr,
       ContainerSize,
       containersizeErr,
       containersizeHelperText,
@@ -973,6 +1012,36 @@ class addContainer extends Component {
                     />
                   </FormControl>
                 </GridItem>
+                <GridItem xs={12} sm={12} md={3}>
+                      <FormControl className="mb-0" fullWidth>
+                        <CustomInput
+                          labelText="Container short Name"
+                          id="containershortname"
+                          formControlProps={{ fullWidth: true }}
+                          error={containershortnameErr}
+                          helperText={containershortnameHelperText}
+                          inputProps={{
+                            value: ContainerShortName,
+                            endAdornment: (
+                              <InputAdornment position="end">
+                                <Icon className="requiredicon">
+                                  perm_identity
+                                </Icon>
+                              </InputAdornment>
+                            ),
+                            onChange: (event) =>
+                              this.handleChange(event, "containershortname"),
+                            onBlur: (event) =>
+                              this.handleBlur(event, "containershortname"),
+                            onFocus: () =>
+                              this.setState({
+                                containershortnameErr: false,
+                                containershortnameHelperText: "",
+                              }),
+                          }}
+                        />
+                      </FormControl>
+                    </GridItem>
                 <GridItem xs={12} sm={12} md={3}>
                   <div className="select-spl">
                     <FormControl error={containersizeErr} fullWidth>

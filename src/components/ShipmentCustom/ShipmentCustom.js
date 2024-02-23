@@ -494,6 +494,7 @@ class ShipmentCustom extends React.Component {
         { value: "Visitor Visa", label: "Visitor Visa" },
       ],
       NameAsPerPassport: "",
+      PassportNumber:"",
       YearsOutsideIndia: "",
       StayInIndia: "",
       LatestArrivalDate: "",
@@ -506,6 +507,8 @@ class ShipmentCustom extends React.Component {
       movingBackIndiaHelperText: "",
       nameAsperPassportErr: false,
       nameAsperPassportHelperText: "",
+      PassportNumberErr: false,
+      PassportNumberHelperText: "",
       stayinIndiaErr: false,
       stayinIndiaHelperText: "",
       appliedForTRErr: false,
@@ -1753,6 +1756,7 @@ class ShipmentCustom extends React.Component {
                   : true
                 : "",
               NameAsPerPassport: res.data[0].NameAsPerPassport,
+              PassportNumber:res.data[0].PassportNumber,
               YearsOutsideIndia: res.data[0].YearsOutsideIndia,
               StayInIndia: !CommonConfig.isEmpty(res.data[0].StayInIndia)
                 ? res.data[0].StayInIndia.data[0] === 0
@@ -3658,6 +3662,14 @@ class ShipmentCustom extends React.Component {
         YearsOutsideIndia: event.target.value,
         yearsOutsideIndiaErr: false,
         yearsOutsideIndiaHelperText: "",
+      });
+    }
+
+    else if (type === "PassportNumber") {
+      this.setState({
+        PassportNumber: event.target.value,
+        PassportNumberErr: false,
+        PassportNumberHelperText: "",
       });
     }
   };
@@ -9877,6 +9889,7 @@ class ShipmentCustom extends React.Component {
             ) {
               objdata.UserAdditionalData = {
                 NameAsPerPassport: this.state.NameAsPerPassport,
+                PassportNumber:this.state.PassportNumber,
                 YearsOutsideIndia: this.state.YearsOutsideIndia,
                 UserAdditionalDetailsID: this.state.UserAdditionalDetailsID,
                 StayInIndia: this.state.StayInIndia,
@@ -9940,7 +9953,7 @@ class ShipmentCustom extends React.Component {
               delete objdata.shipments.ShipmentStatus;
               delete objdata.shipments.ContainerID;
               delete objdata.shipments.pickupProvider;
-              objdata.UserAdditionalData = [];
+              // objdata.UserAdditionalData = [];
 
               debugger;
 
@@ -13817,24 +13830,35 @@ class ShipmentCustom extends React.Component {
                             </GridItem>
                             {/* {isBackIndia ? 
                             <> */}
-                            <GridItem sm={4} md={4}>
-                              <CustomInput
-                                formControlProps={{ fullWidth: true }}
-                                labelText="Your Name as per passport?"
-                                error={this.state.nameAsperPassportErr}
-                                helperText={
-                                  this.state.nameAsperPassportHelperText
-                                }
-                                inputProps={{
-                                  value: this.state.NameAsPerPassport,
-                                  onChange: (e) =>
-                                    this.handleAdditionalChange(
-                                      e,
-                                      "NameAsPerPassport"
-                                    ),
-                                }}
-                              />
-                            </GridItem>
+                            
+                            {this.state.ShipmentType.value === "Ocean" ? (
+                              <GridItem sm={4} md={4}>
+                                <FormControl fullWidth>
+                                  <Autocomplete
+                                    id="combo-box-demo"
+                                    options={containerName}
+                                    value={ContainerName}
+                                    onChange={(event, value) =>
+                                      this.selectChange(
+                                        event,
+                                        value,
+                                        "ContainerName"
+                                      )
+                                    }
+                                    getOptionLabel={(option) => option.label}
+                                    renderInput={(params) => (
+                                      <TextField
+                                        {...params}
+                                        label="Container Name"
+                                        margin="normal"
+                                        fullWidth
+                                      />
+                                    )}
+                                  />
+                                </FormControl>
+                              </GridItem>
+                            ) : null}
+
                             <GridItem sm={4} md={4}>
                               <div className="select-spl">
                                 <FormControl
@@ -14095,33 +14119,45 @@ class ShipmentCustom extends React.Component {
                                 </FormControl>
                               </div>
                             </GridItem>
-                            {this.state.ShipmentType.value === "Ocean" ? (
-                              <GridItem sm={4} md={4}>
-                                <FormControl fullWidth>
-                                  <Autocomplete
-                                    id="combo-box-demo"
-                                    options={containerName}
-                                    value={ContainerName}
-                                    onChange={(event, value) =>
-                                      this.selectChange(
-                                        event,
-                                        value,
-                                        "ContainerName"
-                                      )
-                                    }
-                                    getOptionLabel={(option) => option.label}
-                                    renderInput={(params) => (
-                                      <TextField
-                                        {...params}
-                                        label="Container Name"
-                                        margin="normal"
-                                        fullWidth
-                                      />
-                                    )}
-                                  />
-                                </FormControl>
-                              </GridItem>
-                            ) : null}
+                            <GridItem sm={4} md={4}>
+                              <CustomInput
+                                formControlProps={{ fullWidth: true }}
+                                labelText="Your Name as per passport?"
+                                error={this.state.nameAsperPassportErr}
+                                helperText={
+                                  this.state.nameAsperPassportHelperText
+                                }
+                                inputProps={{
+                                  value: this.state.NameAsPerPassport,
+                                  onChange: (e) =>
+                                    this.handleAdditionalChange(
+                                      e,
+                                      "NameAsPerPassport"
+                                    ),
+                                }}
+                              />
+                            </GridItem>
+
+                            <GridItem sm={4} md={4}>
+                              <CustomInput
+                                formControlProps={{ fullWidth: true }}
+                                labelText="Passport Number?"
+                                error={this.state.PassportNumberErr}
+                                helperText={
+                                  this.state.PassportNumberHelperText
+                                }
+                                inputProps={{
+                                  value: this.state.PassportNumber,
+                                  onChange: (e) =>
+                                    this.handleAdditionalChange(
+                                      e,
+                                      "PassportNumber"
+                                    ),
+                                }}
+                              />
+                            </GridItem>
+
+                           
                           </GridContainer>
 
                           {/* :
