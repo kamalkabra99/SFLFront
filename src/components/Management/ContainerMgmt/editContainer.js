@@ -52,6 +52,10 @@ class editContainer extends Component {
       containernameErr: false,
       containernameHelperText: "",
 
+      ContainerShortName: "",
+      containershortnameErr: false,
+      containershortnameHelperText: "",
+
       ContainerSize: "",
       ContainerSizeList: [],
       SetShiprecordHBL: false,
@@ -144,6 +148,17 @@ class editContainer extends Component {
       UpdateShipIDHBLSET:"",
       SetShiprecord:false,
       Base: "",
+
+      NotifyPartyName: "",
+      NotifyPartyPhone: "",
+      NotifyPartyEmail: "",
+      NotifyPartyAddr1: "",
+      NotifyPartyAddr2: "",
+      NotifyPartyAddr3: "",
+
+      NotifyPartyCity: "",
+      NotifyPartyState: "",
+      NotifyPartyZipCode: "",
 
       NotifyParty: "",
       NotifyPartyList: [],
@@ -417,6 +432,7 @@ class editContainer extends Component {
             });
             this.setState({
               ContainerName: res.data.ContainerName,
+              ContainerShortName: res.data.ContainerShortName,
               ContainerSize: res.data.ContainerSize,
               CurrentStatus: res.data.CurrentStatus,
               ContainerStatus:
@@ -437,6 +453,17 @@ class editContainer extends Component {
               FreightForwarder: res.data.FreightForwarder,
               Carrier: res.data.Carrier,
               NotifyParty: res.data.NotifyParty,
+              NotifyPartyName: res.data.NotifyPartnerName,
+              NotifyPartyPhone: res.data.PhoneNum,
+              NotifyPartyEmail: res.data.Email,
+              NotifyPartyAddr1: res.data.AddressLine1,
+              NotifyPartyAddr2: res.data.AddressLine2,
+              NotifyPartyAddr3: res.data.AddressLine3,
+
+              NotifyPartyCity: res.data.City,
+              NotifyPartyState: res.data.State,
+              NotifyPartyZipCode: res.data.ZipCode,
+              
               CustomsBroker: res.data.CustomsBroker,
               CreatedBy: res.data.CreatedBy,
               CreatedOn: moment(res.data.CreatedOn).format(
@@ -617,7 +644,11 @@ class editContainer extends Component {
     let Val = event.target.value;
     if (type === "containername") {
       this.setState({ ContainerName: Val });
-    } else if (type === "containernumber") {
+    } else if (type === "containershortname") {
+      this.setState({ ContainerShortName: Val });
+    }
+    
+    else if (type === "containernumber") {
       this.setState({ ContainerNumber: Val });
     } else if (type === "sealnumber") {
       this.setState({ SealNumber: Val });
@@ -697,7 +728,24 @@ class editContainer extends Component {
           containernameHelperText: "",
         });
       }
-    } else if (type === "containersize") {
+    }
+    else if (type === "containershortname") {
+      if (CommonConfig.isEmpty(this.state.ContainerShortName)) {
+        this.setState({
+          ContainerShortName: Val,
+          containershortnameErr: true,
+          containershortnameHelperText: "Please enter container short name",
+        });
+      } else {
+        this.setState({
+          ContainerShortName: Val,
+          containershortnameErr: false,
+          containershortnameHelperText: "",
+        });
+      }
+    }
+    
+    else if (type === "containersize") {
       if (CommonConfig.isEmpty(this.state.ContainerSize)) {
         this.setState({
           ContainerSize: Val,
@@ -775,6 +823,7 @@ class editContainer extends Component {
         userId: CommonConfig.loggedInUserData().PersonID,
         ContainerID: this.props.history.location.state.containerId,
         ContainerName: this.state.ContainerName,
+        containershortname: this.state.ContainerShortName,
         ContainerSize: this.state.ContainerSize,
         CurrentStatus: this.state.CurrentStatus,
         ContainerStatus: this.state.ContainerStatus,
@@ -1632,7 +1681,8 @@ class editContainer extends Component {
 
     localStorage.setItem("ContainerNumber",this.state.ContainerNumber)
     localStorage.setItem("BookingNumber",this.state.BookingNumber)
-    localStorage.setItem("BOLNumber",this.state.BOLNumber)
+    localStorage.setItem("BOLNumber",record.original.TrackingNumber + this.state.ContainerShortName)
+
     localStorage.setItem("PointOfOrigin",this.state.PointOfOrigin)
     localStorage.setItem("PortOfLoading",this.state.PortOfLoading)
     localStorage.setItem("PortOfUnloading",this.state.PortOfUnloading)
@@ -1640,6 +1690,40 @@ class editContainer extends Component {
     localStorage.setItem("VesselNumber",this.state.VesselNumber)
     localStorage.setItem("NotifyParty",this.state.NotifyParty)
     localStorage.setItem("TrackNO", record.original.TrackingNumber)
+    localStorage.setItem("NotifyPartyName",this.state.NotifyPartyName)
+
+    localStorage.setItem("hblDate",this.state.HBLDate);
+
+   
+    localStorage.setItem("NotifyPartyPhone",this.state.NotifyPartyPhone + "  Email: "+ this.state.NotifyPartyEmail)
+    // localStorage.setItem("NotifyPartyEmail",)
+    
+
+
+    var fromadd1Notify =  this.state.NotifyPartyAddr1
+    var fromadd2Notify = this.state.NotifyPartyAddr2
+    var fromadd3Notify = this.state.NotifyPartyAddr3
+
+    var FromAddressNotify = ""
+
+    if(fromadd1Notify != ""){
+      FromAddressNotify = FromAddressNotify + fromadd1Notify
+    }
+    if(fromadd2Notify != ""){
+      FromAddressNotify = FromAddressNotify + ", " + fromadd2Notify
+    }
+    if(fromadd3Notify != ""){
+      FromAddressNotify = FromAddressNotify + ", " + fromadd3Notify
+    }
+
+
+      localStorage.setItem("NotifyPartyAddr3",FromAddressNotify)
+      var fromCitysNotify = this.state.NotifyPartyCity + ", " + this.state.NotifyPartyState + " - " + this.state.NotifyPartyZipCode
+
+      localStorage.setItem("NotifyPartyCity",fromCitysNotify)
+
+
+ 
 
     var fromadd1 =  record.original.FromAdd1
     var fromadd2 = record.original.FromAdd2
@@ -1688,7 +1772,7 @@ class editContainer extends Component {
     var TOState = record.original.ToState
     var TOZipCo = record.original.toZip
 
-    var TOCitys = TOCity + ", " + TOState + " - " + TOZipCo
+    var TOCitys = TOCity + ", " + TOState + " - " + TOZipCo + "  Passport: " + record.original.PassportNumber
 
     localStorage.setItem("TOAddress", TOAddress)
     localStorage.setItem("TOCitys", TOCitys)
@@ -1783,8 +1867,9 @@ class editContainer extends Component {
           packSeqList = packSeqList.substring(0, packSeqList.length-2);
 
           var TotalCBM = (TotalcftH/35.315).toFixed(4);
+          TotalChargableWeightHBL = (TotalChargableWeightHBL/2.2).toFixed(3)
         
-          dataHtml = dataHtml + " <tr><td>"+packSeqList+"</td><td>"+totalPackH+"</td><td>USED HOUSE HOLD GOODS AND PERSONAL EFFECTS</td><td>"+TotalChargableWeightHBL+" Lbs.</td><td>"+TotalcftH+" CFT</td></tr>  <tr><td></td><td></td><td></td><td></td><td>"+TotalCBM+" CBM</td></tr>"
+          dataHtml = dataHtml + " <tr><td>"+packSeqList+"</td><td>"+totalPackH+"</td><td>USED HOUSE HOLD GOODS AND PERSONAL EFFECTS</td><td>"+TotalChargableWeightHBL+" KG.</td><td>"+TotalCBM+" CBM</td></tr>"
           
 
 
@@ -2610,6 +2695,9 @@ class editContainer extends Component {
 
     const {
       ShipmentStatus,
+      ContainerShortName,
+      containershortnameHelperText,
+      containershortnameErr,
       ContainerName,
       containernameErr,
       containernameHelperText,
@@ -2751,6 +2839,38 @@ class editContainer extends Component {
                         />
                       </FormControl>
                     </GridItem>
+
+                    <GridItem xs={12} sm={12} md={3}>
+                      <FormControl className="mb-0" fullWidth>
+                        <CustomInput
+                          labelText="Container short Name"
+                          id="containershortname"
+                          formControlProps={{ fullWidth: true }}
+                          error={containershortnameErr}
+                          helperText={containershortnameHelperText}
+                          inputProps={{
+                            value: ContainerShortName,
+                            endAdornment: (
+                              <InputAdornment position="end">
+                                <Icon className="requiredicon">
+                                  perm_identity
+                                </Icon>
+                              </InputAdornment>
+                            ),
+                            onChange: (event) =>
+                              this.handleChange(event, "containershortname"),
+                            onBlur: (event) =>
+                              this.handleBlur(event, "containershortname"),
+                            onFocus: () =>
+                              this.setState({
+                                containershortnameErr: false,
+                                containershortnameHelperText: "",
+                              }),
+                          }}
+                        />
+                      </FormControl>
+                    </GridItem>
+
                     <GridItem xs={12} sm={12} md={3}>
                       <div className="select-spl">
                         <FormControl error={containersizeErr} fullWidth>

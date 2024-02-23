@@ -154,6 +154,17 @@ class HBL extends React.Component {
 
     this.state.dataHtml = localStorage.getItem("dataHtml")
     document.getElementById("dataHtml").innerHTML = this.state.dataHtml
+
+   
+
+    // this.state.dataHtml = localStorage.getItem("dataHtml")
+    document.getElementById("NotifyPartyCity").innerHTML = localStorage.getItem("NotifyPartyCity")
+    document.getElementById("NotifyPartyAddr3").innerHTML = localStorage.getItem("NotifyPartyAddr3")
+    document.getElementById("NotifyPartyPhone").innerHTML = localStorage.getItem("NotifyPartyPhone")
+
+    document.getElementById("hblDate").innerHTML = localStorage.getItem("hblDate")
+
+    
     
     // var customerName = this.props.match.params.name;
     console.log("ship = " , this.state.pVesselNumber , " | cony = ", contId)
@@ -293,7 +304,12 @@ class HBL extends React.Component {
                   <td className="t-50">
                     NOTIFY PARTY/INTERMEDIATE CONSIGNEE<br></br>
                     <div className="hbl-textarea">
-                      <label id = "pNotifyParty"></label>
+                      <label id = "pNotifyParty"></label><br></br>
+                      <label id = "NotifyPartyAddr3"></label><br></br>
+                      <label id = "NotifyPartyCity"></label><br></br>
+                      <label id = "NotifyPartyPhone"></label><br></br>
+                      
+                      
                     </div>
                     
                   </td>
@@ -413,7 +429,7 @@ class HBL extends React.Component {
                 <tr>
                   <td className="t-50">
                     DATE (MM/DD/YYYY)<br></br>
-                    {this.state.CreatedDate}
+                    <label id = "hblDate"></label>
                   </td>
                   <td className="t-50">TOTAL COLLECT</td>
                 </tr>
