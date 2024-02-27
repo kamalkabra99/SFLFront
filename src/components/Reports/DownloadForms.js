@@ -36,6 +36,7 @@ class DownloadForms extends Component {
   }
 
   async componentDidMount() {
+    debugger;
     var WriteAccess = CommonConfig.getUserAccess("Download Forms").WriteAccess;
 
     var AllAccess = CommonConfig.getUserAccess("Download Forms").AllAccess;
@@ -349,6 +350,7 @@ class DownloadForms extends Component {
                       data={FormList}
                       minRows={2}
                       filterable
+                      defaultFilterMethod={CommonConfig.filterCaseInsensitive}
                       resizable={false}
                       columns={column}
                       defaultPageSize={10}

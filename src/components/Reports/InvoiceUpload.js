@@ -725,9 +725,9 @@ class InvoiceUpload extends Component {
                           data={InvoiceData}
                           minRows={2}
                           // pageText={`Total rows : ` + searchFinalLength}
-                          //   defaultFilterMethod={
-                          //     CommonConfig.filterCaseInsensitive
-                          //   }
+                          defaultFilterMethod={
+                            CommonConfig.filterCaseInsensitive
+                          }
                           // getPaginationProps={(e) => this.checkProps(e)}
                           filterable
                           resizable={false}

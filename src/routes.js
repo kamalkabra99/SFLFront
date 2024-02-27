@@ -14,6 +14,7 @@ import AddUserNew from "components/Management/AddUserNew";
 import VendorSearch from "components/Management/VendorSearch";
 import Vendor from "components/Management/Vendor/Vendor";
 import EditVendor from "components/Management/EditVendor";
+import AddEditVendors from "components/Management/AddEditVendors";
 import ContactUs from "components/WebForms/ContactUs";
 import CallBack from "components/WebForms/CallBack";
 import AddaClaim from "components/FileaClaim/AddaClaim";
@@ -609,6 +610,15 @@ var dashRoutes = [
         layout: "/admin",
         invisible: false,
       },
+      {
+        path: "/AddEditVendors",
+        name: "Add Edit Vendors",
+        icon: EditSalesLeadIcon,
+        component: AddEditVendors,
+        layout: "/admin",
+        invisible: false,
+      },
+
       {
         path: "/MapVendor",
         name: "Map Vendor",

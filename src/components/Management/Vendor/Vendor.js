@@ -59,28 +59,34 @@ class Vendor extends Component {
           i++;
           return OBJ;
         });
-        for(let i =0; i < seriveList.length ; i++){
-          seriveList[i].Index = i+1;
-          console.log("Test = ",seriveList[i].Index);
+        for (let i = 0; i < seriveList.length; i++) {
+          seriveList[i].Index = i + 1;
+          console.log("Test = ", seriveList[i].Index);
         }
-        var data = 
-        {
+        var data = {
           value: "All",
           label: "All",
           IsSelected: false,
           Index: 0,
-        }
-        seriveList.push(data)
-        seriveList.sort((a,b) => a.Index - b.Index);
+        };
+        seriveList.push(data);
+        seriveList.sort((a, b) => a.Index - b.Index);
 
-        console.log("ServiceList = ",seriveList);
+        console.log("ServiceList = ", seriveList);
         this.setState({ servicelist: seriveList });
       }
     });
   };
 
   addVendor = () => {
-    this.props.history.push("/admin/AddEditVendor");
+    if (
+      CommonConfig.loggedInUserData().PersonID === 18 ||
+      CommonConfig.loggedInUserData().PersonID === 1
+    ) {
+      this.props.history.push("/admin/AddEditVendors");
+    } else {
+      this.props.history.push("/admin/AddEditVendor");
+    }
   };
 
   showLoader() {
@@ -131,32 +137,38 @@ class Vendor extends Component {
   getVendorList() {
     try {
       this.showLoader();
-      api.get("vendor/getVendorList").then((res) => {
-        if (res.success) {
-          if (this.state.Access.AllAccess === 1) {
-            this.setState({ vendorList: res.data, Loading: false });
+      api
+        .get("vendor/getVendorList")
+        .then((res) => {
+          if (res.success) {
+            if (this.state.Access.AllAccess === 1) {
+              this.setState({ vendorList: res.data, Loading: false });
+            } else {
+              var FinalVendorList = [];
+              FinalVendorList = res.data.filter(
+                (x) => x.PersonID === CommonConfig.loggedInUserData().PersonID
+              );
+              this.setState({ vendorList: FinalVendorList, Loading: false });
+            }
           } else {
-            var FinalVendorList = [];
-            FinalVendorList = res.data.filter(
-              (x) => x.PersonID === CommonConfig.loggedInUserData().PersonID
-            );
-            this.setState({ vendorList: FinalVendorList, Loading: false });
+            cogoToast.error("Something Went Wrong");
           }
-        } else {
-          cogoToast.error("Something Went Wrong");
-        }
-      })
+        })
         .catch((err) => {
           cogoToast.error("Something Went Wrong");
         });
-    } catch (error) { }
+    } catch (error) {}
   }
 
   editVendor = (record) => {
     const { history } = this.props;
     let vendorId = record.original.VendorID;
     history.push({
-      pathname: "AddEditVendor/",
+      pathname:
+        CommonConfig.loggedInUserData().PersonID === 18 ||
+        CommonConfig.loggedInUserData().PersonID === 1
+          ? "AddEditVendors/"
+          : "AddEditVendor/",
       state: {
         vendorId: vendorId,
         filterlist: this.state.filterProps,
@@ -166,7 +178,6 @@ class Vendor extends Component {
     });
   };
 
-  
   handleCheckboxChange = (e, record, type) => {
     debugger;
     let checkedArr = this.state.servicelist;
@@ -185,45 +196,42 @@ class Vendor extends Component {
       let previousList = checkedArr.filter((x) => x.IsSelected === true);
       this.setState({ serviceValue: previousList });
       let arrType = "previousSelected" + this.state.chatlist;
-     
-      this.filterMethod("Hello",previousList)
-      
-    } else{
+
+      this.filterMethod("Hello", previousList);
+    } else {
       // else {
-        this.setState({ shipmentquery: "" });
-        checkedArr.map((OBJ) => {
-          OBJ.IsSelected = e.target.checked;
-          return OBJ;
-        });
-        this.state.shipmentquery = this.state.StatusQuery;
-        this.setState({
-          checkAll: e.target.checked,
-        });
-        let previousList = checkedArr.filter((x) => x.IsSelected === true);
-        let arrType = "previousSelectedStatusList";
-        if (previousList.length === 0) {
-          this.state.checkdata = "";
-        } else {
-          this.state.checkdata = `All`;
-        }
-        this.setState({
-          StatusList: checkedArr,
-          [arrType]: previousList,
-          StatusQuery: this.state.shipmentquery,
-        });
-  
-        this.filterMethod("Hello",previousList)
+      this.setState({ shipmentquery: "" });
+      checkedArr.map((OBJ) => {
+        OBJ.IsSelected = e.target.checked;
+        return OBJ;
+      });
+      this.state.shipmentquery = this.state.StatusQuery;
+      this.setState({
+        checkAll: e.target.checked,
+      });
+      let previousList = checkedArr.filter((x) => x.IsSelected === true);
+      let arrType = "previousSelectedStatusList";
+      if (previousList.length === 0) {
+        this.state.checkdata = "";
+      } else {
+        this.state.checkdata = `All`;
+      }
+      this.setState({
+        StatusList: checkedArr,
+        [arrType]: previousList,
+        StatusQuery: this.state.shipmentquery,
+      });
+
+      this.filterMethod("Hello", previousList);
       // }
     }
     // console.log("checkedArr = ",checkdata);
   };
 
-
-
   filterMethod = (event, value) => {
     console.log("value= ", value);
     this.setState({ serviceValue: value });
-    console.log("serviceValue = ",this.state.serviceValue);
+    console.log("serviceValue = ", this.state.serviceValue);
   };
 
   setFilterProps = (filterValue) => {
@@ -309,7 +317,7 @@ class Vendor extends Component {
         .catch((err) => {
           cogoToast.error("Something Went Wrong");
         });
-    } catch (error) { }
+    } catch (error) {}
   };
 
   render() {
@@ -505,14 +513,14 @@ class Vendor extends Component {
                     <Button
                       className="cm-toggle"
                       color="rose"
-                    // onClick={() =>
-                    //   this.setState({
-                    //     IsDropDownShow:
-                    //       this.state.IsDropDownShow === true ? false : true,
-                    //   })
-                    // }
+                      // onClick={() =>
+                      //   this.setState({
+                      //     IsDropDownShow:
+                      //       this.state.IsDropDownShow === true ? false : true,
+                      //   })
+                      // }
                     >
-                     Services <ExpandMoreIcon />
+                      Services <ExpandMoreIcon />
                     </Button>
                     {this.state.IsDropDownShow === true ? (
                       <div className="cm-dropdown" ref={this.state.ref}>
@@ -524,12 +532,13 @@ class Vendor extends Component {
                                   <input
                                     type="checkbox"
                                     checked={step.IsSelected}
-                                    onChange={(e, value) => this.handleCheckboxChange(
-                                      e,
-                                      step,
-                                      step.value
-                                    
-                                    )}
+                                    onChange={(e, value) =>
+                                      this.handleCheckboxChange(
+                                        e,
+                                        step,
+                                        step.value
+                                      )
+                                    }
                                     value={this.state.serviceValue}
                                   />{" "}
                                   {step.value}
@@ -551,7 +560,6 @@ class Vendor extends Component {
                     ) : null}
                   </div>
                 </div>
-
               </CardHeader>
               <CardBody>
                 <ReactTable

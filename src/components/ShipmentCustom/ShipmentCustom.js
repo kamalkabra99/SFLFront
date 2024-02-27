@@ -494,7 +494,7 @@ class ShipmentCustom extends React.Component {
         { value: "Visitor Visa", label: "Visitor Visa" },
       ],
       NameAsPerPassport: "",
-      PassportNumber:"",
+      PassportNumber: "",
       YearsOutsideIndia: "",
       StayInIndia: "",
       LatestArrivalDate: "",
@@ -1756,7 +1756,7 @@ class ShipmentCustom extends React.Component {
                   : true
                 : "",
               NameAsPerPassport: res.data[0].NameAsPerPassport,
-              PassportNumber:res.data[0].PassportNumber,
+              PassportNumber: res.data[0].PassportNumber,
               YearsOutsideIndia: res.data[0].YearsOutsideIndia,
               StayInIndia: !CommonConfig.isEmpty(res.data[0].StayInIndia)
                 ? res.data[0].StayInIndia.data[0] === 0
@@ -2331,13 +2331,13 @@ class ShipmentCustom extends React.Component {
 
               cogoToast.error("Invoice and Payment Received does not match");
             } else if (
-              value.value === "Yes" &&
-              this.state.AllClearYes === false
+              (value.value === "Yes" && this.state.AllClearYes === false) ||
+              (value.value === "No" && this.state.AllClearYes === false)
             ) {
+              debugger;
               this.setState({
                 IsChanged: false,
               });
-
               cogoToast.error("Please open accounts tab to enable this field");
             } else {
               this.setState({
@@ -3663,9 +3663,7 @@ class ShipmentCustom extends React.Component {
         yearsOutsideIndiaErr: false,
         yearsOutsideIndiaHelperText: "",
       });
-    }
-
-    else if (type === "PassportNumber") {
+    } else if (type === "PassportNumber") {
       this.setState({
         PassportNumber: event.target.value,
         PassportNumberErr: false,
@@ -9889,7 +9887,7 @@ class ShipmentCustom extends React.Component {
             ) {
               objdata.UserAdditionalData = {
                 NameAsPerPassport: this.state.NameAsPerPassport,
-                PassportNumber:this.state.PassportNumber,
+                PassportNumber: this.state.PassportNumber,
                 YearsOutsideIndia: this.state.YearsOutsideIndia,
                 UserAdditionalDetailsID: this.state.UserAdditionalDetailsID,
                 StayInIndia: this.state.StayInIndia,
@@ -11456,28 +11454,28 @@ class ShipmentCustom extends React.Component {
       dateTime: new Date().getTime(),
       ShippingID: this.state.ShippingID,
       BLNumber: this.state.BLNumber,
-      HtmlData:HtmlData
+      HtmlData: HtmlData,
     };
-    
-      api
-        .post("scheduleshipment/downloadHBLpdf", data)
-        .then((res) => {
-          if (res.success) {
-            this.hideLoader();
-            cogoToast.success("HBL Generated");
-            //window.close();
-            this.setState({
-              HBLdocOpen: false,
-            });
-            this.getDocumentation();
-          } else {
-            this.hideLoader();
-            cogoToast.error("HBL Generation Error");
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+
+    api
+      .post("scheduleshipment/downloadHBLpdf", data)
+      .then((res) => {
+        if (res.success) {
+          this.hideLoader();
+          cogoToast.success("HBL Generated");
+          //window.close();
+          this.setState({
+            HBLdocOpen: false,
+          });
+          this.getDocumentation();
+        } else {
+          this.hideLoader();
+          cogoToast.error("HBL Generation Error");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
     // });
     // Use html2pdf to convert HTML to PDF
     // html2pdf(element, options).then((pdf) => {
@@ -13830,7 +13828,7 @@ class ShipmentCustom extends React.Component {
                             </GridItem>
                             {/* {isBackIndia ? 
                             <> */}
-                            
+
                             {this.state.ShipmentType.value === "Ocean" ? (
                               <GridItem sm={4} md={4}>
                                 <FormControl fullWidth>
@@ -14143,9 +14141,7 @@ class ShipmentCustom extends React.Component {
                                 formControlProps={{ fullWidth: true }}
                                 labelText="Passport Number?"
                                 error={this.state.PassportNumberErr}
-                                helperText={
-                                  this.state.PassportNumberHelperText
-                                }
+                                helperText={this.state.PassportNumberHelperText}
                                 inputProps={{
                                   value: this.state.PassportNumber,
                                   onChange: (e) =>
@@ -14156,8 +14152,6 @@ class ShipmentCustom extends React.Component {
                                 }}
                               />
                             </GridItem>
-
-                           
                           </GridContainer>
 
                           {/* :

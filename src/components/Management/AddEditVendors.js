@@ -34,6 +34,11 @@ import AssignmentIcon from "@material-ui/icons/Assignment";
 import Button from "components/CustomButtons/Button.js";
 import cogoToast from "cogo-toast";
 import moment from "moment";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogContent from "@material-ui/core/DialogContent";
 
 const useStyles = () => makeStyles(styles);
 const classes = useStyles();
@@ -113,12 +118,15 @@ class AddEditVendors extends Component {
         DocumentCreatedOn: moment().format(CommonConfig.dateFormat.dateOnly),
         DocumentCreatedBy: CommonConfig.loggedInUserData().Name,
       },
-      isEdit: false,
 
       CountryList: [],
       selectedCountry: {},
       countryErr: false,
       countryHelperText: "",
+
+      selectedVendorCountry: {},
+      VendorcountryErr: false,
+      VendorcountryHelperText: "",
 
       contactName: "",
       contactNameErr: false,
@@ -160,14 +168,31 @@ class AddEditVendors extends Component {
       zipCodeErr: false,
       zipCodeHelperText: "",
 
+      VendorzipCode: "",
+      VendorzipCodeErr: false,
+      VendorzipCodeHelperText: "",
+
+      VendorcityAutoComplete: false,
+      VendorstateAutoComplete: false,
+      VendorgoogleApiCityList: [],
+      Vendorcity: "",
+
       cityAutoComplete: false,
       stateAutoComplete: false,
       googleApiCityList: [],
       stateList: [],
 
+      Vendorcity: "",
+      VendorcityErr: false,
+      VendorcityHelperText: "",
+
       city: "",
       cityErr: false,
       cityHelperText: "",
+
+      Vendorstate: "",
+      VendorstateErr: false,
+      VendorstateHelperText: "",
 
       state: "",
       stateErr: false,
@@ -203,6 +228,692 @@ class AddEditVendors extends Component {
     document.getElementById("Comments").style.display = "none";
     document.getElementById("ContactAdd").style.display = "none";
   }
+  ChangeCountry = (value) => {
+    this.setState({ selectedCountry: value });
+    this.getStates(value);
+  };
+  ChangeVendorCountry = (value) => {
+    this.setState({ selectedVendorCountry: value });
+    this.getStates(value);
+  };
+  ChangeFromCity = (event, value) => {
+    if (value != null) {
+      this.setState({ city: value });
+    }
+  };
+  vendorChangeCity = (event, value) => {
+    if (value != null) {
+      this.setState({ Vendorcity: value });
+    }
+  };
+  ChangeFromState = (event, value) => {
+    if (value != null) {
+      this.setState({ state: value });
+    }
+  };
+  vendorChangeState = (event, value) => {
+    if (value != null) {
+      this.setState({ Vendorstate: value });
+    }
+  };
+  selectChangeTab1 = (event, value, type) => {
+    if (value != null) {
+      if (type === "VendorCountry") {
+        var SelectedCountry = _.findIndex(this.state.CountryList, function(
+          country
+        ) {
+          return country.CountryName === value.label;
+        });
+
+        var fromSelectedCountryData = this.state.CountryList[SelectedCountry];
+
+        if (
+          fromSelectedCountryData.IsFedexCity == 1 &&
+          fromSelectedCountryData.IsZipAvailable == 0
+        ) {
+          var SelectedCity = { label: "Select City" };
+          this.setState({
+            disableFromZip: true,
+            disableFromState: true,
+            isFedexCountryFrom: true,
+            FromFedExSelectedCity: SelectedCity,
+          });
+
+          var CityData = {
+            CityType: "FedEx",
+            CountryId: fromSelectedCountryData.CountryID,
+          };
+
+          this.getFromFedexCityList(CityData, "");
+        } else {
+          this.setState({
+            disableFromZip: false,
+            disableFromState: false,
+            isFedexCountryFrom: false,
+          });
+        }
+
+        this.setState({
+          selectedFromCountry: value,
+          fromCity: "",
+          fromState: "",
+        });
+        this.getStates(value);
+      }
+    }
+  };
+
+  getStates(countryData) {
+    try {
+      this.showLoader();
+
+      let data = {
+        countryId: countryData.value,
+      };
+
+      api
+        .post("location/getStateList", data)
+        .then((res) => {
+          if (res.success) {
+            this.setState({
+              stateList: res.data,
+              stateAutoComplete: res.data.length ? true : false,
+            });
+
+            this.hideLoader();
+          }
+        })
+        .catch((err) => {
+          this.hideLoader();
+          console.log("err...", err);
+          cogoToast.error("Something Went Wrong");
+        });
+    } catch (error) {
+      this.hideLoader();
+    }
+  }
+  VendorzipChange = (zip) => {
+    this.setState({
+      VendorstateErr: false,
+      VendorcityErr: false,
+      VendorstateHelperText: "",
+      VendorcityHelperText: "",
+    });
+    if (zip.length) {
+      fetch(
+        CommonConfig.zipCodeAPIKey(zip, this.state.selectedVendorCountry.label)
+      )
+        .then((result) => result.json())
+        .then((data) => {
+          this.showLoader();
+          if (data["status"] === "OK") {
+            if (
+              data["results"][0] &&
+              data["results"][0].hasOwnProperty("postcode_localities")
+            ) {
+              var FinalCity = [];
+
+              var countryShortName = "";
+
+              countryShortName = _.filter(
+                data["results"][0]["address_components"],
+                function(data) {
+                  return data.types[0] === "country";
+                }
+              )[0].long_name;
+              var CityData = _.filter(
+                data["results"][0]["address_components"],
+                function(data) {
+                  if (data.types[0] == "locality") {
+                    return data.types[0] === "locality";
+                  }
+                }
+              );
+
+              var CityData2 = _.filter(
+                data["results"][0]["address_components"],
+                function(data) {
+                  if (data.types[0] == "neighborhood") {
+                    return data.types[0] === "neighborhood";
+                  }
+                }
+              );
+
+              var CityData3 = _.filter(
+                data["results"][0]["address_components"],
+                function(data) {
+                  if (data.types[0] == "administrative_area_level_2") {
+                    return data.types[0] === "administrative_area_level_2";
+                  }
+                }
+              );
+
+              var CityData4 = _.filter(
+                data["results"][0]["address_components"],
+                function(data) {
+                  if (data.types[0] == "administrative_area_level_1") {
+                    return data.types[0] === "administrative_area_level_1";
+                  }
+                }
+              );
+
+              if (CityData.length > 0) {
+                CityData = CityData[0].long_name;
+                FinalCity.push({
+                  City_code: CityData,
+                  Name: CityData,
+                });
+                var SelectedCity = {
+                  value: FinalCity[0].City_code,
+                  label: FinalCity[0].Name,
+                };
+              } else if (CityData2.length > 0) {
+                CityData2 = CityData2[0].long_name;
+                FinalCity.push({
+                  City_code: CityData2,
+                  Name: CityData2,
+                });
+                var SelectedCity = {
+                  value: FinalCity[0].City_code,
+                  label: FinalCity[0].Name,
+                };
+              } else if (CityData3.length > 0) {
+                CityData3 = CityData3[0].long_name;
+                FinalCity.push({
+                  City_code: CityData3,
+                  Name: CityData3,
+                });
+                var SelectedCity = {
+                  value: FinalCity[0].City_code,
+                  label: FinalCity[0].Name,
+                };
+              } else if (CityData4.length > 0) {
+                CityData4 = CityData4[0].long_name;
+                FinalCity.push({
+                  City_code: CityData4,
+                  Name: CityData4,
+                });
+                var SelectedCity = {
+                  value: FinalCity[0].City_code,
+                  label: FinalCity[0].Name,
+                };
+              }
+
+              var state = _.filter(
+                data["results"][0]["address_components"],
+                function(data) {
+                  return data.types[0] === "administrative_area_level_1";
+                }
+              )[0].long_name;
+              var SelectedState = { value: state, label: state };
+
+              if (countryShortName === this.state.selectedVendorCountry.label) {
+                this.setState({
+                  VendorcityAutoComplete: FinalCity.length ? true : false,
+                  VendorstateAutoComplete: this.state.stateList.length
+                    ? true
+                    : false,
+                  VendorgoogleApiCityList: FinalCity,
+                  Vendorstate: this.state.stateList.length
+                    ? SelectedState
+                    : state,
+                  Vendorcity: SelectedCity,
+                });
+              } else {
+                this.setState({
+                  VendorcityAutoComplete: false,
+                  VendorstateAutoComplete: this.state.stateList.length
+                    ? true
+                    : false,
+                  VendorgoogleApiCityList: [],
+                  Vendorstate: "",
+                  Vendorcity: "",
+                });
+              }
+              this.hideLoader();
+            } else if (data["results"][0]) {
+              var FinalCity = [];
+              var city = "";
+              var countryShortName = "";
+
+              countryShortName = _.filter(
+                data["results"][0]["address_components"],
+                function(data) {
+                  return data.types[0] === "country";
+                }
+              )[0].long_name;
+
+              if (
+                city == "" &&
+                _.filter(data["results"][0]["address_components"], function(
+                  data
+                ) {
+                  return data.types[0] === "locality";
+                }).length > 0
+              ) {
+                city = _.filter(
+                  data["results"][0]["address_components"],
+                  function(data) {
+                    return data.types[0] === "locality";
+                  }
+                )[0].short_name;
+              } else if (
+                city == "" &&
+                _.filter(data["results"][0]["address_components"], function(
+                  data
+                ) {
+                  return data.types[0] === "administrative_area_level_3";
+                }).length > 0
+              ) {
+                city = _.filter(
+                  data["results"][0]["address_components"],
+                  function(data) {
+                    return data.types[0] === "administrative_area_level_3";
+                  }
+                )[0].short_name;
+              } else if (
+                city == "" &&
+                _.filter(data["results"][0]["address_components"], function(
+                  data
+                ) {
+                  return data.types[0] === "political";
+                }).length > 0
+              ) {
+                city = _.filter(
+                  data["results"][0]["address_components"],
+                  function(data) {
+                    return data.types[0] === "political";
+                  }
+                )[0].short_name;
+              } else if (
+                city == "" &&
+                _.filter(data["results"][0]["address_components"], function(
+                  data
+                ) {
+                  return data.types[0] === "neighborhood";
+                }).length > 0
+              ) {
+                city = _.filter(
+                  data["results"][0]["address_components"],
+                  function(data) {
+                    return data.types[0] === "neighborhood";
+                  }
+                )[0].short_name;
+              } else if (
+                city == "" &&
+                _.filter(data["results"][0]["address_components"], function(
+                  data
+                ) {
+                  return data.types[0] === "administrative_area_level_2";
+                }).length > 0
+              ) {
+                city = _.filter(
+                  data["results"][0]["address_components"],
+                  function(data) {
+                    return data.types[0] === "administrative_area_level_2";
+                  }
+                )[0].long_name;
+              } else if (
+                city == "" &&
+                _.filter(data["results"][0]["address_components"], function(
+                  data
+                ) {
+                  return data.types[0] === "administrative_area_level_1";
+                }).length > 0
+              ) {
+                city = _.filter(
+                  data["results"][0]["address_components"],
+                  function(data) {
+                    return data.types[0] === "administrative_area_level_1";
+                  }
+                )[0].long_name;
+              } else if (city == "") {
+                city = "";
+              }
+
+              var state = _.filter(
+                data["results"][0]["address_components"],
+                function(data) {
+                  return data.types[0] === "administrative_area_level_1";
+                }
+              )[0].long_name;
+
+              FinalCity.push({
+                City_code: city,
+                Name: city,
+              });
+
+              var SelectedCity = {
+                value: FinalCity[0].City_code,
+                label: FinalCity[0].Name,
+              };
+
+              var SelectedState = { value: state, label: state };
+
+              if (countryShortName === this.state.selectedVendorCountry.label) {
+                this.setState({
+                  VendorcityAutoComplete: FinalCity.length ? true : false,
+                  VendorstateAutoComplete: this.state.stateList.length
+                    ? true
+                    : false,
+                  VendorgoogleApiCityList: FinalCity,
+                  Vendorstate: this.state.stateList.length
+                    ? SelectedState
+                    : state,
+                  Vendorcity: SelectedCity,
+                });
+              } else {
+                this.setState({
+                  VendorcityAutoComplete: false,
+                  VendorstateAutoComplete: this.state.stateList.length
+                    ? true
+                    : false,
+                  VendorgoogleApiCityList: [],
+                  Vendorstate: "",
+                  Vendorcity: "",
+                });
+              }
+              this.hideLoader();
+            }
+          } else {
+            cogoToast.error("Zip code not found");
+            this.setState({
+              VendorcityAutoComplete: false,
+              VendorstateAutoComplete: this.state.stateList.length
+                ? true
+                : false,
+              VendorgoogleApiCityList: [],
+              Vendorstate: "",
+              Vendorcity: "",
+            });
+            this.hideLoader();
+          }
+        });
+    }
+  };
+  zipChange = (zip) => {
+    this.setState({
+      stateErr: false,
+      cityErr: false,
+      stateHelperText: "",
+      cityHelperText: "",
+    });
+    if (zip.length) {
+      fetch(CommonConfig.zipCodeAPIKey(zip, this.state.selectedCountry.label))
+        .then((result) => result.json())
+        .then((data) => {
+          this.showLoader();
+          if (data["status"] === "OK") {
+            if (
+              data["results"][0] &&
+              data["results"][0].hasOwnProperty("postcode_localities")
+            ) {
+              var FinalCity = [];
+
+              var countryShortName = "";
+
+              countryShortName = _.filter(
+                data["results"][0]["address_components"],
+                function(data) {
+                  return data.types[0] === "country";
+                }
+              )[0].long_name;
+              var CityData = _.filter(
+                data["results"][0]["address_components"],
+                function(data) {
+                  if (data.types[0] == "locality") {
+                    return data.types[0] === "locality";
+                  }
+                }
+              );
+
+              var CityData2 = _.filter(
+                data["results"][0]["address_components"],
+                function(data) {
+                  if (data.types[0] == "neighborhood") {
+                    return data.types[0] === "neighborhood";
+                  }
+                }
+              );
+
+              var CityData3 = _.filter(
+                data["results"][0]["address_components"],
+                function(data) {
+                  if (data.types[0] == "administrative_area_level_2") {
+                    return data.types[0] === "administrative_area_level_2";
+                  }
+                }
+              );
+
+              var CityData4 = _.filter(
+                data["results"][0]["address_components"],
+                function(data) {
+                  if (data.types[0] == "administrative_area_level_1") {
+                    return data.types[0] === "administrative_area_level_1";
+                  }
+                }
+              );
+
+              if (CityData.length > 0) {
+                CityData = CityData[0].long_name;
+                FinalCity.push({
+                  City_code: CityData,
+                  Name: CityData,
+                });
+                var SelectedCity = {
+                  value: FinalCity[0].City_code,
+                  label: FinalCity[0].Name,
+                };
+              } else if (CityData2.length > 0) {
+                CityData2 = CityData2[0].long_name;
+                FinalCity.push({
+                  City_code: CityData2,
+                  Name: CityData2,
+                });
+                var SelectedCity = {
+                  value: FinalCity[0].City_code,
+                  label: FinalCity[0].Name,
+                };
+              } else if (CityData3.length > 0) {
+                CityData3 = CityData3[0].long_name;
+                FinalCity.push({
+                  City_code: CityData3,
+                  Name: CityData3,
+                });
+                var SelectedCity = {
+                  value: FinalCity[0].City_code,
+                  label: FinalCity[0].Name,
+                };
+              } else if (CityData4.length > 0) {
+                CityData4 = CityData4[0].long_name;
+                FinalCity.push({
+                  City_code: CityData4,
+                  Name: CityData4,
+                });
+                var SelectedCity = {
+                  value: FinalCity[0].City_code,
+                  label: FinalCity[0].Name,
+                };
+              }
+
+              var state = _.filter(
+                data["results"][0]["address_components"],
+                function(data) {
+                  return data.types[0] === "administrative_area_level_1";
+                }
+              )[0].long_name;
+              var SelectedState = { value: state, label: state };
+
+              if (countryShortName === this.state.selectedCountry.label) {
+                this.setState({
+                  cityAutoComplete: FinalCity.length ? true : false,
+                  stateAutoComplete: this.state.stateList.length ? true : false,
+                  googleApiCityList: FinalCity,
+                  state: this.state.stateList.length ? SelectedState : state,
+                  city: SelectedCity,
+                });
+              } else {
+                this.setState({
+                  cityAutoComplete: false,
+                  stateAutoComplete: this.state.stateList.length ? true : false,
+                  googleApiCityList: [],
+                  state: "",
+                  city: "",
+                });
+              }
+              this.hideLoader();
+            } else if (data["results"][0]) {
+              var FinalCity = [];
+              var city = "";
+              var countryShortName = "";
+
+              countryShortName = _.filter(
+                data["results"][0]["address_components"],
+                function(data) {
+                  return data.types[0] === "country";
+                }
+              )[0].long_name;
+
+              if (
+                city == "" &&
+                _.filter(data["results"][0]["address_components"], function(
+                  data
+                ) {
+                  return data.types[0] === "locality";
+                }).length > 0
+              ) {
+                city = _.filter(
+                  data["results"][0]["address_components"],
+                  function(data) {
+                    return data.types[0] === "locality";
+                  }
+                )[0].short_name;
+              } else if (
+                city == "" &&
+                _.filter(data["results"][0]["address_components"], function(
+                  data
+                ) {
+                  return data.types[0] === "administrative_area_level_3";
+                }).length > 0
+              ) {
+                city = _.filter(
+                  data["results"][0]["address_components"],
+                  function(data) {
+                    return data.types[0] === "administrative_area_level_3";
+                  }
+                )[0].short_name;
+              } else if (
+                city == "" &&
+                _.filter(data["results"][0]["address_components"], function(
+                  data
+                ) {
+                  return data.types[0] === "political";
+                }).length > 0
+              ) {
+                city = _.filter(
+                  data["results"][0]["address_components"],
+                  function(data) {
+                    return data.types[0] === "political";
+                  }
+                )[0].short_name;
+              } else if (
+                city == "" &&
+                _.filter(data["results"][0]["address_components"], function(
+                  data
+                ) {
+                  return data.types[0] === "neighborhood";
+                }).length > 0
+              ) {
+                city = _.filter(
+                  data["results"][0]["address_components"],
+                  function(data) {
+                    return data.types[0] === "neighborhood";
+                  }
+                )[0].short_name;
+              } else if (
+                city == "" &&
+                _.filter(data["results"][0]["address_components"], function(
+                  data
+                ) {
+                  return data.types[0] === "administrative_area_level_2";
+                }).length > 0
+              ) {
+                city = _.filter(
+                  data["results"][0]["address_components"],
+                  function(data) {
+                    return data.types[0] === "administrative_area_level_2";
+                  }
+                )[0].long_name;
+              } else if (
+                city == "" &&
+                _.filter(data["results"][0]["address_components"], function(
+                  data
+                ) {
+                  return data.types[0] === "administrative_area_level_1";
+                }).length > 0
+              ) {
+                city = _.filter(
+                  data["results"][0]["address_components"],
+                  function(data) {
+                    return data.types[0] === "administrative_area_level_1";
+                  }
+                )[0].long_name;
+              } else if (city == "") {
+                city = "";
+              }
+
+              var state = _.filter(
+                data["results"][0]["address_components"],
+                function(data) {
+                  return data.types[0] === "administrative_area_level_1";
+                }
+              )[0].long_name;
+
+              FinalCity.push({
+                City_code: city,
+                Name: city,
+              });
+
+              var SelectedCity = {
+                value: FinalCity[0].City_code,
+                label: FinalCity[0].Name,
+              };
+
+              var SelectedState = { value: state, label: state };
+
+              if (countryShortName === this.state.selectedCountry.label) {
+                this.setState({
+                  cityAutoComplete: FinalCity.length ? true : false,
+                  stateAutoComplete: this.state.stateList.length ? true : false,
+                  googleApiCityList: FinalCity,
+                  state: this.state.stateList.length ? SelectedState : state,
+                  city: SelectedCity,
+                });
+              } else {
+                this.setState({
+                  cityAutoComplete: false,
+                  stateAutoComplete: this.state.stateList.length ? true : false,
+                  googleApiCityList: [],
+                  state: "",
+                  city: "",
+                });
+              }
+              this.hideLoader();
+            }
+          } else {
+            cogoToast.error("Zip code not found");
+            this.setState({
+              cityAutoComplete: false,
+              stateAutoComplete: this.state.stateList.length ? true : false,
+              googleApiCityList: [],
+              state: "",
+              city: "",
+            });
+            this.hideLoader();
+          }
+        });
+    }
+  };
   getContacts(vendorId) {
     try {
       debugger;
@@ -290,6 +1001,10 @@ class AddEditVendors extends Component {
 
     return IsFormValid;
   }
+  cancelContact() {
+    document.getElementById("ContactAdd").style.display = "none";
+    this.ResetContact();
+  }
   ResetContact() {
     this.setState({
       contactName: "",
@@ -310,7 +1025,9 @@ class AddEditVendors extends Component {
   }
 
   addContact = () => {
+    debugger;
     let valid = this.validateAddContact();
+
     if (valid) {
       var phoneArray = [
         { phone: this.state.phone1, phoneExt: this.state.phone1Ext },
@@ -321,21 +1038,21 @@ class AddEditVendors extends Component {
       if (this.state.isEdit) {
         let contacts = this.state.contactList;
         const key = this.state.contactListKey;
-        (contacts[key].Name = this.state.contactName),
-          (contacts[key].Title = this.state.title),
-          (contacts[key].Country = this.state.selectedCountry.label),
-          (contacts[key].AddressLine1 = this.state.addressLine1),
-          (contacts[key].AddressLine2 = this.state.addressLine2),
-          (contacts[key].AddressLine3 = this.state.addressLine3),
-          (contacts[key].ZipCode = this.state.zipCode),
-          (contacts[key].City = CommonConfig.isEmpty(this.state.city.label)
-            ? this.state.city
-            : this.state.city.label),
-          (contacts[key].State = CommonConfig.isEmpty(this.state.state.label)
-            ? this.state.state
-            : this.state.state.label),
-          (contacts[key].Email = this.state.email),
-          (contacts[key].Phone = phoneArray);
+        contacts[key].Name = this.state.contactName;
+        contacts[key].Title = this.state.title;
+        contacts[key].Country = this.state.selectedCountry.label;
+        contacts[key].AddressLine1 = this.state.addressLine1;
+        contacts[key].AddressLine2 = this.state.addressLine2;
+        contacts[key].AddressLine3 = this.state.addressLine3;
+        contacts[key].ZipCode = this.state.zipCode;
+        contacts[key].City = CommonConfig.isEmpty(this.state.city.label)
+          ? this.state.city
+          : this.state.city.label;
+        contacts[key].State = CommonConfig.isEmpty(this.state.state.label)
+          ? this.state.state
+          : this.state.state.label;
+        contacts[key].Email = this.state.email;
+        contacts[key].Phone = phoneArray;
 
         this.setState({ contactList: contacts, isEdit: false });
         this.ResetContact();
@@ -365,6 +1082,7 @@ class AddEditVendors extends Component {
         });
         this.ResetContact();
       }
+      document.getElementById("ContactAdd").style.display = "none";
     }
   };
   changeDropDown = (event, type) => {
@@ -427,8 +1145,6 @@ class AddEditVendors extends Component {
       this.setState({ VendorPhone: val });
     } else if (type === "VendorEmail") {
       this.setState({ VendorEmail: val });
-    } else if (type === "VendorZip") {
-      this.setState({ VendorZip: val });
     } else if (type === "contactName") {
       if (CommonConfig.isEmpty(val)) {
         this.setState({
@@ -631,6 +1347,88 @@ class AddEditVendors extends Component {
       } else {
         this.setState({ email: val, emailErr: false, emailHelperText: "" });
       }
+    } else if (type === "VendorzipCode") {
+      if (CommonConfig.isEmpty(val)) {
+        this.setState({
+          VendorzipCode: val,
+          VendorzipCodeErr: true,
+          VendorzipCodeHelperText: "Please enter Zip Code",
+        });
+      } else if (
+        val.trim() !== val ||
+        !val.match(CommonConfig.RegExp.zipCode)
+      ) {
+        this.setState({
+          VendorzipCode: val,
+          VendorzipCodeErr: true,
+          VendorzipCodeHelperText: "Zipcode is not valid",
+        });
+      } else if (val.length > 12) {
+        this.setState({
+          VendorzipCode: val,
+          VendorzipCodeErr: true,
+          VendorzipCodeHelperText: "Zipcode length should be max 12 character",
+        });
+      } else {
+        this.setState({
+          VendorzipCode: val,
+          VendorzipCodeErr: false,
+          VendorzipCodeHelperText: "",
+        });
+        this.VendorzipChange(val);
+      }
+    } else if (type === "Vendorcity") {
+      if (CommonConfig.isEmpty(val)) {
+        this.setState({
+          Vendorcity: val,
+          VendorcityErr: true,
+          VendorcityHelperText: "Please enter City",
+        });
+      } else if (CommonConfig.RegExp.companyName.test(val)) {
+        this.setState({
+          Vendorcity: val,
+          VendorcityErr: true,
+          VendorcityHelperText: "City is not valid",
+        });
+      } else if (val.length > 54) {
+        this.setState({
+          Vendorcity: val,
+          VendorcityErr: true,
+          VendorcityHelperText: "City shoule be max 54 characters",
+        });
+      } else {
+        this.setState({
+          Vendorcity: val,
+          VendorcityErr: false,
+          VendorcityHelperText: "",
+        });
+      }
+    } else if (type === "Vendorstate") {
+      if (CommonConfig.isEmpty(val)) {
+        this.setState({
+          Vendorstate: val,
+          VendorstateErr: true,
+          VendorstateHelperText: "Please enter State",
+        });
+      } else if (CommonConfig.RegExp.companyName.test(val)) {
+        this.setState({
+          Vendorstate: val,
+          VendorstateErr: true,
+          VendorstateHelperText: "State is not valid",
+        });
+      } else if (val.length > 54) {
+        this.setState({
+          Vendorstate: val,
+          VendorstateErr: true,
+          VendorstateHelperText: "State shoule be max 54 characters",
+        });
+      } else {
+        this.setState({
+          Vendorstate: val,
+          VendorstateErr: false,
+          VendorstateHelperText: "",
+        });
+      }
     }
   };
   handleChange = (event, type) => {
@@ -642,7 +1440,7 @@ class AddEditVendors extends Component {
     } else if (type === "carrierLink") {
       this.setState({ carrierLink: val });
     } else if (type === "comments") {
-      this.setState({ Vendorcomments: val });
+      this.setState({ comments: val });
     } else if (type === "VendorAddressLine1") {
       this.setState({ VendorAddressLine1: val });
     } else if (type === "VendorAddressLine2") {
@@ -653,8 +1451,12 @@ class AddEditVendors extends Component {
       this.setState({ VendorPhone: val });
     } else if (type === "VendorEmail") {
       this.setState({ VendorEmail: val });
-    } else if (type === "VendorZip") {
-      this.setState({ VendorZip: val });
+    } else if (type === "VendorzipCode") {
+      this.setState({ VendorzipCode: val });
+    } else if (type === "Vendorcity") {
+      this.setState({ Vendorcity: val });
+    } else if (type === "Vendorstate") {
+      this.setState({ Vendorstate: val });
     } else if (type === "contactName") {
       this.setState({ contactName: val });
     } else if (type === "title") {
@@ -698,24 +1500,40 @@ class AddEditVendors extends Component {
           if (res.success) {
             this.hideLoader();
             let allServiceList = this.state.ServiceList;
-
-            for (var i = 0; i < allServiceList.length; i++) {
-              for (var j = 0; j < res.data.services.length; j++) {
-                if (
-                  allServiceList[i].ServiceId === res.data.services[j].Id &&
-                  allServiceList[i].ServiceName ===
-                    res.data.services[j].serviceName
-                ) {
-                  allServiceList[i].isChecked = true;
+            if (
+              res.data.services != undefined ||
+              res.data.services.length > 0
+            ) {
+              for (var i = 0; i < allServiceList.length; i++) {
+                for (var j = 0; j < res.data.services.length; j++) {
+                  if (
+                    allServiceList[i].ServiceId === res.data.services[j].Id &&
+                    allServiceList[i].ServiceName ===
+                      res.data.services[j].serviceName
+                  ) {
+                    allServiceList[i].isChecked = true;
+                  }
                 }
               }
             }
-            for (var i = 0; i < res.data.DocumentList.length; i++) {
-              var filesList = res.data.DocumentList[i];
-              filesList.CreatedOn = moment(filesList.CreatedOn).format(
-                CommonConfig.dateFormat.dateOnly
+            if (res.data.DocumentList.length > 0) {
+              for (var i = 0; i < res.data.DocumentList.length; i++) {
+                var filesList = res.data.DocumentList[i];
+                filesList.CreatedOn = moment(filesList.CreatedOn).format(
+                  CommonConfig.dateFormat.dateOnly
+                );
+                this.state.Attachments.push(filesList);
+              }
+            }
+            const country = {};
+            if (res.data.Country != "" || res.data.country != null) {
+              const selectedCountry = this.state.CountryList.find(
+                (x) => x.CountryName === res.data.Country
               );
-              this.state.Attachments.push(filesList);
+              country = {
+                value: selectedCountry.CountryID,
+                label: selectedCountry.CountryName,
+              };
             }
             this.setState({
               vendorName: res.data.Name,
@@ -727,6 +1545,14 @@ class AddEditVendors extends Component {
               offeredService: res.data.services,
               createdBy: res.data.CreatedBy,
               isBulkUpload: res.data.IsBulkUpload === 1 ? true : false,
+              isFormW9: res.data.FormW9 === 1 ? true : false,
+              VendorAddressLine1: res.data.AddressLine1,
+              VendorAddressLine2: res.data.AddressLine2,
+              VendorAddressLine3: res.data.AddressLine3,
+              VendorzipCode: res.data.ZipCode,
+              Vendorcity: res.data.City,
+              Vendorstate: res.data.State,
+              selectedVendorCountry: country,
             });
             this.setState({
               Attachments: [
@@ -794,6 +1620,7 @@ class AddEditVendors extends Component {
   }
 
   navigateChange = (key) => {
+    debugger;
     let stepsList = this.state.Steps;
     let activeIndex = stepsList.findIndex((x) => x.classname === "active");
 
@@ -802,6 +1629,14 @@ class AddEditVendors extends Component {
       stepsList[activeIndex]["classname"] = "inactive";
       this.setState({ Steps: stepsList });
       let divID = stepsList[key]["stepId"];
+      if (
+        key === 0 &&
+        document.getElementById("ContactAdd").style.display === "block"
+      ) {
+        document.getElementById("ContactAdd").style.display = "block";
+      } else {
+        document.getElementById("ContactAdd").style.display = "none";
+      }
       let activeDiv = stepsList[activeIndex]["stepId"];
       document.getElementById(divID).style.display = "block";
       document.getElementById(activeDiv).style.display = "none";
@@ -869,23 +1704,25 @@ class AddEditVendors extends Component {
       comments: vendorDetails.comments,
       carrierLink: vendorDetails.carrierLink,
       service: vendorDetails.offeredService,
-      contacts: this.state.contactList,
       userId: CommonConfig.loggedInUserData().PersonID,
-      DocumentList: finalAttachment,
+      isFormW9: vendorDetails.isFormW9,
+      AddressLine1: vendorDetails.VendorAddressLine1,
+      AddressLine2: vendorDetails.VendorAddressLine2,
+      AddressLine3: vendorDetails.VendorAddressLine3,
+      ZipCode: vendorDetails.VendorzipCode,
+      City: CommonConfig.isEmpty(vendorDetails.Vendorcity.label)
+        ? vendorDetails.Vendorcity
+        : vendorDetails.Vendorcity.label,
+      State: CommonConfig.isEmpty(vendorDetails.Vendorstate.label)
+        ? vendorDetails.Vendorstate
+        : vendorDetails.Vendorstate.label,
+      Country: vendorDetails.selectedVendorCountry.label,
     };
-    var formData = new FormData();
-    formData.append("data", JSON.stringify(data));
-
-    if (vendorDetails.AttachmentList.length > 0) {
-      vendorDetails.AttachmentList.forEach((file) => {
-        formData.append("Attachments", file);
-      });
-    }
 
     try {
       this.showLoader();
       api
-        .post("vendor/addVendor", formData)
+        .post("vendor/addNewVendor", JSON.stringify(data))
         .then((res) => {
           if (res.success) {
             this.hideLoader();
@@ -992,6 +1829,165 @@ class AddEditVendors extends Component {
         contactListKey: key,
       });
     }
+  };
+  editVendor() {
+    if (this.state.offeredService.length === 0) {
+      return cogoToast.error("Please select one service");
+    }
+    if (this.state.contactList.length === 0) {
+      return cogoToast.error("Please add one contact");
+    }
+    debugger;
+    let vendorDetails = this.state;
+    var finalAttachment = [];
+    for (var i = 0; i < vendorDetails.Attachments.length; i++) {
+      if (vendorDetails.Attachments[i].hasOwnProperty("AttachmentName")) {
+        finalAttachment.push(vendorDetails.Attachments[i]);
+      }
+    }
+    debugger;
+    let data = {
+      vendorId: this.state.vendorId,
+      vendorName: vendorDetails.vendorName,
+      vendorWebsite: vendorDetails.vendorWebsite,
+      vendorType: vendorDetails.vendorType,
+      isBulkUpload: vendorDetails.isBulkUpload,
+      isFormW9: vendorDetails.isFormW9, // === true ? 1 : 0,
+      carrierLink: vendorDetails.carrierLink,
+      comments: vendorDetails.comments,
+      service: vendorDetails.offeredService,
+      contacts: this.state.contactList,
+      userId: CommonConfig.loggedInUserData().PersonID,
+      DocumentList: finalAttachment,
+      AddressLine1: vendorDetails.VendorAddressLine1,
+      AddressLine2: vendorDetails.VendorAddressLine2,
+      AddressLine3: vendorDetails.VendorAddressLine3,
+      ZipCode: vendorDetails.VendorzipCode,
+      City: CommonConfig.isEmpty(vendorDetails.Vendorcity.label)
+        ? vendorDetails.Vendorcity
+        : vendorDetails.Vendorcity.label,
+      State: CommonConfig.isEmpty(vendorDetails.Vendorstate.label)
+        ? vendorDetails.Vendorstate
+        : vendorDetails.Vendorstate.label,
+      Country: vendorDetails.selectedVendorCountry.label,
+    };
+
+    var formData = new FormData();
+    formData.append("data", JSON.stringify(data));
+
+    if (vendorDetails.AttachmentList.length > 0) {
+      vendorDetails.AttachmentList.forEach((file) => {
+        formData.append("Attachments", file);
+      });
+    }
+    try {
+      this.showLoader();
+      api
+        .post("vendor/EditVendor", formData)
+        .then((res) => {
+          if (res.success) {
+            this.props.history.push({
+              pathname: "/admin/Vendor",
+              state: {
+                filterlist:
+                  this.props.history.location.state.filterlist !== undefined
+                    ? this.props.history.location.state.filterlist
+                    : null,
+                sortlist:
+                  this.props.history.location.state.sortlist !== undefined
+                    ? this.props.history.location.state.sortlist
+                    : null,
+                serviceValue:
+                  this.props.history.location.state.serviceValue !== undefined
+                    ? this.props.history.location.state.serviceValue
+                    : null,
+              },
+            });
+          }
+        })
+        .catch((err) => {
+          this.hideLoader();
+          console.log("err..", err);
+          cogoToast.error("Something Went Wrong");
+        });
+    } catch (error) {
+      this.hideLoader();
+      console.log("error..", error);
+      cogoToast.error("Something Went Wrong");
+    }
+  }
+  fileUpload = (event, record) => {
+    const files = event.target.files[0];
+    console.log("FileSizes = ", files);
+    console.log("FileSizes = ", files.size);
+    var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.pdf)$/i;
+    if (!allowedExtensions.exec(files.name)) {
+      cogoToast.error(
+        "Please upload file having extensions .jpeg/.jpg/.png/.pdf only."
+      );
+    } else {
+      if (files.size > 5000000) {
+        cogoToast.error("please upload the file maximum 5MB");
+      } else {
+        let AttachmentList = this.state.Attachments;
+        let Index = this.state.Attachments.indexOf(record.original);
+        let dateNow = new Date().getTime();
+        AttachmentList[Index]["DateTime"] = dateNow;
+        AttachmentList[Index]["AttachmentName"] = files.name;
+        AttachmentList[Index]["AttachmentType"] = files.type;
+        AttachmentList[Index]["AttachmentID"] = null;
+        AttachmentList[Index]["Status"] = "Active";
+        this.setState({
+          Attachments: AttachmentList,
+          AttachmentList: [...this.state.AttachmentList, files],
+        });
+      }
+    }
+  };
+  renderDocumentName = (cellInfo) => {
+    return (
+      <div className="table-input-slam">
+        <CustomInput
+          inputProps={{
+            value: cellInfo.original.FileName,
+            onChange: (event) => this.handleDocumentChange(event, cellInfo),
+          }}
+        />
+      </div>
+    );
+  };
+  handleDocumentDelete = (e, record) => {
+    console.log("Records = ", record);
+    var data = {
+      Attachments: record,
+    };
+    api
+      .post("/vendor/deleteVendorSingleDocument", data)
+      .then((res) => {
+        if (res.success) {
+          this.hideLoader();
+        }
+      })
+      .catch((err) => {
+        console.log("error", err);
+      });
+
+    var AttachmentList = this.state.Attachments;
+    var Index = AttachmentList.indexOf(record);
+    AttachmentList[Index]["Status"] = "Inactive";
+    this.setState({ Attachments: AttachmentList });
+  };
+  handleDocumentChange = (e, record) => {
+    var Index = this.state.Attachments.indexOf(record.original);
+    this.state.Attachments[Index]["FileName"] = e.target.value;
+    this.setState({ Attachments: [...this.state.Attachments] });
+  };
+
+  deleteContact = () => {
+    let contacts = this.state.contactList;
+
+    contacts.splice(this.state.contactListKey, 1);
+    this.setState({ contactList: contacts, open: false });
   };
 
   render(Steps) {
@@ -1297,10 +2293,10 @@ class AddEditVendors extends Component {
                       <FormControl fullWidth>
                         <InputLabel>Bulk Upload</InputLabel>
                         <Select
-                          // value={this.state.isBulkUpload}
-                          // onChange={(event) =>
-                          //   this.changeDropDown(event, "bulkUpload")
-                          // }
+                          value={this.state.isBulkUpload}
+                          onChange={(event) =>
+                            this.changeDropDown(event, "bulkUpload")
+                          }
                           inputProps={{
                             name: "bulkupload",
                             id: "bulkupload",
@@ -1477,23 +2473,20 @@ class AddEditVendors extends Component {
                     {" "}
                     <FormControl fullWidth>
                       <Autocomplete
-                        // options={CountryOption}
-                        id="Country"
-                        getOptionLabel={(option) =>
-                          option.label ? option.label : option
-                        }
-                        // value={selectedToCountry}
+                        options={CountryOptions}
+                        id="VendorCountry"
+                        getOptionLabel={(option) => option.label}
+                        value={this.state.selectedVendorCountry}
                         autoSelect
-                        // onChange={(event, value) =>
-                        //   this.selectChangeTab1(event, value, "ToCountry")
-                        // }
+                        onChange={(event, value) =>
+                          this.ChangeVendorCountry(value)
+                        }
                         renderInput={(params) => (
                           <TextField
                             {...params}
-                            error={this.state.pickupcountryErr}
-                            helperText={this.state.pickupcountryHelperText}
                             label="Country"
-                            margin="normal"
+                            error={this.state.VendorcountryErr}
+                            helperText={this.state.VendorcountryHelperText}
                             fullWidth
                           />
                         )}
@@ -1503,81 +2496,130 @@ class AddEditVendors extends Component {
                   <GridItem xs={12} sm={4} md={3}>
                     {" "}
                     <CustomInput
-                      labelText="Zip"
-                      id="proposaltype"
-                      formControlProps={{
-                        fullWidth: true,
-                      }}
+                      labelText={<span>Zip</span>}
+                      id="VendorzipCode"
+                      error={this.state.VendorzipCodeErr}
+                      helperText={this.state.VendorzipCodeHelperText}
+                      formControlProps={{ fullWidth: true }}
                       inputProps={{
-                        value: this.state.VendorZip,
-                        onChange: (e) => this.handleChange(e, "VendorZip"),
-                        onBlur: (e) => this.handleBlur(e, "VendorZip"),
                         endAdornment: (
-                          <InputAdornment
-                            position="end"
-                            className={classes.inputAdornment}
-                          >
-                            <Icon className={classes.User}>
-                              local_post_office
-                            </Icon>
+                          <InputAdornment position="end">
+                            <Icon className="requiredicon">location_city</Icon>
                           </InputAdornment>
                         ),
+                        value: this.state.VendorzipCode,
+                        onBlur: (event) =>
+                          this.handleBlur(event, "VendorzipCode"),
+                        onChange: (e) => this.handleChange(e, "VendorzipCode"),
+                        onFocus: (event) =>
+                          this.setState({
+                            VendorzipCodeErr: false,
+                            VendorzipCodeHelperText: "",
+                          }),
                       }}
                     />
                   </GridItem>
                   <GridItem xs={12} sm={4} md={3}>
-                    <CustomInput
-                      labelText="City"
-                      id="city"
-                      formControlProps={{ fullWidth: true }}
-                      inputProps={{
-                        //   value: toCity.label ? toCity.label : toCity,
-                        //   onChange: (event) =>
-                        //     this.handleCityStateChange(event, "toCity"),
-                        //   onBlur: (event) =>
-                        //     this.handleBlur(event, "toCity"),
-                        endAdornment: (
-                          <InputAdornment
-                            position="end"
-                            className={classes.inputAdornment}
-                          >
-                            <Icon>location_city</Icon>
-                          </InputAdornment>
-                        ),
-                      }}
-                    />
+                    {this.state.VendorcityAutoComplete === false ? (
+                      <CustomInput
+                        labelText={<span>City</span>}
+                        id="Vendorcity"
+                        error={this.state.VendorcityErr}
+                        helperText={this.state.VendorcityHelperText}
+                        formControlProps={{ fullWidth: true }}
+                        inputProps={{
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <Icon className="requiredicon">
+                                location_city
+                              </Icon>
+                            </InputAdornment>
+                          ),
+                          value: this.state.Vendorcity,
+                          onChange: (e) => this.handleChange(e, "Vrndorcity"),
+                          onBlur: (e) => this.handleBlur(e, "Vendorcity"),
+                          onFocus: () =>
+                            this.setState({
+                              VendorcityErr: false,
+                              VendorcityHelperText: "",
+                            }),
+                        }}
+                      />
+                    ) : (
+                      <Autocomplete
+                        options={CityOptions}
+                        id="vendorcityAutoComplete"
+                        autoSelect
+                        getOptionLabel={(option) => option.label}
+                        value={this.state.Vendorcity}
+                        onChange={(event, value) =>
+                          this.vendorChangeCity(event, value)
+                        }
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            margin="normal"
+                            label="City"
+                            fullWidth
+                          />
+                        )}
+                      />
+                    )}
                   </GridItem>
                   <GridItem xs={12} sm={12} md={3}>
-                    <CustomInput
-                      labelText="State"
-                      id="state"
-                      formControlProps={{ fullWidth: true }}
-                      inputProps={{
-                        // value: toState.value ? toState.value : toState,
-                        // disabled: this.state.disableToState,
-                        // onChange: (event) =>
-                        //   this.handleCityStateChange(event, "toState"),
-                        // onBlur: (event) =>
-                        //   this.handleBlur(event, "toState"),
-                        endAdornment: (
-                          <InputAdornment
-                            position="end"
-                            className={classes.inputAdornment}
-                          >
-                            <Icon>location_city</Icon>
-                          </InputAdornment>
-                        ),
-                      }}
-                    />
+                    {this.state.VendorstateAutoComplete === false ? (
+                      <CustomInput
+                        labelText={<span>State</span>}
+                        id="state"
+                        error={this.state.VendorstateErr}
+                        helperText={this.state.VendorstateHelperText}
+                        formControlProps={{ fullWidth: true }}
+                        inputProps={{
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <Icon className="requiredicon">public</Icon>
+                            </InputAdornment>
+                          ),
+                          value: this.state.Vendorstate,
+                          onChange: (e) => this.handleChange(e, "Vendorstate"),
+                          onBlur: (e) => this.handleBlur(e, "Vendorstate"),
+                          onFocus: () =>
+                            this.setState({
+                              VendorstateErr: false,
+                              VendorstateHelperText: "",
+                            }),
+                        }}
+                      />
+                    ) : (
+                      <Autocomplete
+                        options={StateOptions}
+                        id="VendorstateAutoComplete"
+                        autoSelect
+                        getOptionLabel={(option) => option.label}
+                        value={this.state.Vendorstate}
+                        onChange={(event, value) =>
+                          this.vendorChangeState(event, value)
+                        }
+                        onFocus={() =>
+                          this.setState({
+                            VendorstateErr: false,
+                            VendorstateHelperText: "",
+                          })
+                        }
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            margin="normal"
+                            error={this.state.VendorstateErr}
+                            helperText={this.state.VendorstateHelperText}
+                            label="State"
+                            fullWidth
+                          />
+                        )}
+                      />
+                    )}
                   </GridItem>
                 </GridContainer>
-                <div className="shipment-submit">
-                  <div className="right">
-                    <Button color="rose" onClick={() => this.addVendor()}>
-                      Submit
-                    </Button>
-                  </div>
-                </div>
               </CardBody>
             </Card>
             <div id="PanelShow">
@@ -1601,7 +2643,6 @@ class AddEditVendors extends Component {
                   })}
                 </ul>
               </div>
-
               <div className="shipment-content">
                 <div className="shipment-pane" id="ContactDetails">
                   <div className="shipment-box mb-0">
@@ -2156,6 +3197,53 @@ class AddEditVendors extends Component {
                   </div>
                 </div>
               </div>
+            </div>
+            <div className="shipment-submit">
+              <div className="right">
+                <Button
+                  color="rose"
+                  onClick={() => {
+                    CommonConfig.isEmpty(this.state.vendorId)
+                      ? this.addVendor()
+                      : this.editVendor();
+                  }}
+                >
+                  SAVE & EXIT
+                </Button>
+              </div>
+            </div>
+            <div>
+              <Dialog
+                open={this.state.open}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+              >
+                <DialogTitle id="alert-dialog-title">
+                  Confirm Delete
+                </DialogTitle>
+                <DialogContent>
+                  <DialogContentText id="alert-dialog-description">
+                    Are you sure want to delete?
+                  </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                  <Button
+                    onClick={() => this.setState({ open: false })}
+                    color="primary"
+                  >
+                    Cancel
+                  </Button>
+                  {this.state.Access.DeleteAccess === 1 ? (
+                    <Button
+                      onClick={() => this.deleteContact()}
+                      color="primary"
+                      autoFocus
+                    >
+                      Delete
+                    </Button>
+                  ) : null}
+                </DialogActions>
+              </Dialog>
             </div>
           </GridItem>
         </GridContainer>
