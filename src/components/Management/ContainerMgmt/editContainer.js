@@ -151,6 +151,7 @@ class editContainer extends Component {
 
       NotifyPartyName: "",
       NotifyPartyPhone: "",
+      GSTNo:"",
       NotifyPartyEmail: "",
       NotifyPartyAddr1: "",
       NotifyPartyAddr2: "",
@@ -231,8 +232,8 @@ class editContainer extends Component {
   }
 
   async componentDidMount() {
-    this.setState({ Base: CommonConfig.BaseUrl });
-    //  this.setState({ Base: "http://localhost:3000/" });
+    // this.setState({ Base: CommonConfig.BaseUrl });
+     this.setState({ Base: "http://localhost:3000/" });
     await this.showHide();
     await this.stringMapSize();
     await this.stringmapStatus();
@@ -312,105 +313,109 @@ class editContainer extends Component {
         ContainerID: this.props.history.location.state.containerId,
       };
       var dataMer = []
-      api.get("container/getMergedShipments")
+      api.post("container/getMergedShipments", data)
             .then((resultHBL) => {
               console.log("Result = ",resultHBL)
               // this.setState({ managedByList: result.data });
               dataMer = resultHBL.data 
+
+              api
+              .post("container/getShipmentsByContainer", data)
+              .then((res) => {
+                if (res.success) {
+      
+                  console.log("Packages = " , res.data)
+                  res.data.Packages.map((OBJ) => {
+                    var i = 1;
+                    OBJ.map((obj) => {
+                      obj.Index = i;
+                      i++;
+                      return obj;
+                    });
+                    return OBJ;
+                  });
+                 
+                  
+                  var setHblShipment = []
+                  // var YesNO=[]
+      
+                  var setCountShip = []
+      
+                  for (let hblindex = 0; hblindex < res.data.Shipments.length; hblindex++) {
+                    // const element = array[hblindex];
+                    if(res.data.Shipments[hblindex].hblshipment == 0){
+                      res.data.Shipments[hblindex].setsc = 1
+                      res.data.Shipments[hblindex].setPack = res.data.Shipments[hblindex].TotalPackages
+                      setHblShipment.push(res.data.Shipments[hblindex])
+                    }else{
+                      setCountShip.push(res.data.Shipments[hblindex])
+                    }
+                    
+                  }
+      
+                  console.log("setCountShip = ",setCountShip)
+      
+                  for (let setind = 0; setind < setHblShipment.length; setind++) {
+                    debugger
+                    for (let HBLSETING = 0; HBLSETING < dataMer.length; HBLSETING++) {
+                      
+                        if(dataMer[HBLSETING].hblshipment == setHblShipment[setind].ShippingID){
+                          setHblShipment[setind].setsc = setHblShipment[setind].setsc + dataMer[HBLSETING].totalShipment
+                          setHblShipment[setind].setPack = setHblShipment[setind].setPack+  dataMer[HBLSETING].totalPack
+                        }
+                      
+                    }
+                    
+                  }
+      
+      
+                  console.log("yesno = ",setHblShipment )
+                  
+      
+                  
+      
+      
+      
+                  this.setState({
+                    ShipmentList: res.data.Shipments,
+                    HBLShipmentList: setHblShipment,
+                    Sequence: res.data.Packages,
+      
+                    // serviceNameData:YesNO,
+                  });
+      
+                  var counts = 0
+                  var tvcount = 0
+                  var cftCount = 0
+      
+                  for (let index = 0; index < res.data.Shipments.length; index++) {
+      
+                    counts = counts + res.data.Shipments[index].TotalPackages
+                    tvcount = tvcount + res.data.Shipments[index].TV
+                    cftCount = cftCount + res.data.Shipments[index].CFT
+                    //const element = array[index];
+                    
+                  }
+                  this.state.TotalTVCount = tvcount
+                  this.state.TotalCFTCount = cftCount
+      
+                  this.state.TotalPackagesCount = counts
+                  console.log("counts = ", counts)
+      
+                } else {
+                  cogoToast.error("Something went wrong");
+                }
+              })
+              .catch((err) => {
+                console.log("error.....", err);
+              });
+
             })
             .catch((err) => {
               console.log(err);
             });
 
-      api
-        .post("container/getShipmentsByContainer", data)
-        .then((res) => {
-          if (res.success) {
-
-            console.log("Packages = " , res.data)
-            res.data.Packages.map((OBJ) => {
-              var i = 1;
-              OBJ.map((obj) => {
-                obj.Index = i;
-                i++;
-                return obj;
-              });
-              return OBJ;
-            });
-           
-            
-            var setHblShipment = []
-            // var YesNO=[]
-
-            var setCountShip = []
-
-            for (let hblindex = 0; hblindex < res.data.Shipments.length; hblindex++) {
-              // const element = array[hblindex];
-              if(res.data.Shipments[hblindex].hblshipment == 0){
-                res.data.Shipments[hblindex].setsc = 1
-                res.data.Shipments[hblindex].setPack = res.data.Shipments[hblindex].TotalPackages
-                setHblShipment.push(res.data.Shipments[hblindex])
-              }else{
-                setCountShip.push(res.data.Shipments[hblindex])
-              }
-              
-            }
-
-            console.log("setCountShip = ",setCountShip)
-
-            for (let setind = 0; setind < setHblShipment.length; setind++) {
-              for (let HBLSETING = 0; HBLSETING < dataMer.length; HBLSETING++) {
-                
-                  if(dataMer[HBLSETING].hblshipment == setHblShipment[setind].ShippingID){
-                    setHblShipment[setind].setsc = setHblShipment[setind].setsc + dataMer[HBLSETING].totalShipment
-                    setHblShipment[setind].setPack = setHblShipment[setind].setPack+  dataMer[HBLSETING].totalPack
-                  }
-                
-              }
-              
-            }
-
-
-            console.log("yesno = ",setHblShipment )
-            
-
-            
-
-
-
-            this.setState({
-              ShipmentList: res.data.Shipments,
-              HBLShipmentList: setHblShipment,
-              Sequence: res.data.Packages,
-
-              // serviceNameData:YesNO,
-            });
-
-            var counts = 0
-            var tvcount = 0
-            var cftCount = 0
-
-            for (let index = 0; index < res.data.Shipments.length; index++) {
-
-              counts = counts + res.data.Shipments[index].TotalPackages
-              tvcount = tvcount + res.data.Shipments[index].TV
-              cftCount = cftCount + res.data.Shipments[index].CFT
-              //const element = array[index];
-              
-            }
-            this.state.TotalTVCount = tvcount
-            this.state.TotalCFTCount = cftCount
-
-            this.state.TotalPackagesCount = counts
-            console.log("counts = ", counts)
-
-          } else {
-            cogoToast.error("Something went wrong");
-          }
-        })
-        .catch((err) => {
-          console.log("error.....", err);
-        });
+     
     } catch (err) {}
   };
 
@@ -455,6 +460,7 @@ class editContainer extends Component {
               NotifyParty: res.data.NotifyParty,
               NotifyPartyName: res.data.NotifyPartnerName,
               NotifyPartyPhone: res.data.PhoneNum,
+              GSTNo:res.data.GSTNo,
               NotifyPartyEmail: res.data.Email,
               NotifyPartyAddr1: res.data.AddressLine1,
               NotifyPartyAddr2: res.data.AddressLine2,
@@ -1695,7 +1701,7 @@ class editContainer extends Component {
     localStorage.setItem("hblDate",this.state.HBLDate);
 
    
-    localStorage.setItem("NotifyPartyPhone",this.state.NotifyPartyPhone + "  Email: "+ this.state.NotifyPartyEmail)
+    localStorage.setItem("NotifyPartyPhone",this.state.NotifyPartyPhone + "  Email: "+ this.state.NotifyPartyEmail + " GST: " + this.state.GSTNo)
     // localStorage.setItem("NotifyPartyEmail",)
     
 
