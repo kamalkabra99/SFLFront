@@ -95,6 +95,10 @@ class AddEditVendors extends Component {
       isBulkUpload: false,
       isFormW9: false,
       VendorAddressLine1: "",
+
+      VendorAddressLine1Err: false,
+      VendorAddressLine1ErrText: "",
+
       VendorAddressLine2: "",
       VendorAddressLine3: "",
       VendorPhone: "",
@@ -123,6 +127,11 @@ class AddEditVendors extends Component {
       selectedCountry: {},
       countryErr: false,
       countryHelperText: "",
+
+      VendorEmailHelperText: "",
+      VendorEmailErr: false,
+      VendorPhoneErr: false,
+      VendorPhoneHelperText: "",
 
       selectedVendorCountry: {},
       VendorcountryErr: false,
@@ -1090,7 +1099,7 @@ class AddEditVendors extends Component {
       this.setState({
         vendorType: event.target.value,
         vendorTypeErr: false,
-        vendorNameHelperText: "",
+        vendorTypeHelperText: "",
       });
     } else if (type === "bulkUpload") {
       this.setState({ isBulkUpload: event.target.value });
@@ -1107,7 +1116,7 @@ class AddEditVendors extends Component {
           this.setState({
             vendorName: val,
             vendorNameErr: true,
-            vendorNameHelperText: "Please Enter valid Vender Name.",
+            vendorNameHelperText: "Please Enter vaid Vender Name.",
           });
         } else if (CommonConfig.RegExp.companyName.test(val)) {
           this.setState({
@@ -1516,7 +1525,9 @@ class AddEditVendors extends Component {
                 }
               }
             }
+
             if (res.data.DocumentList.length > 0) {
+              // this.state.Attachments = [];
               for (var i = 0; i < res.data.DocumentList.length; i++) {
                 var filesList = res.data.DocumentList[i];
                 filesList.CreatedOn = moment(filesList.CreatedOn).format(
@@ -1525,15 +1536,18 @@ class AddEditVendors extends Component {
                 this.state.Attachments.push(filesList);
               }
             }
-            const country = {};
-            if (res.data.Country != "" || res.data.country != null) {
+
+            if (res.data.Country !== null) {
               const selectedCountry = this.state.CountryList.find(
                 (x) => x.CountryName === res.data.Country
               );
-              country = {
+              const country = {
                 value: selectedCountry.CountryID,
                 label: selectedCountry.CountryName,
               };
+              this.setState({
+                selectedVendorCountry: country,
+              });
             }
             this.setState({
               vendorName: res.data.Name,
@@ -1552,7 +1566,8 @@ class AddEditVendors extends Component {
               VendorzipCode: res.data.ZipCode,
               Vendorcity: res.data.City,
               Vendorstate: res.data.State,
-              selectedVendorCountry: country,
+              VendorEmail: res.data.Email,
+              VendorPhone: res.data.PhoneNum,
             });
             this.setState({
               Attachments: [
@@ -1688,59 +1703,124 @@ class AddEditVendors extends Component {
     document.getElementById("ContactAdd").style.display = "block";
   }
 
-  addVendor() {
-    let vendorDetails = this.state;
-    var finalAttachment = [];
-    for (var i = 0; i < vendorDetails.Attachments.length; i++) {
-      if (vendorDetails.Attachments[i].hasOwnProperty("AttachmentName")) {
-        finalAttachment.push(vendorDetails.Attachments[i]);
-      }
+  validate() {
+    let IsFormValid = true;
+    if (CommonConfig.isEmpty(this.state.vendorName)) {
+      IsFormValid = false;
+      this.setState({
+        vendorNameErr: true,
+        vendorNameHelperText: "Please enter vendor name",
+      });
     }
-    let data = {
-      vendorName: vendorDetails.vendorName,
-      vendorWebsite: vendorDetails.vendorWebsite,
-      vendorType: vendorDetails.vendorType,
-      isBulkUpload: vendorDetails.isBulkUpload,
-      comments: vendorDetails.comments,
-      carrierLink: vendorDetails.carrierLink,
-      service: vendorDetails.offeredService,
-      userId: CommonConfig.loggedInUserData().PersonID,
-      isFormW9: vendorDetails.isFormW9,
-      AddressLine1: vendorDetails.VendorAddressLine1,
-      AddressLine2: vendorDetails.VendorAddressLine2,
-      AddressLine3: vendorDetails.VendorAddressLine3,
-      ZipCode: vendorDetails.VendorzipCode,
-      City: CommonConfig.isEmpty(vendorDetails.Vendorcity.label)
-        ? vendorDetails.Vendorcity
-        : vendorDetails.Vendorcity.label,
-      State: CommonConfig.isEmpty(vendorDetails.Vendorstate.label)
-        ? vendorDetails.Vendorstate
-        : vendorDetails.Vendorstate.label,
-      Country: vendorDetails.selectedVendorCountry.label,
-    };
+    if (CommonConfig.isEmpty(this.state.vendorType)) {
+      IsFormValid = false;
+      this.setState({
+        vendorTypeErr: true,
+        vendorTypeHelperText: "Please enter vendor type",
+      });
+    }
+    if (CommonConfig.isEmpty(this.state.VendorPhone)) {
+      IsFormValid = false;
+      this.setState({
+        VendorPhoneErr: true,
+        VendorPhoneHelperText: "Please enter vendor phone",
+      });
+    }
+    if (CommonConfig.isEmpty(this.state.VendorEmail)) {
+      IsFormValid = false;
+      this.setState({
+        VendorEmailErr: true,
+        VendorEmailHelperText: "Please enter vendor email",
+      });
+    }
+    if (CommonConfig.isEmpty(this.state.VendorAddressLine1)) {
+      IsFormValid = false;
+      this.setState({
+        VendorAddressLine1Err: true,
+        VendorAddressLine1ErrText: "Please enter address",
+      });
+    }
+    if (CommonConfig.isEmpty(this.state.selectedVendorCountry.label)) {
+      IsFormValid = false;
+      this.setState({
+        VendorcountryErr: true,
+        VendorcountryHelperText: "Please select country",
+      });
+    }
+    if (CommonConfig.isEmpty(this.state.zipCode)) {
+      IsFormValid = false;
+      this.setState({
+        zipCodeErr: true,
+        zipCodeHelperText: "Please enter zipcode",
+      });
+    }
+    return IsFormValid;
+  }
 
-    try {
-      this.showLoader();
-      api
-        .post("vendor/addNewVendor", JSON.stringify(data))
-        .then((res) => {
-          if (res.success) {
+  addVendor(redirect) {
+    if (this.validate()) {
+      let vendorDetails = this.state;
+      var finalAttachment = [];
+      for (var i = 0; i < vendorDetails.Attachments.length; i++) {
+        if (vendorDetails.Attachments[i].hasOwnProperty("AttachmentName")) {
+          finalAttachment.push(vendorDetails.Attachments[i]);
+        }
+      }
+      let data = {
+        vendorName: vendorDetails.vendorName,
+        vendorWebsite: vendorDetails.vendorWebsite,
+        vendorType: vendorDetails.vendorType,
+        isBulkUpload: vendorDetails.isBulkUpload,
+        comments: vendorDetails.comments,
+        carrierLink: vendorDetails.carrierLink,
+        service: vendorDetails.offeredService,
+        userId: CommonConfig.loggedInUserData().PersonID,
+        isFormW9: vendorDetails.isFormW9,
+        AddressLine1: vendorDetails.VendorAddressLine1,
+        AddressLine2: vendorDetails.VendorAddressLine2,
+        AddressLine3: vendorDetails.VendorAddressLine3,
+        ZipCode: vendorDetails.VendorzipCode,
+        City: CommonConfig.isEmpty(vendorDetails.Vendorcity.label)
+          ? vendorDetails.Vendorcity
+          : vendorDetails.Vendorcity.label,
+        State: CommonConfig.isEmpty(vendorDetails.Vendorstate.label)
+          ? vendorDetails.Vendorstate
+          : vendorDetails.Vendorstate.label,
+        Country: vendorDetails.selectedVendorCountry.label,
+        Vendoremail: vendorDetails.VendorEmail,
+        Vendorphone: vendorDetails.VendorPhone,
+      };
+
+      try {
+        this.showLoader();
+        api
+          .post("vendor/addNewVendor", JSON.stringify(data))
+          .then((res) => {
+            if (res.success) {
+              this.hideLoader();
+              if (redirect == "true") {
+                this.getVendorDetails(res.vendorid);
+                this.getContacts(this.state.vendorId);
+                this.setState({ Attachments: [this.state.objAttachment] });
+                document.getElementById("PanelShow").style.display = "none";
+              } else {
+                this.props.history.push({
+                  pathname: "/admin/Vendor",
+                  state: { filterlist: [], sortlist: [], serviceValue: "" },
+                });
+              }
+            }
+          })
+          .catch((err) => {
             this.hideLoader();
-            this.props.history.push({
-              pathname: "/admin/Vendor",
-              state: { filterlist: [], sortlist: [], serviceValue: "" },
-            });
-          }
-        })
-        .catch((err) => {
-          this.hideLoader();
-          console.log("err..", err);
-          cogoToast.error("Something Went Wrong");
-        });
-    } catch (error) {
-      this.hideLoader();
-      cogoToast.error("Something Went Wrong");
-      console.log("error..", error);
+            console.log("err..", err);
+            cogoToast.error("Something Went Wrong");
+          });
+      } catch (error) {
+        this.hideLoader();
+        cogoToast.error("Something Went Wrong");
+        console.log("error..", error);
+      }
     }
   }
   getCountry() {
@@ -1830,7 +1910,26 @@ class AddEditVendors extends Component {
       });
     }
   };
-  editVendor() {
+  cancelVandor() {
+    this.props.history.push({
+      pathname: "/admin/Vendor",
+      state: {
+        filterlist:
+          this.props.history.location.state.filterlist !== undefined
+            ? this.props.history.location.state.filterlist
+            : null,
+        sortlist:
+          this.props.history.location.state.sortlist !== undefined
+            ? this.props.history.location.state.sortlist
+            : null,
+        serviceValue:
+          this.props.history.location.state.serviceValue !== undefined
+            ? this.props.history.location.state.serviceValue
+            : null,
+      },
+    });
+  }
+  editVendor(redirect) {
     if (this.state.offeredService.length === 0) {
       return cogoToast.error("Please select one service");
     }
@@ -1870,6 +1969,8 @@ class AddEditVendors extends Component {
         ? vendorDetails.Vendorstate
         : vendorDetails.Vendorstate.label,
       Country: vendorDetails.selectedVendorCountry.label,
+      Vendoremail: vendorDetails.VendorEmail,
+      Vendorphone: vendorDetails.VendorPhone,
     };
 
     var formData = new FormData();
@@ -1886,23 +1987,28 @@ class AddEditVendors extends Component {
         .post("vendor/EditVendor", formData)
         .then((res) => {
           if (res.success) {
-            this.props.history.push({
-              pathname: "/admin/Vendor",
-              state: {
-                filterlist:
-                  this.props.history.location.state.filterlist !== undefined
-                    ? this.props.history.location.state.filterlist
-                    : null,
-                sortlist:
-                  this.props.history.location.state.sortlist !== undefined
-                    ? this.props.history.location.state.sortlist
-                    : null,
-                serviceValue:
-                  this.props.history.location.state.serviceValue !== undefined
-                    ? this.props.history.location.state.serviceValue
-                    : null,
-              },
-            });
+            if (redirect === "false") {
+              this.props.history.push({
+                pathname: "/admin/Vendor",
+                state: {
+                  filterlist:
+                    this.props.history.location.state.filterlist !== undefined
+                      ? this.props.history.location.state.filterlist
+                      : null,
+                  sortlist:
+                    this.props.history.location.state.sortlist !== undefined
+                      ? this.props.history.location.state.sortlist
+                      : null,
+                  serviceValue:
+                    this.props.history.location.state.serviceValue !== undefined
+                      ? this.props.history.location.state.serviceValue
+                      : null,
+                },
+              });
+            } else {
+              //kruti
+              this.getVendorDetails(this.state.vendorId);
+            }
           }
         })
         .catch((err) => {
@@ -2281,7 +2387,7 @@ class AddEditVendors extends Component {
                           <MenuItem value="Both"> Both </MenuItem>
                         </Select>
                         <FormHelperText>
-                          {/* {this.state.vendorTypeHelperText} */}
+                          {this.state.vendorTypeHelperText}
                         </FormHelperText>
                       </FormControl>
                     </div>
@@ -2349,7 +2455,14 @@ class AddEditVendors extends Component {
                             <Icon className={classes.User}>call</Icon>
                           </InputAdornment>
                         ),
+                        onFocus: (event) =>
+                          this.setState({
+                            VendorPhoneErr: false,
+                            VendorPhoneHelperText: "",
+                          }),
                       }}
+                      error={this.state.VendorPhoneErr}
+                      helperText={this.state.VendorPhoneHelperText}
                     />
                   </GridItem>
                   <GridItem xs={12} sm={12} md={3}>
@@ -2373,7 +2486,14 @@ class AddEditVendors extends Component {
                             </Icon>
                           </InputAdornment>
                         ),
+                        onFocus: (event) =>
+                          this.setState({
+                            VendorEmailErr: false,
+                            VendorEmailHelperText: "",
+                          }),
                       }}
+                      error={this.state.VendorEmailErr}
+                      helperText={this.state.VendorEmailHelperText}
                     />
                   </GridItem>
                 </GridContainer>
@@ -2418,7 +2538,14 @@ class AddEditVendors extends Component {
                             <Icon className={classes.User}>location_on</Icon>
                           </InputAdornment>
                         ),
+                        onFocus: (event) =>
+                          this.setState({
+                            VendorAddressLine1Err: false,
+                            VendorAddressLine1ErrText: "",
+                          }),
                       }}
+                      error={this.state.VendorAddressLine1Err}
+                      helperText={this.state.VendorAddressLine1ErrText}
                     />
                   </GridItem>
                   <GridItem xs={12} sm={4} md={3}>
@@ -3200,16 +3327,29 @@ class AddEditVendors extends Component {
             </div>
             <div className="shipment-submit">
               <div className="right">
+                {!CommonConfig.isEmpty(this.state.vendorId) ? (
+                  <Button
+                    color="rose"
+                    onClick={() => {
+                      CommonConfig.isEmpty(this.state.vendorId)
+                        ? this.addVendor("true")
+                        : this.editVendor("true");
+                    }}
+                  >
+                    SAVE
+                  </Button>
+                ) : null}
                 <Button
                   color="rose"
                   onClick={() => {
                     CommonConfig.isEmpty(this.state.vendorId)
-                      ? this.addVendor()
-                      : this.editVendor();
+                      ? this.addVendor("false")
+                      : this.editVendor("false");
                   }}
                 >
                   SAVE & EXIT
                 </Button>
+                <Button onClick={() => this.cancelVandor()}>Cancel</Button>
               </div>
             </div>
             <div>

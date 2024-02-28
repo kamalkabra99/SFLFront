@@ -2332,7 +2332,9 @@ class ShipmentCustom extends React.Component {
               cogoToast.error("Invoice and Payment Received does not match");
             } else if (
               (value.value === "Yes" && this.state.AllClearYes === false) ||
-              (value.value === "No" && this.state.AllClearYes === false)
+              (value.value === "No" &&
+                this.state.AllClear.label === "Yes" &&
+                this.state.AllClearYes === false)
             ) {
               debugger;
               this.setState({

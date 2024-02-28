@@ -79,14 +79,14 @@ class Vendor extends Component {
   };
 
   addVendor = () => {
-    if (
-      CommonConfig.loggedInUserData().PersonID === 18 ||
-      CommonConfig.loggedInUserData().PersonID === 1
-    ) {
-      this.props.history.push("/admin/AddEditVendors");
-    } else {
-      this.props.history.push("/admin/AddEditVendor");
-    }
+    // if (
+    //   CommonConfig.loggedInUserData().PersonID === 18 ||
+    //   CommonConfig.loggedInUserData().PersonID === 1
+    // ) {
+    this.props.history.push("/admin/AddEditVendors");
+    // } else {
+    //this.props.history.push("/admin/AddEditVendor");
+    // }
   };
 
   showLoader() {
@@ -164,11 +164,11 @@ class Vendor extends Component {
     const { history } = this.props;
     let vendorId = record.original.VendorID;
     history.push({
-      pathname:
-        CommonConfig.loggedInUserData().PersonID === 18 ||
-        CommonConfig.loggedInUserData().PersonID === 1
-          ? "AddEditVendors/"
-          : "AddEditVendor/",
+      pathname: "AddEditVendors/",
+      // CommonConfig.loggedInUserData().PersonID === 18 ||
+      // CommonConfig.loggedInUserData().PersonID === 1
+      //   ? "AddEditVendors/"
+      //   : "AddEditVendor/",
       state: {
         vendorId: vendorId,
         filterlist: this.state.filterProps,
@@ -375,6 +375,11 @@ class Vendor extends Component {
             return row;
           }
         },
+      },
+      {
+        Header: "Country",
+        accessor: "Country",
+        width: 100,
       },
       {
         Header: "CreatedBy",
