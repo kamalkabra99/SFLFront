@@ -111,7 +111,7 @@ class Reports extends Component {
           classname: "inactive",
         },
         {
-          stepName: "Invoice Upload",
+          stepName: "Vendor Invoice Upload",
           stepId: "InvoiceUpload",
           Icon: "fas fa-upload",
           classname: "inactive",

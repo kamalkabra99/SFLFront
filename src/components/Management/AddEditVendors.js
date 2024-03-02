@@ -39,6 +39,7 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
+import { common } from "@material-ui/core/colors";
 
 const useStyles = () => makeStyles(styles);
 const classes = useStyles();
@@ -923,9 +924,8 @@ class AddEditVendors extends Component {
         });
     }
   };
-  getContacts(vendorId) {
+  async getContacts(vendorId) {
     try {
-      debugger;
       this.showLoader();
       api
         .get("vendor/getVendorContacts/" + vendorId)
@@ -933,6 +933,7 @@ class AddEditVendors extends Component {
           if (res.success) {
             this.hideLoader();
             var finalContact = res.data;
+            //  console.log("cont", this.state.contactList);
             this.setState({ contactList: finalContact });
           }
         })
@@ -1034,7 +1035,6 @@ class AddEditVendors extends Component {
   }
 
   addContact = () => {
-    debugger;
     let valid = this.validateAddContact();
 
     if (valid) {
@@ -1505,8 +1505,8 @@ class AddEditVendors extends Component {
       api
         .get("vendor/getVendorById/" + vendorId)
         .then((res) => {
-          debugger;
           if (res.success) {
+            debugger;
             this.hideLoader();
             let allServiceList = this.state.ServiceList;
             if (
@@ -1527,7 +1527,8 @@ class AddEditVendors extends Component {
             }
 
             if (res.data.DocumentList.length > 0) {
-              // this.state.Attachments = [];
+              this.state.Attachments.length = 0;
+
               for (var i = 0; i < res.data.DocumentList.length; i++) {
                 var filesList = res.data.DocumentList[i];
                 filesList.CreatedOn = moment(filesList.CreatedOn).format(
@@ -1536,8 +1537,8 @@ class AddEditVendors extends Component {
                 this.state.Attachments.push(filesList);
               }
             }
-
-            if (res.data.Country !== null) {
+            if (!CommonConfig.isEmpty(res.data.Country)) {
+              // if (res.data.Country !== null || res.data.Country !== "") {
               const selectedCountry = this.state.CountryList.find(
                 (x) => x.CountryName === res.data.Country
               );
@@ -1549,6 +1550,7 @@ class AddEditVendors extends Component {
                 selectedVendorCountry: country,
               });
             }
+
             this.setState({
               vendorName: res.data.Name,
               vendorWebsite: res.data.Website,
@@ -1635,7 +1637,6 @@ class AddEditVendors extends Component {
   }
 
   navigateChange = (key) => {
-    debugger;
     let stepsList = this.state.Steps;
     let activeIndex = stepsList.findIndex((x) => x.classname === "active");
 
@@ -1704,6 +1705,7 @@ class AddEditVendors extends Component {
   }
 
   validate() {
+    debugger;
     let IsFormValid = true;
     if (CommonConfig.isEmpty(this.state.vendorName)) {
       IsFormValid = false;
@@ -1747,7 +1749,7 @@ class AddEditVendors extends Component {
         VendorcountryHelperText: "Please select country",
       });
     }
-    if (CommonConfig.isEmpty(this.state.zipCode)) {
+    if (CommonConfig.isEmpty(this.state.VendorzipCode)) {
       IsFormValid = false;
       this.setState({
         zipCodeErr: true,
@@ -1758,6 +1760,7 @@ class AddEditVendors extends Component {
   }
 
   addVendor(redirect) {
+    debugger;
     if (this.validate()) {
       let vendorDetails = this.state;
       var finalAttachment = [];
@@ -1930,13 +1933,14 @@ class AddEditVendors extends Component {
     });
   }
   editVendor(redirect) {
+    debugger;
     if (this.state.offeredService.length === 0) {
       return cogoToast.error("Please select one service");
     }
     if (this.state.contactList.length === 0) {
       return cogoToast.error("Please add one contact");
     }
-    debugger;
+
     let vendorDetails = this.state;
     var finalAttachment = [];
     for (var i = 0; i < vendorDetails.Attachments.length; i++) {
@@ -1944,7 +1948,7 @@ class AddEditVendors extends Component {
         finalAttachment.push(vendorDetails.Attachments[i]);
       }
     }
-    debugger;
+
     let data = {
       vendorId: this.state.vendorId,
       vendorName: vendorDetails.vendorName,
@@ -1962,13 +1966,23 @@ class AddEditVendors extends Component {
       AddressLine2: vendorDetails.VendorAddressLine2,
       AddressLine3: vendorDetails.VendorAddressLine3,
       ZipCode: vendorDetails.VendorzipCode,
-      City: CommonConfig.isEmpty(vendorDetails.Vendorcity.label)
+      // City: CommonConfig.isEmpty(vendorDetails.Vendorcity.label)
+      //   ? vendorDetails.Vendorcity
+      //   : vendorDetails.Vendorcity.label,
+      City: CommonConfig.isEmpty(vendorDetails.Vendorcity)
         ? vendorDetails.Vendorcity
         : vendorDetails.Vendorcity.label,
-      State: CommonConfig.isEmpty(vendorDetails.Vendorstate.label)
+      State: CommonConfig.isEmpty(vendorDetails.Vendorstate)
+        ? vendorDetails.Vendorstate
+        : CommonConfig.isEmpty(vendorDetails.Vendorstate.label)
         ? vendorDetails.Vendorstate
         : vendorDetails.Vendorstate.label,
-      Country: vendorDetails.selectedVendorCountry.label,
+      // State: CommonConfig.isEmpty(vendorDetails.Vendorstate)
+      //   ? vendorDetails.Vendorstate
+      //   : vendorDetails.Vendorstate.label,
+      Country: CommonConfig.isEmpty(vendorDetails.selectedVendorCountry)
+        ? vendorDetails.selectedVendorCountry
+        : vendorDetails.selectedVendorCountry.label,
       Vendoremail: vendorDetails.VendorEmail,
       Vendorphone: vendorDetails.VendorPhone,
     };
@@ -1981,12 +1995,14 @@ class AddEditVendors extends Component {
         formData.append("Attachments", file);
       });
     }
+    debugger;
     try {
       this.showLoader();
       api
         .post("vendor/EditVendor", formData)
         .then((res) => {
           if (res.success) {
+            debugger;
             if (redirect === "false") {
               this.props.history.push({
                 pathname: "/admin/Vendor",
@@ -2007,7 +2023,19 @@ class AddEditVendors extends Component {
               });
             } else {
               //kruti
-              this.getVendorDetails(this.state.vendorId);
+              window.location.reload();
+              // this.setState({
+              //   objAttachment: {
+              //     Index: 0,
+              //     FileName: "",
+              //     Status: "Active",
+              //     DocumentCreatedOn: moment().format(
+              //       CommonConfig.dateFormat.dateOnly
+              //     ),
+              //     DocumentCreatedBy: CommonConfig.loggedInUserData().Name,
+              //   },
+              // });
+              // this.getVendorDetails(this.state.vendorId);
             }
           }
         })
@@ -2043,6 +2071,7 @@ class AddEditVendors extends Component {
         AttachmentList[Index]["AttachmentType"] = files.type;
         AttachmentList[Index]["AttachmentID"] = null;
         AttachmentList[Index]["Status"] = "Active";
+        AttachmentList[Index]["vendorid"] = this.state.vendorId;
         this.setState({
           Attachments: AttachmentList,
           AttachmentList: [...this.state.AttachmentList, files],
@@ -2088,7 +2117,32 @@ class AddEditVendors extends Component {
     this.state.Attachments[Index]["FileName"] = e.target.value;
     this.setState({ Attachments: [...this.state.Attachments] });
   };
-
+  AddNewRowData = () => {
+    let attachments = this.state.Attachments;
+    let IsValid = true;
+    for (let i = 0; i < this.state.Attachments.length; i++) {
+      if (!attachments[i].hasOwnProperty("AttachmentName")) {
+        IsValid = false;
+      }
+    }
+    var AttachmentList = this.state.Attachments.filter(
+      (x) => x.Status === "Active" && (x.FileName === "" || x.FileName === null)
+    );
+    if (AttachmentList.length === 0 && IsValid) {
+      const objAttachment = {
+        Index: AttachmentList.filter((x) => x.Status === "Active").length + 1,
+        FileName: "",
+        Status: "Active",
+        DocumentCreatedOn: moment().format(CommonConfig.dateFormat.dateOnly),
+        DocumentCreatedBy: CommonConfig.loggedInUserData().Name,
+      };
+      this.setState({
+        Attachments: [...this.state.Attachments, objAttachment],
+      });
+    } else {
+      cogoToast.error("Please fill above row first");
+    }
+  };
   deleteContact = () => {
     let contacts = this.state.contactList;
 
@@ -2110,12 +2164,12 @@ class AddEditVendors extends Component {
       {
         Header: "Name",
         accessor: "Name",
-        width: 180,
+        width: 150,
       },
       {
         Header: "Title",
         accessor: "Title",
-        width: 180,
+        width: 100,
       },
       {
         Header: "City",
@@ -2133,10 +2187,10 @@ class AddEditVendors extends Component {
         width: 220,
       },
       {
-        Header: "Phone",
+        Header: "Work Phone",
         accessor: "Phone",
         id: "phone",
-        width: 125,
+        width: 100,
         Cell: (record) => {
           if (Object.values(record.value).length) {
             return (
@@ -2150,12 +2204,31 @@ class AddEditVendors extends Component {
         },
       },
       {
+        Header: "Cell Phone",
+        accessor: "Phone",
+        id: "phone",
+        width: 100,
+        Cell: (record) => {
+          if (Object.values(record.value).length) {
+            return (
+              <div>
+                <span>{record.value[1] ? record.value[1].phone : ""}</span>
+              </div>
+            );
+          } else {
+            return null;
+          }
+        },
+      },
+      {
         Header: "Action",
         filterable: false,
         sortable: false,
+        width: 100,
         Cell: (record) => {
           return (
-            <div className="align-right">
+            // <div className="align-right">
+            <div>
               {this.state.Access.WriteAccess === 1 ? (
                 <CreateIcon
                   onClick={() =>
