@@ -232,8 +232,8 @@ class editContainer extends Component {
   }
 
   async componentDidMount() {
-    // this.setState({ Base: CommonConfig.BaseUrl });
-     this.setState({ Base: "http://localhost:3000/" });
+    this.setState({ Base: CommonConfig.BaseUrl });
+    //  this.setState({ Base: "http://localhost:3000/" });
     await this.showHide();
     await this.stringMapSize();
     await this.stringmapStatus();

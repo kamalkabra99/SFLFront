@@ -4650,6 +4650,8 @@ class EditSalesLeads extends Component {
     }
 
     this.validate().then((res) => {
+
+
       if (res) {
         var FinalNotes = this.state.notes.filter(
           (x) => x.NoteText !== "" && x.NoteText !== null
@@ -4751,15 +4753,91 @@ class EditSalesLeads extends Component {
           };
 
           this.showLoader();
-          try {
-            if (this.props.history.location.state.id === "") {
-              api
-                .post("salesLead/getManagedByPhoneOREmail", manageData)
-                .then((result) => {
-                  if (result.success) {
-                    if (result.data.length > 0) {
-                      data.ManagedBy = result.data[0].ManagedBy;
-                    }
+
+          let data14 = {
+            Email: this.state.EmailAddress,
+          }
+
+          api
+            .post("salesLead/getEmailID", data14)
+            .then((restest) => {
+              if (restest.success) {
+
+                console.log(restest.data[0][0])
+
+                data.EmailID = restest.data[0][0].EmailID;
+
+                try {
+                  if (this.props.history.location.state.id === "") {
+                    api
+                      .post("salesLead/getManagedByPhoneOREmail", manageData)
+                      .then((result) => {
+                        if (result.success) {
+                          if (result.data.length > 0) {
+                            data.ManagedBy = result.data[0].ManagedBy;
+                          }
+                          var formData = new FormData();
+                          formData.append("data", JSON.stringify(data));
+                          if (this.state.Attachments.length > 0) {
+                            this.state.Attachments.forEach((file) => {
+                              formData.append("Attachments", file);
+                            });
+                          }
+                          api
+                            .post("salesLead/addSalesLead", formData)
+                            .then((res) => {
+                              if (res.success) {
+                                this.hideLoader();
+                                if (redirect) {
+                                  localStorage.removeItem("SearchCount");
+      
+                                  this.props.history.push({
+                                    pathname: "/admin/SalesLeads",
+                                    state: {
+                                      filterlist:
+                                        this.props.history.location.state &&
+                                        this.props.history.location.state.filterlist
+                                          ? this.props.history.location.state
+                                              .filterlist
+                                          : null,
+                                      sortlist:
+                                        this.props.history.location.state &&
+                                        this.props.history.location.state.sortlist
+                                          ? this.props.history.location.state.sortlist
+                                          : null,
+                                      packageValue:
+                                        this.props.history.location.state &&
+                                        this.props.history.location.state.packageValue
+                                          ? this.props.history.location.state
+                                              .packageValue
+                                          : null,
+                                      statusfilter:
+                                        this.props.history.location.state &&
+                                        this.props.history.location.state.statusfilter
+                                          ? this.props.history.location.state
+                                              .statusfilter
+                                          : null,
+                                    },
+                                  });
+                                } else {
+                                  this.reCallApi();
+                                }
+                                cogoToast.success("Saleslead updated Sucessfully");
+                              } else {
+                                this.hideLoader();
+                                cogoToast.error("Something went wrong6");
+                              }
+                            })
+                            .catch((err) => {
+                              this.hideLoader();
+                              cogoToast.error("Something went wrong7");
+                            });
+                        }
+                      })
+                      .catch((err) => {
+                        console.log("error", err);
+                      });
+                  } else {
                     var formData = new FormData();
                     formData.append("data", JSON.stringify(data));
                     if (this.state.Attachments.length > 0) {
@@ -4774,15 +4852,14 @@ class EditSalesLeads extends Component {
                           this.hideLoader();
                           if (redirect) {
                             localStorage.removeItem("SearchCount");
-
+      
                             this.props.history.push({
                               pathname: "/admin/SalesLeads",
                               state: {
                                 filterlist:
                                   this.props.history.location.state &&
                                   this.props.history.location.state.filterlist
-                                    ? this.props.history.location.state
-                                        .filterlist
+                                    ? this.props.history.location.state.filterlist
                                     : null,
                                 sortlist:
                                   this.props.history.location.state &&
@@ -4792,14 +4869,12 @@ class EditSalesLeads extends Component {
                                 packageValue:
                                   this.props.history.location.state &&
                                   this.props.history.location.state.packageValue
-                                    ? this.props.history.location.state
-                                        .packageValue
+                                    ? this.props.history.location.state.packageValue
                                     : null,
                                 statusfilter:
                                   this.props.history.location.state &&
                                   this.props.history.location.state.statusfilter
-                                    ? this.props.history.location.state
-                                        .statusfilter
+                                    ? this.props.history.location.state.statusfilter
                                     : null,
                               },
                             });
@@ -4809,77 +4884,27 @@ class EditSalesLeads extends Component {
                           cogoToast.success("Saleslead updated Sucessfully");
                         } else {
                           this.hideLoader();
-                          cogoToast.error("Something went wrong6");
+                          cogoToast.error("Something went wrong8");
                         }
                       })
                       .catch((err) => {
                         this.hideLoader();
-                        cogoToast.error("Something went wrong7");
+                        cogoToast.error("Something went wrong9");
                       });
                   }
-                })
-                .catch((err) => {
-                  console.log("error", err);
-                });
-            } else {
-              var formData = new FormData();
-              formData.append("data", JSON.stringify(data));
-              if (this.state.Attachments.length > 0) {
-                this.state.Attachments.forEach((file) => {
-                  formData.append("Attachments", file);
-                });
-              }
-              api
-                .post("salesLead/addSalesLead", formData)
-                .then((res) => {
-                  if (res.success) {
-                    this.hideLoader();
-                    if (redirect) {
-                      localStorage.removeItem("SearchCount");
-
-                      this.props.history.push({
-                        pathname: "/admin/SalesLeads",
-                        state: {
-                          filterlist:
-                            this.props.history.location.state &&
-                            this.props.history.location.state.filterlist
-                              ? this.props.history.location.state.filterlist
-                              : null,
-                          sortlist:
-                            this.props.history.location.state &&
-                            this.props.history.location.state.sortlist
-                              ? this.props.history.location.state.sortlist
-                              : null,
-                          packageValue:
-                            this.props.history.location.state &&
-                            this.props.history.location.state.packageValue
-                              ? this.props.history.location.state.packageValue
-                              : null,
-                          statusfilter:
-                            this.props.history.location.state &&
-                            this.props.history.location.state.statusfilter
-                              ? this.props.history.location.state.statusfilter
-                              : null,
-                        },
-                      });
-                    } else {
-                      this.reCallApi();
-                    }
-                    cogoToast.success("Saleslead updated Sucessfully");
-                  } else {
-                    this.hideLoader();
-                    cogoToast.error("Something went wrong8");
-                  }
-                })
-                .catch((err) => {
+                } catch (error) {
                   this.hideLoader();
-                  cogoToast.error("Something went wrong9");
-                });
-            }
-          } catch (error) {
-            this.hideLoader();
-            cogoToast.error("Something went wrong10");
-          }
+                  cogoToast.error("Something went wrong10");
+                }
+
+              }
+            })
+            .catch((err) => {
+              console.log("error.....", err);
+          });
+
+
+          
         } else {
           cogoToast.error(
             "There were found error in the form.Please correct and resubmit"

@@ -2729,55 +2729,73 @@ class Step1 extends React.Component {
             console.log("error", err);
           });
       }
-      setTimeout(() => {
-        try {
-          api
-            .post("salesLead/addSalesLead", data)
+
+      
+      let data14 = {
+        Email: this.state.EmailAddress,
+      }
+      api
+            .post("salesLead/getEmailID", data14)
             .then((res) => {
               if (res.success) {
-                var arr1 = [];
-                var arr2 = [];
-                var arr = [];
 
-                this.state.rateArr.forEach((obj) => {
-                  if (obj.IsError) {
-                    arr2.push(obj);
-                  } else {
-                    arr1.push(obj);
-                  }
-                });
-                arr = arr1.concat(arr2);
-                if (arr.length > 0) {
-                  let emailData = {
-                    SalesLeadID: res.data,
-                    ChargableWeight: this.state.FinalGetRate.ChargableWeight,
-                    RateData: arr,
-                    IsResidential: this.state.IsResidential,
-                    RateType: "Hub",
-                  };
-                  debugger;
-                  api
-                    .post("salesLead/sendGetRateEmail", emailData)
-                    .then((response) => {
-                      debugger;
-                      this.hideLoader();
-                      if (response.success) {
-                        cogoToast.success(response.data.message);
-                      }
-                    })
-                    .catch((err) => {
-                      console.log("error", err);
-                    });
-                } else {
-                  this.hideLoader();
+                data.EmailID = res.data[0][0].EmailID;
+
+                  setTimeout(() => {
+                    try {
+                      api
+                        .post("salesLead/addSalesLead", data)
+                        .then((res) => {
+                          if (res.success) {
+                            var arr1 = [];
+                            var arr2 = [];
+                            var arr = [];
+
+                            this.state.rateArr.forEach((obj) => {
+                              if (obj.IsError) {
+                                arr2.push(obj);
+                              } else {
+                                arr1.push(obj);
+                              }
+                            });
+                            arr = arr1.concat(arr2);
+                            if (arr.length > 0) {
+                              let emailData = {
+                                SalesLeadID: res.data,
+                                ChargableWeight: this.state.FinalGetRate.ChargableWeight,
+                                RateData: arr,
+                                IsResidential: this.state.IsResidential,
+                                RateType: "Hub",
+                              };
+                              debugger;
+                              api
+                                .post("salesLead/sendGetRateEmail", emailData)
+                                .then((response) => {
+                                  debugger;
+                                  this.hideLoader();
+                                  if (response.success) {
+                                    cogoToast.success(response.data.message);
+                                  }
+                                })
+                                .catch((err) => {
+                                  console.log("error", err);
+                                });
+                            } else {
+                              this.hideLoader();
+                            }
+                          }
+                        })
+                        .catch((err) => {
+                          console.log("error", err);
+                        });
+                    } catch (err) {}
+                  }, 2000);
                 }
-              }
-            })
-            .catch((err) => {
-              console.log("error", err);
+              })
+              .catch((err) => {
+                console.log("error.....", err);
             });
-        } catch (err) {}
-      }, 2000);
+  
     }
   };
 
