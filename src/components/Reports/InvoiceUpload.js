@@ -363,6 +363,10 @@ class InvoiceUpload extends Component {
       VendorName: this.state.SearchVendorName.value
         ? this.state.SearchVendorName.value
         : "",
+      CreatedBy:
+        this.state.AllAccess === 1
+          ? ""
+          : CommonConfig.loggedInUserData().PersonID,
     };
     this.showLoader();
     try {

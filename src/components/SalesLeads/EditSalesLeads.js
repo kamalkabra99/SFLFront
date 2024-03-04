@@ -1293,7 +1293,11 @@ class EditSalesLeads extends Component {
     } else if (type === "referredby") {
       this.setState({ ReferredBy: value.props.value });
     } else if (type === "CancelationReason") {
-      this.setState({ CancelationReason: value });
+      this.setState({
+        CancelationReason: value,
+        CancelationReasonErr: false,
+        CancelationReasonHelperText: "",
+      });
     }
   }
 
@@ -4195,6 +4199,7 @@ class EditSalesLeads extends Component {
         CancelationReasonErr: true,
         CancelationReasonHelperText: "Please Enter Cancellation Reason",
       });
+      return;
     }
 
     if (
@@ -4650,8 +4655,6 @@ class EditSalesLeads extends Component {
     }
 
     this.validate().then((res) => {
-
-
       if (res) {
         var FinalNotes = this.state.notes.filter(
           (x) => x.NoteText !== "" && x.NoteText !== null
@@ -4756,14 +4759,13 @@ class EditSalesLeads extends Component {
 
           let data14 = {
             Email: this.state.EmailAddress,
-          }
+          };
 
           api
             .post("salesLead/getEmailID", data14)
             .then((restest) => {
               if (restest.success) {
-
-                console.log(restest.data[0][0])
+                console.log(restest.data[0][0]);
 
                 data.EmailID = restest.data[0][0].EmailID;
 
@@ -4790,30 +4792,35 @@ class EditSalesLeads extends Component {
                                 this.hideLoader();
                                 if (redirect) {
                                   localStorage.removeItem("SearchCount");
-      
+
                                   this.props.history.push({
                                     pathname: "/admin/SalesLeads",
                                     state: {
                                       filterlist:
                                         this.props.history.location.state &&
-                                        this.props.history.location.state.filterlist
+                                        this.props.history.location.state
+                                          .filterlist
                                           ? this.props.history.location.state
                                               .filterlist
                                           : null,
                                       sortlist:
                                         this.props.history.location.state &&
-                                        this.props.history.location.state.sortlist
-                                          ? this.props.history.location.state.sortlist
+                                        this.props.history.location.state
+                                          .sortlist
+                                          ? this.props.history.location.state
+                                              .sortlist
                                           : null,
                                       packageValue:
                                         this.props.history.location.state &&
-                                        this.props.history.location.state.packageValue
+                                        this.props.history.location.state
+                                          .packageValue
                                           ? this.props.history.location.state
                                               .packageValue
                                           : null,
                                       statusfilter:
                                         this.props.history.location.state &&
-                                        this.props.history.location.state.statusfilter
+                                        this.props.history.location.state
+                                          .statusfilter
                                           ? this.props.history.location.state
                                               .statusfilter
                                           : null,
@@ -4822,7 +4829,9 @@ class EditSalesLeads extends Component {
                                 } else {
                                   this.reCallApi();
                                 }
-                                cogoToast.success("Saleslead updated Sucessfully");
+                                cogoToast.success(
+                                  "Saleslead updated Sucessfully"
+                                );
                               } else {
                                 this.hideLoader();
                                 cogoToast.error("Something went wrong6");
@@ -4852,14 +4861,15 @@ class EditSalesLeads extends Component {
                           this.hideLoader();
                           if (redirect) {
                             localStorage.removeItem("SearchCount");
-      
+
                             this.props.history.push({
                               pathname: "/admin/SalesLeads",
                               state: {
                                 filterlist:
                                   this.props.history.location.state &&
                                   this.props.history.location.state.filterlist
-                                    ? this.props.history.location.state.filterlist
+                                    ? this.props.history.location.state
+                                        .filterlist
                                     : null,
                                 sortlist:
                                   this.props.history.location.state &&
@@ -4869,12 +4879,14 @@ class EditSalesLeads extends Component {
                                 packageValue:
                                   this.props.history.location.state &&
                                   this.props.history.location.state.packageValue
-                                    ? this.props.history.location.state.packageValue
+                                    ? this.props.history.location.state
+                                        .packageValue
                                     : null,
                                 statusfilter:
                                   this.props.history.location.state &&
                                   this.props.history.location.state.statusfilter
-                                    ? this.props.history.location.state.statusfilter
+                                    ? this.props.history.location.state
+                                        .statusfilter
                                     : null,
                               },
                             });
@@ -4896,15 +4908,11 @@ class EditSalesLeads extends Component {
                   this.hideLoader();
                   cogoToast.error("Something went wrong10");
                 }
-
               }
             })
             .catch((err) => {
               console.log("error.....", err);
-          });
-
-
-          
+            });
         } else {
           cogoToast.error(
             "There were found error in the form.Please correct and resubmit"

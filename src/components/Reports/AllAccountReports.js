@@ -74,6 +74,8 @@ class AllAccountReports extends Component {
       PayableList: [],
       VendorPayableList: [],
       VendorNameList: [],
+      CountryList: [],
+      selectedCountry: {},
       yesNo: [
         { value: "Yes", label: "Yes" },
         { value: "No", label: "No" },
@@ -193,9 +195,13 @@ class AllAccountReports extends Component {
     await this.getVendorName();
     await this.getContainerName();
     await this.getpaymentType();
+    await this.getCountry();
   }
 
   // Account Payable Methods
+  ChangeCountry = (value) => {
+    this.setState({ selectedCountry: value });
+  };
   getVendorName() {
     try {
       api
@@ -210,7 +216,21 @@ class AllAccountReports extends Component {
       console.log("error", err);
     }
   }
-
+  getCountry() {
+    try {
+      api
+        .get("location/getCountryList")
+        .then((res) => {
+          if (res.success) {
+            var Country = res.data;
+            this.setState({ CountryList: Country });
+          }
+        })
+        .catch((err) => {
+          console.log("err..", err);
+        });
+    } catch (error) {}
+  }
   inputChange = (e, type) => {
     this.setState({
       [type]: e.target.value,
@@ -290,6 +310,7 @@ class AllAccountReports extends Component {
   }
 
   searchReport = () => {
+    debugger;
     if (this.validate()) {
       this.setState({ searchClicked: true });
       try {
@@ -316,6 +337,9 @@ class AllAccountReports extends Component {
           InvoiceNumber: CommonConfig.isEmpty(this.state.InvoiceNumber)
             ? ""
             : this.state.InvoiceNumber,
+          CountryID: CommonConfig.isEmpty(this.state.selectedCountry)
+            ? ""
+            : this.state.selectedCountry.value,
         };
         api
           .post("reports/getAccountPayableReport", data)
@@ -372,6 +396,7 @@ class AllAccountReports extends Component {
       PayableList: [],
       VendorPayableList: [],
       VendorNameList: [],
+      selectedCountry: {},
       searchClicked: false,
     });
   };
@@ -461,6 +486,9 @@ class AllAccountReports extends Component {
         InvoiceNumber: CommonConfig.isEmpty(this.state.InvoiceNumber)
           ? ""
           : this.state.InvoiceNumber,
+        CountryID: CommonConfig.isEmpty(this.state.selectedCountry)
+          ? ""
+          : this.state.selectedCountry.value,
       };
       let vendorList = this.state.VendorNameList;
       let index = vendorList.findIndex((x) => x.Index === idx);
@@ -1548,6 +1576,9 @@ class AllAccountReports extends Component {
     const VendorList = this.state.VendorList.map((type) => {
       return { value: type.VendorName, label: type.VendorName };
     });
+    const CountryOptions = this.state.CountryList.map((Country) => {
+      return { value: Country.CountryID, label: Country.CountryName };
+    });
     const columns = [
       {
         Header: "Date",
@@ -1975,7 +2006,7 @@ class AllAccountReports extends Component {
                           )}
                         />
                       </GridItem>
-                      <GridItem xs={12} sm={12} md={2} className="z-index-9">
+                      <GridItem xs={12} sm={12} md={4} className="z-index-9">
                         <div className="date-spl">
                           <InputLabel className={classes.label}>
                             From Date
@@ -1996,7 +2027,7 @@ class AllAccountReports extends Component {
                           </FormControl>
                         </div>
                       </GridItem>
-                      <GridItem xs={12} sm={12} md={2} className="z-index-9">
+                      <GridItem xs={12} sm={12} md={4} className="z-index-9">
                         <div className="date-spl">
                           <InputLabel className={classes.label}>
                             To Date
@@ -2017,7 +2048,10 @@ class AllAccountReports extends Component {
                           </FormControl>
                         </div>
                       </GridItem>
-                      <GridItem xs={12} sm={12} md={2}>
+                    </GridContainer>
+
+                    <GridContainer>
+                      <GridItem xs={12} sm={12} md={4}>
                         <div className="mt-15">
                           <FormControl fullWidth>
                             <TextField
@@ -2030,7 +2064,7 @@ class AllAccountReports extends Component {
                           </FormControl>
                         </div>
                       </GridItem>
-                      <GridItem xs={12} sm={12} md={2}>
+                      <GridItem xs={12} sm={12} md={4}>
                         <div className="select-spl">
                           <FormControl
                             className={classes.formControl}
@@ -2052,6 +2086,29 @@ class AllAccountReports extends Component {
                             </Select>
                           </FormControl>
                         </div>
+                      </GridItem>
+                      <GridItem xs={12} sm={12} md={4}>
+                        <FormControl fullWidth>
+                          <Autocomplete
+                            options={CountryOptions}
+                            id="Country"
+                            getOptionLabel={(option) => option.label}
+                            value={this.state.selectedCountry}
+                            //autoSelect
+                            onChange={(event, value) =>
+                              this.ChangeCountry(value)
+                            }
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                label="Country"
+                                error={this.state.VendorcountryErr}
+                                helperText={this.state.VendorcountryHelperText}
+                                fullWidth
+                              />
+                            )}
+                          />
+                        </FormControl>
                       </GridItem>
                     </GridContainer>
 
@@ -2176,15 +2233,16 @@ class AllAccountReports extends Component {
 
                         <div className="shipment-submit  mt-20">
                           <div className="right">
-                            {CommonConfig.getUserAccess("Account Payable").WriteAccess == 1 ?(
+                            {CommonConfig.getUserAccess("Account Payable")
+                              .WriteAccess == 1 ? (
                               <Button
-                              color="rose"
-                              onClick={() => this.handleSaveAccountIssued()}
-                            >
-                              Update
-                            </Button>
-                            ): null }
-                            
+                                color="rose"
+                                onClick={() => this.handleSaveAccountIssued()}
+                              >
+                                Update
+                              </Button>
+                            ) : null}
+
                             <Button
                               color="secondary"
                               onClick={() => this.resetReport()}
