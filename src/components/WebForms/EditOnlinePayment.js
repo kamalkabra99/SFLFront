@@ -703,38 +703,67 @@ class EditOnlinePayment extends Component {
           (x) => CommonConfig.isEmpty(x.ConfirmationNumber) !== true
         ),
       };
-      try {
-        this.showLoader();
-        api
-          .post("payment/addPayment/", data)
-          .then((result) => {
-            if (result.success) {
-              this.hideLoader();
-              cogoToast.success("Updated Successfully");
-              if (redirect) {
-                this.props.history.push({
-                  pathname: "/admin/OnlinePayment",
-                  state: {
-                    filterlist: this.props.history.location.state.filterlist,
-                    sortlist: this.props.history.location.state.sortlist,
-                    statusList: this.props.history.location.state.statusList,
-                  },
+
+
+
+      let data14 = {
+        Email: this.state.EmailAddress,
+      }
+
+      api
+        .post("salesLead/getEmailID", data14)
+        .then((restest) => {
+          if (restest.success) {
+
+            console.log(restest.data[0][0])
+
+            data.EmailIds = restest.data[0][0].EmailID;
+
+            try {
+              this.showLoader();
+              api
+                .post("payment/addPayment/", data)
+                .then((result) => {
+                  if (result.success) {
+                    this.hideLoader();
+                    cogoToast.success("Updated Successfully");
+                    if (redirect) {
+                      this.props.history.push({
+                        pathname: "/admin/OnlinePayment",
+                        state: {
+                          filterlist: this.props.history.location.state.filterlist,
+                          sortlist: this.props.history.location.state.sortlist,
+                          statusList: this.props.history.location.state.statusList,
+                        },
+                      });
+                    } else {
+                      this.reCallApi();
+                    }
+                  } else {
+                    this.hideLoader();
+                    cogoToast.error("Something went wrong");
+                  }
+                })
+                .catch((err) => {
+                  this.hideLoader();
+                  cogoToast.error("Something went wrong");
                 });
-              } else {
-                this.reCallApi();
-              }
-            } else {
-              this.hideLoader();
+            } catch (err) {
               cogoToast.error("Something went wrong");
             }
-          })
-          .catch((err) => {
-            this.hideLoader();
-            cogoToast.error("Something went wrong");
-          });
-      } catch (err) {
-        cogoToast.error("Something went wrong");
-      }
+
+           
+
+          }
+        })
+        .catch((err) => {
+          console.log("error.....", err);
+      });
+
+
+
+
+      
     } else {
       this.setState({ saveErr: true });
       cogoToast.error(
