@@ -339,7 +339,7 @@ class AllAccountReports extends Component {
             : this.state.InvoiceNumber,
           CountryID: CommonConfig.isEmpty(this.state.selectedCountry)
             ? ""
-            : this.state.selectedCountry.value,
+            : this.state.selectedCountry.label,
         };
         api
           .post("reports/getAccountPayableReport", data)
@@ -488,7 +488,7 @@ class AllAccountReports extends Component {
           : this.state.InvoiceNumber,
         CountryID: CommonConfig.isEmpty(this.state.selectedCountry)
           ? ""
-          : this.state.selectedCountry.value,
+          : this.state.selectedCountry.label,
       };
       let vendorList = this.state.VendorNameList;
       let index = vendorList.findIndex((x) => x.Index === idx);
@@ -2094,7 +2094,8 @@ class AllAccountReports extends Component {
                             id="Country"
                             getOptionLabel={(option) => option.label}
                             value={this.state.selectedCountry}
-                            //autoSelect
+                            autoSelect
+                            autoComplete="new-password"
                             onChange={(event, value) =>
                               this.ChangeCountry(value)
                             }

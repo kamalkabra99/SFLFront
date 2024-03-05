@@ -218,6 +218,9 @@ class AddEditVendors extends Component {
       deleteopen: false,
       close: false,
       AttachmentListArray: [],
+      deleteVendor: false,
+      VendorList: [],
+      flag: 0,
     };
   }
 
@@ -237,6 +240,21 @@ class AddEditVendors extends Component {
     document.getElementById("Documents").style.display = "none";
     document.getElementById("Comments").style.display = "none";
     document.getElementById("ContactAdd").style.display = "none";
+    this.getVendorName();
+  }
+  getVendorName() {
+    try {
+      api
+        .get("vendor/getVendorNameList")
+        .then((result) => {
+          this.setState({ VendorList: result.data });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (err) {
+      console.log("error", err);
+    }
   }
   ChangeCountry = (value) => {
     this.setState({ selectedCountry: value });
@@ -1111,25 +1129,39 @@ class AddEditVendors extends Component {
     let val = event.target.value;
 
     if (type === "vendorName") {
+      debugger;
       if (!CommonConfig.isEmpty(val)) {
-        if (val.length > 54) {
+        var selectedName = [];
+        selectedName = this.state.VendorList.filter(
+          (x) => x.VendorName === val
+        );
+        if (selectedName.length !== 0) {
           this.setState({
-            vendorName: val,
-            vendorNameErr: true,
-            vendorNameHelperText: "Please Enter vaid Vender Name.",
+            vendorName: "",
+            flag: 1,
           });
-        } else if (CommonConfig.RegExp.companyName.test(val)) {
-          this.setState({
-            vendorName: val,
-            vendorNameErr: true,
-            vendorNameHelperText: "Please Enter valid Vender Name.",
-          });
+          return cogoToast.error("Vendor name already in used");
         } else {
-          this.setState({
-            vendorName: val,
-            vendorNameErr: false,
-            vendorNameHelperText: "",
-          });
+          if (val.length > 54) {
+            this.setState({
+              vendorName: val,
+              vendorNameErr: true,
+              vendorNameHelperText: "Please Enter vaid Vender Name.",
+            });
+          } else if (CommonConfig.RegExp.companyName.test(val)) {
+            this.setState({
+              vendorName: val,
+              vendorNameErr: true,
+              vendorNameHelperText: "Please Enter valid Vender Name.",
+            });
+          } else {
+            this.setState({
+              vendorName: val,
+              vendorNameErr: false,
+              vendorNameHelperText: "",
+              flag: 0,
+            });
+          }
         }
       } else if (CommonConfig.isEmpty(val)) {
         this.setState({
@@ -1440,6 +1472,7 @@ class AddEditVendors extends Component {
       }
     }
   };
+
   handleChange = (event, type) => {
     let val = event.target.value;
     if (type === "vendorName") {
@@ -2149,7 +2182,49 @@ class AddEditVendors extends Component {
     contacts.splice(this.state.contactListKey, 1);
     this.setState({ contactList: contacts, open: false });
   };
-
+  deleteVendor = () => {
+    debugger;
+    console.log("test....", this.state.vendorId);
+    try {
+      var data = {
+        VendorID: this.state.vendorId,
+        Attachments: this.state.Attachments,
+      };
+      api
+        .post("/vendor/deleteVendor", data)
+        .then((res) => {
+          if (res.success) {
+            this.hideLoader();
+            this.setState({ deleteVendor: false });
+            this.props.history.push({
+              pathname: "/admin/Vendor",
+              state: {
+                filterlist:
+                  this.props.history.location.state.filterlist !== undefined
+                    ? this.props.history.location.state.filterlist
+                    : null,
+                sortlist:
+                  this.props.history.location.state.sortlist !== undefined
+                    ? this.props.history.location.state.sortlist
+                    : null,
+                serviceValue:
+                  this.props.history.location.state.serviceValue !== undefined
+                    ? this.props.history.location.state.serviceValue
+                    : null,
+              },
+            });
+          }
+        })
+        .catch((err) => {
+          console.log("error", err);
+        });
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
+  deleteVendorPopUp = () => {
+    this.setState({ deleteVendor: true });
+  };
   render(Steps) {
     const CountryOptions = this.state.CountryList.map((Country) => {
       return { value: Country.CountryID, label: Country.CountryName };
@@ -2257,13 +2332,15 @@ class AddEditVendors extends Component {
         Cell: this.renderDocumentName,
       },
       {
-        Header: "CreatedOn",
-        accessor: "DocumentCreatedOn",
+        Header: "DocumentCreatedOn",
         width: 220,
+        maxWidth: 220,
+        filterable: false,
+        sortable: false,
+        accessor: "DocumentCreatedOn",
         sortMethod: (a, b) => {
           return CommonConfig.dateSortMethod(a, b);
         },
-        maxWidth: 220,
       },
       {
         Header: "Added By",
@@ -3399,6 +3476,18 @@ class AddEditVendors extends Component {
               </div>
             </div>
             <div className="shipment-submit">
+              <div className="left">
+                {!CommonConfig.isEmpty(this.state.vendorId) &&
+                this.state.Access.DeleteAccess === 1 ? (
+                  <Button
+                    onClick={() => this.deleteVendorPopUp()}
+                    color="danger"
+                    autoFocus
+                  >
+                    Delete
+                  </Button>
+                ) : null}
+              </div>
               <div className="right">
                 {!CommonConfig.isEmpty(this.state.vendorId) ? (
                   <Button
@@ -3413,7 +3502,7 @@ class AddEditVendors extends Component {
                   </Button>
                 ) : null}
                 <Button
-                  color="rose"
+                  color="primary"
                   onClick={() => {
                     CommonConfig.isEmpty(this.state.vendorId)
                       ? this.addVendor("false")
@@ -3449,6 +3538,39 @@ class AddEditVendors extends Component {
                   {this.state.Access.DeleteAccess === 1 ? (
                     <Button
                       onClick={() => this.deleteContact()}
+                      color="primary"
+                      autoFocus
+                    >
+                      Delete
+                    </Button>
+                  ) : null}
+                </DialogActions>
+              </Dialog>
+            </div>
+            <div>
+              <Dialog
+                open={this.state.deleteVendor}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+              >
+                <DialogTitle id="alert-dialog-title">
+                  Confirm Delete
+                </DialogTitle>
+                <DialogContent>
+                  <DialogContentText id="alert-dialog-description">
+                    Are you sure want to delete?
+                  </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                  <Button
+                    onClick={() => this.setState({ deleteVendor: false })}
+                    color="primary"
+                  >
+                    Cancel
+                  </Button>
+                  {this.state.Access.DeleteAccess === 1 ? (
+                    <Button
+                      onClick={() => this.deleteVendor()}
                       color="primary"
                       autoFocus
                     >
