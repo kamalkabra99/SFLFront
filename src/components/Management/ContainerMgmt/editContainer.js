@@ -1872,7 +1872,8 @@ class editContainer extends Component {
 
           packSeqList = packSeqList.substring(0, packSeqList.length-2);
 
-          var TotalCBM = (TotalcftH/35.315).toFixed(4);
+          var TotalCBM = (TotalcftH/36).toFixed(4);
+          TotalChargableWeightHBL = TotalcftH * 7
           TotalChargableWeightHBL = (TotalChargableWeightHBL/2.2).toFixed(3)
         
           dataHtml = dataHtml + " <tr><td>"+packSeqList+"</td><td>"+totalPackH+"</td><td>USED HOUSE HOLD GOODS AND PERSONAL EFFECTS</td><td>"+TotalChargableWeightHBL+" KG.</td><td>"+TotalCBM+" CBM</td></tr>"
