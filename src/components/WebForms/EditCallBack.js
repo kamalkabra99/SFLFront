@@ -369,45 +369,62 @@ class EditCallBack extends Component {
         TimetoCall: this.state.TimetoCall,
       };
 
-      var formData = new FormData();
-      formData.append("data", JSON.stringify(data));
-      if (this.state.Attachments.length > 0) {
-        this.state.Attachments.forEach((file) => {
-          formData.append("Attachments", file);
-        });
+
+      let data14 = {
+        Email: this.state.EmailAddress,
       }
-      try {
-        this.setState({ Loading: true });
-        api.post("callBack/addCallBack", formData).then((result) => {
-          console.log("testttt");
-          if (result.success) {
-            this.setState({ Loading: false });
-            cogoToast.success("Updated Successfully");
-            if (redirect) {
-              console.log(
-                "testttt",
-                this.props.history.location.state.filterlist
-              );
-              debugger;
-              this.props.history.push({
-                pathname: "/admin/CallBack",
-                state: {
-                  filterlist: this.props.history.location.state.filterlist,
-                  sortlist: this.props.history.location.state.sortlist,
-                  statusList: this.props.history.location.state.statusList,
-                },
+
+      api
+        .post("salesLead/getEmailID", data14)
+        .then((restest) => {
+          if (restest.success) {
+
+            console.log(restest.data[0][0])
+
+            data.EmailIds = restest.data[0][0].EmailID;
+
+
+            var formData = new FormData();
+            formData.append("data", JSON.stringify(data));
+            if (this.state.Attachments.length > 0) {
+              this.state.Attachments.forEach((file) => {
+                formData.append("Attachments", file);
               });
-            } else {
-              this.reCallApi();
             }
-          } else {
-            this.setState({ Loading: false });
-            cogoToast.error("Something Went Wrong");
+            try {
+              this.setState({ Loading: true });
+              api.post("callBack/addCallBack", formData).then((result) => {
+                console.log("testttt");
+                if (result.success) {
+                  this.setState({ Loading: false });
+                  cogoToast.success("Updated Successfully");
+                  if (redirect) {
+                    console.log(
+                      "testttt",
+                      this.props.history.location.state.filterlist
+                    );
+                    debugger;
+                    this.props.history.push({
+                      pathname: "/admin/CallBack",
+                      state: {
+                        filterlist: this.props.history.location.state.filterlist,
+                        sortlist: this.props.history.location.state.sortlist,
+                        statusList: this.props.history.location.state.statusList,
+                      },
+                    });
+                  } else {
+                    this.reCallApi();
+                  }
+                } else {
+                  this.setState({ Loading: false });
+                  cogoToast.error("Something Went Wrong");
+                }
+              });
+            } catch (err) {
+              cogoToast.error("Something Went Wrong");
+            }
           }
-        });
-      } catch (err) {
-        cogoToast.error("Something Went Wrong");
-      }
+        })
     }
   };
 
