@@ -65,6 +65,7 @@ class AllAccountReports extends Component {
       ],
 
       //Account Payable
+      errorMessage: "",
       FromDate: "",
       ToDate: "",
       PaidStatus: "",
@@ -310,7 +311,6 @@ class AllAccountReports extends Component {
   }
 
   searchReport = () => {
-    debugger;
     if (this.validate()) {
       this.setState({ searchClicked: true });
       try {
@@ -346,6 +346,15 @@ class AllAccountReports extends Component {
           .then((res) => {
             this.hideLoader();
             if (res.success) {
+              debugger;
+              if (res.data.AccountData.length === 0) {
+                this.setState({
+                  searchClicked: false,
+                  errorMessage: "No Record Found",
+                });
+              } else {
+                this.setState({ errorMessage: "" });
+              }
               var i = 1;
               res.data.VendorList.map((obj) => {
                 obj.expand = true;
@@ -1034,7 +1043,6 @@ class AllAccountReports extends Component {
   };
 
   handelExportToExcel = (evt) => {
-    debugger;
     if (this.state.AccountReceivableReport.length > 0) {
       const headData = Object.keys(this.state.AccountReceivableReport[0]).map(
         (col) => ({
@@ -2253,7 +2261,20 @@ class AllAccountReports extends Component {
                           </div>
                         </div>
                       </>
-                    ) : null}
+                    ) : (
+                      <div>
+                        <span
+                          style={{
+                            textAlign: "center",
+                            width: "100%",
+                            display: "inline-block",
+                          }}
+                        >
+                          {" "}
+                          {this.state.errorMessage}
+                        </span>
+                      </div>
+                    )}
                   </GridItem>
                 </div>
                 <div className="shipment-pane" id="accountreceivable">

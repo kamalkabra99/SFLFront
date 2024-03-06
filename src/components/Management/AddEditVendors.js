@@ -2194,25 +2194,30 @@ class AddEditVendors extends Component {
         .post("/vendor/deleteVendor", data)
         .then((res) => {
           if (res.success) {
+            debugger;
             this.hideLoader();
             this.setState({ deleteVendor: false });
-            this.props.history.push({
-              pathname: "/admin/Vendor",
-              state: {
-                filterlist:
-                  this.props.history.location.state.filterlist !== undefined
-                    ? this.props.history.location.state.filterlist
-                    : null,
-                sortlist:
-                  this.props.history.location.state.sortlist !== undefined
-                    ? this.props.history.location.state.sortlist
-                    : null,
-                serviceValue:
-                  this.props.history.location.state.serviceValue !== undefined
-                    ? this.props.history.location.state.serviceValue
-                    : null,
-              },
-            });
+            if (res.data.data[0] !== undefined) {
+              return cogoToast.error("shipment is avaliable for this vendor");
+            } else {
+              this.props.history.push({
+                pathname: "/admin/Vendor",
+                state: {
+                  filterlist:
+                    this.props.history.location.state.filterlist !== undefined
+                      ? this.props.history.location.state.filterlist
+                      : null,
+                  sortlist:
+                    this.props.history.location.state.sortlist !== undefined
+                      ? this.props.history.location.state.sortlist
+                      : null,
+                  serviceValue:
+                    this.props.history.location.state.serviceValue !== undefined
+                      ? this.props.history.location.state.serviceValue
+                      : null,
+                },
+              });
+            }
           }
         })
         .catch((err) => {
