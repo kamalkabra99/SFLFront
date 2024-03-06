@@ -377,43 +377,63 @@ class EditContactUs extends Component {
         RequestStatus: this.state.RequestStatus,
         TrackingNumber: this.state.TrackingNumber,
       };
-      var formData = new FormData();
-      formData.append("data", JSON.stringify(data));
-      if (this.state.Attachments.length > 0) {
-        this.state.Attachments.forEach((file) => {
-          formData.append("Attachments", file);
-        });
-      }
-      this.setState({ Loading: true });
-      api.post("contactus/addContanctUs/", formData).then((result) => {
-        if (result.success) {
-          this.setState({ Loading: false });
-          cogoToast.success("Updated Successfully");
-          if (redirect) {
-            this.props.history.push({
-              pathname: "/admin/ContactUs",
-              state: {
-                filterlist: this.props.history.location.state.filterlist,
-                sortlist: this.props.history.location.state.sortlist,
-                statusList: this.props.history.location.state.statusList,
-              },
-            });
-          } else {
-            this.reCallApi();
-          }
-        } else {
-          this.setState({ Loading: false });
-          cogoToast.error("Something Went Wrong");
 
-          this.props.history.push({
-            pathname: "/admin/ContactUs",
-            state: {
-              filterlist: this.props.history.location.state.filterlist,
-              sortlist: this.props.history.location.state.sortlist,
-              statusList: this.props.history.location.state.statusList,
-            },
-          });
-        }
+      let data14 = {
+        Email: this.state.EmailAddress,
+      }
+
+      api
+        .post("salesLead/getEmailID", data14)
+        .then((restest) => {
+          if (restest.success) {
+
+            console.log(restest.data[0][0])
+
+            data.EmailIds = restest.data[0][0].EmailID;
+
+
+            var formData = new FormData();
+            formData.append("data", JSON.stringify(data));
+            if (this.state.Attachments.length > 0) {
+              this.state.Attachments.forEach((file) => {
+                formData.append("Attachments", file);
+              });
+            }
+            this.setState({ Loading: true });
+            api.post("contactus/addContanctUs/", formData).then((result) => {
+              if (result.success) {
+                this.setState({ Loading: false });
+                cogoToast.success("Updated Successfully");
+                if (redirect) {
+                  this.props.history.push({
+                    pathname: "/admin/ContactUs",
+                    state: {
+                      filterlist: this.props.history.location.state.filterlist,
+                      sortlist: this.props.history.location.state.sortlist,
+                      statusList: this.props.history.location.state.statusList,
+                    },
+                  });
+                } else {
+                  this.reCallApi();
+                }
+              } else {
+                this.setState({ Loading: false });
+                cogoToast.error("Something Went Wrong");
+
+                this.props.history.push({
+                  pathname: "/admin/ContactUs",
+                  state: {
+                    filterlist: this.props.history.location.state.filterlist,
+                    sortlist: this.props.history.location.state.sortlist,
+                    statusList: this.props.history.location.state.statusList,
+                  },
+                });
+              }
+            });
+          }
+        })
+        .catch((err) => {
+          console.log("error.....", err);
       });
     }
   };

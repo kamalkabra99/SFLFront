@@ -246,6 +246,7 @@ class editContainer extends Component {
     await this.getContainerByID();
     await this.getShipmentByContainer();
     await this.getManualTracking();
+    // await this.getemaildata();
   }
 
   async reCallApi() {
@@ -254,6 +255,8 @@ class editContainer extends Component {
     await this.getManualTracking();
     await this.getStatusList();
   }
+
+
   getStatusList = () => {
     try {
       let data = {
