@@ -89,11 +89,14 @@ class AddEditVendors extends Component {
       vendorTypeErr: false,
       vendorTypeHelperText: "",
 
-      carrierLink: "",
-      carrierLinkErr: false,
-      carrierLinkHelperText: "",
+      EINNumber: "",
+      EINNumberErr: false,
+      EINNumberHelperText: "",
 
-      isBulkUpload: false,
+      SSNNumber: "",
+      SSNNumberErr: false,
+      SSNNumberHelperText: "",
+
       isFormW9: false,
       VendorAddressLine1: "",
 
@@ -228,8 +231,8 @@ class AddEditVendors extends Component {
     this.setState({ Access: CommonConfig.getUserAccess("Vendor Management") });
     if (CommonConfig.isEmpty(this.state.vendorId)) {
       this.setState({ Attachments: [this.state.objAttachment] });
-      document.getElementById("PanelShow").style.display = "none";
     }
+    document.getElementById("PanelShow").style.display = "none";
     await this.getServiceList();
     await this.getCountry();
     if (!CommonConfig.isEmpty(this.state.vendorId)) {
@@ -1119,8 +1122,6 @@ class AddEditVendors extends Component {
         vendorTypeErr: false,
         vendorTypeHelperText: "",
       });
-    } else if (type === "bulkUpload") {
-      this.setState({ isBulkUpload: event.target.value });
     } else if (type === "FormW9") {
       this.setState({ isFormW9: event.target.value });
     }
@@ -1172,8 +1173,23 @@ class AddEditVendors extends Component {
       }
     } else if (type === "website") {
       this.setState({ vendorWebsite: val });
-    } else if (type === "carrierLink") {
-      this.setState({ carrierLink: val });
+    } else if (type === "EINNumber") {
+      if (!CommonConfig.isEmpty(val)) {
+        let chars = val.split("");
+        chars.splice(2, 0, "-");
+        this.setState({ EINNumber: chars.join("") });
+      } else {
+        this.setState({ EINNumber: val });
+      }
+    } else if (type === "SSNNumber") {
+      if (!CommonConfig.isEmpty(val)) {
+        let chars = val.split("");
+        chars.splice(3, 0, "-");
+        chars.splice(6, 0, "-");
+        this.setState({ SSNNumber: chars.join("") });
+      } else {
+        this.setState({ SSNNumber: val });
+      }
     } else if (type === "comments") {
       this.setState({ comments: val });
     } else if (type === "VendorAddressLine1") {
@@ -1479,8 +1495,16 @@ class AddEditVendors extends Component {
       this.setState({ vendorName: val });
     } else if (type === "website") {
       this.setState({ vendorWebsite: val });
-    } else if (type === "carrierLink") {
-      this.setState({ carrierLink: val });
+    } else if (type === "EINNumber") {
+      let EINNumber = event.target.value.replace(/\D/g, "");
+      if (event.target.value.length <= 10) {
+        this.setState({ EINNumber: EINNumber });
+      }
+    } else if (type === "SSNNumber") {
+      let SSNNumber = event.target.value.replace(/\D/g, "");
+      if (event.target.value.length <= 10) {
+        this.setState({ SSNNumber: SSNNumber });
+      }
     } else if (type === "comments") {
       this.setState({ comments: val });
     } else if (type === "VendorAddressLine1") {
@@ -1583,17 +1607,18 @@ class AddEditVendors extends Component {
                 selectedVendorCountry: country,
               });
             }
-
+            document.getElementById("PanelShow").style.display = "block";
             this.setState({
               vendorName: res.data.Name,
               vendorWebsite: res.data.Website,
               vendorType: res.data.VendorType,
               ServiceList: allServiceList,
               comments: res.data.Comments,
-              carrierLink: res.data.CarrierLink,
+              EINNumber: res.data.EINNumber,
+              SSNNumber: res.data.SSNNumber,
               offeredService: res.data.services,
               createdBy: res.data.CreatedBy,
-              isBulkUpload: res.data.IsBulkUpload === 1 ? true : false,
+
               isFormW9: res.data.FormW9 === 1 ? true : false,
               VendorAddressLine1: res.data.AddressLine1,
               VendorAddressLine2: res.data.AddressLine2,
@@ -1806,9 +1831,9 @@ class AddEditVendors extends Component {
         vendorName: vendorDetails.vendorName,
         vendorWebsite: vendorDetails.vendorWebsite,
         vendorType: vendorDetails.vendorType,
-        isBulkUpload: vendorDetails.isBulkUpload,
         comments: vendorDetails.comments,
-        carrierLink: vendorDetails.carrierLink,
+        EINNumber: vendorDetails.EINNumber,
+        SSNNumber: vendorDetails.SSNNumber,
         service: vendorDetails.offeredService,
         userId: CommonConfig.loggedInUserData().PersonID,
         isFormW9: vendorDetails.isFormW9,
@@ -1947,23 +1972,36 @@ class AddEditVendors extends Component {
     }
   };
   cancelVandor() {
-    this.props.history.push({
-      pathname: "/admin/Vendor",
-      state: {
-        filterlist:
-          this.props.history.location.state.filterlist !== undefined
-            ? this.props.history.location.state.filterlist
-            : null,
-        sortlist:
-          this.props.history.location.state.sortlist !== undefined
-            ? this.props.history.location.state.sortlist
-            : null,
-        serviceValue:
-          this.props.history.location.state.serviceValue !== undefined
-            ? this.props.history.location.state.serviceValue
-            : null,
-      },
-    });
+    debugger;
+    if (this.props.history.location.state !== undefined) {
+      this.props.history.push({
+        pathname: "/admin/Vendor",
+        state: {
+          filterlist:
+            this.props.history.location.state !== undefined
+              ? this.props.history.location.state.filterlist !== undefined
+                ? this.props.history.location.state.filterlist
+                : null
+              : null,
+          sortlist:
+            this.props.history.location.state !== undefined
+              ? this.props.history.location.state.sortlist !== undefined
+                ? this.props.history.location.state.sortlist
+                : null
+              : null,
+          serviceValue:
+            this.props.history.location.state !== undefined
+              ? this.props.history.location.state.serviceValue !== undefined
+                ? this.props.history.location.state.serviceValue
+                : null
+              : null,
+        },
+      });
+    } else {
+      this.props.history.push({
+        pathname: "/admin/Vendor",
+      });
+    }
   }
   editVendor(redirect) {
     debugger;
@@ -1987,9 +2025,9 @@ class AddEditVendors extends Component {
       vendorName: vendorDetails.vendorName,
       vendorWebsite: vendorDetails.vendorWebsite,
       vendorType: vendorDetails.vendorType,
-      isBulkUpload: vendorDetails.isBulkUpload,
       isFormW9: vendorDetails.isFormW9, // === true ? 1 : 0,
-      carrierLink: vendorDetails.carrierLink,
+      EINNumber: vendorDetails.EINNumber,
+      SSNNumber: vendorDetails.SSNNumber,
       comments: vendorDetails.comments,
       service: vendorDetails.offeredService,
       contacts: this.state.contactList,
@@ -2550,43 +2588,45 @@ class AddEditVendors extends Component {
                 </GridContainer>
                 <GridContainer>
                   <GridItem xs={12} sm={4} md={3}>
-                    <div className="select-spl">
-                      <FormControl fullWidth>
-                        <InputLabel>Bulk Upload</InputLabel>
-                        <Select
-                          value={this.state.isBulkUpload}
-                          onChange={(event) =>
-                            this.changeDropDown(event, "bulkUpload")
-                          }
-                          inputProps={{
-                            name: "bulkupload",
-                            id: "bulkupload",
-                          }}
-                        >
-                          <MenuItem value={true}> Yes </MenuItem>
-                          <MenuItem value={false}> No </MenuItem>
-                        </Select>
-                      </FormControl>
-                    </div>
-                  </GridItem>
-                  <GridItem xs={12} sm={4} md={3}>
                     <CustomInput
-                      labelText={<span>Carrier Link</span>}
-                      id="carrierlink"
+                      labelText={<span>EIN Number</span>}
+                      id="EINNumber"
                       formControlProps={{ fullWidth: true }}
                       inputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
-                            <Icon>location_city</Icon>
+                            {/* <Icon>location_city</Icon> */}
                           </InputAdornment>
                         ),
-                        value: this.state.carrierLink,
-                        onChange: (e) => this.handleChange(e, "carrierLink"),
-                        onBlur: (e) => this.handleBlur(e, "carrierLink"),
+                        value: this.state.EINNumber,
+                        onChange: (e) => this.handleChange(e, "EINNumber"),
+                        onBlur: (e) => this.handleBlur(e, "EINNumber"),
                         onFocus: () =>
                           this.setState({
-                            carrierLinkErr: false,
-                            carrierLinkHelperText: "",
+                            EINNumberErr: false,
+                            EINNumberHelperText: "",
+                          }),
+                      }}
+                    />
+                  </GridItem>
+                  <GridItem xs={12} sm={4} md={3}>
+                    <CustomInput
+                      labelText={<span>SSN Number</span>}
+                      id="SSNNumber"
+                      formControlProps={{ fullWidth: true }}
+                      inputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            {/* <Icon>location_city</Icon> */}
+                          </InputAdornment>
+                        ),
+                        value: this.state.SSNNumber,
+                        onChange: (e) => this.handleChange(e, "SSNNumber"),
+                        onBlur: (e) => this.handleBlur(e, "SSNNumber"),
+                        onFocus: () =>
+                          this.setState({
+                            SSNNumberErr: false,
+                            SSNNumberHelperText: "",
                           }),
                       }}
                     />
@@ -2656,7 +2696,7 @@ class AddEditVendors extends Component {
                   <GridItem xs={12} sm={4} md={3}>
                     <div className="select-spl">
                       <FormControl fullWidth>
-                        <InputLabel>Form W-9</InputLabel>
+                        <InputLabel>Form W-9 Required?</InputLabel>
                         <Select
                           value={this.state.isFormW9}
                           onChange={(event) =>
