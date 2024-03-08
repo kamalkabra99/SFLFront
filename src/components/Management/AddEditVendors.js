@@ -40,6 +40,10 @@ import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import { common } from "@material-ui/core/colors";
+import FlightTakeoff from "@material-ui/icons/FlightTakeoff";
+import momentTimezone from "moment-timezone";
+import Tooltip from "@material-ui/core/Tooltip";
+import InfoIcon from "@material-ui/icons/PriorityHigh";
 
 const useStyles = () => makeStyles(styles);
 const classes = useStyles();
@@ -224,6 +228,8 @@ class AddEditVendors extends Component {
       deleteVendor: false,
       VendorList: [],
       flag: 0,
+      isNotesVisible: true,
+      notes: [],
     };
   }
 
@@ -244,7 +250,144 @@ class AddEditVendors extends Component {
     document.getElementById("Comments").style.display = "none";
     document.getElementById("ContactAdd").style.display = "none";
     this.getVendorName();
+    // if (this.state.notes.filter((x) => x.Status === "Active").length === 0) {
+    //   this.handleAddNotesRow();
+    // }
   }
+  handleAddNotesRow = () => {
+    var addnotes = this.state.notes.filter(
+      (x) => x.Status === "Active" && (x.NoteText === null || x.NoteText === "")
+    );
+    if (addnotes.length === 0) {
+      var todayDate = new Date();
+      const note = {
+        NoteText: "",
+        NoteType: null,
+        NoteTitle: null,
+        Status: "Active",
+        AttachmentID: null,
+        AttachmentType: null,
+        AttachmentName: null,
+        CreatedOn: moment(todayDate).format(CommonConfig.dateFormat.dateTime),
+        disabled: false,
+        closebutton: true,
+        CreatedBy: CommonConfig.loggedInUserData().PersonID,
+        NoteID: null,
+        CreatedByNote: CommonConfig.loggedInUserData().Name,
+        AddedBy: CommonConfig.loggedInUserData().Name,
+        Index: this.state.notes.length + 1,
+      };
+      this.setState({
+        notesDisabled: false,
+        notes: [...this.state.notes, note],
+      });
+    } else {
+      cogoToast.error("Please fill above note first");
+    }
+  };
+  handleChangeNotes = (event, idx) => {
+    const { value } = event.target;
+    const notes = [...this.state.notes];
+    var noteIndex = notes.findIndex((x) => x.Index === idx);
+    if (noteIndex !== -1) {
+      notes[noteIndex]["NoteText"] = value;
+      if (
+        notes[noteIndex]["NoteText"] === null ||
+        notes[noteIndex]["NoteText"] === ""
+      ) {
+        this.setState({ noteErr: true });
+      } else {
+        this.setState({ noteErr: false });
+      }
+    }
+    this.setState({ notes: notes });
+  };
+  handleNotesRemoveRow = (Index) => {
+    debugger;
+    const removeNotes = [...this.state.notes];
+    var noteIndex = this.state.notes.findIndex((x) => x.Index === Index);
+    if (noteIndex !== -1) {
+      removeNotes[noteIndex]["Status"] = "Inactive";
+      // removeNotes[noteIndex]["AttachmentStatus"] = "Inactive";
+      this.setState({ notes: removeNotes });
+      if (removeNotes.filter((x) => x.Status === "Active").length === 0) {
+        this.setState({
+          isNotesVisible: false,
+        });
+      }
+    }
+  };
+  viewNotes = () => {
+    return this.state.notes
+      .filter((x) => x.Status === "Active")
+      .map((notes, idx) => {
+        return (
+          <tr>
+            <td style={{ width: "154px" }}>
+              {momentTimezone(notes.CreatedOn)
+                .tz(CommonConfig.UStimezone)
+                .format(CommonConfig.dateFormat.dateTime)}
+            </td>
+            <td>
+              {notes.disabled ? (
+                <p
+                  id="noteText"
+                  dangerouslySetInnerHTML={{
+                    __html: notes.NoteText.replace(/\r?\n/g, "<br />"),
+                  }}
+                ></p>
+              ) : (
+                <div className="table-textarea">
+                  <textarea
+                    name="NoteText"
+                    disabled={notes.disabled}
+                    value={notes.NoteText}
+                    onChange={(event) =>
+                      this.handleChangeNotes(event, notes.Index)
+                    }
+                  ></textarea>
+                </div>
+              )}
+            </td>
+            <td className="pck-action-column">
+              <div className="pck-subbtn">
+                {/* {this.state.DeleteAccess === 1? */}
+                <Button
+                  justIcon
+                  color="danger"
+                  className="Plus-btn "
+                  onClick={() => this.handleNotesRemoveRow(notes.Index)}
+                  disabled={this.state.notesDisabled}
+                >
+                  <i className={"fas fa-minus"} />
+                </Button>
+                {this.state.notes.filter((x) => x.Status === "Active")
+                  .length ===
+                idx + 1 ? (
+                  <Button
+                    justIcon
+                    color="facebook"
+                    onClick={() => this.handleAddNotesRow()}
+                    className="Plus-btn "
+                  >
+                    <i className={"fas fa-plus"} />
+                  </Button>
+                ) : null}
+                <Tooltip title={notes.CreatedByNote} arrow>
+                  <Button
+                    className="Plus-btn info-icon"
+                    justIcon
+                    color="twitter"
+                  >
+                    <InfoIcon />
+                  </Button>
+                </Tooltip>
+              </div>
+            </td>
+          </tr>
+        );
+      });
+  };
   getVendorName() {
     try {
       api
@@ -1583,6 +1726,31 @@ class AddEditVendors extends Component {
               }
             }
 
+            if (res.data.NoteList.length > 0) {
+              var i = 0;
+              res.data.NoteList.map((Obj) => {
+                Obj.Index = i;
+                i++;
+                return Obj;
+              });
+              res.data.NoteList.map((Obj) => {
+                Obj.disabled = i;
+                i++;
+                return Obj;
+              });
+
+              for (var i = 0; i < res.data.NoteList.length; i++) {
+                var NoteList = res.data.NoteList[i];
+                NoteList.CreatedOn = moment(NoteList.CreatedOn).format(
+                  CommonConfig.dateFormat.dateOnly
+                );
+                this.state.notes.push(NoteList);
+              }
+              this.handleAddNotesRow();
+            } else {
+              this.handleAddNotesRow();
+            }
+
             if (res.data.DocumentList.length > 0) {
               this.state.Attachments.length = 0;
 
@@ -1594,6 +1762,7 @@ class AddEditVendors extends Component {
                 this.state.Attachments.push(filesList);
               }
             }
+            debugger;
             if (!CommonConfig.isEmpty(res.data.Country)) {
               // if (res.data.Country !== null || res.data.Country !== "") {
               const selectedCountry = this.state.CountryList.find(
@@ -1827,6 +1996,9 @@ class AddEditVendors extends Component {
           finalAttachment.push(vendorDetails.Attachments[i]);
         }
       }
+      var FinalNotes = this.state.notes.filter(
+        (x) => x.NoteText !== "" && x.NoteText !== null
+      );
       let data = {
         vendorName: vendorDetails.vendorName,
         vendorWebsite: vendorDetails.vendorWebsite,
@@ -1850,6 +2022,7 @@ class AddEditVendors extends Component {
         Country: vendorDetails.selectedVendorCountry.label,
         Vendoremail: vendorDetails.VendorEmail,
         Vendorphone: vendorDetails.VendorPhone,
+        Notes: FinalNotes,
       };
 
       try {
@@ -2011,7 +2184,9 @@ class AddEditVendors extends Component {
     if (this.state.contactList.length === 0) {
       return cogoToast.error("Please add one contact");
     }
-
+    if (this.state.vendorName === "") {
+      return cogoToast.error("Please enter vendor name");
+    }
     let vendorDetails = this.state;
     var finalAttachment = [];
     for (var i = 0; i < vendorDetails.Attachments.length; i++) {
@@ -2019,7 +2194,9 @@ class AddEditVendors extends Component {
         finalAttachment.push(vendorDetails.Attachments[i]);
       }
     }
-
+    var FinalNotes = this.state.notes.filter(
+      (x) => x.NoteText !== "" && x.NoteText !== null
+    );
     let data = {
       vendorId: this.state.vendorId,
       vendorName: vendorDetails.vendorName,
@@ -2028,7 +2205,7 @@ class AddEditVendors extends Component {
       isFormW9: vendorDetails.isFormW9, // === true ? 1 : 0,
       EINNumber: vendorDetails.EINNumber,
       SSNNumber: vendorDetails.SSNNumber,
-      comments: vendorDetails.comments,
+      // comments: vendorDetails.comments,
       service: vendorDetails.offeredService,
       contacts: this.state.contactList,
       userId: CommonConfig.loggedInUserData().PersonID,
@@ -2056,6 +2233,7 @@ class AddEditVendors extends Component {
         : vendorDetails.selectedVendorCountry.label,
       Vendoremail: vendorDetails.VendorEmail,
       Vendorphone: vendorDetails.VendorPhone,
+      Notes: FinalNotes,
     };
 
     var formData = new FormData();
@@ -2588,6 +2766,26 @@ class AddEditVendors extends Component {
                 </GridContainer>
                 <GridContainer>
                   <GridItem xs={12} sm={4} md={3}>
+                    <div className="select-spl">
+                      <FormControl fullWidth>
+                        <InputLabel>Form W-9 Required?</InputLabel>
+                        <Select
+                          value={this.state.isFormW9}
+                          onChange={(event) =>
+                            this.changeDropDown(event, "FormW9")
+                          }
+                          inputProps={{
+                            name: "FormW9",
+                            id: "FormW9",
+                          }}
+                        >
+                          <MenuItem value={true}> Yes </MenuItem>
+                          <MenuItem value={false}> No </MenuItem>
+                        </Select>
+                      </FormControl>
+                    </div>
+                  </GridItem>
+                  <GridItem xs={12} sm={4} md={3}>
                     <CustomInput
                       labelText={<span>EIN Number</span>}
                       id="EINNumber"
@@ -2660,6 +2858,8 @@ class AddEditVendors extends Component {
                       helperText={this.state.VendorPhoneHelperText}
                     />
                   </GridItem>
+                </GridContainer>
+                <GridContainer>
                   <GridItem xs={12} sm={12} md={3}>
                     <CustomInput
                       labelText="Email"
@@ -2691,28 +2891,7 @@ class AddEditVendors extends Component {
                       helperText={this.state.VendorEmailHelperText}
                     />
                   </GridItem>
-                </GridContainer>
-                <GridContainer>
-                  <GridItem xs={12} sm={4} md={3}>
-                    <div className="select-spl">
-                      <FormControl fullWidth>
-                        <InputLabel>Form W-9 Required?</InputLabel>
-                        <Select
-                          value={this.state.isFormW9}
-                          onChange={(event) =>
-                            this.changeDropDown(event, "FormW9")
-                          }
-                          inputProps={{
-                            name: "FormW9",
-                            id: "FormW9",
-                          }}
-                        >
-                          <MenuItem value={true}> Yes </MenuItem>
-                          <MenuItem value={false}> No </MenuItem>
-                        </Select>
-                      </FormControl>
-                    </div>
-                  </GridItem>
+
                   <GridItem xs={12} sm={4} md={3}>
                     <CustomInput
                       labelText="Address Line 1"
@@ -3447,38 +3626,46 @@ class AddEditVendors extends Component {
                 </div>
                 <div className="shipment-pane" id="Comments">
                   <div className="shipment-box mb-0">
-                    <Card>
-                      <CardHeader
-                        className="btn-right-outer"
-                        color="primary"
-                        icon
-                      >
-                        <CardIcon color="primary">
-                          <AssignmentIcon />
-                        </CardIcon>
-                        <h4 className="margin-right-auto text-color-black">
-                          Comments
-                        </h4>
-                      </CardHeader>
-                      <CardBody className="shipment-cardbody">
-                        <GridContainer justify="center">
-                          <GridItem xs={12} sm={12} md={12}>
-                            <div className="normal-textarea">
-                              <textarea
-                                aria-label="minimum height"
-                                rowsMin={3}
-                                value={this.state.comments}
-                                id="comments"
-                                onChange={(event) =>
-                                  this.handleChange(event, "comments")
-                                }
-                                required
-                              />
+                    <GridContainer>
+                      <GridItem xs={12} sm={12}>
+                        <Card>
+                          <CardHeader
+                            className="btn-right-outer"
+                            color="primary"
+                            icon
+                          >
+                            <CardIcon color="primary">
+                              <FlightTakeoff />
+                            </CardIcon>
+                            <h4 className="margin-right-auto text-color-black">
+                              Notes
+                            </h4>
+                            <div
+                              style={{ textAlign: "right", marginTop: "12px" }}
+                            >
+                              /
                             </div>
-                          </GridItem>
-                        </GridContainer>
-                      </CardBody>
-                    </Card>
+                          </CardHeader>
+
+                          <div className="notes-table">
+                            {this.state.isNotesVisible ? (
+                              <div className="package-table">
+                                <table>
+                                  <thead>
+                                    <tr>
+                                      <th>Date</th>
+                                      <th>Comments</th>
+                                      <th>Action</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>{this.viewNotes()}</tbody>
+                                </table>
+                              </div>
+                            ) : null}
+                          </div>
+                        </Card>
+                      </GridItem>
+                    </GridContainer>
                   </div>
                 </div>
                 <div className="shipment-pane" id="Documents">
