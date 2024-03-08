@@ -324,9 +324,14 @@ class AddEditVendors extends Component {
         return (
           <tr>
             <td style={{ width: "154px" }}>
-              {momentTimezone(notes.CreatedOn)
+              {notes.CreatedOn}
+              {/* {moment(notes.CreatedOn).format(CommonConfig.dateFormat.dateTime)} */}
+              {/* {moment(notes.CreatedOn)
                 .tz(CommonConfig.UStimezone)
-                .format(CommonConfig.dateFormat.dateTime)}
+                .format(CommonConfig.dateFormat.dateTime)} */}
+              {/* {momentTimezone(notes.CreatedOn)
+                .tz(CommonConfig.UStimezone)
+                .format(CommonConfig.dateFormat.dateTime)} */}
             </td>
             <td>
               {notes.disabled ? (
@@ -1765,16 +1770,24 @@ class AddEditVendors extends Component {
             debugger;
             if (!CommonConfig.isEmpty(res.data.Country)) {
               // if (res.data.Country !== null || res.data.Country !== "") {
+              console.log("CountryList", this.state.CountryList);
               const selectedCountry = this.state.CountryList.find(
                 (x) => x.CountryName === res.data.Country
               );
-              const country = {
-                value: selectedCountry.CountryID,
-                label: selectedCountry.CountryName,
-              };
-              this.setState({
-                selectedVendorCountry: country,
-              });
+              console.log("selectedCountry", selectedCountry);
+              if (selectedCountry !== undefined) {
+                const country = {
+                  value: selectedCountry.CountryID
+                    ? selectedCountry.CountryID
+                    : "",
+                  label: selectedCountry.CountryName
+                    ? selectedCountry.CountryName
+                    : "",
+                };
+                this.setState({
+                  selectedVendorCountry: country,
+                });
+              }
             }
             document.getElementById("PanelShow").style.display = "block";
             this.setState({
