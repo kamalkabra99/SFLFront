@@ -116,6 +116,7 @@ class LoginPage extends Component {
 
   login = (event) => {
     event.preventDefault();
+
     try {
       this.setState({ Loading: true });
       let data = {
@@ -142,19 +143,15 @@ class LoginPage extends Component {
                 );
               });
 
-              var pData = {
-                UserID: res.Data.PersonID,
-                userTimeZonedata:res.Data.userTimeZone
-              }
-              api.post("contactus/CheckUserLoginBreak", pData).then((res) => {
-                console.log("Res = ", res);
+            var pData = {
+              UserID: res.Data.PersonID,
+              userTimeZonedata: res.Data.userTimeZone,
+            };
+            api.post("contactus/CheckUserLoginBreak", pData).then((res) => {
+              console.log("Res = ", res);
 
-                localStorage.setItem(
-                  "UserBreakData",
-                  res.Data[0][0].BreakCount
-                );
-                
-              });
+              localStorage.setItem("UserBreakData", res.Data[0][0].BreakCount);
+            });
 
             let timeZone = moment.tz.guess();
 

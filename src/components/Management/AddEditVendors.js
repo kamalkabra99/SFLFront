@@ -324,14 +324,14 @@ class AddEditVendors extends Component {
         return (
           <tr>
             <td style={{ width: "154px" }}>
-              {notes.CreatedOn}
+              {/* {notes.CreatedOn} */}
               {/* {moment(notes.CreatedOn).format(CommonConfig.dateFormat.dateTime)} */}
               {/* {moment(notes.CreatedOn)
                 .tz(CommonConfig.UStimezone)
                 .format(CommonConfig.dateFormat.dateTime)} */}
-              {/* {momentTimezone(notes.CreatedOn)
+              {momentTimezone(notes.CreatedOn)
                 .tz(CommonConfig.UStimezone)
-                .format(CommonConfig.dateFormat.dateTime)} */}
+                .format(CommonConfig.dateFormat.dateTime)}
             </td>
             <td>
               {notes.disabled ? (
