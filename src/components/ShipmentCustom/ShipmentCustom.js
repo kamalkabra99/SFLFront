@@ -13984,7 +13984,8 @@ class ShipmentCustom extends React.Component {
                                   error={this.state.ableToProvidePassportErr}
                                 >
                                   <InputLabel className={classes.selectLabel}>
-                                    Will Provide Passport for Custom Clearance?
+                                    Wlll provide original passport for Customs
+                                    Clearance ?
                                   </InputLabel>
                                   <Select
                                     value={this.state.AbleToProvidePassport}

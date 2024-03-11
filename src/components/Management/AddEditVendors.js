@@ -119,7 +119,7 @@ class AddEditVendors extends Component {
       Loading: false,
       createdBy: CommonConfig.loggedInUserData().Name,
       comments: "",
-      open: false,
+
       vendorId: !CommonConfig.isEmpty(this.props.history.location.state)
         ? this.props.history.location.state.vendorId
         : "",
@@ -222,6 +222,8 @@ class AddEditVendors extends Component {
         : "",
       contactListKey: "",
       open: false,
+      delDoc: false,
+      recordDocument: "",
       deleteopen: false,
       close: false,
       AttachmentListArray: [],
@@ -351,16 +353,17 @@ class AddEditVendors extends Component {
             </td>
             <td className="pck-action-column">
               <div className="pck-subbtn">
-                {/* {this.state.DeleteAccess === 1? */}
-                <Button
-                  justIcon
-                  color="danger"
-                  className="Plus-btn "
-                  onClick={() => this.handleNotesRemoveRow(notes.Index)}
-                  disabled={this.state.notesDisabled}
-                >
-                  <i className={"fas fa-minus"} />
-                </Button>
+                {this.state.Access.DeleteAccess === 1 ? (
+                  <Button
+                    justIcon
+                    color="danger"
+                    className="Plus-btn "
+                    onClick={() => this.handleNotesRemoveRow(notes.Index)}
+                    disabled={this.state.notesDisabled}
+                  >
+                    <i className={"fas fa-minus"} />
+                  </Button>
+                ) : null}
                 {this.state.notes.filter((x) => x.Status === "Active")
                   .length ===
                 idx + 1 ? (
@@ -2348,10 +2351,13 @@ class AddEditVendors extends Component {
       </div>
     );
   };
-  handleDocumentDelete = (e, record) => {
-    console.log("Records = ", record);
+  DeleteDocument = (e, record) => {
+    this.setState({ recordDocument: record, delDoc: true });
+  };
+  handleDocumentDelete = () => {
+    console.log("Records = ", this.state.recordDocument);
     var data = {
-      Attachments: record,
+      Attachments: this.state.recordDocument,
     };
     api
       .post("/vendor/deleteVendorSingleDocument", data)
@@ -2365,9 +2371,9 @@ class AddEditVendors extends Component {
       });
 
     var AttachmentList = this.state.Attachments;
-    var Index = AttachmentList.indexOf(record);
+    var Index = AttachmentList.indexOf(this.state.recordDocument);
     AttachmentList[Index]["Status"] = "Inactive";
-    this.setState({ Attachments: AttachmentList });
+    this.setState({ Attachments: AttachmentList, delDoc: false });
   };
   handleDocumentChange = (e, record) => {
     var Index = this.state.Attachments.indexOf(record.original);
@@ -2626,7 +2632,7 @@ class AddEditVendors extends Component {
             <div className="align-right">
               {this.state.Access.DeleteAccess === 1 ? (
                 <DeleteIcon
-                  onClick={(e) => this.handleDocumentDelete(e, record.original)}
+                  onClick={(e) => this.DeleteDocument(e, record.original)}
                 />
               ) : null}
             </div>
@@ -3811,6 +3817,39 @@ class AddEditVendors extends Component {
                   {this.state.Access.DeleteAccess === 1 ? (
                     <Button
                       onClick={() => this.deleteVendor()}
+                      color="primary"
+                      autoFocus
+                    >
+                      Delete
+                    </Button>
+                  ) : null}
+                </DialogActions>
+              </Dialog>
+            </div>
+            <div>
+              <Dialog
+                open={this.state.delDoc}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+              >
+                <DialogTitle id="alert-dialog-title">
+                  Confirm Delete
+                </DialogTitle>
+                <DialogContent>
+                  <DialogContentText id="alert-dialog-description">
+                    Are you sure want to delete?
+                  </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                  <Button
+                    onClick={() => this.setState({ delDoc: false })}
+                    color="primary"
+                  >
+                    Cancel
+                  </Button>
+                  {this.state.Access.DeleteAccess === 1 ? (
+                    <Button
+                      onClick={() => this.handleDocumentDelete()}
                       color="primary"
                       autoFocus
                     >

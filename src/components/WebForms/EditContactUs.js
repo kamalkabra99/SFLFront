@@ -347,6 +347,7 @@ class EditContactUs extends Component {
     var FinalNotes = this.state.notes.filter(
       (x) => x.NoteText !== "" && x.NoteText !== null
     );
+    debugger;
     if (
       this.state.CustomerNameErr === true ||
       this.state.contactnumberErr === true ||
@@ -360,6 +361,12 @@ class EditContactUs extends Component {
       cogoToast.error(
         "There were found error in the form.Please correct and resubmit"
       );
+    } else if (
+      (this.state.selectedRequestStatus === "Open" ||
+        this.state.selectedRequestStatus === "closed") &&
+      this.state.WorkingOnRequest === null
+    ) {
+      return cogoToast.error("please select Managed by");
     } else {
       let data = {
         NoteList: FinalNotes,
@@ -380,17 +387,15 @@ class EditContactUs extends Component {
 
       let data14 = {
         Email: this.state.EmailAddress,
-      }
+      };
 
       api
         .post("salesLead/getEmailID", data14)
         .then((restest) => {
           if (restest.success) {
-
-            console.log(restest.data[0][0])
+            console.log(restest.data[0][0]);
 
             data.EmailIds = restest.data[0][0].EmailID;
-
 
             var formData = new FormData();
             formData.append("data", JSON.stringify(data));
@@ -434,7 +439,7 @@ class EditContactUs extends Component {
         })
         .catch((err) => {
           console.log("error.....", err);
-      });
+        });
     }
   };
 

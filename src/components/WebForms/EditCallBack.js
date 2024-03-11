@@ -341,6 +341,7 @@ class EditCallBack extends Component {
     var FinalNotes = this.state.notes.filter(
       (x) => x.NoteText !== "" && x.NoteText !== null
     );
+    debugger;
     if (
       this.state.CustomerNameErr ||
       this.state.contactnumberErr ||
@@ -352,6 +353,12 @@ class EditCallBack extends Component {
       cogoToast.error(
         "There were found error in the form.Please correct and resubmit"
       );
+    } else if (
+      (this.state.selectedRequestStatus === "Open" ||
+        this.state.selectedRequestStatus === "closed") &&
+      this.state.selectedWorkingOnRequest === null
+    ) {
+      return cogoToast.error("please select Managed by");
     } else {
       let data = {
         NoteList: FinalNotes,
@@ -369,62 +376,57 @@ class EditCallBack extends Component {
         TimetoCall: this.state.TimetoCall,
       };
 
-
       let data14 = {
         Email: this.state.EmailAddress,
-      }
+      };
 
-      api
-        .post("salesLead/getEmailID", data14)
-        .then((restest) => {
-          if (restest.success) {
+      api.post("salesLead/getEmailID", data14).then((restest) => {
+        if (restest.success) {
+          console.log(restest.data[0][0]);
 
-            console.log(restest.data[0][0])
+          data.EmailIds = restest.data[0][0].EmailID;
 
-            data.EmailIds = restest.data[0][0].EmailID;
-
-
-            var formData = new FormData();
-            formData.append("data", JSON.stringify(data));
-            if (this.state.Attachments.length > 0) {
-              this.state.Attachments.forEach((file) => {
-                formData.append("Attachments", file);
-              });
-            }
-            try {
-              this.setState({ Loading: true });
-              api.post("callBack/addCallBack", formData).then((result) => {
-                console.log("testttt");
-                if (result.success) {
-                  this.setState({ Loading: false });
-                  cogoToast.success("Updated Successfully");
-                  if (redirect) {
-                    console.log(
-                      "testttt",
-                      this.props.history.location.state.filterlist
-                    );
-                    debugger;
-                    this.props.history.push({
-                      pathname: "/admin/CallBack",
-                      state: {
-                        filterlist: this.props.history.location.state.filterlist,
-                        sortlist: this.props.history.location.state.sortlist,
-                        statusList: this.props.history.location.state.statusList,
-                      },
-                    });
-                  } else {
-                    this.reCallApi();
-                  }
-                } else {
-                  this.setState({ Loading: false });
-                  cogoToast.error("Something Went Wrong");
-                }
-              });
-            } catch (err) {
-              cogoToast.error("Something Went Wrong");
-            }
+          var formData = new FormData();
+          formData.append("data", JSON.stringify(data));
+          if (this.state.Attachments.length > 0) {
+            this.state.Attachments.forEach((file) => {
+              formData.append("Attachments", file);
+            });
           }
-        })
+          try {
+            this.setState({ Loading: true });
+            api.post("callBack/addCallBack", formData).then((result) => {
+              console.log("testttt");
+              if (result.success) {
+                this.setState({ Loading: false });
+                cogoToast.success("Updated Successfully");
+                if (redirect) {
+                  console.log(
+                    "testttt",
+                    this.props.history.location.state.filterlist
+                  );
+                  debugger;
+                  this.props.history.push({
+                    pathname: "/admin/CallBack",
+                    state: {
+                      filterlist: this.props.history.location.state.filterlist,
+                      sortlist: this.props.history.location.state.sortlist,
+                      statusList: this.props.history.location.state.statusList,
+                    },
+                  });
+                } else {
+                  this.reCallApi();
+                }
+              } else {
+                this.setState({ Loading: false });
+                cogoToast.error("Something Went Wrong");
+              }
+            });
+          } catch (err) {
+            cogoToast.error("Something Went Wrong");
+          }
+        }
+      });
     }
   };
 

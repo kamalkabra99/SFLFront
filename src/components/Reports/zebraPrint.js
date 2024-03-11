@@ -326,7 +326,7 @@ class zebraPrint extends Component {
                   <CardBody>
                     <div className="shipment-pane">
                       <GridContainer>
-                        <GridItem xs={12} sm={12} md={6}>
+                        <GridItem xs={12} sm={12} md={12}>
                           <div className="mt-15">
                             <FormControl fullWidth>
                               <TextField
@@ -341,31 +341,7 @@ class zebraPrint extends Component {
                             </FormControl>
                           </div>
                         </GridItem>
-                        <GridItem xs={12} sm={12} md={6}>
-                          <div>
-                            <FormControl fullWidth>
-                              <Autocomplete
-                                id="Page_Size"
-                                options={PageSizeList}
-                                value={PageSize}
-                                getOptionLabel={(option) => option.label}
-                                onChange={(event, value) =>
-                                  this.selectChange(event, value, "PageSize")
-                                }
-                                renderInput={(params) => (
-                                  <TextField
-                                    {...params}
-                                    label="Page Size"
-                                    margin="normal"
-                                    fullWidth
-                                    error={this.state.PageSizeErr}
-                                    helperText={this.state.PageSizeErrText}
-                                  />
-                                )}
-                              />
-                            </FormControl>
-                          </div>
-                        </GridItem>
+
                         <GridItem xs={12} sm={12} md={6}>
                           <div className="mt-15">
                             <FormControl fullWidth>
@@ -559,7 +535,7 @@ class zebraPrint extends Component {
                             {/* </div> */}
                           </div>
                         </GridItem>
-                        <GridItem xs={12} sm={12} md={6}>
+                        <GridItem xs={12} sm={12} md={12}>
                           <div className="mt-15">
                             <FormControl fullWidth>
                               <TextField
@@ -574,33 +550,7 @@ class zebraPrint extends Component {
                             </FormControl>
                           </div>
                         </GridItem>
-                        <GridItem xs={12} sm={12} md={6}>
-                          <div>
-                            <FormControl fullWidth>
-                              <Autocomplete
-                                id="Page_Size"
-                                options={PageSizeList}
-                                value={CustomPageSize}
-                                getOptionLabel={(option) => option.label}
-                                onChange={(event, value) =>
-                                  this.selectChange(
-                                    event,
-                                    value,
-                                    "CustomPageSize"
-                                  )
-                                }
-                                renderInput={(params) => (
-                                  <TextField
-                                    {...params}
-                                    label="Page Size"
-                                    margin="normal"
-                                    fullWidth
-                                  />
-                                )}
-                              />
-                            </FormControl>
-                          </div>
-                        </GridItem>
+
                         <GridItem xs={12} sm={12} md={12}>
                           <div className="">
                             <FormControl fullWidth>
