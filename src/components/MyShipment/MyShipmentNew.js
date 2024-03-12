@@ -96,7 +96,7 @@ class MyShipmentNew extends React.Component {
       CountryList: [],
       createopen: false,
       setDupLicate: false,
-      dupTracking: '',
+      dupTracking: "",
       successOpened: false,
       createDuplicate: "0",
 
@@ -585,18 +585,18 @@ class MyShipmentNew extends React.Component {
               res.data[0].AllClear === 3 // ? "Ready for Yes"
                 ? "Ready for Yes"
                 : !CommonConfig.isEmpty(res.data[0].AllClear)
-                  ? res.data[0].AllClear === 0
-                    ? "No"
-                    : "Yes"
-                  : "Not Ready",
+                ? res.data[0].AllClear === 0
+                  ? "No"
+                  : "Yes"
+                : "Not Ready",
             label:
               res.data[0].AllClear === 3 // ? "Ready for Yes"
                 ? "Ready for Yes"
                 : !CommonConfig.isEmpty(res.data[0].AllClear)
-                  ? res.data[0].AllClear === 0
-                    ? "No"
-                    : "Yes"
-                  : "Not Ready",
+                ? res.data[0].AllClear === 0
+                  ? "No"
+                  : "Yes"
+                : "Not Ready",
           };
 
           this.setState(
@@ -621,7 +621,7 @@ class MyShipmentNew extends React.Component {
               ContainerName: containerName,
               AllClear: allclearlist,
             },
-            function () {
+            function() {
               this.removePackageTab();
             }
           );
@@ -696,8 +696,8 @@ class MyShipmentNew extends React.Component {
               StayInIndia: res.data[0].StayInIndia.data[0] === 0 ? false : true,
               LatestArrivalDate: res.data[0].LatestArrivalDate
                 ? moment(res.data[0].LatestArrivalDate).format(
-                  CommonConfig.dateFormat.dateOnly
-                )
+                    CommonConfig.dateFormat.dateOnly
+                  )
                 : "",
               AppliedForTR:
                 res.data[0].AppliedForTR.data[0] === 0 ? false : true,
@@ -705,8 +705,8 @@ class MyShipmentNew extends React.Component {
                 res.data[0].AbleToProvidePassport.data[0] === 0 ? false : true,
               VisaValidDate: res.data[0].VisaValidDate
                 ? moment(res.data[0].VisaValidDate).format(
-                  CommonConfig.dateFormat.dateOnly
-                )
+                    CommonConfig.dateFormat.dateOnly
+                  )
                 : "",
               VisaCategory: res.data[0].ArrivalCategory,
               UserAdditionalDetailsID: res.data[0].UserAdditionalDetailsID,
@@ -981,7 +981,7 @@ class MyShipmentNew extends React.Component {
                 </Button>
                 {this.state.notes.filter((x) => x.Status === "Active")
                   .length ===
-                  idx + 1 ? (
+                idx + 1 ? (
                   <Button
                     justIcon
                     color="facebook"
@@ -1068,7 +1068,7 @@ class MyShipmentNew extends React.Component {
           console.log("err...", err);
           cogoToast.error("Something Went Wrong");
         });
-    } catch (error) { }
+    } catch (error) {}
   }
 
   getStates(countryData) {
@@ -1259,7 +1259,7 @@ class MyShipmentNew extends React.Component {
           console.log("err..", err);
           // cogoToast.error("Something Went Wrong");
         });
-    } catch (error) { }
+    } catch (error) {}
   }
 
   selectChangeTab1 = (event, value, type) => {
@@ -1370,7 +1370,7 @@ class MyShipmentNew extends React.Component {
 
               countryShortName = _.filter(
                 data["results"][0]["address_components"],
-                function (data) {
+                function(data) {
                   return data.types[0] === "country";
                 }
               )[0].long_name;
@@ -1385,7 +1385,7 @@ class MyShipmentNew extends React.Component {
 
               var CityData = _.filter(
                 data["results"][0]["address_components"],
-                function (data) {
+                function(data) {
                   return data.types[0] === "locality";
                 }
               )[0].long_name;
@@ -1397,7 +1397,7 @@ class MyShipmentNew extends React.Component {
 
               var state = _.filter(
                 data["results"][0]["address_components"],
-                function (data) {
+                function(data) {
                   return data.types[0] === "administrative_area_level_1";
                 }
               )[0].long_name;
@@ -1439,14 +1439,14 @@ class MyShipmentNew extends React.Component {
 
               countryShortName = _.filter(
                 data["results"][0]["address_components"],
-                function (data) {
+                function(data) {
                   return data.types[0] === "country";
                 }
               )[0].long_name;
 
               if (
                 city == "" &&
-                _.filter(data["results"][0]["address_components"], function (
+                _.filter(data["results"][0]["address_components"], function(
                   data
                 ) {
                   return data.types[0] === "locality";
@@ -1454,13 +1454,13 @@ class MyShipmentNew extends React.Component {
               ) {
                 city = _.filter(
                   data["results"][0]["address_components"],
-                  function (data) {
+                  function(data) {
                     return data.types[0] === "locality";
                   }
                 )[0].short_name;
               } else if (
                 city == "" &&
-                _.filter(data["results"][0]["address_components"], function (
+                _.filter(data["results"][0]["address_components"], function(
                   data
                 ) {
                   return data.types[0] === "administrative_area_level_3";
@@ -1468,13 +1468,13 @@ class MyShipmentNew extends React.Component {
               ) {
                 city = _.filter(
                   data["results"][0]["address_components"],
-                  function (data) {
+                  function(data) {
                     return data.types[0] === "administrative_area_level_3";
                   }
                 )[0].short_name;
               } else if (
                 city == "" &&
-                _.filter(data["results"][0]["address_components"], function (
+                _.filter(data["results"][0]["address_components"], function(
                   data
                 ) {
                   return data.types[0] === "political";
@@ -1482,13 +1482,13 @@ class MyShipmentNew extends React.Component {
               ) {
                 city = _.filter(
                   data["results"][0]["address_components"],
-                  function (data) {
+                  function(data) {
                     return data.types[0] === "political";
                   }
                 )[0].short_name;
               } else if (
                 city == "" &&
-                _.filter(data["results"][0]["address_components"], function (
+                _.filter(data["results"][0]["address_components"], function(
                   data
                 ) {
                   return data.types[0] === "neighborhood";
@@ -1496,13 +1496,13 @@ class MyShipmentNew extends React.Component {
               ) {
                 city = _.filter(
                   data["results"][0]["address_components"],
-                  function (data) {
+                  function(data) {
                     return data.types[0] === "neighborhood";
                   }
                 )[0].short_name;
               } else if (
                 city == "" &&
-                _.filter(data["results"][0]["address_components"], function (
+                _.filter(data["results"][0]["address_components"], function(
                   data
                 ) {
                   return data.types[0] === "administrative_area_level_2";
@@ -1510,13 +1510,13 @@ class MyShipmentNew extends React.Component {
               ) {
                 city = _.filter(
                   data["results"][0]["address_components"],
-                  function (data) {
+                  function(data) {
                     return data.types[0] === "administrative_area_level_2";
                   }
                 )[0].long_name;
               } else if (
                 city == "" &&
-                _.filter(data["results"][0]["address_components"], function (
+                _.filter(data["results"][0]["address_components"], function(
                   data
                 ) {
                   return data.types[0] === "administrative_area_level_1";
@@ -1524,7 +1524,7 @@ class MyShipmentNew extends React.Component {
               ) {
                 city = _.filter(
                   data["results"][0]["address_components"],
-                  function (data) {
+                  function(data) {
                     return data.types[0] === "administrative_area_level_1";
                   }
                 )[0].long_name;
@@ -1534,7 +1534,7 @@ class MyShipmentNew extends React.Component {
 
               var state = _.filter(
                 data["results"][0]["address_components"],
-                function (data) {
+                function(data) {
                   return data.types[0] === "administrative_area_level_1";
                 }
               )[0].long_name;
@@ -1606,7 +1606,7 @@ class MyShipmentNew extends React.Component {
 
               countryShortName = _.filter(
                 data["results"][0]["address_components"],
-                function (data) {
+                function(data) {
                   return data.types[0] === "country";
                 }
               )[0].long_name;
@@ -1621,7 +1621,7 @@ class MyShipmentNew extends React.Component {
 
               var CityData = _.filter(
                 data["results"][0]["address_components"],
-                function (data) {
+                function(data) {
                   return data.types[0] === "locality";
                 }
               )[0].long_name;
@@ -1633,7 +1633,7 @@ class MyShipmentNew extends React.Component {
 
               var state = _.filter(
                 data["results"][0]["address_components"],
-                function (data) {
+                function(data) {
                   return data.types[0] === "administrative_area_level_1";
                 }
               )[0].long_name;
@@ -1675,14 +1675,14 @@ class MyShipmentNew extends React.Component {
 
               countryShortName = _.filter(
                 data["results"][0]["address_components"],
-                function (data) {
+                function(data) {
                   return data.types[0] === "country";
                 }
               )[0].long_name;
 
               if (
                 city == "" &&
-                _.filter(data["results"][0]["address_components"], function (
+                _.filter(data["results"][0]["address_components"], function(
                   data
                 ) {
                   return data.types[0] === "locality";
@@ -1690,13 +1690,13 @@ class MyShipmentNew extends React.Component {
               ) {
                 city = _.filter(
                   data["results"][0]["address_components"],
-                  function (data) {
+                  function(data) {
                     return data.types[0] === "locality";
                   }
                 )[0].short_name;
               } else if (
                 city == "" &&
-                _.filter(data["results"][0]["address_components"], function (
+                _.filter(data["results"][0]["address_components"], function(
                   data
                 ) {
                   return data.types[0] === "administrative_area_level_3";
@@ -1704,13 +1704,13 @@ class MyShipmentNew extends React.Component {
               ) {
                 city = _.filter(
                   data["results"][0]["address_components"],
-                  function (data) {
+                  function(data) {
                     return data.types[0] === "administrative_area_level_3";
                   }
                 )[0].short_name;
               } else if (
                 city == "" &&
-                _.filter(data["results"][0]["address_components"], function (
+                _.filter(data["results"][0]["address_components"], function(
                   data
                 ) {
                   return data.types[0] === "political";
@@ -1718,13 +1718,13 @@ class MyShipmentNew extends React.Component {
               ) {
                 city = _.filter(
                   data["results"][0]["address_components"],
-                  function (data) {
+                  function(data) {
                     return data.types[0] === "political";
                   }
                 )[0].short_name;
               } else if (
                 city == "" &&
-                _.filter(data["results"][0]["address_components"], function (
+                _.filter(data["results"][0]["address_components"], function(
                   data
                 ) {
                   return data.types[0] === "neighborhood";
@@ -1732,13 +1732,13 @@ class MyShipmentNew extends React.Component {
               ) {
                 city = _.filter(
                   data["results"][0]["address_components"],
-                  function (data) {
+                  function(data) {
                     return data.types[0] === "neighborhood";
                   }
                 )[0].short_name;
               } else if (
                 city == "" &&
-                _.filter(data["results"][0]["address_components"], function (
+                _.filter(data["results"][0]["address_components"], function(
                   data
                 ) {
                   return data.types[0] === "administrative_area_level_2";
@@ -1746,13 +1746,13 @@ class MyShipmentNew extends React.Component {
               ) {
                 city = _.filter(
                   data["results"][0]["address_components"],
-                  function (data) {
+                  function(data) {
                     return data.types[0] === "administrative_area_level_2";
                   }
                 )[0].long_name;
               } else if (
                 city == "" &&
-                _.filter(data["results"][0]["address_components"], function (
+                _.filter(data["results"][0]["address_components"], function(
                   data
                 ) {
                   return data.types[0] === "administrative_area_level_1";
@@ -1760,7 +1760,7 @@ class MyShipmentNew extends React.Component {
               ) {
                 city = _.filter(
                   data["results"][0]["address_components"],
-                  function (data) {
+                  function(data) {
                     return data.types[0] === "administrative_area_level_1";
                   }
                 )[0].long_name;
@@ -1770,7 +1770,7 @@ class MyShipmentNew extends React.Component {
 
               var state = _.filter(
                 data["results"][0]["address_components"],
-                function (data) {
+                function(data) {
                   return data.types[0] === "administrative_area_level_1";
                 }
               )[0].long_name;
@@ -2125,7 +2125,7 @@ class MyShipmentNew extends React.Component {
         PackageList[idx][type] = value;
       }
     }
-    this.setState({ PackageList: PackageList }, function () {
+    this.setState({ PackageList: PackageList }, function() {
       this.Calculate();
     });
   };
@@ -2801,7 +2801,7 @@ class MyShipmentNew extends React.Component {
         IsAESOpen: false,
         IsAlreadyAESFilled: true,
       },
-      function () {
+      function() {
         if (this.state.saveClicked.saveClick) {
           this.handleSave(this.state.saveClicked.redirect);
         } else {
@@ -2833,8 +2833,8 @@ class MyShipmentNew extends React.Component {
   viewCommercialInvoice = () => {
     var disableCommercialInvoice =
       this.state.ShipmentStatus == "New Request" ||
-        this.state.ShipmentStatus == "In Consolidation" ||
-        this.state.ShipmentStatus == "Pickup Scheduled"
+      this.state.ShipmentStatus == "In Consolidation" ||
+      this.state.ShipmentStatus == "Pickup Scheduled"
         ? false
         : true;
     return this.state.commercialList
@@ -2946,7 +2946,7 @@ class MyShipmentNew extends React.Component {
                 }
                 disabled={
                   this.state.ShipmentType.value === "Ocean" &&
-                    disableCommercialInvoice == false
+                  disableCommercialInvoice == false
                     ? false
                     : true
                 }
@@ -3190,7 +3190,7 @@ class MyShipmentNew extends React.Component {
             let printInvoiceData = {
               ShippingID:
                 this.props.location.state &&
-                  this.props.location.state.ShipppingID
+                this.props.location.state.ShipppingID
                   ? this.props.location.state.ShipppingID
                   : null,
               InvoiceData: this.state.DocumentInvoiceData,
@@ -3810,8 +3810,8 @@ class MyShipmentNew extends React.Component {
               {this.state.paymentIssued.filter((x) => x.Status === "Active")
                 .length ===
                 idx + 1 ||
-                this.state.paymentIssued.filter((x) => x.Status === "Active")
-                  .length === 0 ? (
+              this.state.paymentIssued.filter((x) => x.Status === "Active")
+                .length === 0 ? (
                 <Button
                   justIcon
                   color="facebook"
@@ -3839,7 +3839,7 @@ class MyShipmentNew extends React.Component {
       .map((method, idx) => {
         const CardNumber = ReadOnly
           ? "XXXX XXXX XXXX" +
-          method.CardNumber.toString().slice(method.CardNumber.length - 4)
+            method.CardNumber.toString().slice(method.CardNumber.length - 4)
           : method.CardNumber;
         return (
           <tr>
@@ -4108,8 +4108,8 @@ class MyShipmentNew extends React.Component {
                     inputProps={{
                       value: !CommonConfig.isEmpty(method.PaidDate)
                         ? moment(method.PaidDate).format(
-                          CommonConfig.dateFormat.dateOnly
-                        )
+                            CommonConfig.dateFormat.dateOnly
+                          )
                         : "",
                       disabled: true,
                     }}
@@ -4192,7 +4192,7 @@ class MyShipmentNew extends React.Component {
         };
         const CardNumber = ReadOnly
           ? "XXXX XXXX XXXX" +
-          payment.Number.toString().slice(payment.Number.length - 4)
+            payment.Number.toString().slice(payment.Number.length - 4)
           : payment.Number;
         return (
           <tr>
@@ -4722,7 +4722,7 @@ class MyShipmentNew extends React.Component {
               {this.state.trackingNumberList.filter(
                 (x) => x.Status === "Active"
               ).length ===
-                idx + 1 ? (
+              idx + 1 ? (
                 <Button
                   justIcon
                   color="facebook"
@@ -4792,9 +4792,10 @@ class MyShipmentNew extends React.Component {
 
     var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.pdf)$/i;
     if (!allowedExtensions.exec(files.name)) {
-      cogoToast.error('Please upload file having extensions .jpeg/.jpg/.png/.pdf only.');
+      cogoToast.error(
+        "Please upload file having extensions .jpeg/.jpg/.png/.pdf only."
+      );
     } else {
-
       if (files.size > 5000000) {
         cogoToast.error("please upload the file maximum 5MB");
       } else {
@@ -4810,7 +4811,6 @@ class MyShipmentNew extends React.Component {
           Attachments: AttachmentList,
           AttachmentList: [...this.state.AttachmentList, files],
         });
-
       }
     }
   };
@@ -4854,7 +4854,7 @@ class MyShipmentNew extends React.Component {
             value: cellInfo.original.FileName,
             disabled:
               cellInfo.original.TrackingNumber ||
-                cellInfo.original.Status === "Active"
+              cellInfo.original.Status === "Active"
                 ? true
                 : false,
             onChange: (event) => this.handleDocumentChange(event, cellInfo),
@@ -4908,7 +4908,7 @@ class MyShipmentNew extends React.Component {
           value={DocumentType}
           disabled={
             cellInfo.original.TrackingNumber ||
-              cellInfo.original.Status === "Active"
+            cellInfo.original.Status === "Active"
               ? true
               : false
           }
@@ -4961,7 +4961,7 @@ class MyShipmentNew extends React.Component {
                     : "MyShipment",
                 myshipmentstatusList:
                   this.props.history.location.state.myshipmentstatusList !==
-                    undefined
+                  undefined
                     ? this.props.history.location.state.myshipmentstatusList
                     : [],
                 mysortlist:
@@ -4991,13 +4991,11 @@ class MyShipmentNew extends React.Component {
   };
 
   createDuplicate = (responses) => {
-    this.getAccountDetail()
-    this.state.setDupLicate = responses
-    this.state.createDuplicate = "1"
+    this.getAccountDetail();
+    this.state.setDupLicate = responses;
+    this.state.createDuplicate = "1";
     this.handleSave(false);
-
-  }
-
+  };
 
   handleSave = (redirect) => {
     if (this.validate()) {
@@ -5188,8 +5186,8 @@ class MyShipmentNew extends React.Component {
         pickup_date:
           CommonConfig.isEmpty(this.state.PickupDate) != true
             ? moment(this.state.PickupDate)
-              .format("YYYY-MM-DD HH:mm:ss")
-              .toString()
+                .format("YYYY-MM-DD HH:mm:ss")
+                .toString()
             : null,
         package_type: !CommonConfig.isEmpty(packobj)
           ? this.state.PackageType
@@ -5384,10 +5382,11 @@ class MyShipmentNew extends React.Component {
       }
 
       if (this.state.createDuplicate == "1") {
-
         var todayDate = new Date();
         const note1 = {
-          NoteText: "Shipment is duplicate created by Tracking No: " + objdata.TrackingNumber,
+          NoteText:
+            "Shipment is duplicate created by Tracking No: " +
+            objdata.TrackingNumber,
           NoteType: null,
           NoteTitle: null,
           Status: "Active",
@@ -5405,27 +5404,27 @@ class MyShipmentNew extends React.Component {
         };
         let NoteDate = [];
         NoteDate.push(note1);
-        objdata.Notes = NoteDate
-        objdata.TrackingNumber = null
-        objdata.shipments.ShippingID = null
-        objdata.from_address.AddressID = null
-        objdata.to_address.AddressID = null
-        objdata.shipments.ServiceName = ""
-        objdata.shipments.SubServiceName = ""
-        objdata.manualTrackingData = []
-        objdata.trackingData = []
-        delete objdata.shipments.ShipmentStatus
-        delete objdata.shipments.ContainerID
-        delete objdata.shipments.pickupProvider
-        objdata.UserAdditionalData = []
+        objdata.Notes = NoteDate;
+        objdata.TrackingNumber = null;
+        objdata.shipments.ShippingID = null;
+        objdata.from_address.AddressID = null;
+        objdata.to_address.AddressID = null;
+        objdata.shipments.ServiceName = "";
+        objdata.shipments.SubServiceName = "";
+        objdata.manualTrackingData = [];
+        objdata.trackingData = [];
+        delete objdata.shipments.ShipmentStatus;
+        delete objdata.shipments.ContainerID;
+        delete objdata.shipments.pickupProvider;
+        objdata.UserAdditionalData = [];
 
-        objdata.commercial = []
+        objdata.commercial = [];
         // objdata.Notes = []
-        objdata.invoiceData = []
-        objdata.paymentReceivedData = []
-        objdata.paymentIssued = []
-        objdata.TotalCommercialvalue = ""
-        objdata.DocumentList = []
+        objdata.invoiceData = [];
+        objdata.paymentReceivedData = [];
+        objdata.paymentIssued = [];
+        objdata.TotalCommercialvalue = "";
+        objdata.DocumentList = [];
 
         console.log(objdata.PaymentData);
         if (objdata.PaymentData.length == 0) {
@@ -5447,7 +5446,7 @@ class MyShipmentNew extends React.Component {
 
           let Paymentdata = [];
           Paymentdata.push(payment_online1);
-          objdata.PaymentData = Paymentdata
+          objdata.PaymentData = Paymentdata;
         } else {
           for (let index = 0; index < objdata.PaymentData.length; index++) {
             objdata.PaymentData[index].PaymentID = null;
@@ -5455,7 +5454,7 @@ class MyShipmentNew extends React.Component {
         }
         console.log(objdata.PaymentData);
         if (objdata.shipments.shipment_type == "Ocean") {
-          objdata.packages = []
+          objdata.packages = [];
         } else {
           if (objdata.packages.length > 0) {
             for (let index = 0; index < objdata.packages.length; index++) {
@@ -5463,7 +5462,6 @@ class MyShipmentNew extends React.Component {
             }
           }
         }
-
       }
       var formData = new FormData();
       formData.append("data", JSON.stringify(objdata));
@@ -5484,7 +5482,6 @@ class MyShipmentNew extends React.Component {
               // cogoToast.success("Updated Successfully");
 
               if (this.state.createDuplicate == "1") {
-
                 if (objdata.shipments.shipment_type == "Ocean") {
                   var data = {
                     ShippingID: res.data.ShippingID,
@@ -5492,18 +5489,17 @@ class MyShipmentNew extends React.Component {
                     shipStatus: "",
                     pickupDate: "",
                   };
-    
+
                   api
                     .post("scheduleshipment/autoOceanTracking", data)
                     .then((res) => {
                       console.log(res);
                     });
                 }
-                this.state.createDuplicate = "0"
-                this.state.createopen = false
-                this.state.dupTracking = res.data.data
+                this.state.createDuplicate = "0";
+                this.state.createopen = false;
+                this.state.dupTracking = res.data.data;
                 if (this.state.setDupLicate == true) {
-
                   const { history } = this.props;
                   history.push({
                     pathname: "ShipmentNew",
@@ -5517,11 +5513,9 @@ class MyShipmentNew extends React.Component {
                     },
                   });
                   window.location.reload();
-
                 } else {
-                  this.state.successOpened = true
+                  this.state.successOpened = true;
                 }
-
 
                 // cogoToast.success("Duplicated created Successfully. Tracking Number : " + res.data.data);
               } else {
@@ -5533,7 +5527,7 @@ class MyShipmentNew extends React.Component {
                   state: {
                     myfilterlist:
                       this.props.history.location.state.myfilterlist !==
-                        undefined
+                      undefined
                         ? this.props.history.location.state.myfilterlist
                         : null,
                     type:
@@ -5542,7 +5536,7 @@ class MyShipmentNew extends React.Component {
                         : "MyShipment",
                     myshipmentstatusList:
                       this.props.history.location.state.myshipmentstatusList !==
-                        undefined
+                      undefined
                         ? this.props.history.location.state.myshipmentstatusList
                         : [],
                     mysortlist:
@@ -5961,8 +5955,8 @@ class MyShipmentNew extends React.Component {
           return (
             <div className="align-right">
               {(record.index !== 0 || record.original.AttachmentPath) &&
-                !record.original.TrackingNumber &&
-                record.original.Status === "Inactive" ? (
+              !record.original.TrackingNumber &&
+              record.original.Status === "Inactive" ? (
                 <Button
                   justIcon
                   color="danger"
@@ -5974,7 +5968,7 @@ class MyShipmentNew extends React.Component {
               ) : null}
               {this.state.Attachments.filter((x) => x.Status != "Delete")
                 .length ===
-                record.index + 1 ? (
+              record.index + 1 ? (
                 <div className="align-right">
                   <Button
                     justIcon
@@ -6195,7 +6189,7 @@ class MyShipmentNew extends React.Component {
                   return key === 2 &&
                     (this.state.PackageType === "Envelop" ||
                       this.state.selectedFromCountry.value ===
-                      this.state.selectedToCountry.value) ? null : (
+                        this.state.selectedToCountry.value) ? null : (
                     <li>
                       <a
                         className={step.classname}
@@ -7181,8 +7175,8 @@ class MyShipmentNew extends React.Component {
                                     error={this.state.ableToProvidePassportErr}
                                   >
                                     <InputLabel className={classes.selectLabel}>
-                                      Will Provide Passport for Custom
-                                      Clearance?
+                                      Wlll provide original passport for Customs
+                                      Clearance ?
                                     </InputLabel>
                                     <Select
                                       disabled={true}
@@ -7381,7 +7375,7 @@ class MyShipmentNew extends React.Component {
                                   </td>
                                 )}
                                 {this.state.ShipmentType.value !==
-                                  "Ocean" ? null : (
+                                "Ocean" ? null : (
                                   <td colSpan="2">
                                     <CustomInput
                                       inputProps={{
@@ -7793,7 +7787,7 @@ class MyShipmentNew extends React.Component {
                       this.state.PaymentShowData.ChargeType =
                         event.target.value;
                     }}
-                  // inputProps={{ disabled: ReadOnly }}
+                    // inputProps={{ disabled: ReadOnly }}
                   >
                     <MenuItem
                       value={"Charge"}
@@ -7937,12 +7931,10 @@ class MyShipmentNew extends React.Component {
                 Create
               </Button>
 
-
               {/* :null} */}
             </DialogActions>
           </Dialog>
         </div>
-
 
         {/* Confirm Popup */}
 
@@ -7979,12 +7971,8 @@ class MyShipmentNew extends React.Component {
           </Dialog>
         </div>
 
-
         <div className="shipment-submit">
-
           <div className="left">
-
-
             <Button
               justify="center"
               color="primary"
@@ -7994,8 +7982,8 @@ class MyShipmentNew extends React.Component {
             </Button>
           </div>
           {this.state.ShipmentStatus === "New Request" ||
-            this.state.ShipmentStatus === "Pickup Scheduled" ||
-            this.state.ShipmentStatus === "In Consolidation" ? (
+          this.state.ShipmentStatus === "Pickup Scheduled" ||
+          this.state.ShipmentStatus === "In Consolidation" ? (
             <div className="right">
               {this.state.Access.WriteAccess === 1 ? (
                 <>
@@ -8037,14 +8025,8 @@ class MyShipmentNew extends React.Component {
           )}
         </div>
       </div>
-
-
-
     );
-
   }
-
-
 }
 MyShipmentNew.propTypes = {
   classes: PropTypes.object,
