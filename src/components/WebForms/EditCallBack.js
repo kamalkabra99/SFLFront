@@ -356,7 +356,8 @@ class EditCallBack extends Component {
     } else if (
       (this.state.selectedRequestStatus === "Open" ||
         this.state.selectedRequestStatus === "closed") &&
-      this.state.selectedWorkingOnRequest === null
+      (this.state.selectedWorkingOnRequest === null ||
+        this.state.selectedWorkingOnRequest === "")
     ) {
       return cogoToast.error("please select Managed by");
     } else {

@@ -364,7 +364,8 @@ class EditContactUs extends Component {
     } else if (
       (this.state.selectedRequestStatus === "Open" ||
         this.state.selectedRequestStatus === "closed") &&
-      this.state.WorkingOnRequest === null
+      (this.state.WorkingOnRequest === null ||
+        this.state.WorkingOnRequest === "")
     ) {
       return cogoToast.error("please select Managed by");
     } else {

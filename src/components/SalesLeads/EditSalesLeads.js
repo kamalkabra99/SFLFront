@@ -1818,6 +1818,7 @@ class EditSalesLeads extends Component {
           ViewProposalList: result.data.data.ProposalList,
           ProposalLog: result.data.data.ProposalLog,
         });
+        debugger;
         let packList = result.data.data.PackageList.filter(
           (x) =>
             x.PackageType === 1 || x.PackageType === 2 || x.PackageType === 3
@@ -1864,6 +1865,7 @@ class EditSalesLeads extends Component {
           });
           this.state.newpackagetype.push("Car");
         }
+
         var PckgList = packList;
         for (var i = 0; i < PckgList.length; i++) {
           if (PckgList[i].PackageType === 2) {
@@ -1891,6 +1893,8 @@ class EditSalesLeads extends Component {
           CarList: carList,
           TVList: tvList,
         });
+        console.log("check..", this.state.PackageList);
+        debugger;
         // if(PckgList.length === 0){
         //   this.handleAddRow();
         // }
@@ -2749,33 +2753,36 @@ class EditSalesLeads extends Component {
         Weight = PackageList[i].ActualWeight * PackageList[i].Quantity;
       }
 
-      if (PackageList[i].DimensionW) {
-        // WE = PackageList[i].DimensionW;
+      // if (PackageList[i].DimensionW) {
+      //   // WE = PackageList[i].DimensionW;
 
-        if (this.state.SelectedWeightType == "KG") {
-          WE = Math.ceil(parseFloat(PackageList[i].DimensionW * 0.393701));
-        } else {
-          // HE = PackageList[i].DimensionH;
-          WE = PackageList[i].DimensionW;
-        }
-      }
+      //   if (this.state.SelectedWeightType == "KG") {
+      //     WE = Math.ceil(parseFloat(PackageList[i].DimensionW * 0.393701));
+      //   } else {
+      //     // HE = PackageList[i].DimensionH;
+      //     WE = PackageList[i].DimensionW;
+      //   }
+      // }
 
-      if (PackageList[i].DimensionL) {
-        if (this.state.SelectedWeightType == "KG") {
-          LE = Math.ceil(parseFloat(PackageList[i].DimensionL * 0.393701));
-        } else {
-          // HE = PackageList[i].DimensionH;
-          LE = PackageList[i].DimensionL;
-        }
-      }
+      // if (PackageList[i].DimensionL) {
+      //   if (this.state.SelectedWeightType == "KG") {
+      //     LE = Math.ceil(parseFloat(PackageList[i].DimensionL * 0.393701));
+      //   } else {
+      //     // HE = PackageList[i].DimensionH;
+      //     LE = PackageList[i].DimensionL;
+      //   }
+      // }
 
-      if (PackageList[i].DimensionH) {
-        if (this.state.SelectedWeightType == "KG") {
-          HE = Math.ceil(parseFloat(PackageList[i].DimensionH * 0.393701));
-        } else {
-          HE = PackageList[i].DimensionH;
-        }
-      }
+      // if (PackageList[i].DimensionH) {
+      //   if (this.state.SelectedWeightType == "KG") {
+      //     HE = Math.ceil(parseFloat(PackageList[i].DimensionH * 0.393701));
+      //   } else {
+      //     HE = PackageList[i].DimensionH;
+      //   }
+      // }
+      WE = PackageList[i].DimensionW;
+      LE = PackageList[i].DimensionL;
+      HE = PackageList[i].DimensionH;
 
       if (this.state.SelectedWeightType == "KG") {
         Total =
@@ -2785,7 +2792,7 @@ class EditSalesLeads extends Component {
         Total =
           Math.ceil(parseFloat((WE * LE * HE) / 139)) * PackageList[i].Quantity;
       }
-
+      debugger;
       if (Weight > Total) {
         PackageList[i].ChargeableWeight = Weight;
         TotalChargeWeight = parseInt(TotalChargeWeight) + parseInt(Weight);
@@ -3186,7 +3193,6 @@ class EditSalesLeads extends Component {
     );
   };
   createProposal = (type, Value) => {
-    debugger;
     var tvTotalCFT = 0;
     if (type === "SecaucusTotal" || type === "HaywardTotal") {
       if (this.state.TVList.length > 0) {
@@ -3609,8 +3615,6 @@ class EditSalesLeads extends Component {
       editproposal.AdditionalCFTCharges === ""
         ? parseFloat(0.0).toFixed(2)
         : parseFloat(editproposal.AdditionalCFTCharges).toFixed(2);
-
-    debugger;
     if (
       editproposal.EstimatedShippingCost !== "0.00" &&
       editproposal.ServiceType !== "--Select--"
@@ -3736,7 +3740,7 @@ class EditSalesLeads extends Component {
     api
       .post("salesLead/DeleteProposal", data)
       .then((res) => {
-        debugger; //lkj
+        //lkj
         if (res.success) {
           this.showLoader();
           this.setState({
@@ -3825,7 +3829,6 @@ class EditSalesLeads extends Component {
   };
 
   viewProposalLog = (item) => {
-    debugger;
     var list = this.state.ProposalLog.filter((x) => x.ProposalID === item);
     this.setState({
       showProposallist: list,
@@ -3856,7 +3859,6 @@ class EditSalesLeads extends Component {
     });
   };
   sendProposalEmail = () => {
-    debugger;
     this.setState({ ProposalemailOPen: false });
     this.showLoader();
     var inputdata = {
@@ -3943,7 +3945,6 @@ class EditSalesLeads extends Component {
   };
 
   handleCancel = () => {
-    debugger;
     localStorage.removeItem("SearchCount");
     this.props.history.push({
       pathname: "/admin/SalesLeads",
@@ -5227,11 +5228,10 @@ class EditSalesLeads extends Component {
               RateType: "Hub",
               ToEmail: this.state.NewEmailAddress,
             };
-            debugger;
+
             api
               .post("salesLead/sendGetRateEmail", emailData)
               .then((response) => {
-                debugger;
                 this.hideLoader();
                 if (response.success) {
                   this.reCallApi();
