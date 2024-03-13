@@ -39,6 +39,7 @@ import SimpleBackdrop from "../../utils/general";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
+import { isEmpty } from "lodash";
 
 const styles = {
   cardIconTitle: {
@@ -353,13 +354,14 @@ class EditCallBack extends Component {
       cogoToast.error(
         "There were found error in the form.Please correct and resubmit"
       );
+      //JKL
     } else if (
-      (this.state.selectedRequestStatus === "Open" ||
-        this.state.selectedRequestStatus === "closed") &&
+      this.state.selectedRequestStatus !== "New" &&
       (this.state.selectedWorkingOnRequest === null ||
-        this.state.selectedWorkingOnRequest === "")
+        this.state.selectedWorkingOnRequest === "" ||
+        isEmpty(this.state.selectedWorkingOnRequest))
     ) {
-      return cogoToast.error("please select Managed by");
+      return cogoToast.error("Please select Managed by");
     } else {
       let data = {
         NoteList: FinalNotes,

@@ -39,6 +39,7 @@ import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import FormControl from "@material-ui/core/FormControl";
+import { isEmpty } from "lodash";
 
 const styles = {
   cardIconTitle: {
@@ -362,12 +363,12 @@ class EditContactUs extends Component {
         "There were found error in the form.Please correct and resubmit"
       );
     } else if (
-      (this.state.selectedRequestStatus === "Open" ||
-        this.state.selectedRequestStatus === "closed") &&
+      this.state.RequestStatus !== "New" &&
       (this.state.WorkingOnRequest === null ||
-        this.state.WorkingOnRequest === "")
+        this.state.WorkingOnRequest === "" ||
+        isEmpty(this.state.WorkingOnRequest))
     ) {
-      return cogoToast.error("please select Managed by");
+      return cogoToast.error("Please select Managed by");
     } else {
       let data = {
         NoteList: FinalNotes,
