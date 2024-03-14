@@ -2355,6 +2355,7 @@ class AddEditVendors extends Component {
     this.setState({ recordDocument: record, delDoc: true });
   };
   handleDocumentDelete = () => {
+    this.showLoader();
     console.log("Records = ", this.state.recordDocument);
     var data = {
       Attachments: this.state.recordDocument,
@@ -2364,6 +2365,7 @@ class AddEditVendors extends Component {
       .then((res) => {
         if (res.success) {
           this.hideLoader();
+          //cogoToast.success("Document delete from the Server");
         }
       })
       .catch((err) => {
