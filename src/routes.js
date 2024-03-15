@@ -11,9 +11,9 @@ import Scheduleshipment from "components/Scheduleshipment/Scheduleshipment.js";
 import UserList from "components/Management/UserList";
 // import AddUser from "components/Management/Adduser";
 import AddUserNew from "components/Management/AddUserNew";
-import VendorSearch from "components/Management/VendorSearch";
+//import VendorSearch from "components/Management/VendorSearch";
 import Vendor from "components/Management/Vendor/Vendor";
-import EditVendor from "components/Management/EditVendor";
+//import EditVendor from "components/Management/EditVendor";
 import AddEditVendors from "components/Management/AddEditVendors";
 import ContactUs from "components/WebForms/ContactUs";
 import CallBack from "components/WebForms/CallBack";
@@ -586,14 +586,14 @@ var dashRoutes = [
         layout: "/admin",
         invisible: false,
       },
-      {
-        path: "/VendorSearch",
-        name: "Vendor Search",
-        icon: Search,
-        component: VendorSearch,
-        layout: "/admin",
-        invisible: true,
-      },
+      // {
+      //   path: "/VendorSearch",
+      //   name: "Vendor Search",
+      //   icon: Search,
+      //   component: VendorSearch,
+      //   layout: "/admin",
+      //   invisible: true,
+      // },
       {
         path: "/Vendor",
         name: "Vendor",
@@ -602,14 +602,14 @@ var dashRoutes = [
         layout: "/admin",
         invisible: true,
       },
-      {
-        path: "/AddEditVendor",
-        name: "Edit Vendor",
-        icon: EditSalesLeadIcon,
-        component: EditVendor,
-        layout: "/admin",
-        invisible: false,
-      },
+      // {
+      //   path: "/AddEditVendor",
+      //   name: "Edit Vendor",
+      //   icon: EditSalesLeadIcon,
+      //   component: EditVendor,
+      //   layout: "/admin",
+      //   invisible: false,
+      // },
       {
         path: "/AddEditVendors",
         name: "Add Edit Vendors",

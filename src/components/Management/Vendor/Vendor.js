@@ -40,6 +40,7 @@ class Vendor extends Component {
       vendorList: [],
       Access: [],
       finalLength: 0,
+      checkAllcolumn: false,
     };
   }
   serviceOffered = () => {
@@ -319,11 +320,67 @@ class Vendor extends Component {
         });
     } catch (error) {}
   };
+  checkboxHeader = (props) => {
+    return (
+      <div>
+        <input
+          type="checkbox"
+          checked={this.state.checkAllcolumn}
+          onChange={(e) => this.handleCheckboxChangecolumn(e, props, "All")}
+        />
+      </div>
+    );
+  };
+  handleCheckboxChangecolumn = (e, record, type) => {
+    debugger;
+    let Type = this.state.currentTab;
+    let checkedArr = this.state[Type];
+    if (type === "Single") {
+      checkedArr[record.original.Index]["IsSelected"] = e.target.checked;
+    } else {
+      let propsArr = record.data.map((x) => x._original);
+      checkedArr.map((OBJ) => {
+        OBJ.IsSelected =
+          propsArr.findIndex((x) => x.Index === OBJ.Index) !== -1
+            ? e.target.checked
+            : OBJ.IsSelected;
+        return OBJ;
+      });
 
+      this.setState({
+        checkAllcolumn: e.target.checked,
+      });
+    }
+    let previousList = checkedArr.filter((x) => x.IsSelected === true);
+    let arrType = "previousSelected" + Type;
+
+    this.setState({
+      [Type]: checkedArr,
+      [arrType]: previousList,
+    });
+  };
+  renderCheckbox = (record) => {
+    return (
+      <div>
+        <input
+          type="checkbox"
+          checked={record.original.IsSelected}
+          onChange={(e) => this.handleCheckboxChangecolumn(e, record, "Single")}
+        />
+      </div>
+    );
+  };
   render() {
     const { vendorList, servicelist } = this.state;
 
     const columns = [
+      {
+        Header: (props) => this.checkboxHeader(props),
+        Cell: this.renderCheckbox,
+        sortable: false,
+        filterable: false,
+        width: 40,
+      },
       {
         Header: "Name",
         accessor: "Name",
@@ -455,36 +512,6 @@ class Vendor extends Component {
                   Vendor List
                 </h4>
 
-                {/* <div className="filter-top-right-slam">
-                  <div className="autocomplete-fs-small">
-                    <Autocomplete
-                      multiple
-                      size="small"
-                      id="filtercheckbox"
-                      options={servicelist}
-                      getOptionLabel={(option) => option.label}
-                      getOptionSelected={(option, value) =>
-                        this.optionProps(option, value)
-                      }
-                      onChange={(e, value) => this.filterMethod(e, value)}
-                      style={{ width: "100%" }}
-                      renderOption={(option, { selected }) => (
-                        <React.Fragment>
-                          <Checkbox
-                            icon={icon}
-                            checkedIcon={checkedIcon}
-                            style={{ marginRight: 8 }}
-                            checked={selected}
-                          />
-                          {option.label}
-                        </React.Fragment>
-                      )}
-                      renderInput={(params) => this.renderInputMethod(params)}
-                      value={this.state.serviceValue}
-                    />
-                  </div>
-                  
-                </div> */}
                 <div class="vendor-top-buttons">
                   <div class="add-vendor-btn">
                     {this.state.Access.WriteAccess === 1 ? (

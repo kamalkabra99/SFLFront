@@ -43,7 +43,7 @@ import AdminNavbarLinks from "components/Navbars/AdminNavbarLinks.js";
 import UserList from "components/Management/UserList";
 import GetRates from "components/GetRates/GetRates";
 import Service from "components/Management/Service/Service";
-import VendorList from "components/Management/VendorList";
+//import VendorList from "components/Management/VendorList";
 import SalesLeads from "components/SalesLeads/SalesLeads";
 import Scheduleshipment from "components/Scheduleshipment/Scheduleshipment";
 import sidebarStyle from "assets/jss/material-dashboard-pro-react/components/sidebarStyle.js";
@@ -64,7 +64,7 @@ const Components = {
   GetRates: GetRates,
   UserList: UserList,
   Service: Service,
-  VendorList: VendorList,
+  //VendorList: VendorList,
   Scheduleshipment: Scheduleshipment,
   ContactUs: ContactUs,
   CallBack: CallBack,
