@@ -93,10 +93,12 @@ class EditSalesLeads extends Component {
       proposalclick: false,
       // getrateClick: false,
       cancelationReasonList: [],
+      closedReasonList:[],
       CancelationReason: "",
       CancelationReasonErr: false,
       CancelationReasonHelperText: "",
       ProposalLog: [],
+      previousManaged:"",
       OpenproposalLog: false,
       showProposallist: [],
       fromEmailAddress: CommonConfig.loggedInUserData().Email,
@@ -181,6 +183,11 @@ class EditSalesLeads extends Component {
       EmailAddress: "",
       NewEmailAddress: "",
       EmailAdd: "",
+
+      trackingNumberHelperText : "",
+      trackingNumberCheck :false,
+      trackingNumberErr :false,
+      trackingNumber : "",
 
       emailaddressErr: false,
       emailaddressHelperText: "",
@@ -310,12 +317,13 @@ class EditSalesLeads extends Component {
       DeleteAccess: 0,
       pickupCountry: [],
       proposalstatus: [
-        { value: "New", label: "New" },
         { value: "Auto Quote", label: "Auto Quote" },
-        { value: "Open", label: "Open" },
-        { value: "Closed", label: "Closed" },
+        { value: "Booked", label: "Booked" }, // New status
         { value: "Cancelled", label: "Cancelled" },
-        { value: "To be Deleted", label: "To be Deleted" },
+        { value: "Closed", label: "Closed" }, // reason move to closed
+        { value: "New", label: "New" },
+        { value: "Open", label: "Open" },
+        // { value: "To be Deleted", label: "To be Deleted" },
       ],
       deliverytype: [
         { value: "Residential", label: "Residential" },
@@ -1129,16 +1137,20 @@ class EditSalesLeads extends Component {
         emailaddressErr: false,
         emailaddressHelperText: "",
       });
-      // fetch(CommonConfig.EmailAPIKey(event.target.value))
-      //   .then((res) => res.json())
-      //   .then((data) => {
-      //     this.setState({
-      //       EmailAddress: event.target.value,
-      //       emailaddressErr: false,
-      //       // emailaddressHelperText: data.email_status,
-      //     });
-      //   });
-    } else if (type === "newemailaddress") {
+      
+    } 
+    
+   else if (type === "trackingNumber") {
+      this.setState({ emailaddressCheck: true });
+      this.setState({
+        trackingNumber: event.target.value,
+        trackingNumberErr: false,
+        trackingNumberCheck: false,
+        trackingNumberHelperText: "",
+      });
+    } 
+    
+    else if (type === "newemailaddress") {
       this.setState({ emailaddressCheck: true });
       // if (event.target.value === "") {
       //   this.setState({
@@ -1334,7 +1346,27 @@ class EditSalesLeads extends Component {
           contactnameHelperText: "",
         });
       }
-    } else if (type === "emailaddress") {
+    } else if(type == "trackingNumber"){
+      this.setState({ trackingNumberCheck: true });
+      let contactnameValold = event.target.value;
+      let contactnameVal = contactnameValold;
+      if (CommonConfig.isEmpty(contactnameVal)) {
+        this.setState({
+          trackingNumber: contactnameVal,
+          trackingNumberErr: true,
+          trackingNumberHelperText: "Please enter tracking number",
+        });
+      } else {
+        this.setState({
+          trackingNumber: contactnameVal,
+          trackingNumberErr: false,
+          trackingNumberHelperText: "",
+        });
+      }
+    }
+    
+    
+    else if (type === "emailaddress") {
       this.setState({ emailaddressCheck: true });
       let emailaddressVal = event.target.value;
       if (CommonConfig.isEmpty(emailaddressVal)) {
@@ -1637,8 +1669,31 @@ class EditSalesLeads extends Component {
     }
     this.getReferredSite();
     this.getCancellationReason();
+    this.getClosedReason();
     //  await this.getSalesLeadData();
   }
+
+  getClosedReason(){
+
+    try {
+      let data = {
+        stringMapType: "Closed",
+      };
+
+      api
+        .post("stringMap/getstringMap", data)
+        .then((result) => {
+          this.setState({ closedReasonList: result.data });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (err) {
+      console.log("error", err);
+    }
+
+  }
+
   getCancellationReason() {
     try {
       let data = {
@@ -1747,9 +1802,23 @@ class EditSalesLeads extends Component {
         //jk
         if (
           result.data.data.CancelReason !== undefined &&
-          result.data.data.CancelReason !== null
+          result.data.data.CancelReason !== null && result.data.data.ProposalStatus == "Cancelled"
         ) {
           var cancelReason = this.state.cancelationReasonList.find(
+            (x) => x.StringMapID === result.data.data.CancelReason
+          );
+          var sortedReason = {
+            value: cancelReason.Description,
+            label: cancelReason.StringMapID,
+          };
+          this.setState({ CancelationReason: sortedReason });
+        }
+
+        if (
+          result.data.data.CancelReason !== undefined &&
+          result.data.data.CancelReason !== null && result.data.data.ProposalStatus == "Closed"
+        ) {
+          var cancelReason = this.state.closedReasonList.find(
             (x) => x.StringMapID === result.data.data.CancelReason
           );
           var sortedReason = {
@@ -1764,10 +1833,12 @@ class EditSalesLeads extends Component {
           SalesLeadManagementID: result.data.data.SalesLeadManagementID,
           ProposalStatus: result.data.data.ProposalStatus,
           selectedWorkingOnRequest: selectedManagedby,
+          previousManaged: selectedManagedby,
           DeliveryType: result.data.data.DeliveryType,
           ContactName: result.data.data.ContactName,
           CompanyName: result.data.data.CompanyName,
           EmailAddress: result.data.data.Email,
+          trackingNumber: result.data.data.trackingNumber,
           NewEmailAddress: result.data.data.Email,
           ContactNum: result.data.data.PhoneNumber,
           EmailAdd: result.data.data.Email,
@@ -4201,7 +4272,47 @@ class EditSalesLeads extends Component {
         CancelationReasonHelperText: "Please Enter Cancellation Reason",
       });
       return;
+    }else if (
+      this.state.ProposalStatus === "Booked" &&
+      !this.state.trackingNumber
+    ) {
+      this.setState({
+        trackingNumberErr: true,
+        trackingNumberHelperText: "Please Enter Tracking Number",
+      });
+      return;
     }
+    
+    else if (
+      this.state.ProposalStatus === "Closed" &&
+      !this.state.CancelationReason
+    ) {
+      this.setState({
+        CancelationReasonErr: true,
+        CancelationReasonHelperText: "Please Enter Closed Reason",
+      });
+      return;
+    }
+    
+    console.log("previousManaged = ",this.state.previousManaged.value)
+    debugger
+    if(this.state.ProposalStatus === "Cancelled" && this.state.selectedWorkingOnRequest && this.state.previousManaged.value == undefined){
+      
+      debugger
+      // this.state.proposalstatusErr
+      this.setState({
+        proposalstatusErr: true,
+        proposalstatusHelperText: "Please change Proposal Status to new or open",
+      });
+      return;
+      
+    }
+
+    if(this.state.ProposalStatus != "Booked"){
+      this.state.trackingNumber = ""
+    }
+
+    
 
     if (
       // (this.state.PackageList.length > 0 ||
@@ -4661,6 +4772,8 @@ class EditSalesLeads extends Component {
           (x) => x.NoteText !== "" && x.NoteText !== null
         );
 
+        // console.log("FinalNotes = ",FinalNotes)
+
         if (
           !this.state.dropoffcountryErr ||
           !this.state.pickupcountryErr ||
@@ -4731,10 +4844,15 @@ class EditSalesLeads extends Component {
             PackageList: PackageList,
             weightType: this.state.SelectedWeightType,
             NoteList: FinalNotes,
+            trackingNumber: this.state.trackingNumber,
             CancelationReason: this.state.CancelationReason.label
               ? this.state.CancelationReason.label
               : this.state.CancelationReason,
           };
+
+          if(this.state.ProposalStatus === "Cancelled"){
+            data.ManagedBy = 0;
+          }
           let packagetype;
           // for(var i = 0; i< PackageList.length;i++){
           if (PackageList[0].PackageType === 1) {
@@ -4778,6 +4896,9 @@ class EditSalesLeads extends Component {
                         if (result.success) {
                           if (result.data.length > 0) {
                             data.ManagedBy = result.data[0].ManagedBy;
+                            if(this.state.ProposalStatus === "Cancelled"){
+                              data.ManagedBy = 0;
+                            }
                           }
                           var formData = new FormData();
                           formData.append("data", JSON.stringify(data));
@@ -5307,6 +5428,7 @@ class EditSalesLeads extends Component {
       ProposalType,
       ProposalStatus,
       EmailAddress,
+      trackingNumber,
       ContactName,
       DropoffCity,
       DropoffState,
@@ -5324,6 +5446,12 @@ class EditSalesLeads extends Component {
       finalGetResults,
     } = this.state;
     const cancelationReasonList = this.state.cancelationReasonList.map(
+      (type) => {
+        return { value: type.Description, label: type.StringMapID };
+      }
+    );
+
+    const closedReasonList = this.state.closedReasonList.map(
       (type) => {
         return { value: type.Description, label: type.StringMapID };
       }
@@ -6110,29 +6238,6 @@ class EditSalesLeads extends Component {
                     </FormControl>
                   </div>
                 </GridItem>
-                {/* <GridItem xs={12} sm={12} md={4}>
-                  <FormControl className={classes.formControl} fullWidth>
-                    <CustomInput
-                      labelText="Lead Date"
-                      id="leaddate"
-                      formControlProps={{ fullWidth: true }}
-                      inputProps={{
-                        disabled: true,
-                        value: moment(this.state.LeadDate).format(
-                          CommonConfig.dateFormat.dateOnly
-                        ),
-                        endAdornment: (
-                          <InputAdornment
-                            position="end"
-                            className={useStyles.inputAdornment}
-                          >
-                            <Icon className={useStyles.User}>date_range</Icon>
-                          </InputAdornment>
-                        ),
-                      }}
-                    />
-                  </FormControl>
-                </GridItem> */}
 
                 <GridItem xs={12} sm={12} md={3}>
                   <div className="date-input with-icon">
@@ -6211,9 +6316,70 @@ class EditSalesLeads extends Component {
                       />
                     </FormControl>
                   </GridItem>
-                ) : (
+                ) : 
+                
+                this.state.ProposalStatus === "Booked" ? (
+                  <GridItem xs={12} sm={12} md={3}>
+                    <CustomInput className={classes.formControl} fullWidth
+                    labelText={`Tracking Number`}
+                    id="trackingNumber "
+                    // error={this.state.emailaddressErr}
+                    // helperText={this.state.emailaddressHelperText}
+                    formControlProps={{ fullWidth: true }}
+                    inputProps={{
+                      value: trackingNumber,
+                      
+                      onChange: (event) =>
+                        this.handleOnChange(event, "trackingNumber"),
+                      onFocus: () =>
+                        this.setState({
+                          trackingNumberCheck: false,
+                          trackingNumberErr: false,
+                          trackingNumberHelperText: "",
+                        }),
+                      onBlur: (event) =>
+                        this.handlechange(event, "trackingNumber"),
+                      
+                    }}
+                  />
+                  <span id="cemail" style={{ color: "red", fontSize: "12px" }}>
+                    {this.state.trackingNumberHelperText}
+                  </span>
+                  </GridItem>
+                ) : 
+
+                this.state.ProposalStatus == "Closed"?(
+
+                 <GridItem xs={12} sm={12} md={3}>
+                    <FormControl className={classes.formControl} fullWidth>
+                      <Autocomplete
+                        options={closedReasonList}
+                        id="Cancelation Reason"
+                        value={CancelationReason}
+                        getOptionLabel={(option) => option.value}
+                        onChange={(event, value) =>
+                          this.requestChange(event, value, "CancelationReason")
+                        }
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            error={this.state.CancelationReasonErr}
+                            helperText={this.state.CancelationReasonHelperText}
+                            label="Cancellation Reason"
+                            fullWidth
+                          />
+                        )}
+                      />
+                    </FormControl>
+                  </GridItem>
+
+                ) :
+
+                (
                   <GridItem xs={12} sm={12} md={3}></GridItem>
                 )}
+
+                
                 {/* <GridItem xs={12} sm={12} md={3}>
                   <FormControl fullWidth>
                     <CustomInput

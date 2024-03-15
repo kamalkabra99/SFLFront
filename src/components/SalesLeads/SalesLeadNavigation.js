@@ -92,14 +92,16 @@ class SalesLeadNavigation extends Component {
         { label: "All", value: "All", IsSelected: false, Index: 0 },
         { label: "New", value: "New", IsSelected: true, Index: 1 },
         { label: "Auto Quote", value: "Auto Quote", IsSelected: true, Index: 2 },
-        { label: "Open", value: "Open", IsSelected: false, Index: 3 },
-        { label: "Closed", value: "Closed", IsSelected: false, Index: 4 },
-        { label: "Cancelled", value: "Cancelled", IsSelected: false, Index: 5 },
+        { label: "Booked", value: "Booked", IsSelected: false, Index: 3 },
+        
+        { label: "Open", value: "Open", IsSelected: false, Index: 4 },
+        { label: "Closed", value: "Closed", IsSelected: false, Index: 5 },
+        { label: "Cancelled", value: "Cancelled", IsSelected: false, Index: 6 },
         {
           value: "To be Deleted",
           label: "To be Deleted",
           IsSelected: false,
-          Index: 6,
+          Index: 7,
         },
       ],
       contentType: [
