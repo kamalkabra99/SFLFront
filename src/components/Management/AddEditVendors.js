@@ -1278,37 +1278,25 @@ class AddEditVendors extends Component {
     if (type === "vendorName") {
       debugger;
       if (!CommonConfig.isEmpty(val)) {
-        var selectedName = [];
-        selectedName = this.state.VendorList.filter(
-          (x) => x.VendorName === val
-        );
-        if (selectedName.length !== 0) {
+        if (val.length > 54) {
           this.setState({
-            vendorName: "",
-            flag: 1,
+            vendorName: val,
+            vendorNameErr: true,
+            vendorNameHelperText: "Please Enter vaid Vender Name.",
           });
-          return cogoToast.error("Vendor name already in used");
+        } else if (CommonConfig.RegExp.companyName.test(val)) {
+          this.setState({
+            vendorName: val,
+            vendorNameErr: true,
+            vendorNameHelperText: "Please Enter valid Vender Name.",
+          });
         } else {
-          if (val.length > 54) {
-            this.setState({
-              vendorName: val,
-              vendorNameErr: true,
-              vendorNameHelperText: "Please Enter vaid Vender Name.",
-            });
-          } else if (CommonConfig.RegExp.companyName.test(val)) {
-            this.setState({
-              vendorName: val,
-              vendorNameErr: true,
-              vendorNameHelperText: "Please Enter valid Vender Name.",
-            });
-          } else {
-            this.setState({
-              vendorName: val,
-              vendorNameErr: false,
-              vendorNameHelperText: "",
-              flag: 0,
-            });
-          }
+          this.setState({
+            vendorName: val,
+            vendorNameErr: false,
+            vendorNameHelperText: "",
+            flag: 0,
+          });
         }
       } else if (CommonConfig.isEmpty(val)) {
         this.setState({
@@ -1951,6 +1939,25 @@ class AddEditVendors extends Component {
         vendorNameErr: true,
         vendorNameHelperText: "Please enter vendor name",
       });
+    } else {
+      var selectedName = [];
+      selectedName = this.state.VendorList.filter(
+        (x) =>
+          x.VendorName === this.state.vendorName &&
+          x.VendorID !== this.state.vendorId
+      );
+      if (selectedName.length !== 0) {
+        this.setState({
+          vendorName: "",
+          flag: 1,
+        });
+        IsFormValid = false;
+        this.setState({
+          vendorNameErr: true,
+          vendorNameHelperText: "Please enter vendor name",
+        });
+        cogoToast.error("Vendor name already in used");
+      }
     }
     if (CommonConfig.isEmpty(this.state.vendorType)) {
       IsFormValid = false;
@@ -2197,6 +2204,25 @@ class AddEditVendors extends Component {
     }
     if (this.state.vendorName === "") {
       return cogoToast.error("Please enter vendor name");
+    } else {
+      var selectedName = [];
+      selectedName = this.state.VendorList.filter(
+        (x) =>
+          x.VendorName === this.state.vendorName &&
+          x.VendorID !== this.state.vendorId
+      );
+      if (selectedName.length !== 0) {
+        this.setState({
+          vendorName: "",
+          flag: 1,
+        });
+
+        this.setState({
+          vendorNameErr: true,
+          vendorNameHelperText: "Please enter vendor name",
+        });
+        return cogoToast.error("Vendor name already in used");
+      }
     }
     let vendorDetails = this.state;
     var finalAttachment = [];
@@ -2364,6 +2390,26 @@ class AddEditVendors extends Component {
       .post("/vendor/deleteVendorSingleDocument", data)
       .then((res) => {
         if (res.success) {
+          debugger;
+
+          if (res.data.data[0].length > 0) {
+            var response = res.data.data[0];
+            this.state.Attachments.length = 0;
+
+            for (var i = 0; i < response.length; i++) {
+              var filesList = response[i];
+              filesList.CreatedOn = moment(filesList.CreatedOn).format(
+                CommonConfig.dateFormat.dateOnly
+              );
+              this.state.Attachments.push(filesList);
+            }
+            this.setState({
+              Attachments: [
+                ...this.state.Attachments,
+                this.state.objAttachment,
+              ],
+            });
+          }
           this.hideLoader();
           //cogoToast.success("Document delete from the Server");
         }
