@@ -1282,7 +1282,7 @@ class AddEditVendors extends Component {
           this.setState({
             vendorName: val,
             vendorNameErr: true,
-            vendorNameHelperText: "Please Enter vaid Vender Name.",
+            vendorNameHelperText: "Please Enter valid Vender Name.",
           });
         } else if (CommonConfig.RegExp.companyName.test(val)) {
           this.setState({

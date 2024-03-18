@@ -18,6 +18,10 @@ import TextField from "@material-ui/core/TextField";
 import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
 import Checkbox from "@material-ui/core/Checkbox";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import * as XLSX from "xlsx";
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -41,6 +45,9 @@ class Vendor extends Component {
       Access: [],
       finalLength: 0,
       checkAllcolumn: false,
+      selectedList: [],
+      Dialogopen: false,
+      VendorDetailList: [],
     };
   }
   serviceOffered = () => {
@@ -141,14 +148,31 @@ class Vendor extends Component {
       api
         .get("vendor/getVendorList")
         .then((res) => {
+          debugger;
           if (res.success) {
             if (this.state.Access.AllAccess === 1) {
+              var FinalVendorList = [];
+              var i = 0;
+              res.data.map((OBJ) => {
+                OBJ.IsSelected = false;
+                OBJ.Index = i;
+                i++;
+                return OBJ;
+              });
               this.setState({ vendorList: res.data, Loading: false });
             } else {
+              debugger;
               var FinalVendorList = [];
               FinalVendorList = res.data.filter(
                 (x) => x.PersonID === CommonConfig.loggedInUserData().PersonID
               );
+              var i = 0;
+              FinalVendorList.map((OBJ) => {
+                OBJ.IsSelected = false;
+                OBJ.Index = i;
+                i++;
+                return OBJ;
+              });
               this.setState({ vendorList: FinalVendorList, Loading: false });
             }
           } else {
@@ -166,10 +190,7 @@ class Vendor extends Component {
     let vendorId = record.original.VendorID;
     history.push({
       pathname: "AddEditVendors/",
-      // CommonConfig.loggedInUserData().PersonID === 18 ||
-      // CommonConfig.loggedInUserData().PersonID === 1
-      //   ? "AddEditVendors/"
-      //   : "AddEditVendor/",
+
       state: {
         vendorId: vendorId,
         filterlist: this.state.filterProps,
@@ -333,8 +354,8 @@ class Vendor extends Component {
   };
   handleCheckboxChangecolumn = (e, record, type) => {
     debugger;
-    let Type = this.state.currentTab;
-    let checkedArr = this.state[Type];
+    // let Type = this.state.currentTab;
+    let checkedArr = this.state.vendorList;
     if (type === "Single") {
       checkedArr[record.original.Index]["IsSelected"] = e.target.checked;
     } else {
@@ -352,11 +373,11 @@ class Vendor extends Component {
       });
     }
     let previousList = checkedArr.filter((x) => x.IsSelected === true);
-    let arrType = "previousSelected" + Type;
+    //let arrType = "previousSelected" + Type;
 
     this.setState({
-      [Type]: checkedArr,
-      [arrType]: previousList,
+      vendorList: checkedArr,
+      selectedList: previousList,
     });
   };
   renderCheckbox = (record) => {
@@ -370,6 +391,101 @@ class Vendor extends Component {
       </div>
     );
   };
+
+  DownloadExcel = () => {
+    this.showLoader();
+    let List = this.state.selectedList;
+    List = List.filter((x) => x.IsSelected === true).map((obj) => {
+      return obj;
+    });
+
+    console.log("List", List);
+    api
+      .post("vendor/getVendorDataForExcel", List)
+      .then((result) => {
+        if (result.data.success) {
+          this.hideLoader();
+          this.setState({
+            VendorDetailList: result.data.data.ShipmentDetail,
+            ContactDetailList: result.data.data.TrackingDetail,
+            DocumentDetailList: result.data.data.AccountDetail,
+            Dialogopen: true,
+          });
+        } else {
+          this.hideLoader();
+          cogoToast.error("Something Went Wrong");
+        }
+      })
+      .catch((err) => {
+        this.hideLoader();
+        cogoToast.error("Something Went Wrong");
+      });
+  };
+  doExcel1 = (tableId1, tableId2, tableId3) => {
+    debugger;
+    let targetTableElm1 = document.getElementById(tableId1);
+    // let targetTableElm2 = document.getElementById(tableId2);
+    // let targetTableElm3 = document.getElementById(tableId3);
+
+    const wb = { SheetNames: [], Sheets: {} };
+    var ws1 = XLSX.utils.table_to_book(targetTableElm1, { raw: true }).Sheets
+      .Sheet1;
+    wb.SheetNames.push("Shipment Detail");
+    wb.Sheets["Shipment Detail"] = ws1;
+
+    // var ws2 = XLSX.utils.table_to_book(targetTableElm2, { raw: true }).Sheets
+    //   .Sheet1;
+    // wb.SheetNames.push("Package Detail");
+    // wb.Sheets["Package Detail"] = ws2;
+
+    // var ws3 = XLSX.utils.table_to_book(targetTableElm3).Sheets.Sheet1;
+    // Object.keys(ws3).forEach(function(s) {
+    //   let new_str = s.replace(/[0-9]/g, "");
+    //   if (
+    //     new_str == "A" ||
+    //     new_str == "E" ||
+    //     new_str == "F" ||
+    //     new_str == "D"
+    //   ) {
+    //     delete ws3[s].w;
+    //     ws3[s].z = "0";
+    //   }
+    // });
+    // wb.SheetNames.push("Account Detail");
+    // wb.Sheets["Account Detail"] = ws3;
+
+    const blob = new Blob(
+      [this.s2ab(XLSX.write(wb, { bookType: "xlsx", type: "binary" }))],
+      {
+        type: "application/octet-stream",
+      }
+    );
+
+    const link = document.createElement("a");
+    link.href = window.URL.createObjectURL(blob);
+    link.download = "VendorDetailsExcelSheet.xlsx";
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    this.setState({ Dialogopen: false });
+  };
+  renderShipmentData = () => {
+    return this.state.VendorDetailList.map((service) => {
+      const { VendorID, Name, Website, GSTNo, VendorType } = service;
+      return (
+        <tr>
+          <td>{VendorID}</td>
+          <td>{Name}</td>
+          <td>{Website}</td>
+          <td>{GSTNo}</td>
+          <td>{VendorType}</td>
+        </tr>
+      );
+    });
+  };
+
   render() {
     const { vendorList, servicelist } = this.state;
 
@@ -610,10 +726,140 @@ class Vendor extends Component {
                   showPaginationBottom={true}
                   className="-striped -highlight"
                 />
+                <Button color="rose" onClick={(e) => this.DownloadExcel()}>
+                  Download
+                </Button>
               </CardBody>
             </Card>
           </GridItem>
         </GridContainer>
+        <div>
+          <Dialog
+            maxWidth={671}
+            open={this.state.Dialogopen}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <DialogContent>
+              <div>Your Excel Sheet is Generated Successfully.</div>
+            </DialogContent>
+            <DialogActions>
+              <Button
+                color="rose"
+                onClick={() =>
+                  this.doExcel1(
+                    "table-to-xls1",
+                    "table-to-xls2",
+                    "table-to-xls3"
+                  )
+                }
+              >
+                Download
+              </Button>
+              <Button
+                color="danger"
+                onClick={() => this.setState({ Dialogopen: false })}
+              >
+                Cancel
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </div>
+        <div className="d-none">
+          <table id="table-to-xls1" cellSpacing="10" cellPadding="10">
+            <thead>
+              <tr>
+                <th>
+                  <font size="+0">Vendor ID</font>
+                </th>
+                <th>
+                  <font size="+0">Name</font>
+                </th>
+                <th>
+                  <font size="+0">WebSite</font>
+                </th>
+                <th>
+                  <font size="+0">GSTNo</font>
+                </th>
+                <th>
+                  <font size="+0">Vendor Type</font>
+                </th>
+              </tr>
+            </thead>
+            <tbody>{this.renderShipmentData()}</tbody>
+          </table>
+        </div>
+
+        {/* <div className="d-none">
+          <table id="table-to-xls2" cellSpacing="10" cellPadding="10">
+            <thead>
+              <tr>
+                <th align="left" bgcolor="#D9D9D9">
+                  <font size="+0">Tracking Number</font>
+                </th>
+                <th align="left" bgcolor="#D9D9D9">
+                  <font size="+0">Package Count</font>
+                </th>
+                <th align="left" bgcolor="#D9D9D9">
+                  <font size="+0">Actual Weight</font>
+                </th>
+                <th align="left" bgcolor="#D9D9D9">
+                  <font size="+0">Length</font>
+                </th>
+                <th align="left" bgcolor="#D9D9D9">
+                  <font size="+0">Width</font>
+                </th>
+                <th align="left" bgcolor="#D9D9D9">
+                  <font size="+0">Height</font>
+                </th>
+                <th align="left" bgcolor="#D9D9D9">
+                  <font size="+0">Charge Weight</font>
+                </th>
+                <th align="left" bgcolor="#D9D9D9">
+                  <font size="+0">Insurance</font>
+                </th>
+              </tr>
+            </thead>
+            <tbody>{this.renderTrackingData()}</tbody>
+          </table>
+        </div>
+
+        <div className="d-none">
+          <table id="table-to-xls3" cellSpacing="10" cellPadding="10">
+            <thead>
+              <tr>
+                <th align="left" bgcolor="#D9D9D9">
+                  <font size="+0">Tracking Number</font>
+                </th>
+                <th align="left" bgcolor="#D9D9D9">
+                  <font size="+0">Date</font>
+                </th>
+                <th align="left" bgcolor="#D9D9D9">
+                  <font size="+0">Type</font>
+                </th>
+                <th align="left" bgcolor="#D9D9D9">
+                  <font size="+0">Service Description</font>
+                </th>
+                <th align="left" bgcolor="#D9D9D9">
+                  <font size="+0">Payment Account Number</font>
+                </th>
+                <th align="left" bgcolor="#D9D9D9">
+                  <font size="+0">Payment Confirmation Number</font>
+                </th>
+                <th align="left" bgcolor="#D9D9D9">
+                  <font size="+0">Service Qty</font>
+                </th>
+                <th align="left" bgcolor="#D9D9D9">
+                  <font size="+0">Services Cost</font>
+                </th>
+                <th align="left" bgcolor="#D9D9D9">
+                  <font size="+0">Service Total</font>
+                </th>
+              </tr>
+            </thead>
+            <tbody>{this.renderAccountData()}</tbody>
+          </table>
+        </div> */}
       </div>
     );
   }
