@@ -1254,6 +1254,10 @@ class EditSalesLeads extends Component {
       this.setState({ ProposalType: value.props.value });
     } else if (type === "proposalstatus") {
       this.setState({
+        CancelationReason:"",
+        trackingNumber:"",
+      })
+      this.setState({
         ProposalStatus: value,
         proposalstatusHelperText: "",
         proposalstatusErr: false,
@@ -1804,8 +1808,9 @@ class EditSalesLeads extends Component {
           result.data.data.CancelReason !== undefined &&
           result.data.data.CancelReason !== null && result.data.data.ProposalStatus == "Cancelled"
         ) {
+          var closeddata = result.data.data.CancelReason;
           var cancelReason = this.state.cancelationReasonList.find(
-            (x) => x.StringMapID === result.data.data.CancelReason
+            (x) => x.StringMapID == closeddata
           );
           var sortedReason = {
             value: cancelReason.Description,
@@ -1814,12 +1819,19 @@ class EditSalesLeads extends Component {
           this.setState({ CancelationReason: sortedReason });
         }
 
-        if (
+      
+        
+
+        else if (
           result.data.data.CancelReason !== undefined &&
           result.data.data.CancelReason !== null && result.data.data.ProposalStatus == "Closed"
         ) {
+          console.log("this.state.closedReasonList = " , this.state.closedReasonList);
+          console.log("result.data.data.CancelReason " , result.data.data.CancelReason);
+          debugger;
+          var closeddata = result.data.data.CancelReason;
           var cancelReason = this.state.closedReasonList.find(
-            (x) => x.StringMapID === result.data.data.CancelReason
+            (x) => x.StringMapID == closeddata
           );
           var sortedReason = {
             value: cancelReason.Description,
@@ -4327,26 +4339,41 @@ class EditSalesLeads extends Component {
       // this.handleError();
       this.setState({ PackageListError: "Please select Package Type" });
     }
+
+    if(!this.state.StartDate && this.state.ProposalStatus === "Open"){
+      document.getElementById("followuprror").style.display = "block";
+
+      this.setState({
+        // Referrederror: "Please select any one",
+        // Referrederr: true,
+        // ProposalTypeError: "Please select any one",
+        // ProposalTypeErr: true,
+        Followuprror: "Please select date",
+        Followuprr: true,
+      });
+
+      cogoToast.error("Missing or Incorrect Data");
+      return;
+
+    }
     if (
-      !this.state.ReferredBy &&
       !this.state.ProposalType &&
-      !this.state.StartDate &&
+      !this.state.ReferredBy &&
+
       (this.state.ProposalStatus === "Open" ||
-        this.state.ProposalStatus === "Cancelled" ||
-        this.state.ProposalStatus === "Closed" ||
-        this.state.ProposalStatus === "To be Deleted")
+        this.state.ProposalStatus === "Booked" ||
+        this.state.ProposalStatus === "Closed" )
       // this.state.ProposalStatus !== ""
     ) {
       document.getElementById("referrederror").style.display = "block";
       document.getElementById("proposalTypeerror").style.display = "block";
-      document.getElementById("followuprror").style.display = "block";
+      // document.getElementById("followuprror").style.display = "block";
       this.setState({
         Referrederror: "Please select any one",
         Referrederr: true,
         ProposalTypeError: "Please select any one",
         ProposalTypeErr: true,
-        Followuprror: "Please select date",
-        Followuprr: true,
+        
       });
       cogoToast.error("Missing or Incorrect Data");
       return;
@@ -6365,7 +6392,7 @@ class EditSalesLeads extends Component {
                             {...params}
                             error={this.state.CancelationReasonErr}
                             helperText={this.state.CancelationReasonHelperText}
-                            label="Cancellation Reason"
+                            label="Closed Reason"
                             fullWidth
                           />
                         )}

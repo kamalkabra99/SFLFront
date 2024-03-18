@@ -451,7 +451,7 @@ class SalesLeadNavigation extends Component {
               this.setState({ ProposalData: result.Data });
             } else {
               let proposalData = result.Data.filter(
-                (x) => x.ManagedBy === this.state.loggedUser
+                (x) => x.ManagedBy === this.state.loggedUser || x.ManagedBy == 0
               );
               this.setState({ ProposalData: proposalData });
             }
@@ -1889,31 +1889,71 @@ class SalesLeadNavigation extends Component {
   };
   basicFilter = () => {
     return this.state.filtered.map((selectfield, idx) => {
+      const countrylist = this.state.CountryList.map((countrylist) => {
+        return { value: countrylist.CountryID, label: countrylist.CountryName };
+      });
+      const senderstate = this.state.SenderStateList.map((type) => {
+        return { value: type.StateName, label: type.StateName };
+      });
+      const receiverstate = this.state.ReceiverStateList.map((type) => {
+        return { value: type.StateName, label: type.StateName };
+      });
+      const Refferedlist = this.state.refferedsiteData.map((type) => {
+        return { value: type.id, label: type.label };
+      });
+      const managedby = this.state.managedby.map((managedby) => {
+        return { value: managedby.PersonID, label: managedby.Name };
+      });
+      const contenttype = this.state.contentType.map((content) => {
+        return { value: content.value, label: content.label };
+      });
+      const status = this.state.requestStatus
+        .filter((x) => x.label !== "All")
+        .map((status) => {
+          return { value: status.value, label: status.label };
+        });
+      const searchfield = this.state.selectField.map((content) => {
+        return { value: content.value, label: content.label };
+      });
+      const newselectfilter = this.state.selectFilter.map((content) => {
+        return { value: content.value, label: content.label };
+      });
+      const neweditedfilter = this.state.selectFilter
+        .filter(
+          (x) =>
+            x.label !== "Start With" &&
+            x.label !== "Contains" &&
+            x.label !== "Ends With"
+        )
+        .map((x) => {
+          return { value: x.value, label: x.label };
+        });
       return (
         <tr>
-          <td>
-            {/* <FormControl
-              fullWidth
-              error={selectfield.fielderror}
-              className="select-spl"
-            >
-              <InputLabel
-                htmlFor="selectshipmenttype"
-                className={classes.selectLabel}
-              >
-                Select Field
-              </InputLabel>
-              <Select
-                fullWidth={true}
-                id="field"
-                name="field"
-                value={selectfield.field}
-                onChange={(event) => this.requestChange(event, idx)}
-              >
-                {this.fieldBasic()}
-              </Select>
-              <FormHelperText>{selectfield.fieldhelperText}</FormHelperText>
-            </FormControl> */}
+           <td>
+            <Autocomplete
+              options={searchfield}
+              fullWidth={true}
+              id="field"
+              name="field"
+              getOptionLabel={(option) =>
+                option.label ? option.label : option
+              }
+              value={selectfield.field}
+              onChange={(event, val) =>
+                this.onchnageselectfield(event, "field", val, idx)
+              }
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  error={selectfield.error}
+                  helperText={selectfield.helperText}
+                  label="Select Field"
+                  margin="normal"
+                  fullWidth
+                />
+              )}
+            />
           </td>
           <td>
             <FormControl
@@ -2063,7 +2103,7 @@ class SalesLeadNavigation extends Component {
             this.setState({ SearchSalesLeadList: result.Data });
           } else {
             let proposalData = result.Data.filter(
-              (x) => x.ManagedBy === this.state.loggedUser
+              (x) => (x.ManagedBy === this.state.loggedUser || x.ManagedBy === 0 || x.ManagedBy === "0")
             );
             this.setState({ SearchSalesLeadList: proposalData });
           }
@@ -2480,7 +2520,7 @@ class SalesLeadNavigation extends Component {
                 <i className="fas fa-edit"></i>
               </Button>
             </div>
-          ) : record.original.ManagedBy === this.state.loggedUser ? (
+          ) : record.original.ManagedBy === this.state.loggedUser  || record.original.ManagedBy == 0  ? (
             <div className="table-common-btn">
               <Button
                 justIcon
