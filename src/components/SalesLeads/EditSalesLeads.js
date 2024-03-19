@@ -1264,38 +1264,8 @@ class EditSalesLeads extends Component {
         CancelationReasonErr: false,
         CancelationReasonHelperText: "",
       });
-      if (
-        value !== "New" &&
-        this.state.ProposalType === "" &&
-        this.state.FollowupDate === "" &&
-        this.state.ReferredBy === ""
-      ) {
-        this.setState({
-          Referrederror: "Please select any one",
-          Referrederr: true,
-          ProposalTypeError: "Please select any one",
-          ProposalTypeErr: true,
-          Followuprror: "Please select date",
-          Followuprr: true,
-        });
-        document.getElementById("referrederror").style.display = "block";
-        document.getElementById("followuprror").style.display = "block";
-        document.getElementById("proposalTypeerror").style.display = "block";
-      } else {
-        this.setState({
-          Referrederror: "",
-          Referrederr: false,
-          ProposalTypeError: "",
-          ProposalTypeErr: false,
-          Followuprror: "",
-          Followuprr: false,
-          CancelationReasonErr: false,
-          CancelationReasonHelperText: "",
-        });
-        document.getElementById("referrederror").style.display = "none";
-        document.getElementById("followuprror").style.display = "none";
-        document.getElementById("proposalTypeerror").style.display = "none";
-      }
+      debugger
+      
     } else if (type === "deliverytype") {
       this.setState({ DeliveryType: value });
     } else if (type === "pickupcity") {
@@ -4342,12 +4312,14 @@ class EditSalesLeads extends Component {
 
     if(!this.state.StartDate && this.state.ProposalStatus === "Open"){
       document.getElementById("followuprror").style.display = "block";
+      document.getElementById("referrederror").style.display = "block";
+      document.getElementById("proposalTypeerror").style.display = "block";
 
       this.setState({
-        // Referrederror: "Please select any one",
-        // Referrederr: true,
-        // ProposalTypeError: "Please select any one",
-        // ProposalTypeErr: true,
+        Referrederror: "Please select any one",
+        Referrederr: true,
+        ProposalTypeError: "Please select any one",
+        ProposalTypeErr: true,
         Followuprror: "Please select date",
         Followuprr: true,
       });
@@ -4360,7 +4332,7 @@ class EditSalesLeads extends Component {
       !this.state.ProposalType &&
       !this.state.ReferredBy &&
 
-      (this.state.ProposalStatus === "Open" ||
+      (
         this.state.ProposalStatus === "Booked" ||
         this.state.ProposalStatus === "Closed" )
       // this.state.ProposalStatus !== ""
@@ -4378,147 +4350,6 @@ class EditSalesLeads extends Component {
       cogoToast.error("Missing or Incorrect Data");
       return;
     }
-    // else {
-    //   document.getElementById("referrederror").style.display = "none";
-    // }
-    if (
-      !this.state.ReferredBy &&
-      !this.state.ProposalType &&
-      (this.state.ProposalStatus === "Open" ||
-        this.state.ProposalStatus === "Cancelled" ||
-        this.state.ProposalStatus === "Closed" ||
-        this.state.ProposalStatus === "To be Deleted")
-      // this.state.ProposalStatus !== ""
-    ) {
-      document.getElementById("referrederror").style.display = "block";
-      document.getElementById("proposalTypeerror").style.display = "block";
-      this.setState({
-        ProposalTypeError: "Please select any one",
-        ProposalTypeErr: true,
-        Referrederror: "Please select any one",
-        Referrederr: true,
-      });
-      cogoToast.error("Missing or Incorrect Data");
-      return;
-    }
-    // else {
-    //   document.getElementById("referrederror").style.display = "none";
-    // }
-    if (
-      !this.state.ReferredBy &&
-      !this.state.StartDate &&
-      (this.state.ProposalStatus === "Open" ||
-        this.state.ProposalStatus === "Cancelled" ||
-        this.state.ProposalStatus === "Closed" ||
-        this.state.ProposalStatus === "To be Deleted")
-      // this.state.ProposalStatus !== ""
-    ) {
-      document.getElementById("referrederror").style.display = "block";
-      document.getElementById("followuprror").style.display = "block";
-      this.setState({
-        Referrederror: "Please select any one",
-        Referrederr: true,
-        Followuprror: "Please select date",
-        Followuprr: true,
-      });
-      cogoToast.error("Missing or Incorrect Data");
-      return;
-    }
-    // else {
-    //   document.getElementById("referrederror").style.display = "none";
-    // }
-    if (
-      !this.state.ProposalType &&
-      !this.state.StartDate &&
-      (this.state.ProposalStatus === "Open" ||
-        this.state.ProposalStatus === "Cancelled" ||
-        this.state.ProposalStatus === "Closed" ||
-        this.state.ProposalStatus === "To be Deleted")
-      // this.state.ProposalStatus !== ""
-    ) {
-      document.getElementById("proposalTypeerror").style.display = "block";
-      document.getElementById("followuprror").style.display = "block";
-      this.setState({
-        ProposalTypeError: "Please select any one",
-        ProposalTypeErr: true,
-        Followuprror: "Please select date",
-        Followuprr: true,
-      });
-      cogoToast.error("Missing or Incorrect Data");
-      return;
-    }
-    // else {
-    //   document.getElementById("proposalTypeerror").style.display = "none";
-    //   document.getElementById("followuprror").style.display = "none";
-    // }
-    if (
-      !this.state.ReferredBy &&
-      (this.state.ProposalStatus === "Open" ||
-        this.state.ProposalStatus === "Cancelled" ||
-        this.state.ProposalStatus === "Closed" ||
-        this.state.ProposalStatus === "To be Deleted")
-      // this.state.ProposalStatus !== ""
-    ) {
-      document.getElementById("referrederror").style.display = "block";
-      this.setState({
-        Referrederror: "Please select any one",
-        Referrederr: true,
-      });
-      cogoToast.error("Missing or Incorrect Data");
-      return;
-    } else {
-      document.getElementById("referrederror").style.display = "none";
-    }
-    if (
-      !this.state.ProposalType &&
-      (this.state.ProposalStatus === "Open" ||
-        this.state.ProposalStatus === "Cancelled" ||
-        this.state.ProposalStatus === "Closed" ||
-        this.state.ProposalStatus === "To be Deleted")
-      // this.state.ProposalStatus !== ""
-    ) {
-      document.getElementById("proposalTypeerror").style.display = "block";
-      this.setState({
-        ProposalTypeError: "Please select any one",
-        ProposalTypeErr: true,
-      });
-    } else {
-      document.getElementById("proposalTypeerror").style.display = "none";
-    }
-    if (
-      !this.state.StartDate &&
-      (this.state.ProposalStatus === "Open" ||
-        this.state.ProposalStatus === "Cancelled" ||
-        this.state.ProposalStatus === "Closed" ||
-        this.state.ProposalStatus === "To be Deleted")
-    ) {
-      document.getElementById("followuprror").style.display = "block";
-      this.setState({ Followuprror: "Please select date", Followuprr: true });
-      //this.handleError();
-      cogoToast.error("Missing or Incorrect Data");
-      return;
-    } else {
-      document.getElementById("followuprror").style.display = "none";
-    }
-
-    // if (!this.state.ProposalType && this.state.ProposalStatus !== "") {
-    //   document.getElementById("proposalTypeerror").style.display = "block";
-    //   this.setState({
-    //     ProposalTypeError: "Please select any one",
-    //     ProposalTypeErr: true,
-    //   });
-    // } else {
-    //   document.getElementById("proposalTypeerror").style.display = "none";
-    // }
-
-    // if (!this.state.StartDate && this.state.ProposalStatus !== "New") {
-    //   document.getElementById("followuprror").style.display = "block";
-    //   this.setState({ Followuprror: "Please select date", Followuprr: true });
-    //   //this.handleError();
-    //   //  return;
-    // } else {
-    //   document.getElementById("followuprror").style.display = "none";
-    // }
     if (
       this.state.fromStateAutoComplete === true &&
       (!this.state.PickupCityZip || this.state.PickupCityZip === "")
