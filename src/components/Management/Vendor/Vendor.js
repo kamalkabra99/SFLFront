@@ -21,6 +21,7 @@ import Checkbox from "@material-ui/core/Checkbox";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
+import { fileBase } from "../../../utils/config";
 import * as XLSX from "xlsx";
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
@@ -48,6 +49,9 @@ class Vendor extends Component {
       selectedList: [],
       Dialogopen: false,
       VendorDetailList: [],
+      ContactDetailList: [],
+      DocumentDetailList: [],
+      ServiceOfferedList: [],
     };
   }
   serviceOffered = () => {
@@ -406,9 +410,10 @@ class Vendor extends Component {
         if (result.data.success) {
           this.hideLoader();
           this.setState({
-            VendorDetailList: result.data.data.ShipmentDetail,
-            ContactDetailList: result.data.data.TrackingDetail,
-            DocumentDetailList: result.data.data.AccountDetail,
+            VendorDetailList: result.data.data.VendorMaster, //ServiceOffered
+            ContactDetailList: result.data.data.Contacts,
+            DocumentDetailList: result.data.data.Documents,
+            ServiceOfferedList: result.data.data.ServiceOffered,
             Dialogopen: true,
           });
         } else {
@@ -421,38 +426,39 @@ class Vendor extends Component {
         cogoToast.error("Something Went Wrong");
       });
   };
-  doExcel1 = (tableId1, tableId2, tableId3) => {
+  s2ab = (s) => {
+    const buf = new ArrayBuffer(s.length);
+    const view = new Uint8Array(buf);
+    for (var i = 0; i != s.length; ++i) view[i] = s.charCodeAt(i) & 0xff;
+    return buf;
+  };
+  doExcel1 = (tableId1, tableId2, tableId3, tableId4) => {
     debugger;
     let targetTableElm1 = document.getElementById(tableId1);
-    // let targetTableElm2 = document.getElementById(tableId2);
-    // let targetTableElm3 = document.getElementById(tableId3);
+    let targetTableElm2 = document.getElementById(tableId2);
+    let targetTableElm3 = document.getElementById(tableId3);
+    let targetTableElm4 = document.getElementById(tableId4);
 
     const wb = { SheetNames: [], Sheets: {} };
     var ws1 = XLSX.utils.table_to_book(targetTableElm1, { raw: true }).Sheets
       .Sheet1;
-    wb.SheetNames.push("Shipment Detail");
-    wb.Sheets["Shipment Detail"] = ws1;
+    wb.SheetNames.push("Vendor Detail");
+    wb.Sheets["Vendor Detail"] = ws1;
 
-    // var ws2 = XLSX.utils.table_to_book(targetTableElm2, { raw: true }).Sheets
-    //   .Sheet1;
-    // wb.SheetNames.push("Package Detail");
-    // wb.Sheets["Package Detail"] = ws2;
+    var ws2 = XLSX.utils.table_to_book(targetTableElm2, { raw: true }).Sheets
+      .Sheet1;
+    wb.SheetNames.push("Service Detail");
+    wb.Sheets["Service Detail"] = ws2;
 
-    // var ws3 = XLSX.utils.table_to_book(targetTableElm3).Sheets.Sheet1;
-    // Object.keys(ws3).forEach(function(s) {
-    //   let new_str = s.replace(/[0-9]/g, "");
-    //   if (
-    //     new_str == "A" ||
-    //     new_str == "E" ||
-    //     new_str == "F" ||
-    //     new_str == "D"
-    //   ) {
-    //     delete ws3[s].w;
-    //     ws3[s].z = "0";
-    //   }
-    // });
-    // wb.SheetNames.push("Account Detail");
-    // wb.Sheets["Account Detail"] = ws3;
+    var ws3 = XLSX.utils.table_to_book(targetTableElm3, { raw: true }).Sheets
+      .Sheet1;
+    wb.SheetNames.push("Conatct Detail");
+    wb.Sheets["Conatct Detail"] = ws3;
+
+    var ws4 = XLSX.utils.table_to_book(targetTableElm4, { raw: true }).Sheets
+      .Sheet1;
+    wb.SheetNames.push("Document Detail");
+    wb.Sheets["Document Detail"] = ws4;
 
     const blob = new Blob(
       [this.s2ab(XLSX.write(wb, { bookType: "xlsx", type: "binary" }))],
@@ -471,9 +477,19 @@ class Vendor extends Component {
 
     this.setState({ Dialogopen: false });
   };
-  renderShipmentData = () => {
+  renderVendorMasterData = () => {
     return this.state.VendorDetailList.map((service) => {
-      const { VendorID, Name, Website, GSTNo, VendorType } = service;
+      const {
+        VendorID,
+        Name,
+        Website,
+        GSTNo,
+        VendorType,
+        EINNumber,
+        SSNNumber,
+        CreatedBy,
+        CreatedOn,
+      } = service;
       return (
         <tr>
           <td>{VendorID}</td>
@@ -481,6 +497,77 @@ class Vendor extends Component {
           <td>{Website}</td>
           <td>{GSTNo}</td>
           <td>{VendorType}</td>
+          <td>{EINNumber}</td>
+          <td>{SSNNumber}</td>
+          <td>{CreatedBy}</td>
+          <td>{CreatedOn}</td>
+        </tr>
+      );
+    });
+  };
+
+  renderServiceOfferedData = () => {
+    return this.state.ServiceOfferedList.map((service) => {
+      const { Name, ServiceName } = service;
+      return (
+        <tr>
+          <td>{Name}</td>
+          <td>{ServiceName}</td>
+        </tr>
+      );
+    });
+  };
+
+  renderDocumentDetailsData = () => {
+    return this.state.DocumentDetailList.map((service) => {
+      const { Name, Description, AttachmentPath } = service;
+      return (
+        <tr>
+          <td>{Name}</td>
+          <td>{Description}</td>
+          {AttachmentPath !== null ? (
+            <td>
+              {" "}
+              <a href={fileBase + AttachmentPath}>
+                {fileBase + AttachmentPath}
+              </a>
+            </td>
+          ) : (
+            <td>{AttachmentPath}</td>
+          )}
+        </tr>
+      );
+    });
+  };
+
+  renderConatctsData = () => {
+    return this.state.ContactDetailList.map((service) => {
+      const {
+        VendorName,
+        Name,
+        PhoneNum,
+        Email,
+        AddressLine1,
+        AddressLine2,
+        AddressLine3,
+        City,
+        State,
+        ZipCode,
+        Country,
+      } = service;
+      return (
+        <tr>
+          <td>{VendorName}</td>
+          <td>{Name}</td>
+          <td>{PhoneNum}</td>
+          <td>{Email}</td>
+          <td>{AddressLine1}</td>
+          <td>{AddressLine2}</td>
+          <td>{AddressLine3}</td>
+          <td>{City}</td>
+          <td>{State}</td>
+          <td>{ZipCode}</td>
+          <td>{Country}</td>
         </tr>
       );
     });
@@ -726,9 +813,13 @@ class Vendor extends Component {
                   showPaginationBottom={true}
                   className="-striped -highlight"
                 />
-                <Button color="rose" onClick={(e) => this.DownloadExcel()}>
-                  Download
-                </Button>
+                <div className="shipment-submit">
+                  <div className="right">
+                    <Button color="rose" onClick={(e) => this.DownloadExcel()}>
+                      Download
+                    </Button>
+                  </div>
+                </div>
               </CardBody>
             </Card>
           </GridItem>
@@ -750,7 +841,8 @@ class Vendor extends Component {
                   this.doExcel1(
                     "table-to-xls1",
                     "table-to-xls2",
-                    "table-to-xls3"
+                    "table-to-xls3",
+                    "table-to-xls4"
                   )
                 }
               >
@@ -784,43 +876,37 @@ class Vendor extends Component {
                 <th>
                   <font size="+0">Vendor Type</font>
                 </th>
+                <th>
+                  <font size="+0">EINNumber</font>
+                </th>
+                <th>
+                  <font size="+0">SSNNumber</font>
+                </th>
+                <th>
+                  <font size="+0">CreatedBy</font>
+                </th>
+                <th>
+                  <font size="+0">CreatedOn</font>
+                </th>
               </tr>
             </thead>
-            <tbody>{this.renderShipmentData()}</tbody>
+            <tbody>{this.renderVendorMasterData()}</tbody>
           </table>
         </div>
 
-        {/* <div className="d-none">
+        <div className="d-none">
           <table id="table-to-xls2" cellSpacing="10" cellPadding="10">
             <thead>
               <tr>
                 <th align="left" bgcolor="#D9D9D9">
-                  <font size="+0">Tracking Number</font>
+                  <font size="+0">Vendor Name</font>
                 </th>
                 <th align="left" bgcolor="#D9D9D9">
-                  <font size="+0">Package Count</font>
-                </th>
-                <th align="left" bgcolor="#D9D9D9">
-                  <font size="+0">Actual Weight</font>
-                </th>
-                <th align="left" bgcolor="#D9D9D9">
-                  <font size="+0">Length</font>
-                </th>
-                <th align="left" bgcolor="#D9D9D9">
-                  <font size="+0">Width</font>
-                </th>
-                <th align="left" bgcolor="#D9D9D9">
-                  <font size="+0">Height</font>
-                </th>
-                <th align="left" bgcolor="#D9D9D9">
-                  <font size="+0">Charge Weight</font>
-                </th>
-                <th align="left" bgcolor="#D9D9D9">
-                  <font size="+0">Insurance</font>
+                  <font size="+0">Service Name</font>
                 </th>
               </tr>
             </thead>
-            <tbody>{this.renderTrackingData()}</tbody>
+            <tbody>{this.renderServiceOfferedData()}</tbody>
           </table>
         </div>
 
@@ -829,37 +915,62 @@ class Vendor extends Component {
             <thead>
               <tr>
                 <th align="left" bgcolor="#D9D9D9">
-                  <font size="+0">Tracking Number</font>
+                  <font size="+0">Vendor Name</font>
                 </th>
                 <th align="left" bgcolor="#D9D9D9">
-                  <font size="+0">Date</font>
+                  <font size="+0">Contact Name</font>
                 </th>
                 <th align="left" bgcolor="#D9D9D9">
-                  <font size="+0">Type</font>
+                  <font size="+0">Phone</font>
                 </th>
                 <th align="left" bgcolor="#D9D9D9">
-                  <font size="+0">Service Description</font>
+                  <font size="+0">Email</font>
                 </th>
                 <th align="left" bgcolor="#D9D9D9">
-                  <font size="+0">Payment Account Number</font>
+                  <font size="+0">AddressLine 1</font>
                 </th>
                 <th align="left" bgcolor="#D9D9D9">
-                  <font size="+0">Payment Confirmation Number</font>
+                  <font size="+0">AddressLine 2</font>
                 </th>
                 <th align="left" bgcolor="#D9D9D9">
-                  <font size="+0">Service Qty</font>
+                  <font size="+0">AddressLine 3</font>
                 </th>
                 <th align="left" bgcolor="#D9D9D9">
-                  <font size="+0">Services Cost</font>
+                  <font size="+0">City</font>
                 </th>
                 <th align="left" bgcolor="#D9D9D9">
-                  <font size="+0">Service Total</font>
+                  <font size="+0">State</font>
+                </th>
+                <th align="left" bgcolor="#D9D9D9">
+                  <font size="+0">ZipCode</font>
+                </th>
+                <th align="left" bgcolor="#D9D9D9">
+                  <font size="+0">Country</font>
                 </th>
               </tr>
             </thead>
-            <tbody>{this.renderAccountData()}</tbody>
+            <tbody>{this.renderConatctsData()}</tbody>
           </table>
-        </div> */}
+        </div>
+
+        <div className="d-none">
+          <table id="table-to-xls4" cellSpacing="10" cellPadding="10">
+            <thead>
+              <tr>
+                <th align="left" bgcolor="#D9D9D9">
+                  <font size="+0">Vendor Name</font>
+                </th>
+                <th align="left" bgcolor="#D9D9D9">
+                  <font size="+0">File Name</font>
+                </th>
+                <th align="left" bgcolor="#D9D9D9">
+                  <font size="+0">Attachment Path</font>
+                </th>
+              </tr>
+            </thead>
+            <tbody>{this.renderDocumentDetailsData()}</tbody>
+          </table>
+        </div>
       </div>
     );
   }

@@ -466,6 +466,7 @@ class billingInvoice extends Component {
   };
 
   doExcel1 = (tableId1, tableId2, tableId3) => {
+    debugger;
     let targetTableElm1 = document.getElementById(tableId1);
     let targetTableElm2 = document.getElementById(tableId2);
     let targetTableElm3 = document.getElementById(tableId3);
