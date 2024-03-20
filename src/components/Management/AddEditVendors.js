@@ -1308,10 +1308,13 @@ class AddEditVendors extends Component {
     } else if (type === "website") {
       this.setState({ vendorWebsite: val });
     } else if (type === "EINNumber") {
-      debugger;
       if (!CommonConfig.isEmpty(val)) {
         let chars = val.split("");
-        chars.splice(2, 0, "-");
+
+        if (chars[2] !== "-") {
+          chars.splice(2, 0, "-");
+        }
+
         this.setState({ EINNumber: chars.join("") });
       } else {
         this.setState({ EINNumber: val });
@@ -1319,11 +1322,13 @@ class AddEditVendors extends Component {
     } else if (type === "SSNNumber") {
       if (!CommonConfig.isEmpty(val)) {
         let chars = val.split("");
-        chars.splice(3, 0, "-");
-        chars.splice(6, 0, "-");
+        if (chars[3] !== "-") {
+          chars.splice(3, 0, "-");
+        }
+        if (chars[6] !== "-") {
+          chars.splice(6, 0, "-");
+        }
         this.setState({ SSNNumber: chars.join("") });
-      } else {
-        this.setState({ SSNNumber: val });
       }
     } else if (type === "comments") {
       this.setState({ comments: val });
