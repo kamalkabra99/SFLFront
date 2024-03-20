@@ -1308,6 +1308,7 @@ class AddEditVendors extends Component {
     } else if (type === "website") {
       this.setState({ vendorWebsite: val });
     } else if (type === "EINNumber") {
+      debugger;
       if (!CommonConfig.isEmpty(val)) {
         let chars = val.split("");
         chars.splice(2, 0, "-");

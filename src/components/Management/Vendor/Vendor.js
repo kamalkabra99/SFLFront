@@ -91,14 +91,7 @@ class Vendor extends Component {
   };
 
   addVendor = () => {
-    // if (
-    //   CommonConfig.loggedInUserData().PersonID === 18 ||
-    //   CommonConfig.loggedInUserData().PersonID === 1
-    // ) {
     this.props.history.push("/admin/AddEditVendors");
-    // } else {
-    //this.props.history.push("/admin/AddEditVendor");
-    // }
   };
 
   showLoader() {
@@ -452,8 +445,8 @@ class Vendor extends Component {
 
     var ws3 = XLSX.utils.table_to_book(targetTableElm3, { raw: true }).Sheets
       .Sheet1;
-    wb.SheetNames.push("Conatct Detail");
-    wb.Sheets["Conatct Detail"] = ws3;
+    wb.SheetNames.push("contact Detail");
+    wb.Sheets["contact Detail"] = ws3;
 
     var ws4 = XLSX.utils.table_to_book(targetTableElm4, { raw: true }).Sheets
       .Sheet1;
@@ -475,7 +468,7 @@ class Vendor extends Component {
     link.click();
     document.body.removeChild(link);
 
-    this.setState({ Dialogopen: false });
+    this.setState({ Dialogopen: false, selectedList: [] });
   };
   renderVendorMasterData = () => {
     return this.state.VendorDetailList.map((service) => {
@@ -487,6 +480,13 @@ class Vendor extends Component {
         VendorType,
         EINNumber,
         SSNNumber,
+        AddressLine1,
+        AddressLine2,
+        AddressLine3,
+        City,
+        State,
+        ZipCode,
+        Country,
         CreatedBy,
         CreatedOn,
       } = service;
@@ -499,6 +499,13 @@ class Vendor extends Component {
           <td>{VendorType}</td>
           <td>{EINNumber}</td>
           <td>{SSNNumber}</td>
+          <td>{AddressLine1}</td>
+          <td>{AddressLine2}</td>
+          <td>{AddressLine3}</td>
+          <td>{City}</td>
+          <td>{State}</td>
+          <td>{ZipCode}</td>
+          <td>{Country}</td>
           <td>{CreatedBy}</td>
           <td>{CreatedOn}</td>
         </tr>
@@ -520,9 +527,10 @@ class Vendor extends Component {
 
   renderDocumentDetailsData = () => {
     return this.state.DocumentDetailList.map((service) => {
-      const { Name, Description, AttachmentPath } = service;
+      const { VendorID, Name, Description, AttachmentPath } = service;
       return (
         <tr>
+          <td>{VendorID}</td>
           <td>{Name}</td>
           <td>{Description}</td>
           {AttachmentPath !== null ? (
@@ -674,6 +682,16 @@ class Vendor extends Component {
         accessor: "Status",
         id: "status",
         width: 100,
+        Footer: (
+          <Button
+            style={{ width: "85px", height: "25px" }}
+            color="rose"
+            onClick={(e) => this.DownloadExcel()}
+          >
+            {" "}
+            Download
+          </Button>
+        ),
       },
       {
         Header: "Actions",
@@ -813,13 +831,13 @@ class Vendor extends Component {
                   showPaginationBottom={true}
                   className="-striped -highlight"
                 />
-                <div className="shipment-submit">
+                {/* <div className="shipment-submit">
                   <div className="right">
                     <Button color="rose" onClick={(e) => this.DownloadExcel()}>
                       Download
                     </Button>
                   </div>
-                </div>
+                </div> */}
               </CardBody>
             </Card>
           </GridItem>
@@ -881,6 +899,27 @@ class Vendor extends Component {
                 </th>
                 <th>
                   <font size="+0">SSNNumber</font>
+                </th>
+                <th>
+                  <font size="+0">AddressLine 1</font>
+                </th>
+                <th>
+                  <font size="+0">AddressLine 2</font>
+                </th>
+                <th>
+                  <font size="+0">AddressLine 3</font>
+                </th>
+                <th>
+                  <font size="+0">City</font>
+                </th>
+                <th>
+                  <font size="+0">State</font>
+                </th>
+                <th>
+                  <font size="+0">ZipCode</font>
+                </th>
+                <th>
+                  <font size="+0">Country</font>
                 </th>
                 <th>
                   <font size="+0">CreatedBy</font>
@@ -957,6 +996,9 @@ class Vendor extends Component {
           <table id="table-to-xls4" cellSpacing="10" cellPadding="10">
             <thead>
               <tr>
+                <th align="left" bgcolor="#D9D9D9">
+                  <font size="+0">Vendor ID</font>
+                </th>
                 <th align="left" bgcolor="#D9D9D9">
                   <font size="+0">Vendor Name</font>
                 </th>
