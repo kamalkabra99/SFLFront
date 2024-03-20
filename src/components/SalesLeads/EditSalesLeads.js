@@ -1794,7 +1794,7 @@ class EditSalesLeads extends Component {
 
         else if (
           result.data.data.CancelReason !== undefined &&
-          result.data.data.CancelReason !== null && result.data.data.ProposalStatus == "Closed"
+          result.data.data.CancelReason !== null && result.data.data.CancelReason != "" && result.data.data.ProposalStatus == "Closed"
         ) {
           console.log("this.state.closedReasonList = " , this.state.closedReasonList);
           console.log("result.data.data.CancelReason " , result.data.data.CancelReason);
