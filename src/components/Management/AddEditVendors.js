@@ -2025,62 +2025,80 @@ class AddEditVendors extends Component {
       var FinalNotes = this.state.notes.filter(
         (x) => x.NoteText !== "" && x.NoteText !== null
       );
-      let data = {
-        vendorName: vendorDetails.vendorName,
-        vendorWebsite: vendorDetails.vendorWebsite,
-        vendorType: vendorDetails.vendorType,
-        comments: vendorDetails.comments,
-        EINNumber: vendorDetails.EINNumber,
-        SSNNumber: vendorDetails.SSNNumber,
-        service: vendorDetails.offeredService,
-        userId: CommonConfig.loggedInUserData().PersonID,
-        isFormW9: vendorDetails.isFormW9,
-        AddressLine1: vendorDetails.VendorAddressLine1,
-        AddressLine2: vendorDetails.VendorAddressLine2,
-        AddressLine3: vendorDetails.VendorAddressLine3,
-        ZipCode: vendorDetails.VendorzipCode,
-        City: CommonConfig.isEmpty(vendorDetails.Vendorcity.label)
-          ? vendorDetails.Vendorcity
-          : vendorDetails.Vendorcity.label,
-        State: CommonConfig.isEmpty(vendorDetails.Vendorstate.label)
-          ? vendorDetails.Vendorstate
-          : vendorDetails.Vendorstate.label,
-        Country: vendorDetails.selectedVendorCountry.label,
-        Vendoremail: vendorDetails.VendorEmail,
-        Vendorphone: vendorDetails.VendorPhone,
-        Notes: FinalNotes,
+
+      let data14 = {
+        Email: vendorDetails.VendorEmail,
       };
 
-      try {
-        this.showLoader();
-        api
-          .post("vendor/addNewVendor", JSON.stringify(data))
-          .then((res) => {
-            if (res.success) {
-              this.hideLoader();
-              if (redirect == "true") {
-                this.getVendorDetails(res.vendorid);
-                this.getContacts(this.state.vendorId);
-                this.setState({ Attachments: [this.state.objAttachment] });
-                document.getElementById("PanelShow").style.display = "none";
-              } else {
-                this.props.history.push({
-                  pathname: "/admin/Vendor",
-                  state: { filterlist: [], sortlist: [], serviceValue: "" },
+      api
+        .post("salesLead/getEmailID", data14)
+        .then((restest) => {
+          if (restest.success) {
+            console.log(restest.data[0][0]);
+
+            // data.EmailID = restest.data[0][0].EmailID;
+            let data = {
+              vendorName: vendorDetails.vendorName,
+              vendorWebsite: vendorDetails.vendorWebsite,
+              vendorType: vendorDetails.vendorType,
+              comments: vendorDetails.comments,
+              EINNumber: vendorDetails.EINNumber,
+              SSNNumber: vendorDetails.SSNNumber,
+              service: vendorDetails.offeredService,
+              userId: CommonConfig.loggedInUserData().PersonID,
+              isFormW9: vendorDetails.isFormW9,
+              AddressLine1: vendorDetails.VendorAddressLine1,
+              AddressLine2: vendorDetails.VendorAddressLine2,
+              AddressLine3: vendorDetails.VendorAddressLine3,
+              ZipCode: vendorDetails.VendorzipCode,
+              City: CommonConfig.isEmpty(vendorDetails.Vendorcity.label)
+                ? vendorDetails.Vendorcity
+                : vendorDetails.Vendorcity.label,
+              State: CommonConfig.isEmpty(vendorDetails.Vendorstate.label)
+                ? vendorDetails.Vendorstate
+                : vendorDetails.Vendorstate.label,
+              Country: vendorDetails.selectedVendorCountry.label,
+              Vendoremail: vendorDetails.VendorEmail,
+              Vendorphone: vendorDetails.VendorPhone,
+              Notes: FinalNotes,
+              EmailID: restest.data[0][0].EmailID
+            };
+      
+            try {
+              this.showLoader();
+              api
+                .post("vendor/addNewVendor", JSON.stringify(data))
+                .then((res) => {
+                  if (res.success) {
+                    this.hideLoader();
+                    if (redirect == "true") {
+                      this.getVendorDetails(res.vendorid);
+                      this.getContacts(this.state.vendorId);
+                      this.setState({ Attachments: [this.state.objAttachment] });
+                      document.getElementById("PanelShow").style.display = "none";
+                    } else {
+                      this.props.history.push({
+                        pathname: "/admin/Vendor",
+                        state: { filterlist: [], sortlist: [], serviceValue: "" },
+                      });
+                    }
+                  }
+                })
+                .catch((err) => {
+                  this.hideLoader();
+                  console.log("err..", err);
+                  cogoToast.error("Something Went Wrong");
                 });
-              }
+            } catch (error) {
+              this.hideLoader();
+              cogoToast.error("Something Went Wrong");
+              console.log("error..", error);
             }
-          })
-          .catch((err) => {
-            this.hideLoader();
-            console.log("err..", err);
-            cogoToast.error("Something Went Wrong");
-          });
-      } catch (error) {
-        this.hideLoader();
-        cogoToast.error("Something Went Wrong");
-        console.log("error..", error);
-      }
+          }
+        })
+        .catch((err) => {
+          console.log("error.....", err);
+        });      
     }
   }
   getCountry() {
@@ -2242,107 +2260,123 @@ class AddEditVendors extends Component {
     var FinalNotes = this.state.notes.filter(
       (x) => x.NoteText !== "" && x.NoteText !== null
     );
-    let data = {
-      vendorId: this.state.vendorId,
-      vendorName: vendorDetails.vendorName,
-      vendorWebsite: vendorDetails.vendorWebsite,
-      vendorType: vendorDetails.vendorType,
-      isFormW9: vendorDetails.isFormW9, // === true ? 1 : 0,
-      EINNumber: vendorDetails.EINNumber,
-      SSNNumber: vendorDetails.SSNNumber,
-      // comments: vendorDetails.comments,
-      service: vendorDetails.offeredService,
-      contacts: this.state.contactList,
-      userId: CommonConfig.loggedInUserData().PersonID,
-      DocumentList: finalAttachment,
-      AddressLine1: vendorDetails.VendorAddressLine1,
-      AddressLine2: vendorDetails.VendorAddressLine2,
-      AddressLine3: vendorDetails.VendorAddressLine3,
-      ZipCode: vendorDetails.VendorzipCode,
-      // City: CommonConfig.isEmpty(vendorDetails.Vendorcity.label)
-      //   ? vendorDetails.Vendorcity
-      //   : vendorDetails.Vendorcity.label,
-      City: CommonConfig.isEmpty(vendorDetails.Vendorcity)
-        ? vendorDetails.Vendorcity
-        : vendorDetails.Vendorcity.label,
-      State: CommonConfig.isEmpty(vendorDetails.Vendorstate)
-        ? vendorDetails.Vendorstate
-        : CommonConfig.isEmpty(vendorDetails.Vendorstate.label)
-        ? vendorDetails.Vendorstate
-        : vendorDetails.Vendorstate.label,
-      // State: CommonConfig.isEmpty(vendorDetails.Vendorstate)
-      //   ? vendorDetails.Vendorstate
-      //   : vendorDetails.Vendorstate.label,
-      Country: CommonConfig.isEmpty(vendorDetails.selectedVendorCountry)
-        ? vendorDetails.selectedVendorCountry
-        : vendorDetails.selectedVendorCountry.label,
-      Vendoremail: vendorDetails.VendorEmail,
-      Vendorphone: vendorDetails.VendorPhone,
-      Notes: FinalNotes,
+
+    let data14 = {
+      Email: vendorDetails.VendorEmail,
     };
 
-    var formData = new FormData();
-    formData.append("data", JSON.stringify(data));
+    api
+      .post("salesLead/getEmailID", data14)
+      .then((restest) => {
+        if (restest.success) {
+          console.log(restest.data[0][0]);
 
-    if (vendorDetails.AttachmentList.length > 0) {
-      vendorDetails.AttachmentList.forEach((file) => {
-        formData.append("Attachments", file);
-      });
-    }
-    debugger;
-    try {
-      this.showLoader();
-      api
-        .post("vendor/EditVendor", formData)
-        .then((res) => {
-          if (res.success) {
-            debugger;
-            if (redirect === "false") {
-              this.props.history.push({
-                pathname: "/admin/Vendor",
-                state: {
-                  filterlist:
-                    this.props.history.location.state.filterlist !== undefined
-                      ? this.props.history.location.state.filterlist
-                      : null,
-                  sortlist:
-                    this.props.history.location.state.sortlist !== undefined
-                      ? this.props.history.location.state.sortlist
-                      : null,
-                  serviceValue:
-                    this.props.history.location.state.serviceValue !== undefined
-                      ? this.props.history.location.state.serviceValue
-                      : null,
-                },
-              });
-            } else {
-              //kruti
-              window.location.reload();
-              // this.setState({
-              //   objAttachment: {
-              //     Index: 0,
-              //     FileName: "",
-              //     Status: "Active",
-              //     DocumentCreatedOn: moment().format(
-              //       CommonConfig.dateFormat.dateOnly
-              //     ),
-              //     DocumentCreatedBy: CommonConfig.loggedInUserData().Name,
-              //   },
-              // });
-              // this.getVendorDetails(this.state.vendorId);
-            }
+          let data = {
+            vendorId: this.state.vendorId,
+            vendorName: vendorDetails.vendorName,
+            vendorWebsite: vendorDetails.vendorWebsite,
+            vendorType: vendorDetails.vendorType,
+            isFormW9: vendorDetails.isFormW9, // === true ? 1 : 0,
+            EINNumber: vendorDetails.EINNumber,
+            SSNNumber: vendorDetails.SSNNumber,
+            // comments: vendorDetails.comments,
+            service: vendorDetails.offeredService,
+            contacts: this.state.contactList,
+            userId: CommonConfig.loggedInUserData().PersonID,
+            DocumentList: finalAttachment,
+            AddressLine1: vendorDetails.VendorAddressLine1,
+            AddressLine2: vendorDetails.VendorAddressLine2,
+            AddressLine3: vendorDetails.VendorAddressLine3,
+            ZipCode: vendorDetails.VendorzipCode,
+            // City: CommonConfig.isEmpty(vendorDetails.Vendorcity.label)
+            //   ? vendorDetails.Vendorcity
+            //   : vendorDetails.Vendorcity.label,
+            City: CommonConfig.isEmpty(vendorDetails.Vendorcity)
+              ? vendorDetails.Vendorcity
+              : vendorDetails.Vendorcity.label,
+            State: CommonConfig.isEmpty(vendorDetails.Vendorstate)
+              ? vendorDetails.Vendorstate
+              : CommonConfig.isEmpty(vendorDetails.Vendorstate.label)
+              ? vendorDetails.Vendorstate
+              : vendorDetails.Vendorstate.label,
+            // State: CommonConfig.isEmpty(vendorDetails.Vendorstate)
+            //   ? vendorDetails.Vendorstate
+            //   : vendorDetails.Vendorstate.label,
+            Country: CommonConfig.isEmpty(vendorDetails.selectedVendorCountry)
+              ? vendorDetails.selectedVendorCountry
+              : vendorDetails.selectedVendorCountry.label,
+            Vendoremail: vendorDetails.VendorEmail,
+            Vendorphone: vendorDetails.VendorPhone,
+            Notes: FinalNotes,
+            EmailId: restest.data[0][0]
+          };
+      
+          var formData = new FormData();
+          formData.append("data", JSON.stringify(data));
+      
+          if (vendorDetails.AttachmentList.length > 0) {
+            vendorDetails.AttachmentList.forEach((file) => {
+              formData.append("Attachments", file);
+            });
           }
-        })
-        .catch((err) => {
-          this.hideLoader();
-          console.log("err..", err);
-          cogoToast.error("Something Went Wrong");
-        });
-    } catch (error) {
-      this.hideLoader();
-      console.log("error..", error);
-      cogoToast.error("Something Went Wrong");
-    }
+          debugger;
+          try {
+            this.showLoader();
+            api
+              .post("vendor/EditVendor", formData)
+              .then((res) => {
+                if (res.success) {
+                  debugger;
+                  if (redirect === "false") {
+                    this.props.history.push({
+                      pathname: "/admin/Vendor",
+                      state: {
+                        filterlist:
+                          this.props.history.location.state.filterlist !== undefined
+                            ? this.props.history.location.state.filterlist
+                            : null,
+                        sortlist:
+                          this.props.history.location.state.sortlist !== undefined
+                            ? this.props.history.location.state.sortlist
+                            : null,
+                        serviceValue:
+                          this.props.history.location.state.serviceValue !== undefined
+                            ? this.props.history.location.state.serviceValue
+                            : null,
+                      },
+                    });
+                  } else {
+                    //kruti
+                    window.location.reload();
+                    // this.setState({
+                    //   objAttachment: {
+                    //     Index: 0,
+                    //     FileName: "",
+                    //     Status: "Active",
+                    //     DocumentCreatedOn: moment().format(
+                    //       CommonConfig.dateFormat.dateOnly
+                    //     ),
+                    //     DocumentCreatedBy: CommonConfig.loggedInUserData().Name,
+                    //   },
+                    // });
+                    // this.getVendorDetails(this.state.vendorId);
+                  }
+                }
+              })
+              .catch((err) => {
+                this.hideLoader();
+                console.log("err..", err);
+                cogoToast.error("Something Went Wrong");
+              });
+          } catch (error) {
+            this.hideLoader();
+            console.log("error..", error);
+            cogoToast.error("Something Went Wrong");
+          }
+        }
+      })
+    
+    
   }
   fileUpload = (event, record) => {
     const files = event.target.files[0];
