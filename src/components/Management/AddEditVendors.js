@@ -2023,22 +2023,6 @@ class AddEditVendors extends Component {
       var FinalNotes = this.state.notes.filter(
         (x) => x.NoteText !== "" && x.NoteText !== null
       );
-        service: vendorDetails.offeredService,
-        userId: CommonConfig.loggedInUserData().PersonID,
-        isFormW9: vendorDetails.isFormW9,
-        AddressLine1: vendorDetails.VendorAddressLine1,
-        AddressLine2: vendorDetails.VendorAddressLine2,
-        AddressLine3: vendorDetails.VendorAddressLine3,
-        ZipCode: vendorDetails.VendorzipCode,
-        City: CommonConfig.isEmpty(vendorDetails.Vendorcity.label)
-          ? vendorDetails.Vendorcity
-          : vendorDetails.Vendorcity.label,
-        State: CommonConfig.isEmpty(vendorDetails.Vendorstate.label)
-          ? vendorDetails.Vendorstate
-          : vendorDetails.Vendorstate.label,
-        Country: vendorDetails.selectedVendorCountry.label,
-        Vendoremail: vendorDetails.VendorEmail,
-        Vendorphone: vendorDetails.VendorPhone,
 
       let data14 = {
         Email: vendorDetails.VendorEmail,
