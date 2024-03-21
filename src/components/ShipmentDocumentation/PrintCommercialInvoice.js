@@ -20,6 +20,7 @@ class PrintCommercialInvoice extends Component {
   }
   componentDidMount() {
     let data = JSON.parse(localStorage.getItem("printCommercial"));
+    debugger;
     this.setState({
       FromAddress: data.FromAddress.AddressDetail,
       FromCountryName: data.FromAddress.CountryName,
@@ -133,10 +134,10 @@ class PrintCommercialInvoice extends Component {
               </th>
             </tr>
             <tr>
-              <th style={{ width: "60%" }} colspan="4" className="bg-grey">
+              <th style={{ width: "50%" }} colspan="3" className="bg-grey">
                 DATE OF EXPORTATION
               </th>
-              <th style={{ width: "40%" }} colspan="3" className="bg-grey">
+              <th style={{ width: "50%" }} colspan="4" className="bg-grey">
                 EXPORT REFERENCE - SFL TN
               </th>
             </tr>
@@ -149,30 +150,64 @@ class PrintCommercialInvoice extends Component {
               </td>
             </tr>
             <tr>
-              <th colspan="4" className="bg-grey">
+              <th style={{ width: "50%" }} colspan="3" className="bg-grey">
                 SHIPPER / EXPORTER
               </th>
-              <th colspan="3" className="bg-grey">
+              <th style={{ width: "50%" }} colspan="4" className="bg-grey">
                 CONSIGNEE
               </th>
             </tr>
+            {ToAddress.CompanyName !== "" ? (
+              <tr>
+                <th style={{ width: "50%" }} colspan="3"></th>
+                {/* <th colspan="4">COMPLETE NAME : {FromAddress.ContactName}</th> */}
+                {/* <th colspan="3">COMPLETE NAME : {ToAddress.ContactName}</th> */}
+                <th style={{ width: "50%" }} colspan="4">
+                  COMPANY NAME:{ToAddress.CompanyName}
+                </th>
+              </tr>
+            ) : null}
             <tr>
-              <th colspan="4">COMPLETE NAME : {FromAddress.ContactName}</th>
-              <th colspan="3">COMPLETE NAME : {ToAddress.ContactName}</th>
+              <th style={{ width: "50%" }} colspan="3">
+                COMPLETE NAME : {FromAddress.ContactName}
+              </th>
+              <th style={{ width: "50%" }} colspan="4">
+                COMPLETE NAME : {ToAddress.ContactName}
+              </th>
             </tr>
+            {/* <tr>
+              <th colspan="4"></th>
+              <th colspan="3">COMPANY NAME : {ToAddress.ContactName}</th>
+            </tr> */}
+
             <tr>
-              <th colspan="4">ADDRESS </th>
-              <th colspan="3">ADDRESS </th>
+              <th style={{ width: "50%" }} colspan="3">
+                ADDRESS{" "}
+              </th>
+              <th style={{ width: "50%" }} colspan="4">
+                ADDRESS{" "}
+              </th>
+              {/* <th colspan="3">COMPLETE NAME : {ToAddress.ContactName}</th> */}
             </tr>
 
             {!CommonConfig.isEmpty(FromAddress.AddressLine1) ||
             !CommonConfig.isEmpty(FromAddress.AddressLine1) ? (
               <tr>
-                <td colspan="4">{FromAddress.AddressLine1}</td>
-                <td colspan="3">{ToAddress.AddressLine1}</td>
+                <td style={{ width: "50%" }} colspan="3">
+                  {FromAddress.AddressLine1}
+                  {FromAddress.AddressLine2 ? FromAddress.AddressLine2 : null}
+                  {FromAddress.AddressLine3 ? FromAddress.AddressLine3 : null}
+                </td>
+                <td style={{ width: "50%" }} colspan="4">
+                  {" "}
+                  {/* <b>ADDRESS :</b> <br /> */}
+                  {ToAddress.AddressLine1}
+                  {ToAddress.AddressLine2 ? ToAddress.AddressLine2 : null}
+                  {ToAddress.AddressLine3 ? ToAddress.AddressLine3 : null}
+                </td>
               </tr>
             ) : null}
-            {!CommonConfig.isEmpty(FromAddress.AddressLine2) ||
+            {/* {!CommonConfig.isEmpty(FromAddress.AddressLine2) ||
             !CommonConfig.isEmpty(FromAddress.AddressLine2) ? (
               <tr>
                 <td colspan="4">{FromAddress.AddressLine2}</td>
@@ -186,72 +221,78 @@ class PrintCommercialInvoice extends Component {
                 <td colspan="4">{FromAddress.AddressLine3}</td>
                 <td colspan="3">{ToAddress.AddressLine3}</td>
               </tr>
-            ) : null}
+            ) : null} */}
             <tr>
-              <td colspan="4">
+              <td style={{ width: "50%" }} colspan="3">
                 {FromAddress.City},{FromAddress.State}-{FromAddress.ZipCode},
                 {FromCountryName}
               </td>
-              <td colspan="3">
+              <td style={{ width: "50%" }} colspan="4">
                 {ToAddress.City},{ToAddress.State}-{ToAddress.ZipCode},
                 {ToCountryName}
               </td>
             </tr>
             <tr>
-              <th colspan="4" className="bg-grey">
+              <th style={{ width: "50%" }} colspan="3" className="bg-grey">
                 CONTACT NUMBER : {FromAddress.Phone1}
               </th>
-              <th colspan="3" className="bg-grey">
+              <th style={{ width: "50%" }} colspan="4" className="bg-grey">
                 CONTACT NUMBER : {ToAddress.Phone1}
               </th>
             </tr>
             <tr>
-              <th colspan="4" className="bg-grey">
-                EMAIL ID{" "}
+              <th style={{ width: "50%" }} colspan="3" className="bg-grey">
+                EMAIL ID : {FromAddress.Email}
               </th>
-              <th colspan="3" className="bg-grey">
-                EMAIL ID{" "}
+              <th style={{ width: "50%" }} colspan="4" className="bg-grey">
+                EMAIL ID : {ToAddress.Email}
               </th>
             </tr>
-            <tr>
+            {/* <tr>
               <td colspan="4" style={{ borderRight: "none" }}>
                 {FromAddress.Email}
               </td>
               <td colspan="3" style={{ borderLeft: "none" }}>
                 {ToAddress.Email}
               </td>
-            </tr>
+            </tr> */}
             <tr>
-              <th colspan="4" className="bg-grey">
+              <th style={{ width: "50%" }} colspan="3" className="bg-grey">
                 COUNTRY OF EXPORT{" "}
               </th>
-              <th colspan="3" className="bg-grey">
+              <th style={{ width: "50%" }} colspan="4" className="bg-grey">
                 IMPORTER IF OTHER THAN CONSIGNEE
               </th>
             </tr>
             <tr>
-              <td colspan="4">{FromCountryName}</td>
-              <td colspan="3" rowspan="3"></td>
+              <td style={{ width: "50%" }} colspan="3">
+                {FromCountryName}
+              </td>
+              <td style={{ width: "50%" }} colspan="4" rowspan="3"></td>
             </tr>
             <tr>
-              <th colspan="4" className="bg-grey">
+              <th style={{ width: "50%" }} colspan="3" className="bg-grey">
                 COUNTRY OF ORIGIN OF GOODS{" "}
               </th>
             </tr>
             <tr>
-              <td colspan="4">{FromCountryName}</td>
+              <td style={{ width: "50%" }} colspan="4">
+                {FromCountryName}
+              </td>
             </tr>
             <tr>
-              <th colspan="4" className="bg-grey">
+              <th style={{ width: "50%" }} colspan="3" className="bg-grey">
                 COUNTRY OF ULTIMATE DESTINATION{" "}
               </th>
-              <th colspan="3" className="bg-grey">
+              <th style={{ width: "50%" }} colspan="4" className="bg-grey">
                 {this.state.ServiceName} INTERNATIONAL AWB NO
               </th>
             </tr>
             <tr>
-              <td colspan="4">{ToCountryName}</td>
-              <td colspan="3">
+              <td style={{ width: "50%" }} colspan="3">
+                {ToCountryName}
+              </td>
+              <td style={{ width: "50%" }} colspan="4">
                 <select
                   value={this.state.CurrentTrackingNumber}
                   onChange={(e) => this.trackingNumberChange(e)}

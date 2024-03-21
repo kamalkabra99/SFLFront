@@ -1308,16 +1308,18 @@ class AddEditVendors extends Component {
     } else if (type === "website") {
       this.setState({ vendorWebsite: val });
     } else if (type === "EINNumber") {
-      if (!CommonConfig.isEmpty(val)) {
-        let chars = val.split("");
+      if (val.length === 9) {
+        if (!CommonConfig.isEmpty(val)) {
+          let chars = val.split("");
 
-        if (chars[2] !== "-") {
-          chars.splice(2, 0, "-");
+          if (chars[2] !== "-") {
+            chars.splice(2, 0, "-");
+          }
+
+          this.setState({ EINNumber: chars.join("") });
+        } else {
+          this.setState({ EINNumber: val });
         }
-
-        this.setState({ EINNumber: chars.join("") });
-      } else {
-        this.setState({ EINNumber: val });
       }
     } else if (type === "SSNNumber") {
       if (!CommonConfig.isEmpty(val)) {

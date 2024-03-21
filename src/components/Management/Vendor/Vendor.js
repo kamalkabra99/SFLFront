@@ -390,8 +390,13 @@ class Vendor extends Component {
   };
 
   DownloadExcel = () => {
+    debugger;
     this.showLoader();
     let List = this.state.selectedList;
+    if (this.state.selectedList.length === 0) {
+      this.hideLoader();
+      return cogoToast.error("Please select vendor");
+    }
     List = List.filter((x) => x.IsSelected === true).map((obj) => {
       return obj;
     });
@@ -515,9 +520,10 @@ class Vendor extends Component {
 
   renderServiceOfferedData = () => {
     return this.state.ServiceOfferedList.map((service) => {
-      const { Name, ServiceName } = service;
+      const { VendorID, Name, ServiceName } = service;
       return (
         <tr>
+          <td>{VendorID}</td>
           <td>{Name}</td>
           <td>{ServiceName}</td>
         </tr>
@@ -551,6 +557,7 @@ class Vendor extends Component {
   renderConatctsData = () => {
     return this.state.ContactDetailList.map((service) => {
       const {
+        VendorID,
         VendorName,
         Name,
         PhoneNum,
@@ -565,6 +572,7 @@ class Vendor extends Component {
       } = service;
       return (
         <tr>
+          <td>{VendorID}</td>
           <td>{VendorName}</td>
           <td>{Name}</td>
           <td>{PhoneNum}</td>
@@ -654,6 +662,7 @@ class Vendor extends Component {
         accessor: "CreatedBy",
         width: 100,
       },
+
       {
         Header: "Status",
         Cell: (record) => {
@@ -682,16 +691,17 @@ class Vendor extends Component {
         accessor: "Status",
         id: "status",
         width: 100,
-        Footer: (
-          <Button
-            style={{ width: "85px", height: "25px" }}
-            color="rose"
-            onClick={(e) => this.DownloadExcel()}
-          >
-            {" "}
-            Download
-          </Button>
-        ),
+        Footer:
+          this.state.vendorList.length === 0 ? null : (
+            <Button
+              style={{ width: "85px", height: "25px" }}
+              color="rose"
+              onClick={(e) => this.DownloadExcel()}
+            >
+              {" "}
+              Download
+            </Button>
+          ),
       },
       {
         Header: "Actions",
@@ -938,6 +948,9 @@ class Vendor extends Component {
             <thead>
               <tr>
                 <th align="left" bgcolor="#D9D9D9">
+                  <font size="+0">Vendor ID</font>
+                </th>
+                <th align="left" bgcolor="#D9D9D9">
                   <font size="+0">Vendor Name</font>
                 </th>
                 <th align="left" bgcolor="#D9D9D9">
@@ -953,6 +966,9 @@ class Vendor extends Component {
           <table id="table-to-xls3" cellSpacing="10" cellPadding="10">
             <thead>
               <tr>
+                <th align="left" bgcolor="#D9D9D9">
+                  <font size="+0">Vendor ID</font>
+                </th>
                 <th align="left" bgcolor="#D9D9D9">
                   <font size="+0">Vendor Name</font>
                 </th>
