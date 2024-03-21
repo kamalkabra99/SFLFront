@@ -1270,6 +1270,16 @@ class AddEditVendors extends Component {
       });
     } else if (type === "FormW9") {
       this.setState({ isFormW9: event.target.value });
+      if (event.target.value === false) {
+        this.setState({
+          EINNumber: "",
+          SSNNumber: "",
+          EINNumberErr: false,
+          EINNumberHelperText: "",
+          SSNNumberErr: false,
+          SSNNumberHelperText: "",
+        });
+      }
     }
   };
   handleBlur = (event, type) => {
@@ -1308,21 +1318,32 @@ class AddEditVendors extends Component {
     } else if (type === "website") {
       this.setState({ vendorWebsite: val });
     } else if (type === "EINNumber") {
-      if (val.length === 9) {
-        if (!CommonConfig.isEmpty(val)) {
-          let chars = val.split("");
+      if (!CommonConfig.isEmpty(val) && event.target.value.length == 9) {
+        let chars = val.split("");
 
-          if (chars[2] !== "-") {
-            chars.splice(2, 0, "-");
-          }
-
-          this.setState({ EINNumber: chars.join("") });
-        } else {
-          this.setState({ EINNumber: val });
+        if (chars[2] !== "-") {
+          chars.splice(2, 0, "-");
         }
+
+        this.setState({
+          EINNumber: chars.join(""),
+          EINNumberErr: false,
+          EINNumberHelperText: "",
+        });
+      } else if (
+        event.target.value.length !== 10 &&
+        !CommonConfig.isEmpty(val)
+      ) {
+        // cogoToast.error('Please Enter Valid Number!')
+        this.setState({
+          EINNumberErr: true,
+          EINNumberHelperText: "Please enter valid Number",
+        });
+      } else {
+        this.setState({ EINNumber: val });
       }
     } else if (type === "SSNNumber") {
-      if (!CommonConfig.isEmpty(val)) {
+      if (!CommonConfig.isEmpty(val) && event.target.value.length == 9) {
         let chars = val.split("");
         if (chars[3] !== "-") {
           chars.splice(3, 0, "-");
@@ -1331,6 +1352,17 @@ class AddEditVendors extends Component {
           chars.splice(6, 0, "-");
         }
         this.setState({ SSNNumber: chars.join("") });
+      } else if (
+        event.target.value.length !== 11 &&
+        !CommonConfig.isEmpty(val)
+      ) {
+        // cogoToast.error('Please Enter Valid Number!')
+        this.setState({
+          SSNNumberErr: true,
+          SSNNumberHelperText: "Please enter valid Number",
+        });
+      } else {
+        this.setState({ SSNNumber: val });
       }
     } else if (type === "comments") {
       this.setState({ comments: val });
@@ -1639,7 +1671,7 @@ class AddEditVendors extends Component {
       this.setState({ vendorWebsite: val });
     } else if (type === "EINNumber") {
       let EINNumber = event.target.value.replace(/\D/g, "");
-      if (event.target.value.length <= 10) {
+      if (event.target.value.length <= 9) {
         this.setState({ EINNumber: EINNumber });
       }
     } else if (type === "SSNNumber") {
@@ -2009,6 +2041,21 @@ class AddEditVendors extends Component {
         zipCodeHelperText: "Please enter zipcode",
       });
     }
+    debugger;
+    if (
+      this.state.isFormW9 == true &&
+      (CommonConfig.isEmpty(this.state.EINNumber) &&
+        CommonConfig.isEmpty(this.state.SSNNumber))
+    ) {
+      cogoToast.error("Please enter SSN Number or EIN Number");
+      IsFormValid = false;
+    }
+    if (
+      this.state.isFormW9 == true &&
+      (this.state.EINNumberErr === true || this.state.SSNNumberErr === true)
+    ) {
+      IsFormValid = false;
+    }
     return IsFormValid;
   }
 
@@ -2061,9 +2108,9 @@ class AddEditVendors extends Component {
               Vendoremail: vendorDetails.VendorEmail,
               Vendorphone: vendorDetails.VendorPhone,
               Notes: FinalNotes,
-              EmailID: restest.data[0][0].EmailID
+              EmailID: restest.data[0][0].EmailID,
             };
-      
+
             try {
               this.showLoader();
               api
@@ -2074,12 +2121,19 @@ class AddEditVendors extends Component {
                     if (redirect == "true") {
                       this.getVendorDetails(res.vendorid);
                       this.getContacts(this.state.vendorId);
-                      this.setState({ Attachments: [this.state.objAttachment] });
-                      document.getElementById("PanelShow").style.display = "none";
+                      this.setState({
+                        Attachments: [this.state.objAttachment],
+                      });
+                      document.getElementById("PanelShow").style.display =
+                        "none";
                     } else {
                       this.props.history.push({
                         pathname: "/admin/Vendor",
-                        state: { filterlist: [], sortlist: [], serviceValue: "" },
+                        state: {
+                          filterlist: [],
+                          sortlist: [],
+                          serviceValue: "",
+                        },
                       });
                     }
                   }
@@ -2098,7 +2152,7 @@ class AddEditVendors extends Component {
         })
         .catch((err) => {
           console.log("error.....", err);
-        });      
+        });
     }
   }
   getCountry() {
@@ -2222,52 +2276,52 @@ class AddEditVendors extends Component {
   }
   editVendor(redirect) {
     debugger;
-    if (this.state.offeredService.length === 0) {
-      return cogoToast.error("Please select one service");
-    }
-    if (this.state.contactList.length === 0) {
-      return cogoToast.error("Please add one contact");
-    }
-    if (this.state.vendorName === "") {
-      return cogoToast.error("Please enter vendor name");
-    } else {
-      var selectedName = [];
-      selectedName = this.state.VendorList.filter(
-        (x) =>
-          x.VendorName === this.state.vendorName &&
-          x.VendorID !== this.state.vendorId
+    if (this.validate()) {
+      if (this.state.offeredService.length === 0) {
+        return cogoToast.error("Please select one service");
+      }
+      if (this.state.contactList.length === 0) {
+        return cogoToast.error("Please add one contact");
+      }
+      if (this.state.vendorName === "") {
+        return cogoToast.error("Please enter vendor name");
+      } else {
+        var selectedName = [];
+        selectedName = this.state.VendorList.filter(
+          (x) =>
+            x.VendorName === this.state.vendorName &&
+            x.VendorID !== this.state.vendorId
+        );
+        if (selectedName.length !== 0) {
+          this.setState({
+            vendorName: "",
+            flag: 1,
+          });
+
+          this.setState({
+            vendorNameErr: true,
+            vendorNameHelperText: "Please enter vendor name",
+          });
+          return cogoToast.error("Vendor name already in used");
+        }
+      }
+
+      let vendorDetails = this.state;
+      var finalAttachment = [];
+      for (var i = 0; i < vendorDetails.Attachments.length; i++) {
+        if (vendorDetails.Attachments[i].hasOwnProperty("AttachmentName")) {
+          finalAttachment.push(vendorDetails.Attachments[i]);
+        }
+      }
+      var FinalNotes = this.state.notes.filter(
+        (x) => x.NoteText !== "" && x.NoteText !== null
       );
-      if (selectedName.length !== 0) {
-        this.setState({
-          vendorName: "",
-          flag: 1,
-        });
 
-        this.setState({
-          vendorNameErr: true,
-          vendorNameHelperText: "Please enter vendor name",
-        });
-        return cogoToast.error("Vendor name already in used");
-      }
-    }
-    let vendorDetails = this.state;
-    var finalAttachment = [];
-    for (var i = 0; i < vendorDetails.Attachments.length; i++) {
-      if (vendorDetails.Attachments[i].hasOwnProperty("AttachmentName")) {
-        finalAttachment.push(vendorDetails.Attachments[i]);
-      }
-    }
-    var FinalNotes = this.state.notes.filter(
-      (x) => x.NoteText !== "" && x.NoteText !== null
-    );
+      let data14 = {
+        Email: vendorDetails.VendorEmail,
+      };
 
-    let data14 = {
-      Email: vendorDetails.VendorEmail,
-    };
-
-    api
-      .post("salesLead/getEmailID", data14)
-      .then((restest) => {
+      api.post("salesLead/getEmailID", data14).then((restest) => {
         if (restest.success) {
           console.log(restest.data[0][0]);
 
@@ -2308,12 +2362,12 @@ class AddEditVendors extends Component {
             Vendoremail: vendorDetails.VendorEmail,
             Vendorphone: vendorDetails.VendorPhone,
             Notes: FinalNotes,
-            EmailId: restest.data[0][0]
+            EmailId: restest.data[0][0].EmailID,
           };
-      
+
           var formData = new FormData();
           formData.append("data", JSON.stringify(data));
-      
+
           if (vendorDetails.AttachmentList.length > 0) {
             vendorDetails.AttachmentList.forEach((file) => {
               formData.append("Attachments", file);
@@ -2332,15 +2386,18 @@ class AddEditVendors extends Component {
                       pathname: "/admin/Vendor",
                       state: {
                         filterlist:
-                          this.props.history.location.state.filterlist !== undefined
+                          this.props.history.location.state.filterlist !==
+                          undefined
                             ? this.props.history.location.state.filterlist
                             : null,
                         sortlist:
-                          this.props.history.location.state.sortlist !== undefined
+                          this.props.history.location.state.sortlist !==
+                          undefined
                             ? this.props.history.location.state.sortlist
                             : null,
                         serviceValue:
-                          this.props.history.location.state.serviceValue !== undefined
+                          this.props.history.location.state.serviceValue !==
+                          undefined
                             ? this.props.history.location.state.serviceValue
                             : null,
                       },
@@ -2374,9 +2431,8 @@ class AddEditVendors extends Component {
             cogoToast.error("Something Went Wrong");
           }
         }
-      })
-    
-    
+      });
+    }
   }
   fileUpload = (event, record) => {
     const files = event.target.files[0];
@@ -2909,6 +2965,8 @@ class AddEditVendors extends Component {
                             EINNumberHelperText: "",
                           }),
                       }}
+                      error={this.state.EINNumberErr}
+                      helperText={this.state.EINNumberHelperText}
                     />
                   </GridItem>
                   <GridItem xs={12} sm={4} md={3}>
@@ -2931,6 +2989,8 @@ class AddEditVendors extends Component {
                             SSNNumberHelperText: "",
                           }),
                       }}
+                      error={this.state.SSNNumberErr}
+                      helperText={this.state.SSNNumberHelperText}
                     />
                   </GridItem>
                   <GridItem xs={12} sm={4} md={3}>
