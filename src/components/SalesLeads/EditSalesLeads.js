@@ -1250,6 +1250,11 @@ class EditSalesLeads extends Component {
       this.setState({ selectedRequestStatus: value });
     } else if (type === "managedby") {
       this.setState({ selectedWorkingOnRequest: value });
+      this.setState({
+        managedbyErr: false,
+        managedbyHelperText: "",
+      });
+      
     } else if (type === "proposaltype") {
       this.setState({ ProposalType: value.props.value });
     } else if (type === "proposalstatus") {
@@ -4290,8 +4295,15 @@ class EditSalesLeads extends Component {
       
     }
 
-    if(this.state.ProposalStatus != "Booked"){
-      this.state.trackingNumber = ""
+    if(this.state.ProposalStatus != "Cancelled" && this.state.selectedWorkingOnRequest.value == undefined){
+      // this.state.trackingNumber = ""
+
+      this.setState({
+        managedbyErr: true,
+        managedbyHelperText: "Please select managed by",
+      });
+      cogoToast.error("Missing or Incorrect Data");
+      return;
     }
 
     
