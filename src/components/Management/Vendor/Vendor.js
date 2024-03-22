@@ -450,8 +450,8 @@ class Vendor extends Component {
 
     var ws3 = XLSX.utils.table_to_book(targetTableElm3, { raw: true }).Sheets
       .Sheet1;
-    wb.SheetNames.push("contact Detail");
-    wb.Sheets["contact Detail"] = ws3;
+    wb.SheetNames.push("Contact Detail");
+    wb.Sheets["Contact Detail"] = ws3;
 
     var ws4 = XLSX.utils.table_to_book(targetTableElm4, { raw: true }).Sheets
       .Sheet1;

@@ -159,7 +159,9 @@ class PrintCommercialInvoice extends Component {
             </tr>
             {ToAddress.CompanyName !== "" ? (
               <tr>
-                <th style={{ width: "50%" }} colspan="3"></th>
+                <th style={{ width: "50%" }} colspan="3">
+                  COMPANY NAME : {FromAddress.CompanyName}
+                </th>
                 {/* <th colspan="4">COMPLETE NAME : {FromAddress.ContactName}</th> */}
                 {/* <th colspan="3">COMPLETE NAME : {ToAddress.ContactName}</th> */}
                 <th style={{ width: "50%" }} colspan="4">
@@ -193,17 +195,26 @@ class PrintCommercialInvoice extends Component {
             {!CommonConfig.isEmpty(FromAddress.AddressLine1) ||
             !CommonConfig.isEmpty(FromAddress.AddressLine1) ? (
               <tr>
-                <td style={{ width: "50%" }} colspan="3">
+                <td style={{ width: "50%", verticalAlign: "top" }} colspan="3">
                   {FromAddress.AddressLine1}
-                  {FromAddress.AddressLine2 ? FromAddress.AddressLine2 : null}
-                  {FromAddress.AddressLine3 ? FromAddress.AddressLine3 : null}
+
+                  {FromAddress.AddressLine2
+                    ? ", " + FromAddress.AddressLine2
+                    : null}
+                  {FromAddress.AddressLine3
+                    ? ", " + FromAddress.AddressLine3
+                    : null}
                 </td>
                 <td style={{ width: "50%" }} colspan="4">
                   {" "}
                   {/* <b>ADDRESS :</b> <br /> */}
                   {ToAddress.AddressLine1}
-                  {ToAddress.AddressLine2 ? ToAddress.AddressLine2 : null}
-                  {ToAddress.AddressLine3 ? ToAddress.AddressLine3 : null}
+                  {ToAddress.AddressLine2
+                    ? ", " + ToAddress.AddressLine2
+                    : null}
+                  {ToAddress.AddressLine3
+                    ? ", " + ToAddress.AddressLine3
+                    : null}
                 </td>
               </tr>
             ) : null}
@@ -224,11 +235,11 @@ class PrintCommercialInvoice extends Component {
             ) : null} */}
             <tr>
               <td style={{ width: "50%" }} colspan="3">
-                {FromAddress.City},{FromAddress.State}-{FromAddress.ZipCode},
+                {FromAddress.City}, {FromAddress.State} - {FromAddress.ZipCode},{" "}
                 {FromCountryName}
               </td>
               <td style={{ width: "50%" }} colspan="4">
-                {ToAddress.City},{ToAddress.State}-{ToAddress.ZipCode},
+                {ToAddress.City}, {ToAddress.State} - {ToAddress.ZipCode},{" "}
                 {ToCountryName}
               </td>
             </tr>

@@ -1318,52 +1318,62 @@ class AddEditVendors extends Component {
     } else if (type === "website") {
       this.setState({ vendorWebsite: val });
     } else if (type === "EINNumber") {
-      if (!CommonConfig.isEmpty(val) && event.target.value.length == 9) {
-        let chars = val.split("");
+      this.setState({
+        EINNumber: val,
+        EINNumberErr: false,
+        EINNumberHelperText: "",
+      });
+      // if (!CommonConfig.isEmpty(val) && event.target.value.length == 9) {
+      //   let chars = val.split("");
 
-        if (chars[2] !== "-") {
-          chars.splice(2, 0, "-");
-        }
+      //   if (chars[2] !== "-") {
+      //     chars.splice(2, 0, "-");
+      //   }
 
-        this.setState({
-          EINNumber: chars.join(""),
-          EINNumberErr: false,
-          EINNumberHelperText: "",
-        });
-      } else if (
-        event.target.value.length !== 10 &&
-        !CommonConfig.isEmpty(val)
-      ) {
-        // cogoToast.error('Please Enter Valid Number!')
-        this.setState({
-          EINNumberErr: true,
-          EINNumberHelperText: "Please enter valid Number",
-        });
-      } else {
-        this.setState({ EINNumber: val });
-      }
+      //   this.setState({
+      //     EINNumber: chars.join(""),
+      //     EINNumberErr: false,
+      //     EINNumberHelperText: "",
+      //   });
+      // } else if (
+      //   event.target.value.length !== 10 &&
+      //   !CommonConfig.isEmpty(val)
+      // ) {
+      //   // cogoToast.error('Please Enter Valid Number!')
+      //   this.setState({
+      //     EINNumberErr: true,
+      //     EINNumberHelperText: "Please enter valid Number",
+      //   });
+      // } else {
+      //   this.setState({ EINNumber: val });
+      // }
     } else if (type === "SSNNumber") {
-      if (!CommonConfig.isEmpty(val) && event.target.value.length == 9) {
-        let chars = val.split("");
-        if (chars[3] !== "-") {
-          chars.splice(3, 0, "-");
-        }
-        if (chars[6] !== "-") {
-          chars.splice(6, 0, "-");
-        }
-        this.setState({ SSNNumber: chars.join("") });
-      } else if (
-        event.target.value.length !== 11 &&
-        !CommonConfig.isEmpty(val)
-      ) {
-        // cogoToast.error('Please Enter Valid Number!')
-        this.setState({
-          SSNNumberErr: true,
-          SSNNumberHelperText: "Please enter valid Number",
-        });
-      } else {
-        this.setState({ SSNNumber: val });
-      }
+      this.setState({
+        SSNNumber: val,
+        SSNNumberErr: false,
+        SSNNumberHelperText: "",
+      });
+      // if (!CommonConfig.isEmpty(val) && event.target.value.length == 9) {
+      //   let chars = val.split("");
+      //   if (chars[3] !== "-") {
+      //     chars.splice(3, 0, "-");
+      //   }
+      //   if (chars[6] !== "-") {
+      //     chars.splice(6, 0, "-");
+      //   }
+      //   this.setState({ SSNNumber: chars.join("") });
+      // } else if (
+      //   event.target.value.length !== 11 &&
+      //   !CommonConfig.isEmpty(val)
+      // ) {
+      //   // cogoToast.error('Please Enter Valid Number!')
+      //   this.setState({
+      //     SSNNumberErr: true,
+      //     SSNNumberHelperText: "Please enter valid Number",
+      //   });
+      // } else {
+      //   this.setState({ SSNNumber: val });
+      // }
     } else if (type === "comments") {
       this.setState({ comments: val });
     } else if (type === "VendorAddressLine1") {
@@ -1676,7 +1686,7 @@ class AddEditVendors extends Component {
       }
     } else if (type === "SSNNumber") {
       let SSNNumber = event.target.value.replace(/\D/g, "");
-      if (event.target.value.length <= 10) {
+      if (event.target.value.length <= 9) {
         this.setState({ SSNNumber: SSNNumber });
       }
     } else if (type === "comments") {
@@ -2276,163 +2286,167 @@ class AddEditVendors extends Component {
   }
   editVendor(redirect) {
     debugger;
-    if (this.validate()) {
-      if (this.state.offeredService.length === 0) {
-        return cogoToast.error("Please select one service");
-      }
-      if (this.state.contactList.length === 0) {
-        return cogoToast.error("Please add one contact");
-      }
-      if (this.state.vendorName === "") {
-        return cogoToast.error("Please enter vendor name");
-      } else {
-        var selectedName = [];
-        selectedName = this.state.VendorList.filter(
-          (x) =>
-            x.VendorName === this.state.vendorName &&
-            x.VendorID !== this.state.vendorId
-        );
-        if (selectedName.length !== 0) {
-          this.setState({
-            vendorName: "",
-            flag: 1,
-          });
-
-          this.setState({
-            vendorNameErr: true,
-            vendorNameHelperText: "Please enter vendor name",
-          });
-          return cogoToast.error("Vendor name already in used");
-        }
-      }
-
-      let vendorDetails = this.state;
-      var finalAttachment = [];
-      for (var i = 0; i < vendorDetails.Attachments.length; i++) {
-        if (vendorDetails.Attachments[i].hasOwnProperty("AttachmentName")) {
-          finalAttachment.push(vendorDetails.Attachments[i]);
-        }
-      }
-      var FinalNotes = this.state.notes.filter(
-        (x) => x.NoteText !== "" && x.NoteText !== null
-      );
-
-      let data14 = {
-        Email: vendorDetails.VendorEmail,
-      };
-
-      api.post("salesLead/getEmailID", data14).then((restest) => {
-        if (restest.success) {
-          console.log(restest.data[0][0]);
-
-          let data = {
-            vendorId: this.state.vendorId,
-            vendorName: vendorDetails.vendorName,
-            vendorWebsite: vendorDetails.vendorWebsite,
-            vendorType: vendorDetails.vendorType,
-            isFormW9: vendorDetails.isFormW9, // === true ? 1 : 0,
-            EINNumber: vendorDetails.EINNumber,
-            SSNNumber: vendorDetails.SSNNumber,
-            // comments: vendorDetails.comments,
-            service: vendorDetails.offeredService,
-            contacts: this.state.contactList,
-            userId: CommonConfig.loggedInUserData().PersonID,
-            DocumentList: finalAttachment,
-            AddressLine1: vendorDetails.VendorAddressLine1,
-            AddressLine2: vendorDetails.VendorAddressLine2,
-            AddressLine3: vendorDetails.VendorAddressLine3,
-            ZipCode: vendorDetails.VendorzipCode,
-            // City: CommonConfig.isEmpty(vendorDetails.Vendorcity.label)
-            //   ? vendorDetails.Vendorcity
-            //   : vendorDetails.Vendorcity.label,
-            City: CommonConfig.isEmpty(vendorDetails.Vendorcity)
-              ? vendorDetails.Vendorcity
-              : vendorDetails.Vendorcity.label,
-            State: CommonConfig.isEmpty(vendorDetails.Vendorstate)
-              ? vendorDetails.Vendorstate
-              : CommonConfig.isEmpty(vendorDetails.Vendorstate.label)
-              ? vendorDetails.Vendorstate
-              : vendorDetails.Vendorstate.label,
-            // State: CommonConfig.isEmpty(vendorDetails.Vendorstate)
-            //   ? vendorDetails.Vendorstate
-            //   : vendorDetails.Vendorstate.label,
-            Country: CommonConfig.isEmpty(vendorDetails.selectedVendorCountry)
-              ? vendorDetails.selectedVendorCountry
-              : vendorDetails.selectedVendorCountry.label,
-            Vendoremail: vendorDetails.VendorEmail,
-            Vendorphone: vendorDetails.VendorPhone,
-            Notes: FinalNotes,
-            EmailId: restest.data[0][0].EmailID,
-          };
-
-          var formData = new FormData();
-          formData.append("data", JSON.stringify(data));
-
-          if (vendorDetails.AttachmentList.length > 0) {
-            vendorDetails.AttachmentList.forEach((file) => {
-              formData.append("Attachments", file);
-            });
-          }
-          debugger;
-          try {
-            this.showLoader();
-            api
-              .post("vendor/EditVendor", formData)
-              .then((res) => {
-                if (res.success) {
-                  debugger;
-                  if (redirect === "false") {
-                    this.props.history.push({
-                      pathname: "/admin/Vendor",
-                      state: {
-                        filterlist:
-                          this.props.history.location.state.filterlist !==
-                          undefined
-                            ? this.props.history.location.state.filterlist
-                            : null,
-                        sortlist:
-                          this.props.history.location.state.sortlist !==
-                          undefined
-                            ? this.props.history.location.state.sortlist
-                            : null,
-                        serviceValue:
-                          this.props.history.location.state.serviceValue !==
-                          undefined
-                            ? this.props.history.location.state.serviceValue
-                            : null,
-                      },
-                    });
-                  } else {
-                    //kruti
-                    window.location.reload();
-                    // this.setState({
-                    //   objAttachment: {
-                    //     Index: 0,
-                    //     FileName: "",
-                    //     Status: "Active",
-                    //     DocumentCreatedOn: moment().format(
-                    //       CommonConfig.dateFormat.dateOnly
-                    //     ),
-                    //     DocumentCreatedBy: CommonConfig.loggedInUserData().Name,
-                    //   },
-                    // });
-                    // this.getVendorDetails(this.state.vendorId);
-                  }
-                }
-              })
-              .catch((err) => {
-                this.hideLoader();
-                console.log("err..", err);
-                cogoToast.error("Something Went Wrong");
-              });
-          } catch (error) {
-            this.hideLoader();
-            console.log("error..", error);
-            cogoToast.error("Something Went Wrong");
-          }
-        }
-      });
+    if (
+      this.state.isFormW9 === true &&
+      (CommonConfig.isEmpty(this.state.EINNumber) &&
+        CommonConfig.isEmpty(this.state.SSNNumber))
+    ) {
+      return cogoToast.error("Please enter SSN Number or EIN Number");
     }
+    if (this.state.offeredService.length === 0) {
+      return cogoToast.error("Please select one service");
+    }
+    if (this.state.contactList.length === 0) {
+      return cogoToast.error("Please add one contact");
+    }
+    if (this.state.vendorName === "") {
+      return cogoToast.error("Please enter vendor name");
+    } else {
+      var selectedName = [];
+      selectedName = this.state.VendorList.filter(
+        (x) =>
+          x.VendorName === this.state.vendorName &&
+          x.VendorID !== this.state.vendorId
+      );
+      if (selectedName.length !== 0) {
+        this.setState({
+          vendorName: "",
+          flag: 1,
+        });
+
+        this.setState({
+          vendorNameErr: true,
+          vendorNameHelperText: "Please enter vendor name",
+        });
+        return cogoToast.error("Vendor name already in used");
+      }
+    }
+
+    let vendorDetails = this.state;
+    var finalAttachment = [];
+    for (var i = 0; i < vendorDetails.Attachments.length; i++) {
+      if (vendorDetails.Attachments[i].hasOwnProperty("AttachmentName")) {
+        finalAttachment.push(vendorDetails.Attachments[i]);
+      }
+    }
+    var FinalNotes = this.state.notes.filter(
+      (x) => x.NoteText !== "" && x.NoteText !== null
+    );
+
+    let data14 = {
+      Email: vendorDetails.VendorEmail,
+    };
+
+    api.post("salesLead/getEmailID", data14).then((restest) => {
+      if (restest.success) {
+        console.log(restest.data[0][0]);
+
+        let data = {
+          vendorId: this.state.vendorId,
+          vendorName: vendorDetails.vendorName,
+          vendorWebsite: vendorDetails.vendorWebsite,
+          vendorType: vendorDetails.vendorType,
+          isFormW9: vendorDetails.isFormW9, // === true ? 1 : 0,
+          EINNumber: vendorDetails.EINNumber,
+          SSNNumber: vendorDetails.SSNNumber,
+          // comments: vendorDetails.comments,
+          service: vendorDetails.offeredService,
+          contacts: this.state.contactList,
+          userId: CommonConfig.loggedInUserData().PersonID,
+          DocumentList: finalAttachment,
+          AddressLine1: vendorDetails.VendorAddressLine1,
+          AddressLine2: vendorDetails.VendorAddressLine2,
+          AddressLine3: vendorDetails.VendorAddressLine3,
+          ZipCode: vendorDetails.VendorzipCode,
+          // City: CommonConfig.isEmpty(vendorDetails.Vendorcity.label)
+          //   ? vendorDetails.Vendorcity
+          //   : vendorDetails.Vendorcity.label,
+          City: CommonConfig.isEmpty(vendorDetails.Vendorcity)
+            ? vendorDetails.Vendorcity
+            : vendorDetails.Vendorcity.label,
+          State: CommonConfig.isEmpty(vendorDetails.Vendorstate)
+            ? vendorDetails.Vendorstate
+            : CommonConfig.isEmpty(vendorDetails.Vendorstate.label)
+            ? vendorDetails.Vendorstate
+            : vendorDetails.Vendorstate.label,
+          // State: CommonConfig.isEmpty(vendorDetails.Vendorstate)
+          //   ? vendorDetails.Vendorstate
+          //   : vendorDetails.Vendorstate.label,
+          Country: CommonConfig.isEmpty(vendorDetails.selectedVendorCountry)
+            ? vendorDetails.selectedVendorCountry
+            : vendorDetails.selectedVendorCountry.label,
+          Vendoremail: vendorDetails.VendorEmail,
+          Vendorphone: vendorDetails.VendorPhone,
+          Notes: FinalNotes,
+          EmailId: restest.data[0][0].EmailID,
+        };
+
+        var formData = new FormData();
+        formData.append("data", JSON.stringify(data));
+
+        if (vendorDetails.AttachmentList.length > 0) {
+          vendorDetails.AttachmentList.forEach((file) => {
+            formData.append("Attachments", file);
+          });
+        }
+        debugger;
+        try {
+          this.showLoader();
+          api
+            .post("vendor/EditVendor", formData)
+            .then((res) => {
+              if (res.success) {
+                debugger;
+                if (redirect === "false") {
+                  this.props.history.push({
+                    pathname: "/admin/Vendor",
+                    state: {
+                      filterlist:
+                        this.props.history.location.state.filterlist !==
+                        undefined
+                          ? this.props.history.location.state.filterlist
+                          : null,
+                      sortlist:
+                        this.props.history.location.state.sortlist !== undefined
+                          ? this.props.history.location.state.sortlist
+                          : null,
+                      serviceValue:
+                        this.props.history.location.state.serviceValue !==
+                        undefined
+                          ? this.props.history.location.state.serviceValue
+                          : null,
+                    },
+                  });
+                } else {
+                  //kruti
+                  window.location.reload();
+                  // this.setState({
+                  //   objAttachment: {
+                  //     Index: 0,
+                  //     FileName: "",
+                  //     Status: "Active",
+                  //     DocumentCreatedOn: moment().format(
+                  //       CommonConfig.dateFormat.dateOnly
+                  //     ),
+                  //     DocumentCreatedBy: CommonConfig.loggedInUserData().Name,
+                  //   },
+                  // });
+                  // this.getVendorDetails(this.state.vendorId);
+                }
+              }
+            })
+            .catch((err) => {
+              this.hideLoader();
+              console.log("err..", err);
+              cogoToast.error("Something Went Wrong");
+            });
+        } catch (error) {
+          this.hideLoader();
+          console.log("error..", error);
+          cogoToast.error("Something Went Wrong");
+        }
+      }
+    });
   }
   fileUpload = (event, record) => {
     const files = event.target.files[0];
