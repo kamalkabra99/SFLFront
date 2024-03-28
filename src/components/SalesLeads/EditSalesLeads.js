@@ -4722,6 +4722,11 @@ class EditSalesLeads extends Component {
 
           if(this.state.ProposalStatus === "Cancelled"){
             data.ManagedBy = 0;
+            data.SalesLeadFollowupDate = null;
+          }
+          if(this.state.ProposalStatus === "Closed"){
+            // data.ManagedBy = 0;
+            data.SalesLeadFollowupDate = null;
           }
           let packagetype;
           // for(var i = 0; i< PackageList.length;i++){
