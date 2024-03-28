@@ -32,6 +32,8 @@ class SalesTeamProductivity extends Component {
       finalAmount: 0,
       finalLength: 0,
       Loading: false,
+      ToDateAllSales: "",
+      FromDateAllSales: "",
     };
   }
 
@@ -69,6 +71,15 @@ class SalesTeamProductivity extends Component {
       this.setState({ ToDateAllSales: date });
     }
   };
+  reset = () => {
+    this.setState({
+      ToDateAllSales: "",
+      FromDateAllSales: "",
+      SerachList: [],
+      finalAmount: 0,
+      finalLength: 0,
+    });
+  };
   searchSalesLeadproductivity = () => {
     try {
       let data = {
@@ -85,57 +96,59 @@ class SalesTeamProductivity extends Component {
               .format(CommonConfig.dateFormat.dbDateTime)
               .toString(),
       };
-      api
-        .post("reports/GetSalesLeadProductivityReport", data)
-        .then((res) => {
-          debugger;
+      if (data.FromDate === "" || data.ToDate === "") {
+        return cogoToast.error("Please select From Date and To Date");
+      } else {
+        api
+          .post("reports/GetSalesLeadProductivityReport", data)
+          .then((res) => {
+            debugger;
 
-          if (res.success) {
-            const arrayOfObjects = res.data[0].map((obj) => {
-              // Find corresponding objects in other arrays based on id
-              const objFrom2 = res.data[1].find(
-                (item) => item.UserID === obj.UserID
-              );
-              const objFrom3 = res.data[2].find(
-                (item) => item.UserID === obj.UserID
-              );
-              const objFrom4 = res.data[3].find(
-                (item) => item.UserID === obj.UserID
-              );
-              // Create a new object with combined properties
+            if (res.success) {
+              const arrayOfObjects = res.data[0].map((obj) => {
+                // Find corresponding objects in other arrays based on id
+                const objFrom2 = res.data[1].find(
+                  (item) => item.UserID === obj.UserID
+                );
+                const objFrom3 = res.data[2].find(
+                  (item) => item.UserID === obj.UserID
+                );
+                const objFrom4 = res.data[3].find(
+                  (item) => item.UserID === obj.UserID
+                );
+                // Create a new object with combined properties
 
-              return {
-                UserID: obj.UserID,
-                Name: obj.Name,
-                SalesLead: obj.SalesLeads,
-                Shipments: objFrom2 ? objFrom2.Shipments : 0,
-                PaymentReceived: objFrom3
-                  ? "$ " + objFrom3.PaymentRecived == null
-                    ? 0
-                    : "$ " + objFrom3.PaymentRecived
-                  : "$ " + 0,
-                AllClear: objFrom4 ? "$ " + objFrom4.AllClear : "$ " + 0,
-                Conversion:
-                  parseFloat(
-                    (objFrom2.Shipments / obj.SalesLeads) * 100
-                  ).toFixed(2) + " %",
-              };
-            });
+                return {
+                  UserID: obj.UserID,
+                  Name: obj.Name,
+                  SalesLead: obj.SalesLeads,
+                  Shipments: objFrom2 ? objFrom2.Shipments : 0,
+                  PaymentReceived: objFrom3
+                    ? "$ " + objFrom3.PaymentRecived == null
+                      ? 0
+                      : "$ " + objFrom3.PaymentRecived
+                    : "$ " + 0,
+                  AllClear: objFrom4 ? "$ " + objFrom4.AllClear : "$ " + 0,
+                  Conversion:
+                    parseFloat(
+                      (objFrom2.Shipments / obj.SalesLeads) * 100
+                    ).toFixed(2) + " %",
+                };
+              });
 
-            // this.state.SerachList.push(arrayOfObjects);
-            // this.state.SerachList = arrayOfObjects;
-            this.setState({ SerachList: arrayOfObjects });
-            console.log("res....", this.state.SerachList);
-            // this.hideLoader();
-          } else {
+              this.setState({ SerachList: arrayOfObjects });
+
+              // this.hideLoader();
+            } else {
+              cogoToast.error("Something went wrong");
+            }
+          })
+          .catch((err) => {
+            this.hideLoader();
             cogoToast.error("Something went wrong");
-          }
-        })
-        .catch((err) => {
-          this.hideLoader();
-          cogoToast.error("Something went wrong");
-          console.log("error...", err);
-        });
+            console.log("error...", err);
+          });
+      }
     } catch (err) {
       this.hideLoader();
       console.log("error....", err);
@@ -182,7 +195,7 @@ class SalesTeamProductivity extends Component {
       {
         Header: "Payment received",
         accessor: "PaymentReceived",
-        width: 80,
+        width: 150,
       },
       {
         Header: "Sales Clear",
@@ -248,13 +261,10 @@ class SalesTeamProductivity extends Component {
                     </div>
                   </GridItem>
                   <GridItem>
-                    <div className="right">
-                      <Button
-                        color="secondary"
-                        // onClick={() => this.resetCommissionAllSales()}
-                      >
+                    <div className="right mt-20">
+                      {/* <Button color="secondary" onClick={() => this.reset()}>
                         Reset
-                      </Button>
+                      </Button> */}
                       <Button
                         color="rose"
                         onClick={() => this.searchSalesLeadproductivity()}

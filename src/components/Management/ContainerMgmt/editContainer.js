@@ -84,7 +84,7 @@ class editContainer extends Component {
       TotalTVCount: 0,
       TotalPackagesCountHBL: 0,
       TotalCFTCountHBL: 0,
-      PrimaryID:0,
+      PrimaryID: 0,
       TotalTVCountHBL: 0,
       sealnumberErr: false,
       sealnumberHelperText: "",
@@ -96,8 +96,8 @@ class editContainer extends Component {
       BOLNumber: "",
       BOLnumberErr: false,
       BOLnumberHelperText: "",
-      ShippingIDDel:"",
-      DeleteRequest:false,
+      ShippingIDDel: "",
+      DeleteRequest: false,
 
       PointOfOrigin: "",
       pointoforiginErr: false,
@@ -145,15 +145,15 @@ class editContainer extends Component {
       carrierErr: false,
       carrierHelperText: "",
       RemoveShipID: "",
-      HBLYesNOREC:[],
-      UpdateShipID:"",
-      UpdateShipIDHBLSET:"",
-      SetShiprecord:false,
+      HBLYesNOREC: [],
+      UpdateShipID: "",
+      UpdateShipIDHBLSET: "",
+      SetShiprecord: false,
       Base: "",
 
       NotifyPartyName: "",
       NotifyPartyPhone: "",
-      GSTNo:"",
+      GSTNo: "",
       NotifyPartyEmail: "",
       NotifyPartyAddr1: "",
       NotifyPartyAddr2: "",
@@ -180,8 +180,7 @@ class editContainer extends Component {
       CreatedBy: "",
       CreatedOn: "",
 
-      // HBL Start 
-
+      // HBL Start
 
       HBLdocOpen: false,
       PackageNumber: "",
@@ -192,7 +191,7 @@ class editContainer extends Component {
       HTrackingNumber: "",
       HContainerNumber: "",
       BLNumber: "",
-      pTrackingNumber:"",
+      pTrackingNumber: "",
       Vessel: "MAERSK SELETAR 343E",
       Export: "Dallas, Texas",
       Unloading: "Nhava Sheva, India",
@@ -217,8 +216,6 @@ class editContainer extends Component {
       ConsignedTo: "",
       ShipperExportor: "",
       APPLYTO: "",
-
-
 
       // HBL END
 
@@ -264,7 +261,7 @@ class editContainer extends Component {
       trackingManualList: [],
       ShipmentList: [],
       HBLShipmentList: [],
-      serviceNameData:[],
+      serviceNameData: [],
       Sequence: [],
       filterProps: [],
       sortProps: [],
@@ -278,7 +275,7 @@ class editContainer extends Component {
 
   async componentDidMount() {
     // this.setState({ Base: CommonConfig.BaseUrl });
-     this.setState({ Base: "http://localhost:3000/" });
+    this.setState({ Base: "http://localhost:3000/" });
     await this.showHide();
     await this.stringMapSize();
     await this.stringmapStatus();
@@ -300,7 +297,6 @@ class editContainer extends Component {
     await this.getManualTracking();
     await this.getStatusList();
   }
-
 
   getStatusList = () => {
     try {
@@ -360,110 +356,113 @@ class editContainer extends Component {
       let data = {
         ContainerID: this.props.history.location.state.containerId,
       };
-      var dataMer = []
-      api.post("container/getMergedShipments", data)
-            .then((resultHBL) => {
-              console.log("Result = ",resultHBL)
-              // this.setState({ managedByList: result.data });
-              dataMer = resultHBL.data 
+      var dataMer = [];
+      api
+        .post("container/getMergedShipments", data)
+        .then((resultHBL) => {
+          console.log("Result = ", resultHBL);
+          // this.setState({ managedByList: result.data });
+          dataMer = resultHBL.data;
 
-              api
-              .post("container/getShipmentsByContainer", data)
-              .then((res) => {
-                if (res.success) {
-      
-                  console.log("Packages = " , res.data)
-                  res.data.Packages.map((OBJ) => {
-                    var i = 1;
-                    OBJ.map((obj) => {
-                      obj.Index = i;
-                      i++;
-                      return obj;
-                    });
-                    return OBJ;
+          api
+            .post("container/getShipmentsByContainer", data)
+            .then((res) => {
+              if (res.success) {
+                console.log("Packages = ", res.data);
+                res.data.Packages.map((OBJ) => {
+                  var i = 1;
+                  OBJ.map((obj) => {
+                    obj.Index = i;
+                    i++;
+                    return obj;
                   });
-                 
-                  
-                  var setHblShipment = []
-                  // var YesNO=[]
-      
-                  var setCountShip = []
-      
-                  for (let hblindex = 0; hblindex < res.data.Shipments.length; hblindex++) {
-                    // const element = array[hblindex];
-                    if(res.data.Shipments[hblindex].hblshipment == 0){
-                      res.data.Shipments[hblindex].setsc = 1
-                      res.data.Shipments[hblindex].setPack = res.data.Shipments[hblindex].TotalPackages
-                      setHblShipment.push(res.data.Shipments[hblindex])
-                    }else{
-                      setCountShip.push(res.data.Shipments[hblindex])
-                    }
-                    
+                  return OBJ;
+                });
+
+                var setHblShipment = [];
+                // var YesNO=[]
+
+                var setCountShip = [];
+
+                for (
+                  let hblindex = 0;
+                  hblindex < res.data.Shipments.length;
+                  hblindex++
+                ) {
+                  // const element = array[hblindex];
+                  if (res.data.Shipments[hblindex].hblshipment == 0) {
+                    res.data.Shipments[hblindex].setsc = 1;
+                    res.data.Shipments[hblindex].setPack =
+                      res.data.Shipments[hblindex].TotalPackages;
+                    setHblShipment.push(res.data.Shipments[hblindex]);
+                  } else {
+                    setCountShip.push(res.data.Shipments[hblindex]);
                   }
-      
-                  console.log("setCountShip = ",setCountShip)
-      
-                  for (let setind = 0; setind < setHblShipment.length; setind++) {
-                    debugger
-                    for (let HBLSETING = 0; HBLSETING < dataMer.length; HBLSETING++) {
-                      
-                        if(dataMer[HBLSETING].hblshipment == setHblShipment[setind].ShippingID){
-                          setHblShipment[setind].setsc = setHblShipment[setind].setsc + dataMer[HBLSETING].totalShipment
-                          setHblShipment[setind].setPack = setHblShipment[setind].setPack+  dataMer[HBLSETING].totalPack
-                        }
-                      
-                    }
-                    
-                  }
-      
-      
-                  console.log("yesno = ",setHblShipment )
-                  
-      
-                  
-      
-      
-      
-                  this.setState({
-                    ShipmentList: res.data.Shipments,
-                    HBLShipmentList: setHblShipment,
-                    Sequence: res.data.Packages,
-      
-                    // serviceNameData:YesNO,
-                  });
-      
-                  var counts = 0
-                  var tvcount = 0
-                  var cftCount = 0
-      
-                  for (let index = 0; index < res.data.Shipments.length; index++) {
-      
-                    counts = counts + res.data.Shipments[index].TotalPackages
-                    tvcount = tvcount + res.data.Shipments[index].TV
-                    cftCount = cftCount + res.data.Shipments[index].CFT
-                    //const element = array[index];
-                    
-                  }
-                  this.state.TotalTVCount = tvcount
-                  this.state.TotalCFTCount = cftCount
-      
-                  this.state.TotalPackagesCount = counts
-                  console.log("counts = ", counts)
-      
-                } else {
-                  cogoToast.error("Something went wrong");
                 }
-              })
-              .catch((err) => {
-                console.log("error.....", err);
-              });
 
+                console.log("setCountShip = ", setCountShip);
+
+                for (let setind = 0; setind < setHblShipment.length; setind++) {
+                  debugger;
+                  for (
+                    let HBLSETING = 0;
+                    HBLSETING < dataMer.length;
+                    HBLSETING++
+                  ) {
+                    if (
+                      dataMer[HBLSETING].hblshipment ==
+                      setHblShipment[setind].ShippingID
+                    ) {
+                      setHblShipment[setind].setsc =
+                        setHblShipment[setind].setsc +
+                        dataMer[HBLSETING].totalShipment;
+                      setHblShipment[setind].setPack =
+                        setHblShipment[setind].setPack +
+                        dataMer[HBLSETING].totalPack;
+                    }
+                  }
+                }
+
+                console.log("yesno = ", setHblShipment);
+
+                this.setState({
+                  ShipmentList: res.data.Shipments,
+                  HBLShipmentList: setHblShipment,
+                  Sequence: res.data.Packages,
+
+                  // serviceNameData:YesNO,
+                });
+
+                var counts = 0;
+                var tvcount = 0;
+                var cftCount = 0;
+
+                for (
+                  let index = 0;
+                  index < res.data.Shipments.length;
+                  index++
+                ) {
+                  counts = counts + res.data.Shipments[index].TotalPackages;
+                  tvcount = tvcount + res.data.Shipments[index].TV;
+                  cftCount = cftCount + res.data.Shipments[index].CFT;
+                  //const element = array[index];
+                }
+                this.state.TotalTVCount = tvcount;
+                this.state.TotalCFTCount = cftCount;
+
+                this.state.TotalPackagesCount = counts;
+                console.log("counts = ", counts);
+              } else {
+                cogoToast.error("Something went wrong");
+              }
             })
             .catch((err) => {
-              console.log(err);
+              console.log("error.....", err);
             });
-
-     
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     } catch (err) {}
   };
 
@@ -508,7 +507,7 @@ class editContainer extends Component {
               NotifyParty: res.data.NotifyParty,
               NotifyPartyName: res.data.NotifyPartnerName,
               NotifyPartyPhone: res.data.PhoneNum,
-              GSTNo:res.data.GSTNo,
+              GSTNo: res.data.GSTNo,
               NotifyPartyEmail: res.data.Email,
               NotifyPartyAddr1: res.data.AddressLine1,
               NotifyPartyAddr2: res.data.AddressLine2,
@@ -517,7 +516,7 @@ class editContainer extends Component {
               NotifyPartyCity: res.data.City,
               NotifyPartyState: res.data.State,
               NotifyPartyZipCode: res.data.ZipCode,
-              
+
               CustomsBroker: res.data.CustomsBroker,
               CreatedBy: res.data.CreatedBy,
               CreatedOn: moment(res.data.CreatedOn).format(
@@ -615,8 +614,6 @@ class editContainer extends Component {
     }
   };
 
- 
-
   vendorList = () => {
     try {
       let data = {
@@ -700,9 +697,7 @@ class editContainer extends Component {
       this.setState({ ContainerName: Val });
     } else if (type === "containershortname") {
       this.setState({ ContainerShortName: Val });
-    }
-    
-    else if (type === "containernumber") {
+    } else if (type === "containernumber") {
       this.setState({ ContainerNumber: Val });
     } else if (type === "sealnumber") {
       this.setState({ SealNumber: Val });
@@ -782,8 +777,7 @@ class editContainer extends Component {
           containernameHelperText: "",
         });
       }
-    }
-    else if (type === "containershortname") {
+    } else if (type === "containershortname") {
       if (CommonConfig.isEmpty(this.state.ContainerShortName)) {
         this.setState({
           ContainerShortName: Val,
@@ -797,9 +791,7 @@ class editContainer extends Component {
           containershortnameHelperText: "",
         });
       }
-    }
-    
-    else if (type === "containersize") {
+    } else if (type === "containersize") {
       if (CommonConfig.isEmpty(this.state.ContainerSize)) {
         this.setState({
           ContainerSize: Val,
@@ -1761,66 +1753,61 @@ class editContainer extends Component {
     });
   };
 
-  closeDiv = () =>{
+  closeDiv = () => {
     this.setState({
       SetShiprecord: false,
       RemoveShipID: "",
-    })
-  }
+    });
+  };
 
-   closeDivHBL = () =>{
+  closeDivHBL = () => {
     this.setState({
       SetShiprecordHBL: false,
       // RemoveShipID: "",
-    })
-  }
+    });
+  };
 
-  UpdateHBLShipID = (record) =>{
-
+  UpdateHBLShipID = (record) => {
     // if(this.state.UpdateShipID == ""){
     //   cogoToast.error("Please select Tracking Number");
     // }else{
-      var datatosend = {
-        shippingID : this.state.RemoveShipID,
-        UpdateShipping: record.original.ShippingID,
+    var datatosend = {
+      shippingID: this.state.RemoveShipID,
+      UpdateShipping: record.original.ShippingID,
+    };
+
+    api.post("contactus/UpdateHBL", datatosend).then((res) => {
+      this.hideLoader();
+      if (res.success) {
+        this.setState({
+          SetShiprecord: false,
+          RemoveShipID: "",
+        });
+        cogoToast.success("Shipment merged for HBL");
+        this.reCallApi();
+      } else {
+        cogoToast.error("Something went wrong");
       }
-
-      api.post("contactus/UpdateHBL", datatosend).then((res) => {
-        this.hideLoader();
-        if (res.success) {
-          this.setState({
-            SetShiprecord: false,
-            RemoveShipID: "",
-          })
-          cogoToast.success("Shipment merged for HBL");
-          this.reCallApi();
-        } else {
-          cogoToast.error("Something went wrong");
-        }
-      });
+    });
     // }
+  };
 
-  }
-
-
-  handleSelectChange = (datasets) =>{
-    console.log(datasets)
+  handleSelectChange = (datasets) => {
+    console.log(datasets);
     var shipID = datasets.value;
-    this.state.UpdateShipIDHBLSET = datasets
+    this.state.UpdateShipIDHBLSET = datasets;
 
     // this.setState({
     //   // SetShiprecord: true,
     //   UpdateShipID: shipID,
     // });
 
-    this.state.UpdateShipID = shipID
-    console.log(this.state.UpdateShipID)
-
-
-  }
+    this.state.UpdateShipID = shipID;
+    console.log(this.state.UpdateShipID);
+  };
 
   generateHBL = (record) => {
-    console.log("Records = ",record);
+    console.log("Records = ", record);
 
     // localStorage.setItem("ContainerNumber",this.state.ContainerNumber)
     // localStorage.setItem("BookingNumber",this.state.BookingNumber)
@@ -1837,59 +1824,57 @@ class editContainer extends Component {
 
     // localStorage.setItem("hblDate",this.state.HBLDate);
 
-    localStorage.setItem("shippid",record.original.ShippingID);
-    
-   
+    localStorage.setItem("shippid", record.original.ShippingID);
+
     // localStorage.setItem("NotifyPartyPhone",this.state.NotifyPartyPhone + "  Email: "+ this.state.NotifyPartyEmail + " GST: " + this.state.GSTNo)
     // localStorage.setItem("NotifyPartyEmail",)
-    
 
+    var fromadd1Notify = this.state.NotifyPartyAddr1;
+    var fromadd2Notify = this.state.NotifyPartyAddr2;
+    var fromadd3Notify = this.state.NotifyPartyAddr3;
 
-    var fromadd1Notify =  this.state.NotifyPartyAddr1
-    var fromadd2Notify = this.state.NotifyPartyAddr2
-    var fromadd3Notify = this.state.NotifyPartyAddr3
+    var FromAddressNotify = "";
 
-    var FromAddressNotify = ""
-
-    if(fromadd1Notify != ""){
-      FromAddressNotify = FromAddressNotify + fromadd1Notify
+    if (fromadd1Notify != "") {
+      FromAddressNotify = FromAddressNotify + fromadd1Notify;
     }
-    if(fromadd2Notify != ""){
-      FromAddressNotify = FromAddressNotify + ", " + fromadd2Notify
+    if (fromadd2Notify != "") {
+      FromAddressNotify = FromAddressNotify + ", " + fromadd2Notify;
     }
-    if(fromadd3Notify != ""){
-      FromAddressNotify = FromAddressNotify + ", " + fromadd3Notify
+    if (fromadd3Notify != "") {
+      FromAddressNotify = FromAddressNotify + ", " + fromadd3Notify;
     }
 
+    // localStorage.setItem("NotifyPartyAddr3",FromAddressNotify)
+    var fromCitysNotify =
+      this.state.NotifyPartyCity +
+      ", " +
+      this.state.NotifyPartyState +
+      " - " +
+      this.state.NotifyPartyZipCode;
 
-      // localStorage.setItem("NotifyPartyAddr3",FromAddressNotify)
-      var fromCitysNotify = this.state.NotifyPartyCity + ", " + this.state.NotifyPartyState + " - " + this.state.NotifyPartyZipCode
+    // localStorage.setItem("NotifyPartyCity",fromCitysNotify)
 
-      // localStorage.setItem("NotifyPartyCity",fromCitysNotify)
+    var fromadd1 = record.original.FromAdd1;
+    var fromadd2 = record.original.FromAdd2;
+    var fromadd3 = record.original.FromAdd3;
 
-
- 
-
-    var fromadd1 =  record.original.FromAdd1
-    var fromadd2 = record.original.FromAdd2
-    var fromadd3 = record.original.FromAdd3
-
-    var FromAddress = ""
-    if(fromadd1 != ""){
-      FromAddress = FromAddress + fromadd1
+    var FromAddress = "";
+    if (fromadd1 != "") {
+      FromAddress = FromAddress + fromadd1;
     }
-    if(fromadd2 != ""){
-      FromAddress = FromAddress + ", " + fromadd2
+    if (fromadd2 != "") {
+      FromAddress = FromAddress + ", " + fromadd2;
     }
-    if(fromadd3 != ""){
-      FromAddress = FromAddress + ", " + fromadd3
+    if (fromadd3 != "") {
+      FromAddress = FromAddress + ", " + fromadd3;
     }
 
-    var fromCity = record.original.FromCity
-    var fromState = record.original.FromState
-    var fromZipCo = record.original.fromZip
+    var fromCity = record.original.FromCity;
+    var fromState = record.original.FromState;
+    var fromZipCo = record.original.fromZip;
 
-    var fromCitys = fromCity + ", " + fromState + " - " + fromZipCo
+    var fromCitys = fromCity + ", " + fromState + " - " + fromZipCo;
 
     // localStorage.setItem("FromAddress", FromAddress)
     // localStorage.setItem("fromCitys", fromCitys)
@@ -1897,27 +1882,33 @@ class editContainer extends Component {
 
     //   To Contact Name
 
+    var TOadd1 = record.original.ToAdd1;
+    var TOadd2 = record.original.ToAdd2;
+    var TOadd3 = record.original.ToAdd3;
 
-    var TOadd1 =  record.original.ToAdd1
-    var TOadd2 = record.original.ToAdd2
-    var TOadd3 = record.original.ToAdd3
-
-    var TOAddress = ""
-    if(TOadd1 != ""){
-      TOAddress = TOAddress + TOadd1
+    var TOAddress = "";
+    if (TOadd1 != "") {
+      TOAddress = TOAddress + TOadd1;
     }
-    if(TOadd2 != ""){
-      TOAddress = TOAddress + ", " + TOadd2
+    if (TOadd2 != "") {
+      TOAddress = TOAddress + ", " + TOadd2;
     }
-    if(TOadd3 != ""){
-      TOAddress = TOAddress + ", " + TOadd3
+    if (TOadd3 != "") {
+      TOAddress = TOAddress + ", " + TOadd3;
     }
 
-    var TOCity = record.original.ToCity
-    var TOState = record.original.ToState
-    var TOZipCo = record.original.toZip
+    var TOCity = record.original.ToCity;
+    var TOState = record.original.ToState;
+    var TOZipCo = record.original.toZip;
 
-    var TOCitys = TOCity + ", " + TOState + " - " + TOZipCo + "  Passport: " + record.original.PassportNumber
+    var TOCitys =
+      TOCity +
+      ", " +
+      TOState +
+      " - " +
+      TOZipCo +
+      "  Passport: " +
+      record.original.PassportNumber;
 
     // localStorage.setItem("TOAddress", TOAddress)
     // localStorage.setItem("TOCitys", TOCitys)
@@ -1927,71 +1918,82 @@ class editContainer extends Component {
       shipmentID: record.original.ShippingID,
     };
 
-    var TotalcftH = 0
-    var totalPackH = 0
-    var TotalChargableWeightHBL = 0
+    var TotalcftH = 0;
+    var totalPackH = 0;
+    var TotalChargableWeightHBL = 0;
     api
       .post("container/getShipmentsByContainerForHBL", data)
       .then((res) => {
         if (res.success) {
+          console.log("Res = ", res);
 
-          console.log("Res = ",res);
-
-          var packdata = res.data.Packages
-          var packset = []
+          var packdata = res.data.Packages;
+          var packset = [];
 
           for (let index = 0; index < packdata.length; index++) {
             // const element = array[index];
-            if(packdata[index].length > 1){
-              console.log("packdata[index] = ",packdata[index][0]["Sequence"]);
-              console.log("packdata[index] = " ,packdata[index][0]["Sequence"] + " - " + packdata[index][packdata[index].length -1]["Sequence"]  )
-              
-              var packseq = packdata[index][0]["Sequence"] + " - " + packdata[index][packdata[index].length -1]["Sequence"]
-              var packLen = packdata[index].length
-              var Shippingid = packdata[index][0]["ShippingID"]
+            if (packdata[index].length > 1) {
+              console.log("packdata[index] = ", packdata[index][0]["Sequence"]);
+              console.log(
+                "packdata[index] = ",
+                packdata[index][0]["Sequence"] +
+                  " - " +
+                  packdata[index][packdata[index].length - 1]["Sequence"]
+              );
+
+              var packseq =
+                packdata[index][0]["Sequence"] +
+                " - " +
+                packdata[index][packdata[index].length - 1]["Sequence"];
+              var packLen = packdata[index].length;
+              var Shippingid = packdata[index][0]["ShippingID"];
               var pushdata = {
-                packseq:packseq,
-                packLen:packLen,
-                Shippingid:Shippingid
-              }
+                packseq: packseq,
+                packLen: packLen,
+                Shippingid: Shippingid,
+              };
 
-              packset.push(pushdata)
-
-
-            }else{
-
-              var packseq = packdata[index][0]["Sequence"]
-              var packLen = packdata[index].length
-              var Shippingid = packdata[index][0]["ShippingID"]
+              packset.push(pushdata);
+            } else {
+              var packseq = packdata[index][0]["Sequence"];
+              var packLen = packdata[index].length;
+              var Shippingid = packdata[index][0]["ShippingID"];
               var pushdata = {
-                packseq:packseq,
-                packLen:packLen,
-                Shippingid:Shippingid
-              }
+                packseq: packseq,
+                packLen: packLen,
+                Shippingid: Shippingid,
+              };
 
-              packset.push(pushdata)
-
-
-
+              packset.push(pushdata);
             }
           }
 
-          for (let indexship = 0; indexship < res.data.Shipments.length; indexship++) {
+          for (
+            let indexship = 0;
+            indexship < res.data.Shipments.length;
+            indexship++
+          ) {
             // const element = array[indexship];
-              totalPackH = totalPackH + res.data.Shipments[indexship].TotalPackages
-              // tvcount = tvcount + res.data.Shipments[indexship].TV
-              TotalChargableWeightHBL = TotalChargableWeightHBL + res.data.Shipments[indexship].TotalChargableWeight
-              TotalcftH = TotalcftH + res.data.Shipments[indexship].CFT
+            totalPackH =
+              totalPackH + res.data.Shipments[indexship].TotalPackages;
+            // tvcount = tvcount + res.data.Shipments[indexship].TV
+            TotalChargableWeightHBL =
+              TotalChargableWeightHBL +
+              res.data.Shipments[indexship].TotalChargableWeight;
+            TotalcftH = TotalcftH + res.data.Shipments[indexship].CFT;
 
-              for (let indexset = 0; indexset < packset.length; indexset++) {
-                  if(packset[indexset].Shippingid == res.data.Shipments[indexship].ShippingID){
-                    packset[indexset].cft = res.data.Shipments[indexship].CFT
-                    packset[indexset].TotalPackages = res.data.Shipments[indexship].TotalPackages
-                    packset[indexset].TotalChargableWeight = res.data.Shipments[indexship].TotalChargableWeight
-                  }
-                
+            for (let indexset = 0; indexset < packset.length; indexset++) {
+              if (
+                packset[indexset].Shippingid ==
+                res.data.Shipments[indexship].ShippingID
+              ) {
+                packset[indexset].cft = res.data.Shipments[indexship].CFT;
+                packset[indexset].TotalPackages =
+                  res.data.Shipments[indexship].TotalPackages;
+                packset[indexset].TotalChargableWeight =
+                  res.data.Shipments[indexship].TotalChargableWeight;
               }
-            
+            }
           }
           var dataHtml = "";
           var packSeqList = "";
@@ -2000,100 +2002,125 @@ class editContainer extends Component {
 
             // if(packset.length > 1){
 
-              packSeqList = packSeqList + packset[indexpack].packseq + ", "
-
+            packSeqList = packSeqList + packset[indexpack].packseq + ", ";
 
             // }
 
             // dataHtml = dataHtml +  "<tr><td><label>"+ packset[indexpack].packseq +"</label></td> <td><label>"+ packset[indexpack].packLen +"</label></td><td><label>*USED HOUSE HOLD GOODS AND PERSONAL EFFECTS*</label></td><td><label>"+packset[indexpack].TotalChargableWeight+"</label></td><td><label>"+ packset[indexpack].cft +"</label></td></tr>"
-
           }
 
-          packSeqList = packSeqList.substring(0, packSeqList.length-2);
+          packSeqList = packSeqList.substring(0, packSeqList.length - 2);
 
-          var TotalCBM = (TotalcftH/36).toFixed(4);
-          TotalChargableWeightHBL = TotalcftH * 7
-          TotalChargableWeightHBL = (TotalChargableWeightHBL/2.2).toFixed(3)
-        
-          dataHtml = dataHtml + " <tr><td>"+packSeqList+"</td><td>"+totalPackH+"</td><td>USED HOUSE HOLD GOODS AND PERSONAL EFFECTS</td><td>"+TotalChargableWeightHBL+" KG.</td><td>"+TotalCBM+" CBM</td></tr>"
-          
+          var TotalCBM = (TotalcftH / 36).toFixed(4);
+          TotalChargableWeightHBL = TotalcftH * 7;
+          TotalChargableWeightHBL = (TotalChargableWeightHBL / 2.2).toFixed(3);
 
+          dataHtml =
+            dataHtml +
+            " <tr><td>" +
+            packSeqList +
+            "</td><td>" +
+            totalPackH +
+            "</td><td>USED HOUSE HOLD GOODS AND PERSONAL EFFECTS</td><td>" +
+            TotalChargableWeightHBL +
+            " KG.</td><td>" +
+            TotalCBM +
+            " CBM</td></tr>";
 
-          console.log("packset = ",packset)
-
+          console.log("packset = ", packset);
 
           // localStorage.setItem("dataHtml", dataHtml)
 
           // window.open(
-          //   this.state.Base + "auth/HBL/" + 
+          //   this.state.Base + "auth/HBL/" +
           //    record.original.ShippingID + "/"+this.props.history.location.state.containerId,
-              
+
           //   "_blank"
           // );
 
           // HBLdocOpen
 
-
           // localStorage.setItem("FromAddress", FromAddress)
           // localStorage.setItem("fromCitys", fromCitys)
           // localStorage.setItem("fromContact", record.original.ContactName)
 
-    var FromAddressView = FromAddress + " ~ " + fromCitys + " ~ " + record.original.ContactName
+          var FromAddressView =
+            FromAddress +
+            " ~ " +
+            fromCitys +
+            " ~ " +
+            record.original.ContactName;
 
-    // localStorage.setItem("TOAddress", TOAddress)
-    // localStorage.setItem("TOCitys", TOCitys)
-    // localStorage.setItem("TOContact", record.original.ToContactName)
+          // localStorage.setItem("TOAddress", TOAddress)
+          // localStorage.setItem("TOCitys", TOCitys)
+          // localStorage.setItem("TOContact", record.original.ToContactName)
 
-    var ToAddressView = TOAddress + " ~ " + TOCitys + " ~ " + record.original.ToContactName
-          
-    // localStorage.setItem("ContainerNumber",this.state.ContainerNumber)
-    // localStorage.setItem("BookingNumber",this.state.BookingNumber)
-    // localStorage.setItem("BOLNumber",record.original.TrackingNumber + this.state.ContainerShortName)
+          var ToAddressView =
+            TOAddress + " ~ " + TOCitys + " ~ " + record.original.ToContactName;
 
-    // localStorage.setItem("PointOfOrigin",this.state.PointOfOrigin)
-    // localStorage.setItem("PortOfLoading",this.state.PortOfLoading)
-    // localStorage.setItem("PortOfUnloading",this.state.PortOfUnloading)
-    // localStorage.setItem("PlaceOfDeliveryByOnCarrier",this.state.PlaceOfDeliveryByOnCarrier)
-    // localStorage.setItem("VesselNumber",this.state.VesselNumber)
-    // localStorage.setItem("NotifyParty",this.state.NotifyParty)
-    // localStorage.setItem("TrackNO", record.original.TrackingNumber)
-    // localStorage.setItem("NotifyPartyName",this.state.NotifyPartyName)
+          // localStorage.setItem("ContainerNumber",this.state.ContainerNumber)
+          // localStorage.setItem("BookingNumber",this.state.BookingNumber)
+          // localStorage.setItem("BOLNumber",record.original.TrackingNumber + this.state.ContainerShortName)
 
-    // localStorage.setItem("hblDate",this.state.HBLDate);
-    var phoneEmail = this.state.NotifyPartyPhone + "  Email: "+ this.state.NotifyPartyEmail + " GST: " + this.state.GSTNo
+          // localStorage.setItem("PointOfOrigin",this.state.PointOfOrigin)
+          // localStorage.setItem("PortOfLoading",this.state.PortOfLoading)
+          // localStorage.setItem("PortOfUnloading",this.state.PortOfUnloading)
+          // localStorage.setItem("PlaceOfDeliveryByOnCarrier",this.state.PlaceOfDeliveryByOnCarrier)
+          // localStorage.setItem("VesselNumber",this.state.VesselNumber)
+          // localStorage.setItem("NotifyParty",this.state.NotifyParty)
+          // localStorage.setItem("TrackNO", record.original.TrackingNumber)
+          // localStorage.setItem("NotifyPartyName",this.state.NotifyPartyName)
 
-   var ConsigneeDetailsView = this.state.NotifyParty + " ~ " + FromAddressNotify + " ~ " + fromCitysNotify + " ~ " + phoneEmail;
+          // localStorage.setItem("hblDate",this.state.HBLDate);
+          var phoneEmail =
+            this.state.NotifyPartyPhone +
+            "  Email: " +
+            this.state.NotifyPartyEmail +
+            " GST: " +
+            this.state.GSTNo;
 
-   
-    localStorage.setItem("NotifyPartyPhone",this.state.NotifyPartyPhone + "  Email: "+ this.state.NotifyPartyEmail + " GST: " + this.state.GSTNo)
+          var ConsigneeDetailsView =
+            this.state.NotifyParty +
+            " ~ " +
+            FromAddressNotify +
+            " ~ " +
+            fromCitysNotify +
+            " ~ " +
+            phoneEmail;
+
+          localStorage.setItem(
+            "NotifyPartyPhone",
+            this.state.NotifyPartyPhone +
+              "  Email: " +
+              this.state.NotifyPartyEmail +
+              " GST: " +
+              this.state.GSTNo
+          );
           this.setState({
-            ConsigneeDetails:ConsigneeDetailsView,
-            ConsignedTo:ToAddressView,
+            ConsigneeDetails: ConsigneeDetailsView,
+            ConsignedTo: ToAddressView,
             ShipperExportor: FromAddressView,
-            BookingNumber:this.state.BookingNumber,
-            HContainerNumber:this.state.ContainerNumber,
-            BLNumber:record.original.TrackingNumber + this.state.ContainerShortName,
+            BookingNumber: this.state.BookingNumber,
+            HContainerNumber: this.state.ContainerNumber,
+            BLNumber:
+              record.original.TrackingNumber + this.state.ContainerShortName,
             pointState: this.state.PointOfOrigin,
             Vessel: this.state.VesselNumber,
             Export: this.state.PortOfLoading,
             Unloading: this.state.PortOfUnloading,
             develiverd: this.state.PlaceOfDeliveryByOnCarrier,
-            Sequencelist:packSeqList,
-            PackageNumber:totalPackH,
-            description:"USED HOUSE HOLD GOODS AND PERSONAL EFFECTS",
-            WEIGHT:TotalChargableWeightHBL + " KG",
+            Sequencelist: packSeqList,
+            PackageNumber: totalPackH,
+            description: "USED HOUSE HOLD GOODS AND PERSONAL EFFECTS",
+            WEIGHT: TotalChargableWeightHBL + " KG",
             MEASUREMENT: TotalCBM + " CBM",
             pTrackingNumber: record.original.TrackingNumber,
-          })
+          });
 
           this.setState({
-            
             HBLdocOpen: true,
             // RemoveShipID: "",
-          })
-
-          
-         
+          });
         } else {
           cogoToast.error("Something went wrong");
         }
@@ -2101,99 +2128,98 @@ class editContainer extends Component {
       .catch((err) => {
         console.log("error.....", err);
       });
+  };
 
-  }
+  generatePDF = () => {
+    var shipId = localStorage.getItem("shippid");
+    var containerName = document.getElementById("HContainerNumber").value;
+    var BookingNumber = document.getElementById("BookingNumber").value;
+    var BOLNumber = document.getElementById("BLNumber").value;
+    var VesselNumber = document.getElementById("Vessel").value;
+    var PlaceOfDeliveryByOnCarrier = document.getElementById("develiverd")
+      .value;
+    var PortOfUnloading = document.getElementById("Unloading").value;
+    var PortOfLoading = document.getElementById("Export").value;
+    var PointOfOrigin = document.getElementById("pointState").value;
 
-  generatePDF = () =>{
-    debugger
+    var pTracking = document.getElementById("TrackingNumber").value;
 
-    
-      var shipId = localStorage.getItem("shippid")
-      var containerName = document.getElementById("HContainerNumber").value;;
-      var BookingNumber =  document.getElementById("BookingNumber").value;
-      var BOLNumber = document.getElementById("BLNumber").value;
-      var VesselNumber = document.getElementById("Vessel").value
-      var PlaceOfDeliveryByOnCarrier =  document.getElementById("develiverd").value
-      var PortOfUnloading = document.getElementById("Unloading").value
-      var PortOfLoading = document.getElementById("Export").value
-      var PointOfOrigin = document.getElementById("pointState").value 
+    localStorage.setItem("ContainerNumber", containerName);
+    localStorage.setItem("BookingNumber", BookingNumber);
+    localStorage.setItem("BOLNumber", BOLNumber);
 
-      var pTracking = document.getElementById("TrackingNumber").value 
+    localStorage.setItem("PointOfOrigin", PointOfOrigin);
+    localStorage.setItem("PortOfLoading", PortOfLoading);
+    localStorage.setItem("PortOfUnloading", PortOfUnloading);
+    localStorage.setItem(
+      "PlaceOfDeliveryByOnCarrier",
+      PlaceOfDeliveryByOnCarrier
+    );
+    localStorage.setItem("VesselNumber", VesselNumber);
+    localStorage.setItem("TrackNO", pTracking);
 
+    localStorage.setItem("hblDate", this.state.HBLDate);
 
+    var TOAddress = "";
+    var TOCitys = "";
+    var TOContact = "";
 
-      localStorage.setItem("ContainerNumber",containerName)
-      localStorage.setItem("BookingNumber",BookingNumber)
-      localStorage.setItem("BOLNumber",BOLNumber)
+    var toFullAdd = document.getElementById("ConsignedTo").value;
+    const ToaddArray = toFullAdd.split(" ~ ");
 
-      localStorage.setItem("PointOfOrigin",PointOfOrigin)
-      localStorage.setItem("PortOfLoading",PortOfLoading)
-      localStorage.setItem("PortOfUnloading",PortOfUnloading)
-      localStorage.setItem("PlaceOfDeliveryByOnCarrier",PlaceOfDeliveryByOnCarrier)
-      localStorage.setItem("VesselNumber",VesselNumber)
-      localStorage.setItem("TrackNO", pTracking)
-      
+    TOContact = ToaddArray[0];
+    TOAddress = ToaddArray[1];
+    TOCitys = ToaddArray[2];
 
-      localStorage.setItem("hblDate",this.state.HBLDate);
+    localStorage.setItem("TOAddress", TOAddress);
+    localStorage.setItem("TOCitys", TOCitys);
+    localStorage.setItem("TOContact", TOContact);
 
-      var TOAddress = ""
-      var TOCitys = ""
-      var TOContact = ""
+    var FromFullAdd = document.getElementById("ShipperExportor").value;
+    const FromddArray = FromFullAdd.split(" ~ ");
 
-      var toFullAdd = document.getElementById("ConsignedTo").value
-      const ToaddArray = toFullAdd.split(" ~ ");
+    localStorage.setItem("FromAddress", FromddArray[1]);
+    localStorage.setItem("fromCitys", FromddArray[2]);
+    localStorage.setItem("fromContact", FromddArray[0]);
 
-      TOContact = ToaddArray[0]
-      TOAddress = ToaddArray[1]
-      TOCitys = ToaddArray[2]
+    var NotifyData = document.getElementById("ConsigneeDetails").value;
+    const notifyArray = NotifyData.split(" ~ ");
+    var dataHtml = "";
 
+    dataHtml =
+      dataHtml +
+      " <tr><td>" +
+      document.getElementById("Sequencelist").value +
+      "</td><td>" +
+      document.getElementById("PackageNumber").value +
+      "</td><td>USED HOUSE HOLD GOODS AND PERSONAL EFFECTS</td><td>" +
+      document.getElementById("WEIGHT").value +
+      " KG.</td><td>" +
+      document.getElementById("MEASUREMENT").value +
+      " CBM</td></tr>";
 
+    localStorage.setItem("dataHtml", dataHtml);
+    localStorage.setItem("NotifyParty", notifyArray[0]);
+    // localStorage.setItem("NotifyPartyName",this.state.NotifyPartyName)
+    localStorage.setItem("NotifyPartyPhone", notifyArray[3]);
+    localStorage.setItem("NotifyPartyAddr3", notifyArray[1]);
+    localStorage.setItem("NotifyPartyCity", notifyArray[2]);
 
-      localStorage.setItem("TOAddress", TOAddress)
-      localStorage.setItem("TOCitys", TOCitys)
-      localStorage.setItem("TOContact", TOContact)
+    window.open(
+      this.state.Base +
+        "auth/HBL/" +
+        shipId +
+        "/" +
+        this.props.history.location.state.containerId,
 
-      var FromFullAdd = document.getElementById("ShipperExportor").value
-      const FromddArray = FromFullAdd.split(" ~ ");
-     
-      localStorage.setItem("FromAddress", FromddArray[1])
-      localStorage.setItem("fromCitys", FromddArray[2])
-      localStorage.setItem("fromContact", FromddArray[0])
+      "_blank"
+    );
 
-
-      var NotifyData = document.getElementById("ConsigneeDetails").value
-      const notifyArray = NotifyData.split(" ~ ");    
-      var dataHtml = ""
-
-       dataHtml = dataHtml + " <tr><td>"+document.getElementById("Sequencelist").value+"</td><td>"+document.getElementById("PackageNumber").value+"</td><td>USED HOUSE HOLD GOODS AND PERSONAL EFFECTS</td><td>"+document.getElementById("WEIGHT").value+" KG.</td><td>"+document.getElementById("MEASUREMENT").value+" CBM</td></tr>"
-
-
-      localStorage.setItem("dataHtml", dataHtml)
-      localStorage.setItem("NotifyParty",notifyArray[0])
-      // localStorage.setItem("NotifyPartyName",this.state.NotifyPartyName)
-      localStorage.setItem("NotifyPartyPhone",notifyArray[3])
-      localStorage.setItem("NotifyPartyAddr3",notifyArray[1])
-      localStorage.setItem("NotifyPartyCity",notifyArray[2])
-
-      window.open(
-            this.state.Base + "auth/HBL/" + 
-            shipId + "/"+this.props.history.location.state.containerId,
-              
-            "_blank"
-          );
-
-          this.setState({
-            
-            HBLdocOpen: false,
-            // RemoveShipID: "",
-          })
-
-      
-
-    
-
-  }
-  
+    this.setState({
+      HBLdocOpen: false,
+      // RemoveShipID: "",
+    });
+  };
 
   getShipmentByContainerMergeHBL = (record) => {
     try {
@@ -2205,35 +2231,29 @@ class editContainer extends Component {
         .post("container/getShipmentsByContainerForHBL", data)
         .then((res) => {
           if (res.success) {
+            var counts = 0;
+            var tvcount = 0;
+            var cftCount = 0;
 
-            var counts = 0
-            var tvcount = 0
-            var cftCount = 0
-
-            this.state.PrimaryID = record.original.ShippingID
+            this.state.PrimaryID = record.original.ShippingID;
 
             for (let index = 0; index < res.data.Shipments.length; index++) {
-
-              counts = counts + res.data.Shipments[index].TotalPackages
-              tvcount = tvcount + res.data.Shipments[index].TV
-              cftCount = cftCount + res.data.Shipments[index].CFT
+              counts = counts + res.data.Shipments[index].TotalPackages;
+              tvcount = tvcount + res.data.Shipments[index].TV;
+              cftCount = cftCount + res.data.Shipments[index].CFT;
               //const element = array[index];
-              
             }
-            this.state.TotalTVCountHBL = tvcount
-            this.state.TotalCFTCountHBL = cftCount
+            this.state.TotalTVCountHBL = tvcount;
+            this.state.TotalCFTCountHBL = cftCount;
 
-            this.state.TotalPackagesCountHBL = counts
-            console.log("counts = ", counts)
+            this.state.TotalPackagesCountHBL = counts;
+            console.log("counts = ", counts);
 
-            
             this.setState({
               ShipmentListHBL: res.data.Shipments,
               SetShiprecordHBL: true,
               // Sequence: res.data.Packages,
             });
-
-           
           } else {
             cogoToast.error("Something went wrong");
           }
@@ -2246,15 +2266,17 @@ class editContainer extends Component {
 
   openDeleteRequestModal(record) {
     console.log(record);
-    this.setState({ DeleteRequest: true, ShippingIDDel: record.original.ShippingID });
+    this.setState({
+      DeleteRequest: true,
+      ShippingIDDel: record.original.ShippingID,
+    });
   }
 
-  confirmShipStatusHBLData = () =>{
-
+  confirmShipStatusHBLData = () => {
     var datatosend = {
-      shippingID : 0,
+      shippingID: 0,
       UpdateShipping: this.state.ShippingIDDel,
-    }
+    };
 
     api.post("contactus/UpdateHBL", datatosend).then((res) => {
       this.hideLoader();
@@ -2262,33 +2284,31 @@ class editContainer extends Component {
         this.setState({
           DeleteRequest: false,
           ShippingIDDel: "",
-          SetShiprecordHBL:false
-        })
+          SetShiprecordHBL: false,
+        });
         cogoToast.success("Shipment removed");
         this.reCallApi();
       } else {
         cogoToast.error("Something went wrong");
       }
     });
-
-  }
-
+  };
 
   handleEditHBL(record) {
     console.log(record);
-    var shipID = record.original.ShippingID
+    var shipID = record.original.ShippingID;
     var YesNO = [];
-    
-    for (let hblindexauto = 0; hblindexauto < this.state.HBLShipmentList.length; hblindexauto++) {
+
+    for (
+      let hblindexauto = 0;
+      hblindexauto < this.state.HBLShipmentList.length;
+      hblindexauto++
+    ) {
       // const element = array[hblindexauto];
       // var dataSets = []
-        if(this.state.HBLShipmentList[hblindexauto].ShippingID != shipID){
-          
-          YesNO.push(this.state.HBLShipmentList[hblindexauto])
-        }
-        
-      
-      
+      if (this.state.HBLShipmentList[hblindexauto].ShippingID != shipID) {
+        YesNO.push(this.state.HBLShipmentList[hblindexauto]);
+      }
     }
 
     // console.log("yesno = ",YesNO )
@@ -2299,9 +2319,8 @@ class editContainer extends Component {
     this.setState({
       SetShiprecord: true,
       RemoveShipID: shipID,
-      HBLYesNOREC: YesNO
+      HBLYesNOREC: YesNO,
     });
-
   }
 
   editShipment = (record) => {
@@ -2463,13 +2482,13 @@ class editContainer extends Component {
         accessor: "ContactName",
         width: 85,
       },
-     
+
       {
         Header: "From State",
         accessor: "FromState",
         width: 70,
       },
-      
+
       {
         Header: "To State",
         accessor: "ToState",
@@ -2486,7 +2505,7 @@ class editContainer extends Component {
         //   <span>
         //     {CommonConfig.isEmpty(this.state.TotalPackagesCount)
         //       ? ""
-        //       : 
+        //       :
         //         parseFloat(this.state.TotalPackagesCount)
         //          }
         //   </span>
@@ -2494,7 +2513,7 @@ class editContainer extends Component {
         accessor: "setPack",
         width: 35,
       },
-     
+
       {
         Header: "CFT",
         accessor: "CFT",
@@ -2502,11 +2521,10 @@ class editContainer extends Component {
           <span>
             {CommonConfig.isEmpty(this.state.TotalCFTCount)
               ? ""
-              : 
-                parseFloat(this.state.TotalCFTCount).toFixed(2)
-                .toString()
-                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                 }
+              : parseFloat(this.state.TotalCFTCount)
+                  .toFixed(2)
+                  .toString()
+                  .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
           </span>
         ),
         width: 75,
@@ -2538,17 +2556,11 @@ class editContainer extends Component {
               >
                 <i className="fas fa-plus"></i>
               </Button>
-
-             
             </div>
-
           );
-            
-          
         },
         sortable: false,
       },
-
 
       {
         Header: "View",
@@ -2568,18 +2580,15 @@ class editContainer extends Component {
               </Button> */}
 
               <Button
-                  justIcon
-                  color="info"
-                  onClick={() => this.getShipmentByContainerMergeHBL(record)}
-                  className="Plus-btn "
-                >
-                  <i className={"fas fa-eye"} />
-                </Button>
+                justIcon
+                color="info"
+                onClick={() => this.getShipmentByContainerMergeHBL(record)}
+                className="Plus-btn "
+              >
+                <i className={"fas fa-eye"} />
+              </Button>
             </div>
-
           );
-            
-          
         },
         sortable: false,
       },
@@ -2601,27 +2610,20 @@ class editContainer extends Component {
                 <i className="fas fa-plus"></i>
               </Button> */}
 
-                  <Button
-                    justIcon
-                    color="success"
-                    className="Plus-btn"
-                    onClick={() =>
-                      this.generateHBL(record)
-                    }
-                  >
-                    <i className={"fas fa-check"} />
-                  </Button>
+              <Button
+                justIcon
+                color="success"
+                className="Plus-btn"
+                onClick={() => this.generateHBL(record)}
+              >
+                <i className={"fas fa-check"} />
+              </Button>
             </div>
-
           );
-            
-          
         },
         sortable: false,
       },
-      
     ];
-
 
     const shipColums = [
       {
@@ -2672,9 +2674,7 @@ class editContainer extends Component {
           <span>
             {CommonConfig.isEmpty(this.state.TotalPackagesCount)
               ? ""
-              : 
-                parseFloat(this.state.TotalPackagesCount)
-                 }
+              : parseFloat(this.state.TotalPackagesCount)}
           </span>
         ),
         accessor: "TotalPackages",
@@ -2711,9 +2711,7 @@ class editContainer extends Component {
           <span>
             {CommonConfig.isEmpty(this.state.TotalTVCount)
               ? ""
-              : 
-                parseFloat(this.state.TotalTVCount)
-                 }
+              : parseFloat(this.state.TotalTVCount)}
           </span>
         ),
         width: 30,
@@ -2725,11 +2723,10 @@ class editContainer extends Component {
           <span>
             {CommonConfig.isEmpty(this.state.TotalCFTCount)
               ? ""
-              : 
-                parseFloat(this.state.TotalCFTCount).toFixed(2)
-                .toString()
-                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                 }
+              : parseFloat(this.state.TotalCFTCount)
+                  .toFixed(2)
+                  .toString()
+                  .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
           </span>
         ),
         width: 75,
@@ -2800,9 +2797,7 @@ class editContainer extends Component {
           <span>
             {CommonConfig.isEmpty(this.state.TotalPackagesCountHBL)
               ? ""
-              : 
-                parseFloat(this.state.TotalPackagesCountHBL)
-                 }
+              : parseFloat(this.state.TotalPackagesCountHBL)}
           </span>
         ),
         accessor: "TotalPackages",
@@ -2839,9 +2834,7 @@ class editContainer extends Component {
           <span>
             {CommonConfig.isEmpty(this.state.TotalTVCountHBL)
               ? ""
-              : 
-                parseFloat(this.state.TotalTVCountHBL)
-                 }
+              : parseFloat(this.state.TotalTVCountHBL)}
           </span>
         ),
         width: 30,
@@ -2853,11 +2846,10 @@ class editContainer extends Component {
           <span>
             {CommonConfig.isEmpty(this.state.TotalCFTCountHBL)
               ? ""
-              : 
-                parseFloat(this.state.TotalCFTCountHBL).toFixed(2)
-                .toString()
-                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                 }
+              : parseFloat(this.state.TotalCFTCountHBL)
+                  .toFixed(2)
+                  .toString()
+                  .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
           </span>
         ),
         width: 75,
@@ -2886,24 +2878,22 @@ class editContainer extends Component {
         Cell: (record) => {
           return (
             <div className="table-common-btn">
-              {record.original.ShippingID != this.state.PrimaryID ?(
+              {record.original.ShippingID != this.state.PrimaryID ? (
                 <Button
-                justIcon
-                onClick={() => this.openDeleteRequestModal(record)}
-                color="danger"
-              >
-                <i class="fas fa-trash"></i>
-              </Button>
-
-              ):null}
-              
+                  justIcon
+                  onClick={() => this.openDeleteRequestModal(record)}
+                  color="danger"
+                >
+                  <i class="fas fa-trash"></i>
+                </Button>
+              ) : null}
             </div>
           );
         },
         filterable: false,
       },
     ];
-    
+
     const shipColumsDataHBL = [
       {
         Header: "Tracking",
@@ -2927,13 +2917,13 @@ class editContainer extends Component {
         accessor: "ContactName",
         width: 85,
       },
-      
+
       {
         Header: "From State",
         accessor: "FromState",
         width: 70,
       },
-      
+
       {
         Header: "To State",
         accessor: "ToState",
@@ -2944,13 +2934,11 @@ class editContainer extends Component {
         accessor: "TotalPackages",
         width: 35,
       },
-      
-      
-     
+
       {
         Header: "CFT",
         accessor: "CFT",
-      
+
         width: 75,
       },
       {
@@ -2971,23 +2959,18 @@ class editContainer extends Component {
               </Button> */}
 
               <Button
-                  justIcon
-                  color="facebook"
-                  onClick={() => this.UpdateHBLShipID(record)}
-                  className="Plus-btn "
-                >
-                  <i className={"fas fa-plus"} />
-                </Button>
+                justIcon
+                color="facebook"
+                onClick={() => this.UpdateHBLShipID(record)}
+                className="Plus-btn "
+              >
+                <i className={"fas fa-plus"} />
+              </Button>
             </div>
-
           );
-            
-          
         },
         sortable: false,
       },
-      
-      
     ];
 
     const {
@@ -3080,12 +3063,7 @@ class editContainer extends Component {
       TypeOfMove,
       pointState,
       FMCnumber,
-
-
     } = this.state;
-    
-
-   
 
     return (
       <GridContainer className="UserList-outer">
@@ -3862,7 +3840,7 @@ class editContainer extends Component {
               <CardBody>
                 <GridContainer justify="center">
                   <GridItem xs={12} sm={12} md={12}>
-                  <div className="select-reacttable">
+                    <div className="select-reacttable">
                       <ReactTable
                         data={this.state.HBLShipmentList}
                         defaultFilterMethod={CommonConfig.filterCaseInsensitive}
@@ -3969,219 +3947,166 @@ class editContainer extends Component {
           </Dialog>
 
           <div>
-          <Dialog
-            open={this.state.HBLdocOpen}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
-            className="large-Modal"
-          >
-            <DialogTitle id="alert-dialog-title">Genrate HBL</DialogTitle>
-            <DialogContent>
-              <DialogContentText id="alert-dialog-description">
-                <div className="hbl-outer">
-                  <div id="HBL" class="page">
-                    <table className="hbl-table">
-                      <tr>
-                        <th className="text-left t-50">
-                          SFL WORLDWIDE LLC <br></br>
-                          <small>FMC-OTI NO. 025184N</small>
-                        </th>
-                        <th className="text-right t-50">
-                          BILL OF LADING<br></br>
-                          <small>FOR PORT-TO-PORT OR COMBINED TRANSPORT</small>
-                        </th>
-                      </tr>
-                    </table>
-                    <table className="hbl-table">
-                      <tr>
-                        <td rowSpan={3} className="t-50">
-                          SHIPPER/EXPORTER COMPLETE NAME AND ADDRESS<br></br>
-                          <textarea
-                            id="ShipperExportor"
-                            name="Body"
-                            style={{
-                              width: "100%",
-                              height: "120px",
-                              display: "block",
-                            }}
-                            labelText="Body"
-                            //KRUTIU
-                            value={this.state.ShipperExportor}
-                            onChange={(e) =>
-                              this.HselectChange(e, "ShipperExportor")
-                            }
-                          ></textarea>
-                          <div
-                            id="ShipperExportordiv"
-                            dangerouslySetInnerHTML={{
-                              __html: this.state.ShipperExportor,
-                            }}
-                            style={{ display: "none", whiteSpace: "pre-line" }}
-                          />
-                        </td>
-                        <td className="t-25">
-                          BOOKING NUMBER<br></br>
-                          <input
-                            id="BookingNumber"
-                            name="Body"
-                            style={{
-                              display: "block",
-                            }}
-                            value={BookingNumber}
-                            onChange={(e) =>
-                              this.HselectChange(e, "BookingNumber")
-                            }
-                          />
-                          <div
-                            id="BookingNumberdiv"
-                            dangerouslySetInnerHTML={{
-                              __html: BookingNumber,
-                            }}
-                            style={{ display: "none", whiteSpace: "pre-line" }}
-                          />
-                        </td>
-                        <td className="t-25">
-                          CONTAINER NUMBER<br></br>
-                          <input
-                            id="HContainerNumber"
-                            style={{
-                              display: "block",
-                            }}
-                            value={HContainerNumber}
-                            onChange={(e) =>
-                              this.HselectChange(e, "HContainerNumber")
-                            }
-                          />
-                          <div
-                            id="HContainerNumberdiv"
-                            dangerouslySetInnerHTML={{
-                              __html: HContainerNumber,
-                            }}
-                            style={{ display: "none", whiteSpace: "pre-line" }}
-                          />
-                        </td>
-                      </tr>
-                      <tr>
-                        <td colSpan={2} className="t-50">
-                          BILL OF LANDING NUMBER<br></br>
-                          <input
-                            id="BLNumber"
-                            style={{
-                              display: "block",
-                            }}
-                            value={BLNumber}
-                            onChange={(e) => this.HselectChange(e, "BLNumber")}
-                          />
-                          <div
-                            id="BLNumberdiv"
-                            dangerouslySetInnerHTML={{
-                              __html: BLNumber,
-                            }}
-                            style={{ display: "none", whiteSpace: "pre-line" }}
-                          />
-                        </td>
-                      </tr>
-                      <tr>
-                        <td colSpan={2} className="t-50">
-                          EXPORT REFERENCES<br></br>
-                          <input
-                            id="TrackingNumber"
-                            style={{
-                              display: "block",
-                            }}
-                            value={pTrackingNumber}
-                            onChange={(e) =>
-                              this.HselectChange(e, "TrackingNumber")
-                            }
-                          />
-                          <div
-                            id="TrackingNumberdiv"
-                            dangerouslySetInnerHTML={{
-                              __html: pTrackingNumber,
-                            }}
-                            style={{ display: "none", whiteSpace: "pre-line" }}
-                          />
-                        </td>
-                      </tr>
-                    </table>
-                    <table className="hbl-table">
-                      <tr>
-                        <td rowSpan={2} className="t-50">
-                          CONSIGNED TO<br></br>
-                          <textarea
-                            id="ConsignedTo"
-                            name="Body"
-                            style={{
-                              width: "100%",
-                              height: "100px",
-                              display: "block",
-                            }}
-                            labelText="Body"
-                            //KRUTIU
-                            value={this.state.ConsignedTo}
-                            onChange={(e) =>
-                              this.HselectChange(e, "ConsignedTo")
-                            }
-                          ></textarea>
-                          <div
-                            id="ConsignedTodiv"
-                            dangerouslySetInnerHTML={{
-                              __html: this.state.ConsignedTo,
-                            }}
-                            style={{ display: "none", whiteSpace: "pre-line" }}
-                          />
-                        </td>
-                        <td className="t-50">
-                          FORWARDING AGENT FMC NO.
-                          <input
-                            id="FMCnumber"
-                            style={{
-                              display: "block",
-                            }}
-                            value={FMCnumber}
-                            onChange={(e) => this.HselectChange(e, "FMCnumber")}
-                          />
-                          <div
-                            id="FMCnumberdiv"
-                            dangerouslySetInnerHTML={{
-                              __html: FMCnumber,
-                            }}
-                            style={{ display: "none", whiteSpace: "pre-line" }}
-                          />
-                        </td>
-                      </tr>
-                      <tr>
-                        <td colSpan={2} className="t-50">
-                          POINT (STATE) OF ORIGIN OR FTZ NUMBER<br></br>
-                          <textarea
-                            name="Body"
-                            style={{
-                              width: "100%",
-                              height: "60px",
-                              display: "block",
-                            }}
-                            labelText="Body"
-                            id="pointState"
-                            value={pointState}
-                            onChange={(e) =>
-                              this.HselectChange(e, "pointState")
-                            }
-                          ></textarea>
-                          <div
-                            id="pointStatediv"
-                            dangerouslySetInnerHTML={{
-                              __html: pointState,
-                            }}
-                            style={{ display: "none", whiteSpace: "pre-line" }}
-                          />
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="t-50">
-                          NOTIFY PARTY/INTERMEDIATE CONSIGNEE<br></br>
-                          <div className="hbl-textarea">
+            <Dialog
+              open={this.state.HBLdocOpen}
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description"
+              className="large-Modal"
+            >
+              <DialogTitle id="alert-dialog-title">Genrate HBL</DialogTitle>
+              <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                  <div className="hbl-outer">
+                    <div id="HBL" class="page">
+                      <table className="hbl-table">
+                        <tr>
+                          <th className="text-left t-50">
+                            SFL WORLDWIDE LLC <br></br>
+                            <small>FMC-OTI NO. 025184N</small>
+                          </th>
+                          <th className="text-right t-50">
+                            BILL OF LADING<br></br>
+                            <small>
+                              FOR PORT-TO-PORT OR COMBINED TRANSPORT
+                            </small>
+                          </th>
+                        </tr>
+                      </table>
+                      <table className="hbl-table">
+                        <tr>
+                          <td rowSpan={3} className="t-50">
+                            SHIPPER/EXPORTER COMPLETE NAME AND ADDRESS<br></br>
                             <textarea
-                              id="ConsigneeDetails"
+                              id="ShipperExportor"
+                              name="Body"
+                              style={{
+                                width: "100%",
+                                height: "120px",
+                                display: "block",
+                              }}
+                              labelText="Body"
+                              //KRUTIU
+                              value={this.state.ShipperExportor}
+                              onChange={(e) =>
+                                this.HselectChange(e, "ShipperExportor")
+                              }
+                            ></textarea>
+                            <div
+                              id="ShipperExportordiv"
+                              dangerouslySetInnerHTML={{
+                                __html: this.state.ShipperExportor,
+                              }}
+                              style={{
+                                display: "none",
+                                whiteSpace: "pre-line",
+                              }}
+                            />
+                          </td>
+                          <td className="t-25">
+                            BOOKING NUMBER<br></br>
+                            <input
+                              id="BookingNumber"
+                              name="Body"
+                              style={{
+                                display: "block",
+                              }}
+                              value={BookingNumber}
+                              onChange={(e) =>
+                                this.HselectChange(e, "BookingNumber")
+                              }
+                            />
+                            <div
+                              id="BookingNumberdiv"
+                              dangerouslySetInnerHTML={{
+                                __html: BookingNumber,
+                              }}
+                              style={{
+                                display: "none",
+                                whiteSpace: "pre-line",
+                              }}
+                            />
+                          </td>
+                          <td className="t-25">
+                            CONTAINER NUMBER<br></br>
+                            <input
+                              id="HContainerNumber"
+                              style={{
+                                display: "block",
+                              }}
+                              value={HContainerNumber}
+                              onChange={(e) =>
+                                this.HselectChange(e, "HContainerNumber")
+                              }
+                            />
+                            <div
+                              id="HContainerNumberdiv"
+                              dangerouslySetInnerHTML={{
+                                __html: HContainerNumber,
+                              }}
+                              style={{
+                                display: "none",
+                                whiteSpace: "pre-line",
+                              }}
+                            />
+                          </td>
+                        </tr>
+                        <tr>
+                          <td colSpan={2} className="t-50">
+                            BILL OF LANDING NUMBER<br></br>
+                            <input
+                              id="BLNumber"
+                              style={{
+                                display: "block",
+                              }}
+                              value={BLNumber}
+                              onChange={(e) =>
+                                this.HselectChange(e, "BLNumber")
+                              }
+                            />
+                            <div
+                              id="BLNumberdiv"
+                              dangerouslySetInnerHTML={{
+                                __html: BLNumber,
+                              }}
+                              style={{
+                                display: "none",
+                                whiteSpace: "pre-line",
+                              }}
+                            />
+                          </td>
+                        </tr>
+                        <tr>
+                          <td colSpan={2} className="t-50">
+                            EXPORT REFERENCES<br></br>
+                            <input
+                              id="TrackingNumber"
+                              style={{
+                                display: "block",
+                              }}
+                              value={pTrackingNumber}
+                              onChange={(e) =>
+                                this.HselectChange(e, "TrackingNumber")
+                              }
+                            />
+                            <div
+                              id="TrackingNumberdiv"
+                              dangerouslySetInnerHTML={{
+                                __html: pTrackingNumber,
+                              }}
+                              style={{
+                                display: "none",
+                                whiteSpace: "pre-line",
+                              }}
+                            />
+                          </td>
+                        </tr>
+                      </table>
+                      <table className="hbl-table">
+                        <tr>
+                          <td rowSpan={2} className="t-50">
+                            CONSIGNED TO<br></br>
+                            <textarea
+                              id="ConsignedTo"
                               name="Body"
                               style={{
                                 width: "100%",
@@ -4189,368 +4114,486 @@ class editContainer extends Component {
                                 display: "block",
                               }}
                               labelText="Body"
-                              value={this.state.ConsigneeDetails}
+                              //KRUTIU
+                              value={this.state.ConsignedTo}
                               onChange={(e) =>
-                                this.HselectChange(e, "ConsigneeDetails")
+                                this.HselectChange(e, "ConsignedTo")
                               }
                             ></textarea>
                             <div
-                              id="border-hidediv"
+                              id="ConsignedTodiv"
                               dangerouslySetInnerHTML={{
-                                __html: this.state.ConsigneeDetails,
+                                __html: this.state.ConsignedTo,
                               }}
                               style={{
                                 display: "none",
                                 whiteSpace: "pre-line",
                               }}
                             />
-                          </div>
-                        </td>
-                        <td className="t-50">
-                          FOR DELIVERY PLEASE APPLY TO <br />
-                          <textarea
-                            id="APPLYTO"
-                            name="Body"
-                            style={{ width: "100%", height: "100px" }}
-                            labelText="Body"
-                            value={this.state.APPLYTO}
-                            onChange={(e) => this.HselectChange(e, "APPLYTO")}
-                          ></textarea>
-                          <div
-                            id="APPLYTOdiv"
-                            dangerouslySetInnerHTML={{
-                              __html: this.state.APPLYTO,
-                            }}
-                            style={{ display: "none", whiteSpace: "pre-line" }}
-                          />
-                        </td>
-                      </tr>
-                    </table>
-                    <table className="hbl-table">
-                      <tr>
-                        <td className="t-25">
-                          VESSEL<br></br>
-                          <textarea
-                            id="Vessel"
-                            name="Body"
-                            style={{
-                              width: "100%",
-                              height: "50px",
-                              display: "block",
-                            }}
-                            labelText="Body"
-                            value={Vessel}
-                            onChange={(e) => this.HselectChange(e, "Vessel")}
-                          ></textarea>
-                          <div
-                            id="Vesseldiv"
-                            dangerouslySetInnerHTML={{
-                              __html: Vessel,
-                            }}
-                            style={{ display: "none", whiteSpace: "pre-line" }}
-                          />
-                        </td>
-                        <td className="t-25">
-                          PORT OF LOADING/EXPORT<br></br>
-                          <textarea
-                            id="Export"
-                            name="Body"
-                            style={{
-                              width: "100%",
-                              height: "50px",
-                              display: "block",
-                            }}
-                            labelText="Body"
-                            value={Export}
-                            onChange={(e) => this.HselectChange(e, "Export")}
-                          ></textarea>
-                          <div
-                            id="Exportdiv"
-                            dangerouslySetInnerHTML={{
-                              __html: Export,
-                            }}
-                            style={{ display: "none", whiteSpace: "pre-line" }}
-                          />
-                        </td>
-                        <td className="t-50">
-                          TYPE OF MOVE<br></br>
-                          <textarea
-                            id="TypeOfMove"
-                            name="Body"
-                            style={{
-                              width: "100%",
-                              height: "50px",
-                              display: "block",
-                            }}
-                            labelText="Body"
-                            value={TypeOfMove}
-                            onChange={(e) =>
-                              this.HselectChange(e, "TypeOfMove")
-                            }
-                          ></textarea>
-                          <div
-                            id="TypeOfMovediv"
-                            dangerouslySetInnerHTML={{
-                              __html: TypeOfMove,
-                            }}
-                            style={{ display: "none", whiteSpace: "pre-line" }}
-                          />
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="t-25">
-                          FOREIGN PORT OF UNLOADING<br></br>
-                          <textarea
-                            id="Unloading"
-                            name="Body"
-                            style={{
-                              width: "100%",
-                              height: "50px",
-                              display: "block",
-                            }}
-                            labelText="Body"
-                            value={Unloading}
-                            onChange={(e) => this.HselectChange(e, "Unloading")}
-                          ></textarea>
-                          <div
-                            id="Unloadingdiv"
-                            dangerouslySetInnerHTML={{
-                              __html: Unloading,
-                            }}
-                            style={{ display: "none", whiteSpace: "pre-line" }}
-                          />
-                        </td>
-                        <td className="t-25">
-                          PLACE OF DELIVERY BY ON-CARRIER<br></br>
-                          <textarea
-                            id="develiverd"
-                            name="Body"
-                            style={{
-                              width: "100%",
-                              height: "50px",
-                              display: "block",
-                            }}
-                            labelText="Body"
-                            value={develiverd}
-                            onChange={(e) =>
-                              this.HselectChange(e, "develiverd")
-                            }
-                          ></textarea>
-                          <div
-                            id="develiverddiv"
-                            dangerouslySetInnerHTML={{
-                              __html: develiverd,
-                            }}
-                            style={{ display: "none", whiteSpace: "pre-line" }}
-                          />
-                        </td>
-                        <td className="t-50"></td>
-                      </tr>
-                      <tr>
-                        <td className="t-50" colSpan={2}>
-                          CARRIER'S RECEIPT
-                        </td>
-                        <td className="t-50">
-                          PARTICULARS FURNISHED BY SHIPPER
-                        </td>
-                      </tr>
-                    </table>
-                    <table className="hbl-table">
-                      <tr>
-                        <th>MARKS AND NUMBER</th>
-                        <th>Total No. of PKGS.</th>
-                        <th>DESCRIPTION OF PACKAGES AND GOODS</th>
-                        <th>GROSS WEIGHT</th>
-                        <th>MEASUREMENT</th>
-                      </tr>
-                      <tr>
-                        <td>
-                          <textarea
-                            id="Sequencelist"
-                            name="Body"
-                            style={{
-                              width: "100%",
-                              height: "150px",
-                              display: "block",
-                            }}
-                            labelText="Body"
-                            value={this.state.Sequencelist}
-                            onChange={(e) =>
-                              this.HselectChange(e, "Sequencelist")
-                            }
-                          ></textarea>
-                          <div
-                            id="Sequencelistdiv"
-                            dangerouslySetInnerHTML={{
-                              __html: this.state.Sequencelist,
-                            }}
-                            style={{ display: "none", whiteSpace: "pre-line" }}
-                          />
-                        </td>
-                        <td>
-                          <textarea
-                            id="PackageNumber"
-                            name="Body"
-                            style={{
-                              width: "100%",
-                              height: "150px",
-                              display: "block",
-                            }}
-                            labelText="Body"
-                            value={PackageNumber}
-                            onChange={(e) =>
-                              this.HselectChange(e, "PackageNumber")
-                            }
-                          ></textarea>
-                          <div
-                            id="PackageNumberdiv"
-                            dangerouslySetInnerHTML={{
-                              __html: PackageNumber,
-                            }}
-                            style={{ display: "none", whiteSpace: "pre-line" }}
-                          />
-                        </td>
-                        <td>
-                          <textarea
-                            id="description"
-                            name="Body"
-                            style={{
-                              width: "100%",
-                              height: "150px",
-                              display: "block",
-                            }}
-                            labelText="Body"
-                            value={description}
-                            onChange={(e) =>
-                              this.HselectChange(e, "description")
-                            }
-                          ></textarea>
-                          <div
-                            id="descriptiondiv"
-                            dangerouslySetInnerHTML={{
-                              __html: description,
-                            }}
-                            style={{ display: "none", whiteSpace: "pre-line" }}
-                          />
-                        </td>
-                        <td>
-                          <textarea
-                            id="WEIGHT"
-                            name="Body"
-                            style={{
-                              width: "100%",
-                              height: "150px",
-                              display: "block",
-                            }}
-                            labelText="Body"
-                            value={WEIGHT}
-                            onChange={(e) => this.HselectChange(e, "WEIGHT")}
-                          ></textarea>
-                          <div
-                            id="WEIGHTdiv"
-                            dangerouslySetInnerHTML={{
-                              __html: WEIGHT,
-                            }}
-                            style={{ display: "none", whiteSpace: "pre-line" }}
-                          />
-                        </td>
-                        <td>
-                          <textarea
-                            id="MEASUREMENT"
-                            name="Body"
-                            style={{
-                              width: "100%",
-                              height: "150px",
-                              display: "block",
-                            }}
-                            labelText="Body"
-                            value={MEASUREMENT}
-                            onChange={(e) =>
-                              this.HselectChange(e, "MEASUREMENT")
-                            }
-                          ></textarea>
-                          <div
-                            id="MEASUREMENTdiv"
-                            dangerouslySetInnerHTML={{
-                              __html: MEASUREMENT,
-                            }}
-                            style={{ display: "none", whiteSpace: "pre-line" }}
-                          />
-                        </td>
-                      </tr>
+                          </td>
+                          <td className="t-50">
+                            FORWARDING AGENT FMC NO.
+                            <input
+                              id="FMCnumber"
+                              style={{
+                                display: "block",
+                              }}
+                              value={FMCnumber}
+                              onChange={(e) =>
+                                this.HselectChange(e, "FMCnumber")
+                              }
+                            />
+                            <div
+                              id="FMCnumberdiv"
+                              dangerouslySetInnerHTML={{
+                                __html: FMCnumber,
+                              }}
+                              style={{
+                                display: "none",
+                                whiteSpace: "pre-line",
+                              }}
+                            />
+                          </td>
+                        </tr>
+                        <tr>
+                          <td colSpan={2} className="t-50">
+                            POINT (STATE) OF ORIGIN OR FTZ NUMBER<br></br>
+                            <textarea
+                              name="Body"
+                              style={{
+                                width: "100%",
+                                height: "60px",
+                                display: "block",
+                              }}
+                              labelText="Body"
+                              id="pointState"
+                              value={pointState}
+                              onChange={(e) =>
+                                this.HselectChange(e, "pointState")
+                              }
+                            ></textarea>
+                            <div
+                              id="pointStatediv"
+                              dangerouslySetInnerHTML={{
+                                __html: pointState,
+                              }}
+                              style={{
+                                display: "none",
+                                whiteSpace: "pre-line",
+                              }}
+                            />
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="t-50">
+                            NOTIFY PARTY/INTERMEDIATE CONSIGNEE<br></br>
+                            <div className="hbl-textarea">
+                              <textarea
+                                id="ConsigneeDetails"
+                                name="Body"
+                                style={{
+                                  width: "100%",
+                                  height: "100px",
+                                  display: "block",
+                                }}
+                                labelText="Body"
+                                value={this.state.ConsigneeDetails}
+                                onChange={(e) =>
+                                  this.HselectChange(e, "ConsigneeDetails")
+                                }
+                              ></textarea>
+                              <div
+                                id="border-hidediv"
+                                dangerouslySetInnerHTML={{
+                                  __html: this.state.ConsigneeDetails,
+                                }}
+                                style={{
+                                  display: "none",
+                                  whiteSpace: "pre-line",
+                                }}
+                              />
+                            </div>
+                          </td>
+                          <td className="t-50">
+                            FOR DELIVERY PLEASE APPLY TO <br />
+                            <textarea
+                              id="APPLYTO"
+                              name="Body"
+                              style={{ width: "100%", height: "100px" }}
+                              labelText="Body"
+                              value={this.state.APPLYTO}
+                              onChange={(e) => this.HselectChange(e, "APPLYTO")}
+                            ></textarea>
+                            <div
+                              id="APPLYTOdiv"
+                              dangerouslySetInnerHTML={{
+                                __html: this.state.APPLYTO,
+                              }}
+                              style={{
+                                display: "none",
+                                whiteSpace: "pre-line",
+                              }}
+                            />
+                          </td>
+                        </tr>
+                      </table>
+                      <table className="hbl-table">
+                        <tr>
+                          <td className="t-25">
+                            VESSEL<br></br>
+                            <textarea
+                              id="Vessel"
+                              name="Body"
+                              style={{
+                                width: "100%",
+                                height: "50px",
+                                display: "block",
+                              }}
+                              labelText="Body"
+                              value={Vessel}
+                              onChange={(e) => this.HselectChange(e, "Vessel")}
+                            ></textarea>
+                            <div
+                              id="Vesseldiv"
+                              dangerouslySetInnerHTML={{
+                                __html: Vessel,
+                              }}
+                              style={{
+                                display: "none",
+                                whiteSpace: "pre-line",
+                              }}
+                            />
+                          </td>
+                          <td className="t-25">
+                            PORT OF LOADING/EXPORT<br></br>
+                            <textarea
+                              id="Export"
+                              name="Body"
+                              style={{
+                                width: "100%",
+                                height: "50px",
+                                display: "block",
+                              }}
+                              labelText="Body"
+                              value={Export}
+                              onChange={(e) => this.HselectChange(e, "Export")}
+                            ></textarea>
+                            <div
+                              id="Exportdiv"
+                              dangerouslySetInnerHTML={{
+                                __html: Export,
+                              }}
+                              style={{
+                                display: "none",
+                                whiteSpace: "pre-line",
+                              }}
+                            />
+                          </td>
+                          <td className="t-50">
+                            TYPE OF MOVE<br></br>
+                            <textarea
+                              id="TypeOfMove"
+                              name="Body"
+                              style={{
+                                width: "100%",
+                                height: "50px",
+                                display: "block",
+                              }}
+                              labelText="Body"
+                              value={TypeOfMove}
+                              onChange={(e) =>
+                                this.HselectChange(e, "TypeOfMove")
+                              }
+                            ></textarea>
+                            <div
+                              id="TypeOfMovediv"
+                              dangerouslySetInnerHTML={{
+                                __html: TypeOfMove,
+                              }}
+                              style={{
+                                display: "none",
+                                whiteSpace: "pre-line",
+                              }}
+                            />
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="t-25">
+                            FOREIGN PORT OF UNLOADING<br></br>
+                            <textarea
+                              id="Unloading"
+                              name="Body"
+                              style={{
+                                width: "100%",
+                                height: "50px",
+                                display: "block",
+                              }}
+                              labelText="Body"
+                              value={Unloading}
+                              onChange={(e) =>
+                                this.HselectChange(e, "Unloading")
+                              }
+                            ></textarea>
+                            <div
+                              id="Unloadingdiv"
+                              dangerouslySetInnerHTML={{
+                                __html: Unloading,
+                              }}
+                              style={{
+                                display: "none",
+                                whiteSpace: "pre-line",
+                              }}
+                            />
+                          </td>
+                          <td className="t-25">
+                            PLACE OF DELIVERY BY ON-CARRIER<br></br>
+                            <textarea
+                              id="develiverd"
+                              name="Body"
+                              style={{
+                                width: "100%",
+                                height: "50px",
+                                display: "block",
+                              }}
+                              labelText="Body"
+                              value={develiverd}
+                              onChange={(e) =>
+                                this.HselectChange(e, "develiverd")
+                              }
+                            ></textarea>
+                            <div
+                              id="develiverddiv"
+                              dangerouslySetInnerHTML={{
+                                __html: develiverd,
+                              }}
+                              style={{
+                                display: "none",
+                                whiteSpace: "pre-line",
+                              }}
+                            />
+                          </td>
+                          <td className="t-50"></td>
+                        </tr>
+                        <tr>
+                          <td className="t-50" colSpan={2}>
+                            CARRIER'S RECEIPT
+                          </td>
+                          <td className="t-50">
+                            PARTICULARS FURNISHED BY SHIPPER
+                          </td>
+                        </tr>
+                      </table>
+                      <table className="hbl-table">
+                        <tr>
+                          <th>MARKS AND NUMBER</th>
+                          <th>Total No. of PKGS.</th>
+                          <th>DESCRIPTION OF PACKAGES AND GOODS</th>
+                          <th>GROSS WEIGHT</th>
+                          <th>MEASUREMENT</th>
+                        </tr>
+                        <tr>
+                          <td>
+                            <textarea
+                              id="Sequencelist"
+                              name="Body"
+                              style={{
+                                width: "100%",
+                                height: "150px",
+                                display: "block",
+                              }}
+                              labelText="Body"
+                              value={this.state.Sequencelist}
+                              onChange={(e) =>
+                                this.HselectChange(e, "Sequencelist")
+                              }
+                            ></textarea>
+                            <div
+                              id="Sequencelistdiv"
+                              dangerouslySetInnerHTML={{
+                                __html: this.state.Sequencelist,
+                              }}
+                              style={{
+                                display: "none",
+                                whiteSpace: "pre-line",
+                              }}
+                            />
+                          </td>
+                          <td>
+                            <textarea
+                              id="PackageNumber"
+                              name="Body"
+                              style={{
+                                width: "100%",
+                                height: "150px",
+                                display: "block",
+                              }}
+                              labelText="Body"
+                              value={PackageNumber}
+                              onChange={(e) =>
+                                this.HselectChange(e, "PackageNumber")
+                              }
+                            ></textarea>
+                            <div
+                              id="PackageNumberdiv"
+                              dangerouslySetInnerHTML={{
+                                __html: PackageNumber,
+                              }}
+                              style={{
+                                display: "none",
+                                whiteSpace: "pre-line",
+                              }}
+                            />
+                          </td>
+                          <td>
+                            <textarea
+                              id="description"
+                              name="Body"
+                              style={{
+                                width: "100%",
+                                height: "150px",
+                                display: "block",
+                              }}
+                              labelText="Body"
+                              value={description}
+                              onChange={(e) =>
+                                this.HselectChange(e, "description")
+                              }
+                            ></textarea>
+                            <div
+                              id="descriptiondiv"
+                              dangerouslySetInnerHTML={{
+                                __html: description,
+                              }}
+                              style={{
+                                display: "none",
+                                whiteSpace: "pre-line",
+                              }}
+                            />
+                          </td>
+                          <td>
+                            <textarea
+                              id="WEIGHT"
+                              name="Body"
+                              style={{
+                                width: "100%",
+                                height: "150px",
+                                display: "block",
+                              }}
+                              labelText="Body"
+                              value={WEIGHT}
+                              onChange={(e) => this.HselectChange(e, "WEIGHT")}
+                            ></textarea>
+                            <div
+                              id="WEIGHTdiv"
+                              dangerouslySetInnerHTML={{
+                                __html: WEIGHT,
+                              }}
+                              style={{
+                                display: "none",
+                                whiteSpace: "pre-line",
+                              }}
+                            />
+                          </td>
+                          <td>
+                            <textarea
+                              id="MEASUREMENT"
+                              name="Body"
+                              style={{
+                                width: "100%",
+                                height: "150px",
+                                display: "block",
+                              }}
+                              labelText="Body"
+                              value={MEASUREMENT}
+                              onChange={(e) =>
+                                this.HselectChange(e, "MEASUREMENT")
+                              }
+                            ></textarea>
+                            <div
+                              id="MEASUREMENTdiv"
+                              dangerouslySetInnerHTML={{
+                                __html: MEASUREMENT,
+                              }}
+                              style={{
+                                display: "none",
+                                whiteSpace: "pre-line",
+                              }}
+                            />
+                          </td>
+                        </tr>
 
-                      <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td>Kgs</td>
-                        <td>CBM</td>
-                      </tr>
-                    </table>
-                    <table className="hbl-table">
-                      <tr>
-                        <td colSpan={2}>
-                          DECLARED VALUE (FOR AD VALOREM PURPOSE ONLY). (REFER
-                          TO CLAUSE 26 ON REVERSE HEREOFF) IN US$
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="t-50">
-                          In accepting this bill of lading, any local customs or
-                          privileges to the contrary notwithstanding, the
-                          shipper, consignee and owner of the goods and the
-                          holder of this bill of lading, agree to be bound by
-                          all the stipulations, exceptions and conditions stated
-                          herein whether written, printed, stamped or
-                          incorporated on the front or reverse side hereof as
-                          fully as if they were all signed by such shipper,
-                          consignee, owner or holder<br></br>
-                          In witness whereof three (3) bills of lading, all of
-                          the tenor and date have been signed, one of which
-                          being accomplished, the others to stand void.
-                        </td>
-                        <td className="t-50">
-                          FREIGHT AND CHARGES<br></br>
-                          DESCRIPTION OF CHARGES <br></br>FREIGHT PREPAID
-                          {/* <img src={stamp} width="100" border="0" /> */}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="t-50">
-                          BY : SFL WORLDWIDE LLC, AS A CARRIER
-                          {/* <img src={pshah} width="100" border="0" /> */}
-                        </td>
-                        <td className="t-50">TOTAL PREPAID</td>
-                      </tr>
-                      <tr>
-                        <td className="t-50">
-                          DATE (MM/DD/YYYY)<br></br>
-                          {this.state.HCreatedDate}
-                        </td>
-                        <td className="t-50">TOTAL COLLECT</td>
-                      </tr>
-                    </table>
+                        <tr>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td>Kgs</td>
+                          <td>CBM</td>
+                        </tr>
+                      </table>
+                      <table className="hbl-table">
+                        <tr>
+                          <td colSpan={2}>
+                            DECLARED VALUE (FOR AD VALOREM PURPOSE ONLY). (REFER
+                            TO CLAUSE 26 ON REVERSE HEREOFF) IN US$
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="t-50">
+                            In accepting this bill of lading, any local customs
+                            or privileges to the contrary notwithstanding, the
+                            shipper, consignee and owner of the goods and the
+                            holder of this bill of lading, agree to be bound by
+                            all the stipulations, exceptions and conditions
+                            stated herein whether written, printed, stamped or
+                            incorporated on the front or reverse side hereof as
+                            fully as if they were all signed by such shipper,
+                            consignee, owner or holder<br></br>
+                            In witness whereof three (3) bills of lading, all of
+                            the tenor and date have been signed, one of which
+                            being accomplished, the others to stand void.
+                          </td>
+                          <td className="t-50">
+                            FREIGHT AND CHARGES<br></br>
+                            DESCRIPTION OF CHARGES <br></br>FREIGHT PREPAID
+                            {/* <img src={stamp} width="100" border="0" /> */}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="t-50">
+                            BY : SFL WORLDWIDE LLC, AS A CARRIER
+                            {/* <img src={pshah} width="100" border="0" /> */}
+                          </td>
+                          <td className="t-50">TOTAL PREPAID</td>
+                        </tr>
+                        <tr>
+                          <td className="t-50">
+                            DATE (MM/DD/YYYY)<br></br>
+                            {this.state.HCreatedDate}
+                          </td>
+                          <td className="t-50">TOTAL COLLECT</td>
+                        </tr>
+                      </table>
+                    </div>
                   </div>
-                </div>
-              </DialogContentText>
-            </DialogContent>
-            <DialogActions>
-              <Button
-                onClick={() => this.setState({ HBLdocOpen: false })}
-                color="secondary"
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={() => this.generatePDF()}
-                color="primary"
-                autoFocus
-              >
-                Genrate
-              </Button>
-            </DialogActions>
-          </Dialog>
-        </div>
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button
+                  onClick={() => this.setState({ HBLdocOpen: false })}
+                  color="secondary"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={() => this.generatePDF()}
+                  color="primary"
+                  autoFocus
+                >
+                  Genrate
+                </Button>
+              </DialogActions>
+            </Dialog>
+          </div>
 
           <Dialog
             open={this.state.SetShiprecord}
@@ -4559,12 +4602,13 @@ class editContainer extends Component {
             // width="lg"
             className="large-Modal"
           >
-            <DialogTitle id="alert-dialog-titleHBL">Shipment Move to HBL</DialogTitle>
+            <DialogTitle id="alert-dialog-titleHBL">
+              Shipment Move to HBL
+            </DialogTitle>
             <DialogContent>
               <DialogContentText id="alert-dialog-descriptionHBL">
-              <div className="package-select">
-                
-              <GridItem xs={12} sm={12} md={12}>
+                <div className="package-select">
+                  <GridItem xs={12} sm={12} md={12}>
                     <div className="select-reacttable">
                       <ReactTable
                         data={this.state.HBLYesNOREC}
@@ -4580,15 +4624,11 @@ class editContainer extends Component {
                       />
                     </div>
                   </GridItem>
-              </div>
-                
+                </div>
               </DialogContentText>
             </DialogContent>
             <DialogActions>
-              <Button
-                onClick={() => this.closeDiv()}
-                color="secondary"
-              >
+              <Button onClick={() => this.closeDiv()} color="secondary">
                 Cancel
               </Button>
               {/* <Button
@@ -4607,41 +4647,35 @@ class editContainer extends Component {
             aria-describedby="alert-dialog-description"
             className="large-Modal"
           >
-            <DialogTitle id="alert-dialog-titleHBL">Shipment for HBL</DialogTitle>
+            <DialogTitle id="alert-dialog-titleHBL">
+              Shipment for HBL
+            </DialogTitle>
             <DialogContent>
               <DialogContentText id="alert-dialog-descriptionHBL">
-
-              <GridItem xs={12} sm={12} md={12}>
-                    <div className="select-reacttable">
-                      <ReactTable
-                        data={this.state.ShipmentListHBL}
-                        defaultFilterMethod={CommonConfig.filterCaseInsensitive}
-                        sortable={true}
-                        filterable={true}
-                        resizable={false}
-                        minRows={2}
-                        columns={shipColumsHBL}
-                        defaultPageSize={10}
-                        align="center"
-                        className="-striped -highlight"
-                      />
-                    </div>
-                  </GridItem>
-              
-                
+                <GridItem xs={12} sm={12} md={12}>
+                  <div className="select-reacttable">
+                    <ReactTable
+                      data={this.state.ShipmentListHBL}
+                      defaultFilterMethod={CommonConfig.filterCaseInsensitive}
+                      sortable={true}
+                      filterable={true}
+                      resizable={false}
+                      minRows={2}
+                      columns={shipColumsHBL}
+                      defaultPageSize={10}
+                      align="center"
+                      className="-striped -highlight"
+                    />
+                  </div>
+                </GridItem>
               </DialogContentText>
             </DialogContent>
             <DialogActions>
-              <Button
-                onClick={() => this.closeDivHBL()}
-                color="secondary"
-              >
+              <Button onClick={() => this.closeDivHBL()} color="secondary">
                 Cancel
               </Button>
-              
             </DialogActions>
           </Dialog>
-
 
           <Dialog
             open={this.state.DeleteRequest}
@@ -4679,7 +4713,6 @@ class editContainer extends Component {
               </Button>
             </DialogActions>
           </Dialog>
-
         </div>
 
         <Card>
@@ -4748,7 +4781,6 @@ class editContainer extends Component {
           </div>
         </div>
       </GridContainer>
-      
     );
   }
 }
