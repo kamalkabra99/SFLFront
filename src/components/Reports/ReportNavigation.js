@@ -134,6 +134,12 @@ class Reports extends Component {
           Icon: "fas fa-file",
           classname: "inactive",
         },
+        {
+          stepName: "Lead v/s Shipment Report",
+          stepId: "LeadShipmentReport",
+          Icon: "fas fa-file",
+          classname: "inactive",
+        },
       ],
       navigate: "",
     };
@@ -151,6 +157,7 @@ class Reports extends Component {
     this.LabelPrintingList();
     this.DownloadForms();
     this.SalesTeamProductivity();
+    this.LeadShipmentReport();
   }
 
   activeInactive = () => {
@@ -369,6 +376,21 @@ class Reports extends Component {
         let currentSteps = this.state.FedExSteps;
         let index = this.state.FedExSteps.findIndex(
           (x) => x.stepId === "SalesTeamProductivity"
+        );
+        currentSteps.splice(index, 1);
+        this.setState({ FedExSteps: currentSteps });
+      }
+    }
+  };
+  LeadShipmentReport = () => {
+    debugger;
+    if (CommonConfig.getUserAccess("Lead v/s Shipment Report")) {
+      if (
+        CommonConfig.getUserAccess("Lead v/s Shipment Report").ReadAccess === 0
+      ) {
+        let currentSteps = this.state.FedExSteps;
+        let index = this.state.FedExSteps.findIndex(
+          (x) => x.stepId === "LeadShipmentReport"
         );
         currentSteps.splice(index, 1);
         this.setState({ FedExSteps: currentSteps });
@@ -627,6 +649,13 @@ class Reports extends Component {
       } else if (step.stepId === "SalesTeamProductivity") {
         this.props.history.push({
           pathname: "SalesTeamProductivity",
+          state: {
+            id: step.stepId,
+          },
+        });
+      } else if (step.stepId === "LeadShipmentReport") {
+        this.props.history.push({
+          pathname: "LeadShipmentReport",
           state: {
             id: step.stepId,
           },

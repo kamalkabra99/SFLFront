@@ -233,6 +233,29 @@ export class CommonConfig {
     return success;
   };
 
+  static dollerSortMethod = function(a, b) {
+    // Remove '$' sign and any commas, and convert currency strings to numbers
+    if (a) {
+      a = parseFloat(a.replace("$", "").replace(/,/g, ""));
+    }
+    if (b) {
+      b = parseFloat(b.replace("$", "").replace(/,/g, ""));
+    }
+    // Compare the numbers and return 1 if 'a' comes after 'b', -1 otherwise
+    return a > b ? 1 : -1;
+  };
+
+  static percentageSortMethod = function(a, b) {
+    // Remove '%' sign and convert percentage strings to numbers
+    if (a) {
+      a = parseFloat(a.replace("%", ""));
+    }
+    if (b) {
+      b = parseFloat(b.replace("%", ""));
+    }
+    // Compare the numbers and return 1 if 'a' comes after 'b', -1 otherwise
+    return a > b ? 1 : -1;
+  };
   static dateSortMethod = function(a, b) {
     if (a) {
       a = a.split("/");

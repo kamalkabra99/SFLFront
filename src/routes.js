@@ -70,6 +70,7 @@ import zebraPrintOutput from "./components/Reports/zebraPrintOutput";
 import zebraPrintOut from "./components/Reports/zebraPrintout";
 import DownloadForms from "./components/Reports/DownloadForms";
 import SalesTeamProductivity from "./components/Reports/SalesTeamProductivity";
+import LeadShipmentReport from "./components/Reports/LeadShipmentReport";
 import AddDownloadForms from "./components/Reports/AddDownloadForms";
 import AllSalesReports from "components/Reports/AllSalesReports";
 import ShipmentReport from "components/Reports/ShipmentReport";
@@ -436,6 +437,14 @@ var dashRoutes = [
     name: "Sales Team Productivity",
     icon: User,
     component: SalesTeamProductivity,
+    layout: "/admin",
+    invisible: true,
+  },
+  {
+    path: "/LeadShipmentReport",
+    name: "LeadShipmentReport",
+    icon: User,
+    component: LeadShipmentReport,
     layout: "/admin",
     invisible: true,
   },

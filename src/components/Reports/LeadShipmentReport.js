@@ -18,46 +18,44 @@ import api from "../../utils/apiClient";
 import { CommonConfig } from "../../utils/constant";
 import moment from "moment";
 import ReactTable from "react-table";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 
 const useStyles = () => makeStyles(styles);
 const classes = useStyles();
 
-class SalesTeamProductivity extends Component {
+class LeadShipmentReport extends Component {
   constructor(props) {
     super(props);
     this.state = {
       StartDate: "",
       EndDate: "",
       SerachList: [],
-      finalAmount: 0,
-      finalLength: 0,
       Loading: false,
       ToDateAllSales: "",
       FromDateAllSales: "",
+      CountryList: [],
+      selectedCountry: "",
     };
   }
-
-  setLength = (len) => {
-    this.setState({ finalLength: len });
-  };
-  finalAmount = (amountData) => {
-    let amount = 0;
-    for (var j = 0; j < amountData.length; j++) {
-      amount = amount + Number(amountData[j].Amount.replace("$", ""));
-    }
-    this.setState({
-      finalAmount: parseFloat(amount).toFixed(2),
-    });
-  };
-
-  checkProps = (e) => {
-    if (this.state.finalLength !== e.sortedData.length) {
-      this.setLength(e.sortedData.length);
-      this.finalAmount(e.sortedData);
-    }
-    return "";
-  };
-
+  componentDidMount() {
+    this.getCountry();
+  }
+  getCountry() {
+    this.showLoader();
+    try {
+      api
+        .get("location/getCountryList")
+        .then((res) => {
+          if (res.success) {
+            var Country = res.data;
+            this.setState({ CountryList: Country });
+          }
+        })
+        .catch((err) => {
+          console.log("err..", err);
+        });
+    } catch (error) {}
+  }
   hideLoader = () => {
     this.setState({ Loading: false });
   };
@@ -76,11 +74,9 @@ class SalesTeamProductivity extends Component {
       ToDateAllSales: "",
       FromDateAllSales: "",
       SerachList: [],
-      finalAmount: 0,
-      finalLength: 0,
     });
   };
-  searchSalesLeadproductivity = () => {
+  searchLeadShipmentReport = () => {
     try {
       let data = {
         FromDate: CommonConfig.isEmpty(this.state.FromDateAllSales)
@@ -95,12 +91,16 @@ class SalesTeamProductivity extends Component {
               .endOf("day")
               .format(CommonConfig.dateFormat.dbDateTime)
               .toString(),
+        CountryID: this.state.selectedCountry
+          ? this.state.selectedCountry.value
+          : "",
       };
-      if (data.FromDate === "" || data.ToDate === "") {
-        return cogoToast.error("Please select From Date and To Date");
+      debugger;
+      if (data.FromDate === "" || data.ToDate === "" || data.CountryID === "") {
+        return cogoToast.error("Please select From Date , To Date and Country");
       } else {
         api
-          .post("reports/GetSalesLeadProductivityReport", data)
+          .post("reports/GetLeadShipmenReport", data)
           .then((res) => {
             debugger;
 
@@ -108,31 +108,19 @@ class SalesTeamProductivity extends Component {
               const arrayOfObjects = res.data[0].map((obj) => {
                 // Find corresponding objects in other arrays based on id
                 const objFrom2 = res.data[1].find(
-                  (item) => item.UserID === obj.UserID
+                  (item) => item.CountryID === obj.CountryID
                 );
-                const objFrom3 = res.data[2].find(
-                  (item) => item.UserID === obj.UserID
-                );
-                const objFrom4 = res.data[3].find(
-                  (item) => item.UserID === obj.UserID
-                );
-                // Create a new object with combined properties
 
                 return {
-                  UserID: obj.UserID,
-                  Name: obj.Name,
-                  SalesLead: obj.SalesLeads,
-                  Shipments: objFrom2 ? objFrom2.Shipments : 0,
-                  PaymentReceived: objFrom3
-                    ? "$ " + objFrom3.PaymentRecived == null
-                      ? 0
-                      : "$ " + objFrom3.PaymentRecived
-                    : "$ " + 0,
-                  AllClear: objFrom4 ? "$ " + objFrom4.AllClear : "$ " + 0,
-                  Conversion:
-                    parseFloat(
-                      (objFrom2.Shipments / obj.SalesLeads) * 100
-                    ).toFixed(2) + " %",
+                  CountryID: obj.CountryID,
+                  CountryName: obj.CountryName,
+                  SalesLead: obj.SalesLead,
+                  Shipments: objFrom2 ? objFrom2.Shipment : 0,
+                  Conversion: objFrom2
+                    ? parseFloat(
+                        (objFrom2.Shipment / obj.SalesLead) * 100
+                      ).toFixed(2) + "%"
+                    : 0 + "%",
                 };
               });
 
@@ -155,26 +143,22 @@ class SalesTeamProductivity extends Component {
       cogoToast.error("Something went wrong");
     }
   };
-  resetCommissionAllSales = () => {
-    this.setState({
-      StartDate: "",
-      EndDate: "",
-    });
-  };
 
+  selectChangeTab1 = (event, value, type) => {
+    debugger;
+    if (value != null) {
+      if (type === "Country") {
+        this.setState({ selectedCountry: value });
+      }
+    }
+  };
   render() {
-    const {
-      StartDate,
-      EndDate,
-      SerachList,
-      finalAmount,
-      finalLength,
-    } = this.state;
+    const { StartDate, EndDate, SerachList, selectedCountry } = this.state;
     const columnsSearch = [
       {
-        Header: "Name",
-        id: "Name",
-        accessor: "Name",
+        Header: "CountryName",
+        id: "CountryName",
+        accessor: "CountryName",
         width: 150,
       },
       {
@@ -186,33 +170,21 @@ class SalesTeamProductivity extends Component {
       {
         Header: "Shipment",
         accessor: "Shipments",
+
         width: 100,
       },
       {
         Header: "Conversion",
-        accessor: "Conversion",
         sortMethod: (a, b) => {
           return CommonConfig.percentageSortMethod(a, b);
         },
-        width: 100,
-      },
-      {
-        Header: "Payment received",
-        accessor: "PaymentReceived",
-        sortMethod: (a, b) => {
-          return CommonConfig.dollerSortMethod(a, b);
-        },
-        width: 150,
-      },
-      {
-        Header: "Sales Clear",
-        accessor: "AllClear",
-        sortMethod: (a, b) => {
-          return CommonConfig.dollerSortMethod(a, b);
-        },
+        accessor: "Conversion",
         width: 100,
       },
     ];
+    const CountryOption = this.state.CountryList.map((Country) => {
+      return { value: Country.CountryID, label: Country.CountryName };
+    });
     return (
       <GridContainer justify="center" className="schedule-pickup-main-outer">
         <GridItem xs={12} sm={12}>
@@ -222,13 +194,13 @@ class SalesTeamProductivity extends Component {
                 <SalesLeadIcon />
               </CardIcon>
               <h4 className="margin-right-auto text-color-black">
-                Sales Team Productivity
+                Lead v/s Shipment Report
               </h4>
             </CardHeader>
             <CardBody>
               <div className="shipment-nav">
                 <GridContainer>
-                  <GridItem xs={12} sm={12} md={4} className="z-index-9">
+                  <GridItem xs={12} sm={3} md={4} className="z-index-9">
                     <div className="date-spl">
                       <InputLabel className={classes.label}>
                         Start Date
@@ -249,7 +221,7 @@ class SalesTeamProductivity extends Component {
                       </FormControl>
                     </div>
                   </GridItem>
-                  <GridItem xs={12} sm={12} md={4} className="z-index-9">
+                  <GridItem xs={12} sm={3} md={3} className="z-index-9">
                     <div className="date-spl">
                       <InputLabel className={classes.label}>
                         End Date
@@ -270,14 +242,35 @@ class SalesTeamProductivity extends Component {
                       </FormControl>
                     </div>
                   </GridItem>
+                  <GridItem xs={12} sm={3} md={3} className="z-index-9">
+                    <Autocomplete
+                      options={CountryOption}
+                      id="ToCountry"
+                      getOptionLabel={(option) =>
+                        option.label ? option.label : option
+                      }
+                      value={selectedCountry}
+                      autoSelect
+                      onChange={(event, value) =>
+                        this.selectChangeTab1(event, value, "Country")
+                      }
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          error={this.state.countryErr}
+                          helperText={this.state.countryHelperText}
+                          label="Sender Country"
+                          margin="normal"
+                          fullWidth
+                        />
+                      )}
+                    />
+                  </GridItem>
                   <GridItem>
                     <div className="right mt-20">
-                      {/* <Button color="secondary" onClick={() => this.reset()}>
-                        Reset
-                      </Button> */}
                       <Button
                         color="rose"
-                        onClick={() => this.searchSalesLeadproductivity()}
+                        onClick={() => this.searchLeadShipmentReport()}
                       >
                         Search
                       </Button>
@@ -288,7 +281,7 @@ class SalesTeamProductivity extends Component {
                   <GridContainer justify="center" className="mt-20">
                     <ReactTable
                       data={SerachList}
-                      minRows={2}
+                      minRows={4}
                       filterable
                       pageText={
                         "Total rows : " +
@@ -312,4 +305,4 @@ class SalesTeamProductivity extends Component {
     );
   }
 }
-export default SalesTeamProductivity;
+export default LeadShipmentReport;
