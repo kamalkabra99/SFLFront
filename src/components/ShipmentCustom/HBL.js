@@ -132,24 +132,27 @@ class HBL extends React.Component {
     this.state.TrackNO = localStorage.getItem("TrackNO")
     document.getElementById("TrackNO").innerHTML = this.state.TrackNO
 
+
+    this.state.fromContact = localStorage.getItem("FcontactName")
+    document.getElementById("fromContact").innerHTML = this.state.fromContact
+
     this.state.pFromAdd = localStorage.getItem("FromAddress")
     document.getElementById("FromAddress").innerHTML = this.state.pFromAdd
 
-    this.state.pFromCity = localStorage.getItem("fromCitys")
-    document.getElementById("fromCitys").innerHTML = this.state.pFromCity
+    // this.state.pFromCity = localStorage.getItem("fromCitys")
+    // document.getElementById("fromCitys").innerHTML = this.state.pFromCity
 
     
-    this.state.fromContact = localStorage.getItem("fromContact")
-    document.getElementById("fromContact").innerHTML = this.state.fromContact
+  
 
 
     this.state.TOAddress = localStorage.getItem("TOAddress")
     document.getElementById("TOAddress").innerHTML = this.state.TOAddress
 
-    this.state.TOCitys = localStorage.getItem("TOCitys")
-    document.getElementById("TOCitys").innerHTML = this.state.TOCitys
+    // this.state.TOCitys = localStorage.getItem("TOCitys")
+    // document.getElementById("TOCitys").innerHTML = this.state.TOCitys
 
-    this.state.TOContact = localStorage.getItem("TOContact")
+    this.state.TOContact = localStorage.getItem("TcontactName")
     document.getElementById("TOContact").innerHTML = this.state.TOContact
 
     this.state.dataHtml = localStorage.getItem("dataHtml")
@@ -158,9 +161,12 @@ class HBL extends React.Component {
    
 
     // this.state.dataHtml = localStorage.getItem("dataHtml")
-    document.getElementById("NotifyPartyCity").innerHTML = localStorage.getItem("NotifyPartyCity")
-    document.getElementById("NotifyPartyAddr3").innerHTML = localStorage.getItem("NotifyPartyAddr3")
-    document.getElementById("NotifyPartyPhone").innerHTML = localStorage.getItem("NotifyPartyPhone")
+    document.getElementById("NotifyNameParty").innerHTML = localStorage.getItem("NotifyNameParty")
+    document.getElementById("pPassportNumber").innerHTML = localStorage.getItem("pPassportNumber")
+    document.getElementById("GST").innerHTML = localStorage.getItem("GST")
+    
+    // document.getElementById("NotifyPartyAddr3").innerHTML = localStorage.getItem("NotifyPartyAddr3")
+    // document.getElementById("NotifyPartyPhone").innerHTML = localStorage.getItem("NotifyPartyPhone")
 
     document.getElementById("hblDate").innerHTML = localStorage.getItem("hblDate")
 
@@ -257,7 +263,7 @@ class HBL extends React.Component {
                     SHIPPER/EXPORTER COMPLETE NAME AND ADDRESS<br></br>
                       <label id = "fromContact"></label><br></br>
                       <label id = "FromAddress"></label><br></br>
-                      <label id = "fromCitys"></label>
+                      {/* <label id = "fromCitys"></label> */}
                     
                   </td>
                   <td className="t-25">
@@ -288,26 +294,33 @@ class HBL extends React.Component {
                     CONSIGNED TO<br></br>
                     <label id = "TOContact"></label><br></br>
                       <label id = "TOAddress"></label><br></br>
-                      <label id = "TOCitys"></label>
+                      <label id = "pPassportNumber"></label>
                     
                   </td>
-                  <td className="t-50">FORWARDING AGENT FMC NO.</td>
-                </tr>
-                <tr>
-                  <td colSpan={2} className="t-50">
+
+                  <td className="t-50">
                     POINT (STATE) OF ORIGIN OR FTZ NUMBER<br></br>
                     <label id = "pPointOfOrigin">{this.state.pPointOfOrigin}</label>
                     {/* Dallas, Texas */}
                   </td>
+                  {/* <td className="t-50">FORWARDING AGENT FMC NO.</td> */}
+                </tr>
+                <tr>
+                  <td colSpan={2} className="t-50">
+                    TYPE OF MOVE<br></br>
+                    <label>Console</label>
+                  </td>
+                  
                 </tr>
                 <tr>
                   <td className="t-50">
                     NOTIFY PARTY/INTERMEDIATE CONSIGNEE<br></br>
                     <div className="hbl-textarea">
+                    <label id = "NotifyNameParty"></label><br></br>
                       <label id = "pNotifyParty"></label><br></br>
-                      <label id = "NotifyPartyAddr3"></label><br></br>
-                      <label id = "NotifyPartyCity"></label><br></br>
-                      <label id = "NotifyPartyPhone"></label><br></br>
+                      
+                      <label id = "GST"></label><br></br>
+                      {/* <label id = "NotifyPartyPhone"></label><br></br> */}
                       
                       
                     </div>
@@ -321,7 +334,7 @@ class HBL extends React.Component {
               </table>
               <table className="hbl-table">
                 <tr>
-                  <td className="t-25">
+                  <td className="t-50">
                     VESSEL<br></br>
                     <label id = "pVesselNumber">{this.state.pVesselNumber}</label>
                     {/* <input
@@ -330,17 +343,14 @@ class HBL extends React.Component {
                     />{" "} */}
                     {/* MAERSK SELETAR 343E */}
                   </td>
-                  <td className="t-25">
+                  <td className="t-50">
                     PORT OF LOADING/EXPORT<br></br>
                     <label id = "pPortOfLoading">{this.state.pPortOfLoading}</label>
                   </td>
-                  <td className="t-50">
-                    TYPE OF MOVE<br></br>
-                    <label>Console</label>
-                  </td>
+                  
                 </tr>
                 <tr>
-                  <td className="t-25">
+                  <td className="t-50">
                     FOREIGN PORT OF UNLOADING<br></br>
                     <label id = "pPortOfUnloading">{this.state.pPortOfUnloading}</label>
                     {/* <input
@@ -349,7 +359,7 @@ class HBL extends React.Component {
                     />{" "} */}
                     {/* Nhava Sheva, India */}
                   </td>
-                  <td className="t-25">
+                  <td className="t-50">
                     PLACE OF DELIVERY BY ON-CARRIER<br></br>
                     <label id = "pPlaceOfDeliveryByOnCarrier">{this.state.pPlaceOfDeliveryByOnCarrier}</label>
                     {/* <input
@@ -358,13 +368,13 @@ class HBL extends React.Component {
                     />{" "} */}
                     {/* Nhava Sheva, India */}
                   </td>
-                  <td className="t-50"></td>
+                  {/* <td className="t-50"></td> */}
                 </tr>
                 <tr>
-                  <td className="t-50" colSpan={2}>
+                  {/* <td className="t-50" colSpan={2}>
                     CARRIER'S RECEIPT
-                  </td>
-                  <td className="t-50">PARTICULARS FURNISHED BY SHIPPER</td>
+                  </td> */}
+                  <td colSpan={2} className="t-50 textalign-center">PARTICULARS FURNISHED BY SHIPPER</td>
                 </tr>
               </table>
               <table className="hbl-table">
@@ -394,13 +404,13 @@ class HBL extends React.Component {
               </table>
               <table className="hbl-table">
                 <tr>
-                  <td colSpan={2}>
+                  <td className="fontsize-13" colSpan={2}>
                     DECLARED VALUE (FOR AD VALOREM PURPOSE ONLY). (REFER TO
                     CLAUSE 26 ON REVERSE HEREOFF) IN US$
                   </td>
                 </tr>
                 <tr>
-                  <td className="t-50">
+                  <td colSpan= {2} className="t-50 fontsize-13">
                     In accepting this bill of lading, any local customs or
                     privileges to the contrary notwithstanding, the shipper,
                     consignee and owner of the goods and the holder of this bill
@@ -413,27 +423,77 @@ class HBL extends React.Component {
                     tenor and date have been signed, one of which being
                     accomplished, the others to stand void.
                   </td>
-                  <td className="t-50">
+                  {/* <td className="t-50">
                     FREIGHT AND CHARGES<br></br>
                     DESCRIPTION OF CHARGES <br></br>FREIGHT PREPAID
                     <img src={stamp} width="100" border="0" />
-                  </td>
+                  </td> */}
                 </tr>
-                <tr>
+                {/* <tr>
                   <td className="t-50">
                     BY : SFL WORLDWIDE LLC, AS A CARRIER
                     <img src={pshah} width="100" border="0" />
                   </td>
                   <td className="t-50">TOTAL PREPAID</td>
-                </tr>
-                <tr>
+                </tr> */}
+                {/* <tr>
                   <td className="t-50">
                     DATE (MM/DD/YYYY)<br></br>
                     <label id = "hblDate"></label>
                   </td>
                   <td className="t-50">TOTAL COLLECT</td>
-                </tr>
+                </tr> */}
               </table>
+
+              <table className="hbl-table">
+                <thead>
+                  <tr>
+                    <th colSpan={2}>FREIGHT AND CHARGES</th>
+                    <th>BY: SFL WORLDWIDE LLC, AS A CARRIER</th>
+                  </tr>
+                </thead>
+                {/* <tbody id = "dataHtml"> */}
+                  <tr>
+                    <td className="t-25">
+                      FREIGHT (PREPAID)
+
+                    </td>
+
+                    <td className="t-25">
+                      NIL
+                    </td>
+
+                    
+                    <td rowSpan={2} className="t-50">
+
+                    <img src={pshah} width="100" border="0" />  
+
+                    <img src={stamp} width="100" border="0" className="img-spacing" />
+
+                    </td>
+
+                  </tr>
+                  <tr>
+                    <td className="t-25">Total</td>
+                    <td className="t-25">Prepaid</td>
+                    {/* <td className="t-50"></td> */}
+                  </tr>
+
+                  <tr>
+                    <td className="t-25">Total Collect</td>
+                    <td className="t-25">NIL</td>
+                    <td className="t-50">
+                    DATE (MM/DD/YYYY)<br></br>
+                    <label id = "hblDate"></label>
+                    </td>
+                  </tr>
+             
+
+            
+                
+              </table>
+
+
             </div>
           </div>
         

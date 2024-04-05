@@ -141,7 +141,7 @@ class TMSReport extends Component {
         debugger
 
         var managedByValue = 0
-        if (CommonConfig.getUserAccess("Time Booking").DeleteAccess ===
+        if (CommonConfig.getUserAccess("Time Booking Report").AllAccess ===
             1) {
             managedByValue = this.state.ManagedBy.value
         } else {
@@ -587,8 +587,8 @@ class TMSReport extends Component {
 
                                     <GridItem xs={12} sm={12} md={3}>
                                         <div className="date-spl">
-                                            {CommonConfig.getUserAccess("Time Booking").DeleteAccess ===
-                                                1 && CommonConfig.getUserAccess("Time Booking").ReadAccess ===
+                                            {CommonConfig.getUserAccess("Time Booking Report").AllAccess ===
+                                                1 && CommonConfig.getUserAccess("Time Booking Report").ReadAccess ===
                                                 1 ? (
                                                 <Autocomplete
                                                     id="combo-box-demo"

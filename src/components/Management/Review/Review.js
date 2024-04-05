@@ -27,7 +27,7 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import cogoToast from "cogo-toast";
 
 // const backendurl = "https://hubuatapi.sflworldwide.com/"; //cloud production
-const backendurl = "https://hubapi.sflworldwide.com/"; //Hostgater production
+const backendurl = "https://docs.sflworldwide.com/"; //Hostgater production
 class Review extends Component {
   constructor(props) {
     super(props);

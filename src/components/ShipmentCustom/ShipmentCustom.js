@@ -2864,7 +2864,7 @@ class ShipmentCustom extends React.Component {
         }
       })
       .catch((error) => {
-        cogoToast.error("Something Went Wrong");
+        // cogoToast.error("Something Went Wrong");
       });
   }
 

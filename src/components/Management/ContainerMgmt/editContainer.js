@@ -35,6 +35,8 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
+import stamp from "../../../assets/img/HBL/stamp.png";
+import pshah from "../../../assets/img/HBL/pshah.png";
 
 const styles = {
   cardIconTitle: {
@@ -190,6 +192,13 @@ class editContainer extends Component {
       BookingNumber: "",
       HTrackingNumber: "",
       HContainerNumber: "",
+      PNotifyGst: "",
+      PNotifyEmail: "",
+      pPassportNumber:"",
+      NotifyNameParty:"",
+      FcontactName:"",
+      TcontactName:"",
+      PnotifyPhone:"",
       BLNumber: "",
       pTrackingNumber: "",
       Vessel: "MAERSK SELETAR 343E",
@@ -1134,7 +1143,29 @@ class editContainer extends Component {
   HselectChange = (event, value) => {
     if (value === "BookingNumber") {
       this.setState({ BookingNumber: event.target.value });
-    } else if (value === "ConsigneeDetails") {
+    }
+    else if (value === "pPassportNumber") {
+      this.setState({ pPassportNumber: event.target.value });
+    }
+    else if (value === "NotifyNameParty") {
+      this.setState({ NotifyNameParty: event.target.value });
+    }
+    else if (value === "FcontactName") {
+      this.setState({ FcontactName: event.target.value });
+    }
+    else if (value === "TcontactName") {
+      this.setState({ TcontactName: event.target.value });
+    }
+    else if (value === "PNotifyEmail") {
+      this.setState({ PNotifyEmail: event.target.value });
+    }
+    else if (value === "PNotifyGst") {
+      this.setState({ PNotifyGst: event.target.value });
+    }
+    else if (value === "PnotifyPhone") {
+      this.setState({ PnotifyPhone: event.target.value });
+    }
+    else if (value === "ConsigneeDetails") {
       // const updatedText = event.target.value.replace(/\n/g, "<br>");
       this.setState({ ConsigneeDetails: event.target.value });
     } else if (value === "ShipperExportor") {
@@ -1906,9 +1937,7 @@ class editContainer extends Component {
       ", " +
       TOState +
       " - " +
-      TOZipCo +
-      "  Passport: " +
-      record.original.PassportNumber;
+      TOZipCo ;
 
     // localStorage.setItem("TOAddress", TOAddress)
     // localStorage.setItem("TOCitys", TOCitys)
@@ -2011,9 +2040,9 @@ class editContainer extends Component {
 
           packSeqList = packSeqList.substring(0, packSeqList.length - 2);
 
-          var TotalCBM = (TotalcftH / 36).toFixed(4);
+          var TotalCBM = (TotalcftH / 36).toFixed(2);
           TotalChargableWeightHBL = TotalcftH * 7;
-          TotalChargableWeightHBL = (TotalChargableWeightHBL / 2.2).toFixed(3);
+          TotalChargableWeightHBL = (TotalChargableWeightHBL / 2.2).toFixed(2);
 
           dataHtml =
             dataHtml +
@@ -2029,49 +2058,17 @@ class editContainer extends Component {
 
           console.log("packset = ", packset);
 
-          // localStorage.setItem("dataHtml", dataHtml)
-
-          // window.open(
-          //   this.state.Base + "auth/HBL/" +
-          //    record.original.ShippingID + "/"+this.props.history.location.state.containerId,
-
-          //   "_blank"
-          // );
-
-          // HBLdocOpen
-
-          // localStorage.setItem("FromAddress", FromAddress)
-          // localStorage.setItem("fromCitys", fromCitys)
-          // localStorage.setItem("fromContact", record.original.ContactName)
+          
 
           var FromAddressView =
             FromAddress +
-            " ~ " +
-            fromCitys +
-            " ~ " +
-            record.original.ContactName;
+            " " +
+            fromCitys;
 
-          // localStorage.setItem("TOAddress", TOAddress)
-          // localStorage.setItem("TOCitys", TOCitys)
-          // localStorage.setItem("TOContact", record.original.ToContactName)
 
           var ToAddressView =
-            TOAddress + " ~ " + TOCitys + " ~ " + record.original.ToContactName;
+          TOAddress + " " + TOCitys;
 
-          // localStorage.setItem("ContainerNumber",this.state.ContainerNumber)
-          // localStorage.setItem("BookingNumber",this.state.BookingNumber)
-          // localStorage.setItem("BOLNumber",record.original.TrackingNumber + this.state.ContainerShortName)
-
-          // localStorage.setItem("PointOfOrigin",this.state.PointOfOrigin)
-          // localStorage.setItem("PortOfLoading",this.state.PortOfLoading)
-          // localStorage.setItem("PortOfUnloading",this.state.PortOfUnloading)
-          // localStorage.setItem("PlaceOfDeliveryByOnCarrier",this.state.PlaceOfDeliveryByOnCarrier)
-          // localStorage.setItem("VesselNumber",this.state.VesselNumber)
-          // localStorage.setItem("NotifyParty",this.state.NotifyParty)
-          // localStorage.setItem("TrackNO", record.original.TrackingNumber)
-          // localStorage.setItem("NotifyPartyName",this.state.NotifyPartyName)
-
-          // localStorage.setItem("hblDate",this.state.HBLDate);
           var phoneEmail =
             this.state.NotifyPartyPhone +
             "  Email: " +
@@ -2080,14 +2077,10 @@ class editContainer extends Component {
             this.state.GSTNo;
 
           var ConsigneeDetailsView =
-            this.state.NotifyParty +
-            " ~ " +
+            
             FromAddressNotify +
-            " ~ " +
-            fromCitysNotify +
-            " ~ " +
-            phoneEmail;
-
+            " " +
+            fromCitysNotify 
           localStorage.setItem(
             "NotifyPartyPhone",
             this.state.NotifyPartyPhone +
@@ -2097,6 +2090,13 @@ class editContainer extends Component {
               this.state.GSTNo
           );
           this.setState({
+            FcontactName: record.original.ContactName,
+            TcontactName: record.original.ToContactName ,
+            pPassportNumber: record.original.PassportNumber,
+            NotifyNameParty: this.state.NotifyParty,
+            PNotifyGst:this.state.GSTNo,
+            PNotifyEmail:  this.state.NotifyPartyEmail,
+            PnotifyPhone:this.state.NotifyPartyPhone,
             ConsigneeDetails: ConsigneeDetailsView,
             ConsignedTo: ToAddressView,
             ShipperExportor: FromAddressView,
@@ -2112,8 +2112,8 @@ class editContainer extends Component {
             Sequencelist: packSeqList,
             PackageNumber: totalPackH,
             description: "USED HOUSE HOLD GOODS AND PERSONAL EFFECTS",
-            WEIGHT: TotalChargableWeightHBL + " KG",
-            MEASUREMENT: TotalCBM + " CBM",
+            WEIGHT: TotalChargableWeightHBL,
+            MEASUREMENT: TotalCBM,
             pTrackingNumber: record.original.TrackingNumber,
           });
 
@@ -2144,6 +2144,20 @@ class editContainer extends Component {
 
     var pTracking = document.getElementById("TrackingNumber").value;
 
+    var PNotifyGst = document.getElementById("PNotifyGst").value;
+    var PNotifyEmail = document.getElementById("PNotifyEmail").value;
+    var PnotifyPhone = document.getElementById("PnotifyPhone").value;
+
+    var pPassportNumber = document.getElementById("pPassportNumber").value; 
+    var FcontactName = document.getElementById("FcontactName").value; 
+    var TcontactName = document.getElementById("TcontactName").value;    
+    var NotifyNameParty = document.getElementById("NotifyNameParty").value;
+
+    
+  localStorage.setItem("NotifyNameParty", NotifyNameParty);
+    localStorage.setItem("FcontactName", FcontactName);
+    localStorage.setItem("TcontactName", TcontactName);
+
     localStorage.setItem("ContainerNumber", containerName);
     localStorage.setItem("BookingNumber", BookingNumber);
     localStorage.setItem("BOLNumber", BOLNumber);
@@ -2165,25 +2179,29 @@ class editContainer extends Component {
     var TOContact = "";
 
     var toFullAdd = document.getElementById("ConsignedTo").value;
-    const ToaddArray = toFullAdd.split(" ~ ");
+    toFullAdd = toFullAdd
+    
+    var passpData = "Passport: " +  pPassportNumber;
+    localStorage.setItem("pPassportNumber", passpData);
 
-    TOContact = ToaddArray[0];
-    TOAddress = ToaddArray[1];
-    TOCitys = ToaddArray[2];
 
-    localStorage.setItem("TOAddress", TOAddress);
-    localStorage.setItem("TOCitys", TOCitys);
-    localStorage.setItem("TOContact", TOContact);
-
+    localStorage.setItem("TOAddress", toFullAdd);
     var FromFullAdd = document.getElementById("ShipperExportor").value;
-    const FromddArray = FromFullAdd.split(" ~ ");
 
-    localStorage.setItem("FromAddress", FromddArray[1]);
-    localStorage.setItem("fromCitys", FromddArray[2]);
-    localStorage.setItem("fromContact", FromddArray[0]);
+    localStorage.setItem("FromAddress", FromFullAdd);
 
     var NotifyData = document.getElementById("ConsigneeDetails").value;
-    const notifyArray = NotifyData.split(" ~ ");
+    NotifyData = NotifyData + " ," + PnotifyPhone +
+    ",  Email: " +
+    PNotifyEmail
+
+    var GSTINData = "GST: " +
+    PNotifyGst;
+
+
+    localStorage.setItem("GST" , GSTINData)
+
+    // const notifyArray = NotifyData.split(" ~ ");
     var dataHtml = "";
 
     dataHtml =
@@ -2199,11 +2217,16 @@ class editContainer extends Component {
       " CBM</td></tr>";
 
     localStorage.setItem("dataHtml", dataHtml);
-    localStorage.setItem("NotifyParty", notifyArray[0]);
+    localStorage.setItem("NotifyParty", NotifyData);
     // localStorage.setItem("NotifyPartyName",this.state.NotifyPartyName)
-    localStorage.setItem("NotifyPartyPhone", notifyArray[3]);
-    localStorage.setItem("NotifyPartyAddr3", notifyArray[1]);
-    localStorage.setItem("NotifyPartyCity", notifyArray[2]);
+    // localStorage.setItem("NotifyPartyPhone", notifyArray[3]);
+    // localStorage.setItem("NotifyPartyAddr3", notifyArray[1]);
+    // localStorage.setItem("NotifyPartyCity", notifyArray[2]);
+
+    if(!this.state.HBLDate){
+      cogoToast.error("Please select HBL Date of container");
+      return;
+    }
 
     window.open(
       this.state.Base +
@@ -3054,6 +3077,13 @@ class editContainer extends Component {
       // BookingNumber,
       HTrackingNumber,
       HContainerNumber,
+      PNotifyGst,
+      PNotifyEmail,
+      pPassportNumber,
+      NotifyNameParty,
+      PnotifyPhone,
+      TcontactName,
+      FcontactName,
       BLNumber,
       pTrackingNumber,
       Vessel,
@@ -4003,6 +4033,31 @@ class editContainer extends Component {
                             />
                           </td>
                           <td className="t-25">
+                            Contact Name<br></br>
+                            <input
+                              id="FcontactName"
+                              style={{
+                                display: "block",
+                              }}
+                              value={FcontactName}
+                              onChange={(e) =>
+                                this.HselectChange(e, "FcontactName")
+                              }
+                            />
+                            <div
+                              id="FcontactNamediv"
+                              dangerouslySetInnerHTML={{
+                                __html: FcontactName,
+                              }}
+                              style={{
+                                display: "none",
+                                whiteSpace: "pre-line",
+                              }}
+                            />
+                          </td>
+                        
+
+                          <td className="t-25">
                             BOOKING NUMBER<br></br>
                             <input
                               id="BookingNumber"
@@ -4074,9 +4129,8 @@ class editContainer extends Component {
                               }}
                             />
                           </td>
-                        </tr>
-                        <tr>
-                          <td colSpan={2} className="t-50">
+
+                          <td className="t-50">
                             EXPORT REFERENCES<br></br>
                             <input
                               id="TrackingNumber"
@@ -4100,10 +4154,13 @@ class editContainer extends Component {
                             />
                           </td>
                         </tr>
+                        <tr>
+                          
+                        </tr>
                       </table>
                       <table className="hbl-table">
                         <tr>
-                          <td rowSpan={2} className="t-50">
+                          <td rowSpan={2} className="t-25">
                             CONSIGNED TO<br></br>
                             <textarea
                               id="ConsignedTo"
@@ -4131,7 +4188,43 @@ class editContainer extends Component {
                               }}
                             />
                           </td>
-                          <td className="t-50">
+
+                          <td className="t-25">
+                            Contact Name<br></br>
+                            <input
+                              id="TcontactName"
+                              style={{
+                                display: "block",
+                              }}
+                              value={TcontactName}
+                              onChange={(e) =>
+                                this.HselectChange(e, "TcontactName")
+                              }
+                            />
+                            
+                          </td>
+
+                          <td className="t-25">
+                              Passport Number
+                          <input
+                              id="pPassportNumber"
+                              style={{
+                                display: "block",
+                              }}
+                              value={pPassportNumber}
+                              onChange={(e) =>
+                                this.HselectChange(e, "pPassportNumber")
+                              }
+                            />
+
+                            
+
+                          </td>
+
+                          
+                        </tr>
+                        <tr>
+                        <td className="t-25">
                             FORWARDING AGENT FMC NO.
                             <input
                               id="FMCnumber"
@@ -4154,9 +4247,7 @@ class editContainer extends Component {
                               }}
                             />
                           </td>
-                        </tr>
-                        <tr>
-                          <td colSpan={2} className="t-50">
+                          <td className="t-50">
                             POINT (STATE) OF ORIGIN OR FTZ NUMBER<br></br>
                             <textarea
                               name="Body"
@@ -4185,7 +4276,7 @@ class editContainer extends Component {
                           </td>
                         </tr>
                         <tr>
-                          <td className="t-50">
+                          <td  className="t-50">
                             NOTIFY PARTY/INTERMEDIATE CONSIGNEE<br></br>
                             <div className="hbl-textarea">
                               <textarea
@@ -4214,7 +4305,39 @@ class editContainer extends Component {
                               />
                             </div>
                           </td>
-                          <td className="t-50">
+                          <td className="t-25">
+                              Notify Party Name
+                          {/* <input
+                              id="NotifyNameParty"
+                              style={{
+                                display: "block",
+                              }}
+                              value={NotifyNameParty}
+                              onChange={(e) =>
+                                this.HselectChange(e, "NotifyNameParty")
+                              }
+                            /> */}
+
+                              <textarea
+                                id="NotifyNameParty"
+                                name="Body"
+                                style={{
+                                  width: "100%",
+                                  height: "100px",
+                                  display: "block",
+                                }}
+                                labelText="Body"
+                                value={NotifyNameParty}
+                                onChange={(e) =>
+                                  this.HselectChange(e, "NotifyNameParty")
+                                }
+                              ></textarea>
+
+                            
+
+                          </td>
+
+                          <td colSpan={2} className="t-50">
                             FOR DELIVERY PLEASE APPLY TO <br />
                             <textarea
                               id="APPLYTO"
@@ -4234,6 +4357,61 @@ class editContainer extends Component {
                                 whiteSpace: "pre-line",
                               }}
                             />
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="t-50">
+                              Email (Notify Party)
+                          <input
+                            id="PNotifyEmail"
+                            style={{
+                              display: "block",
+                            }}
+                            value={PNotifyEmail}
+                            onChange={(e) =>
+                              this.HselectChange(e, "PNotifyEmail")
+                            }
+                          />
+                          <div
+                            id="PNotifyEmail"
+                            dangerouslySetInnerHTML={{
+                              __html: PNotifyEmail,
+                            }}
+                            style={{
+                              display: "none",
+                              whiteSpace: "pre-line",
+                            }}
+                          />
+                            
+
+                          </td>
+                          <td className="t-50">
+                              Phone Number (Notify Party)
+                          <input
+                              id="PnotifyPhone"
+                              style={{
+                                display: "block",
+                              }}
+                              value={PnotifyPhone}
+                              onChange={(e) =>
+                                this.HselectChange(e, "PnotifyPhone")
+                              }
+                            />
+
+                          </td>
+                          <td className="t-50">
+                              GST (Notify Party) 
+                          <input
+                              id="PNotifyGst"
+                              style={{
+                                display: "block",
+                              }}
+                              value={PNotifyGst}
+                              onChange={(e) =>
+                                this.HselectChange(e, "PNotifyGst")
+                              }
+                            />
+
                           </td>
                         </tr>
                       </table>
@@ -4375,10 +4553,10 @@ class editContainer extends Component {
                           <td className="t-50"></td>
                         </tr>
                         <tr>
-                          <td className="t-50" colSpan={2}>
+                          {/* <td className="t-50" colSpan={2}>
                             CARRIER'S RECEIPT
-                          </td>
-                          <td className="t-50">
+                          </td> */}
+                          <td colSpan={2} className="t-50 textalign-center">
                             PARTICULARS FURNISHED BY SHIPPER
                           </td>
                         </tr>
@@ -4532,13 +4710,13 @@ class editContainer extends Component {
                       </table>
                       <table className="hbl-table">
                         <tr>
-                          <td colSpan={2}>
+                          <td className="fontsize-13" colSpan={2}>
                             DECLARED VALUE (FOR AD VALOREM PURPOSE ONLY). (REFER
                             TO CLAUSE 26 ON REVERSE HEREOFF) IN US$
                           </td>
                         </tr>
                         <tr>
-                          <td className="t-50">
+                          <td colSpan= {2} className="t-50 fontsize-13">
                             In accepting this bill of lading, any local customs
                             or privileges to the contrary notwithstanding, the
                             shipper, consignee and owner of the goods and the
@@ -4552,26 +4730,57 @@ class editContainer extends Component {
                             the tenor and date have been signed, one of which
                             being accomplished, the others to stand void.
                           </td>
-                          <td className="t-50">
-                            FREIGHT AND CHARGES<br></br>
-                            DESCRIPTION OF CHARGES <br></br>FREIGHT PREPAID
-                            {/* <img src={stamp} width="100" border="0" /> */}
-                          </td>
+                          
                         </tr>
-                        <tr>
-                          <td className="t-50">
-                            BY : SFL WORLDWIDE LLC, AS A CARRIER
-                            {/* <img src={pshah} width="100" border="0" /> */}
-                          </td>
-                          <td className="t-50">TOTAL PREPAID</td>
-                        </tr>
-                        <tr>
-                          <td className="t-50">
+                       
+                      </table>
+
+                      <table className="hbl-table">
+                        <thead>
+                          <tr>
+                            <th colSpan={2}>FREIGHT AND CHARGES</th>
+                            <th>BY: SFL WORLDWIDE LLC, AS A CARRIER</th>
+                          </tr>
+                        </thead>
+                        {/* <tbody id = "dataHtml"> */}
+                          <tr>
+                            <td className="t-25">
+                              FREIGHT (PREPAID)
+
+                            </td>
+
+                            <td className="t-25">
+                              NIL
+                            </td>
+
+                            
+                            <td rowSpan={2} className="t-50">
+
+                            <img src={pshah} width="100" border="0" />  
+
+                            <img src={stamp} width="100" border="0" className="img-spacing" />
+
+                            </td>
+
+                          </tr>
+                          <tr>
+                            <td className="t-25">Total</td>
+                            <td className="t-25">Prepaid</td>
+                            {/* <td className="t-50"></td> */}
+                          </tr>
+
+                          <tr>
+                            <td className="t-25">Total Collect</td>
+                            <td className="t-25">NIL</td>
+                            <td className="t-50">
                             DATE (MM/DD/YYYY)<br></br>
                             {this.state.HCreatedDate}
-                          </td>
-                          <td className="t-50">TOTAL COLLECT</td>
-                        </tr>
+                            </td>
+                          </tr>
+                      
+
+                    
+                        
                       </table>
                     </div>
                   </div>
@@ -4594,6 +4803,7 @@ class editContainer extends Component {
               </DialogActions>
             </Dialog>
           </div>
+
 
           <Dialog
             open={this.state.SetShiprecord}

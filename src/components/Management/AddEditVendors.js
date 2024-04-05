@@ -1579,15 +1579,22 @@ class AddEditVendors extends Component {
         }
       }
     } else if (type === "email") {
-      if (!val.match(CommonConfig.RegExp.email)) {
-        this.setState({
-          email: val,
-          emailErr: true,
-          emailHelperText: "Please enter valid Email",
-        });
-      } else {
+      if(val != ""){
+
+        if (!val.match(CommonConfig.RegExp.email)) {
+          this.setState({
+            email: val,
+            emailErr: true,
+            emailHelperText: "Please enter valid Email",
+          });
+        } else {
+          this.setState({ email: val, emailErr: false, emailHelperText: "" });
+        }
+
+      }else{
         this.setState({ email: val, emailErr: false, emailHelperText: "" });
       }
+      
     } else if (type === "VendorzipCode") {
       if (CommonConfig.isEmpty(val)) {
         this.setState({
@@ -1844,7 +1851,7 @@ class AddEditVendors extends Component {
               VendorzipCode: res.data.ZipCode,
               Vendorcity: res.data.City,
               Vendorstate: res.data.State,
-              VendorEmail: res.data.Email,
+              VendorEmail: res.data.Email == null || res.data.Email == undefined ? "": res.data.Email ,
               VendorPhone: res.data.PhoneNum,
             });
             this.setState({

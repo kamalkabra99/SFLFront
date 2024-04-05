@@ -4215,6 +4215,23 @@ class EditSalesLeads extends Component {
         // pickupcityErr: true,
       });
     }
+    if(this.state.StartDate){
+      var followUpprev = new Date(this.state.StartDate)
+      var currentdate = new Date()
+      debugger
+      if(currentdate > followUpprev){
+        console.log("date = " , new Date(this.state.StartDate));
+        this.setState({
+          // ProposalTypeError: "Please select any one",
+          // Referrederror: "Please select any one",
+          Followuprror: "Follow up date should be today date or greater",
+          // PackageListError: "Please select Package Type",
+        });
+        cogoToast.error("Missing or Incorrect Data");
+        return;
+      }
+      
+    }
     if (!this.state.EmailAddress) {
       document.getElementById("cemail").style.display = "block";
       this.setState({
@@ -4764,7 +4781,8 @@ class EditSalesLeads extends Component {
                 data.EmailID = restest.data[0][0].EmailID;
 
                 try {
-                  if (this.props.history.location.state.id === "") {
+                  console.log("this.props.history.location.state.id = ",this.props.history.location.state.id);
+                  if (this.props.history.location.state.id === "" ) {
                     api
                       .post("salesLead/getManagedByPhoneOREmail", manageData)
                       .then((result) => {
