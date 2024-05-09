@@ -1115,7 +1115,16 @@ class Scheduleshipment extends React.Component {
             fromCompanyNameErr: true,
             fromCompanyNameHelperText: "Company name is not valid.",
           });
-        } else {
+        }
+        else if(CommonConfig.arabicvalidate(event.target.value) == "no"){
+          this.setState({
+            fromCompanyName: event.target.value,
+            fromCompanyNameErr: true,
+            fromCompanyNameHelperText: "Please enter valid company name from A to Z",
+          });
+        }
+        
+        else {
           this.setState({
             fromCompanyName: event.target.value,
             fromCompanyNameErr: false,
@@ -1142,7 +1151,17 @@ class Scheduleshipment extends React.Component {
           fromContactNameErr: true,
           fromContactNameHelperText: "Company name is not valid.",
         });
-      } else {
+      }
+      else if(CommonConfig.arabicvalidate(event.target.value) == "no"){
+        this.setState({
+          fromContactName: event.target.value,
+          fromContactNameErr: true,
+          fromContactNameHelperText: "Please enter valid contact name from A to Z",
+        });
+      } 
+      
+      
+      else {
         this.setState({
           fromContactName: event.target.value,
           fromContactNameErr: false,
@@ -1163,7 +1182,19 @@ class Scheduleshipment extends React.Component {
           fromAddressLine1HelperText:
             "Addressline 1 should be max 35 characters",
         });
-      } else {
+      }
+      
+      else if(CommonConfig.arabicvalidate(event.target.value) == "no"){
+        this.setState({
+          fromAddressLine1: event.target.value,
+          fromAddressLine1Err: true,
+          fromAddressLine1HelperText:
+            "Please enter valid AddressLine 1 from A to Z",
+        });
+      } 
+      
+      
+      else {
         this.setState({
           fromAddressLine1: event.target.value,
           fromAddressLine1Err: false,
@@ -1179,7 +1210,16 @@ class Scheduleshipment extends React.Component {
             fromAddressLine2HelperText:
               "Addressline 2 should be max 35 characters",
           });
-        } else {
+        } 
+        else if(CommonConfig.arabicvalidate(event.target.value) == "no"){
+          this.setState({
+            fromAddressLine2: event.target.value,
+            fromAddressLine2Err: true,
+            fromAddressLine2HelperText:
+              "Please enter valid AddressLine 2 from A to Z",
+          });
+        } 
+        else {
           this.setState({
             fromAddressLine2: event.target.value,
             fromAddressLine2Err: false,
@@ -1196,7 +1236,16 @@ class Scheduleshipment extends React.Component {
             fromAddressLine3HelperText:
               "Addressline 3 should be max 35 characters",
           });
-        } else {
+        } 
+        else if(CommonConfig.arabicvalidate(event.target.value) == "no"){
+          this.setState({
+            fromAddressLine3: event.target.value,
+            fromAddressLine3Err: true,
+            fromAddressLine3HelperText: "Please enter valid AddressLine 3 from A to Z",
+          });
+        } 
+        
+        else {
           this.setState({
             fromAddressLine3: event.target.value,
             fromAddressL3ne1Err: false,

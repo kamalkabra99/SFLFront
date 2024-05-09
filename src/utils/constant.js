@@ -268,6 +268,16 @@ export class CommonConfig {
     return a > b ? 1 : -1;
   };
 
+  static arabicvalidate = function(value){
+    var arabicCharUnicodeRange = /[\u0600-\u06FF]/;
+    if ( arabicCharUnicodeRange.test(value) )
+    {
+      return "no"
+    }else{
+      return "yes"
+    }
+  }
+
   static RegExp = {
     number: /^[0-9\b]+$/,
     onlyNumber: /[a-zA-Z~`!@#$%^&*()_+=-{}|:"<>?,;']+$/,

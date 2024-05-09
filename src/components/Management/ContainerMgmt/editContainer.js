@@ -60,6 +60,10 @@ class editContainer extends Component {
       containershortnameErr: false,
       containershortnameHelperText: "",
 
+      IGMNumber: "",
+      IGMNumberErr: false,
+      IGMNumberHelperText: "",
+
       ContainerSize: "",
       ContainerSizeList: [],
       SetShiprecordHBL: false,
@@ -79,6 +83,7 @@ class editContainer extends Component {
       ContainerNumber: "",
       containernumberErr: false,
       containernumberHelperText: "",
+      generatedata:"one",
 
       SealNumber: "",
       TotalPackagesCount: 0,
@@ -124,6 +129,14 @@ class editContainer extends Component {
       HBLDate: "",
       hbldateErr: false,
       hbldateHelperText: "",
+
+      IGMDate: "",
+      IGMDateErr: false,
+      IGMDateHelperText: "",
+
+      IGMInwardDate: "",
+      IGMInwardDateErr: false,
+      IGMInwardDateHelperText: "",
 
       LoadDate: "",
       loaddateErr: false,
@@ -182,9 +195,19 @@ class editContainer extends Component {
       CreatedBy: "",
       CreatedOn: "",
 
+      packedBy: [
+        { value: "one", label: "Select one" },
+        { value: "HBL", label: "HBL" },
+        { value: "PL", label: "PL" },
+        { value: "DO", label: "DO" },
+        
+      ],
+
       // HBL Start
 
       HBLdocOpen: false,
+      PLdocOpen: false,
+      DOdocOpen: false,
       PackageNumber: "",
       description: "",
       WEIGHT: "",
@@ -198,6 +221,8 @@ class editContainer extends Component {
       NotifyNameParty:"",
       FcontactName:"",
       TcontactName:"",
+      PLToAddress:"",
+      PLFromAddress:"",
       PnotifyPhone:"",
       BLNumber: "",
       pTrackingNumber: "",
@@ -227,6 +252,25 @@ class editContainer extends Component {
       APPLYTO: "",
 
       // HBL END
+
+      // DO Start
+      DOConsignee:"",
+      DONotifyParty:"",
+      DoDeliverTo:"",
+      DoMBLNo:"",
+      DoVessel:"",
+      DoHBLNo:"",
+      DoLoadingPort:"",
+      DoIGMNo:"",
+      DoITMSub:"",
+      DoContainerNum:"",
+      DoSealNumber:"",
+      DoDescription:"PIECES OF HOUSEHOLD GOODS AND PERSONAL EFFECTS",
+
+      DOSequencelist: "",
+      DoPackageNumber: "",
+      DOWEIGHT: "",
+      DOMEASUREMENT: "",
 
       objAttachment: {
         Index: 0,
@@ -494,6 +538,7 @@ class editContainer extends Component {
             this.setState({
               ContainerName: res.data.ContainerName,
               ContainerShortName: res.data.ContainerShortName,
+              IGMNumber:res.data.IGMNumber,
               ContainerSize: res.data.ContainerSize,
               CurrentStatus: res.data.CurrentStatus,
               ContainerStatus:
@@ -508,6 +553,8 @@ class editContainer extends Component {
               PlaceOfDeliveryByOnCarrier: res.data.PlaceOfDeliveryByOnCarrier,
               VesselNumber: res.data.VesselNumber,
               HBLDate: res.data.HBLDate,
+              IGMInwardDate : res.data.IGMInwardDate,
+              IGMDate : res.data.IGMDate,
               LoadDate: res.data.LoadDate,
               SailingDate: res.data.SailingDate,
               ArrivalDate: res.data.ArrivalDate,
@@ -666,6 +713,20 @@ class editContainer extends Component {
     } catch (err) {}
   };
 
+  packedBy = () => {
+    return this.state.packedBy.map((content) => {
+      return (
+        <MenuItem
+          classes={{ root: classes.selectMenuItem }}
+          value={content.value}
+        >
+          {" "}
+          {content.label}{" "}
+        </MenuItem>
+      );
+    });
+  };
+
   stringmapStatus = () => {
     try {
       let data = {
@@ -706,7 +767,11 @@ class editContainer extends Component {
       this.setState({ ContainerName: Val });
     } else if (type === "containershortname") {
       this.setState({ ContainerShortName: Val });
-    } else if (type === "containernumber") {
+    }
+    else if (type === "IGMNumber") {
+      this.setState({ IGMNumber: Val });
+    }
+     else if (type === "containernumber") {
       this.setState({ ContainerNumber: Val });
     } else if (type === "sealnumber") {
       this.setState({ SealNumber: Val });
@@ -800,7 +865,17 @@ class editContainer extends Component {
           containershortnameHelperText: "",
         });
       }
-    } else if (type === "containersize") {
+    } 
+    else if(type == "IGMNumber"){
+
+      this.setState({
+        IGMNumber: Val,
+        IGMNumberErr: false,
+        IGMNumberHelperText: "",
+      });
+
+    }
+    else if (type === "containersize") {
       if (CommonConfig.isEmpty(this.state.ContainerSize)) {
         this.setState({
           ContainerSize: Val,
@@ -879,6 +954,7 @@ class editContainer extends Component {
         ContainerID: this.props.history.location.state.containerId,
         ContainerName: this.state.ContainerName,
         containershortname: this.state.ContainerShortName,
+        IGMNumber:this.state.IGMNumber,
         ContainerSize: this.state.ContainerSize,
         CurrentStatus: this.state.CurrentStatus,
         ContainerStatus: this.state.ContainerStatus,
@@ -894,6 +970,20 @@ class editContainer extends Component {
         HBLDate:
           CommonConfig.isEmpty(this.state.HBLDate) != true
             ? moment(this.state.HBLDate)
+                .format("YYYY-MM-DD HH:mm:ss")
+                .toString()
+            : null,
+
+        IGMInwardDate:
+          CommonConfig.isEmpty(this.state.IGMInwardDate) != true
+            ? moment(this.state.IGMInwardDate)
+                .format("YYYY-MM-DD HH:mm:ss")
+                .toString()
+            : null,
+
+            IGMDate:
+          CommonConfig.isEmpty(this.state.IGMDate) != true
+            ? moment(this.state.IGMDate)
                 .format("YYYY-MM-DD HH:mm:ss")
                 .toString()
             : null,
@@ -1125,7 +1215,23 @@ class editContainer extends Component {
         loaddateErr: false,
         loaddateHelperText: "",
       });
-    } else if (type === "sailing") {
+    }
+    else if (type === "IGMDate") {
+      this.setState({
+        IGMDate: date,
+        IGMDateErr: false,
+        IGMDateHelperText: "",
+      });
+    }
+    else if (type === "IGMInwardDate") {
+      this.setState({
+        IGMInwardDate: date,
+        IGMInwardDateErr: false,
+        IGMInwardDateHelperText: "",
+      });
+    }
+    
+    else if (type === "sailing") {
       this.setState({
         SailingDate: date,
         sailingdateErr: false,
@@ -1147,11 +1253,72 @@ class editContainer extends Component {
     else if (value === "pPassportNumber") {
       this.setState({ pPassportNumber: event.target.value });
     }
+    else if (value === "PLToAddress") {
+      this.setState({ PLToAddress: event.target.value });
+    }
+    else if (value === "PLFromAddress") {
+      this.setState({ PLFromAddress: event.target.value });
+    }
     else if (value === "NotifyNameParty") {
       this.setState({ NotifyNameParty: event.target.value });
     }
     else if (value === "FcontactName") {
       this.setState({ FcontactName: event.target.value });
+    }
+    else if (value === "DOConsignee") {
+      this.setState({ DOConsignee: event.target.value });
+    }
+    else if (value === "DONotifyParty") {
+      this.setState({ DONotifyParty: event.target.value });
+    }
+    else if (value === "DoMBLNo") {
+      this.setState({ DoMBLNo: event.target.value });
+    }
+    else if (value === "DoIGMNo") {
+      this.setState({ DoIGMNo: event.target.value });
+    }
+
+    else if (value === "DoContainerNum") {
+      this.setState({ DoContainerNum: event.target.value });
+    }
+
+    else if (value === "DoDescription") {
+      this.setState({ DoDescription: event.target.value });
+    }
+
+    else if (value === "DoPackageNumber") {
+      this.setState({ DoPackageNumber: event.target.value });
+    }
+
+    else if (value === "DOWEIGHT") {
+      this.setState({ DOWEIGHT: event.target.value });
+    }
+  
+    else if (value === "DOMEASUREMENT") {
+      this.setState({ DOMEASUREMENT: event.target.value });
+    }
+
+    else if (value === "DOSequencelist") {
+      this.setState({ DOSequencelist: event.target.value });
+    }
+
+    else if (value === "DoSealNumber") {
+      this.setState({ DoSealNumber: event.target.value });
+    }
+    else if (value === "DoITMSub") {
+      this.setState({ DoITMSub: event.target.value });
+    }
+    else if (value === "DoLoadingPort") {
+      this.setState({ DoLoadingPort: event.target.value });
+    }
+    else if (value === "DoHBLNo") {
+      this.setState({ DoHBLNo: event.target.value });
+    }
+    else if (value === "DoVessel") {
+      this.setState({ DoVessel: event.target.value });
+    }
+    else if (value === "DoDeliverTo") {
+      this.setState({ DoDeliverTo: event.target.value });
     }
     else if (value === "TcontactName") {
       this.setState({ TcontactName: event.target.value });
@@ -2130,6 +2297,377 @@ class editContainer extends Component {
       });
   };
 
+  generateDO = (record) => {
+    localStorage.setItem("shippid", record.original.ShippingID);
+
+
+    let data = {
+      ContainerID: this.props.history.location.state.containerId,
+      shipmentID: record.original.ShippingID,
+    };
+
+    var TotalcftH = 0;
+    var totalPackH = 0;
+    var TotalChargableWeightHBL = 0;
+    api
+      .post("container/getShipmentsByContainerForHBL", data)
+      .then((res) => {
+        if (res.success) {
+          console.log("Res = ", res);
+
+          var packdata = res.data.Packages;
+          var packset = [];
+
+          for (let index = 0; index < packdata.length; index++) {
+            // const element = array[index];
+            if (packdata[index].length > 1) {
+              console.log("packdata[index] = ", packdata[index][0]["Sequence"]);
+              console.log(
+                "packdata[index] = ",
+                packdata[index][0]["Sequence"] +
+                  " - " +
+                  packdata[index][packdata[index].length - 1]["Sequence"]
+              );
+
+              var packseq =
+                packdata[index][0]["Sequence"] +
+                " - " +
+                packdata[index][packdata[index].length - 1]["Sequence"];
+              var packLen = packdata[index].length;
+              var Shippingid = packdata[index][0]["ShippingID"];
+              var pushdata = {
+                packseq: packseq,
+                packLen: packLen,
+                Shippingid: Shippingid,
+              };
+
+              packset.push(pushdata);
+            } else {
+              var packseq = packdata[index][0]["Sequence"];
+              var packLen = packdata[index].length;
+              var Shippingid = packdata[index][0]["ShippingID"];
+              var pushdata = {
+                packseq: packseq,
+                packLen: packLen,
+                Shippingid: Shippingid,
+              };
+
+              packset.push(pushdata);
+            }
+          }
+
+          for (
+            let indexship = 0;
+            indexship < res.data.Shipments.length;
+            indexship++
+          ) {
+            // const element = array[indexship];
+            totalPackH =
+              totalPackH + res.data.Shipments[indexship].TotalPackages;
+            // tvcount = tvcount + res.data.Shipments[indexship].TV
+            TotalChargableWeightHBL =
+              TotalChargableWeightHBL +
+              res.data.Shipments[indexship].TotalChargableWeight;
+            TotalcftH = TotalcftH + res.data.Shipments[indexship].CFT;
+
+            for (let indexset = 0; indexset < packset.length; indexset++) {
+              if (
+                packset[indexset].Shippingid ==
+                res.data.Shipments[indexship].ShippingID
+              ) {
+                packset[indexset].cft = res.data.Shipments[indexship].CFT;
+                packset[indexset].TotalPackages =
+                  res.data.Shipments[indexship].TotalPackages;
+                packset[indexset].TotalChargableWeight =
+                  res.data.Shipments[indexship].TotalChargableWeight;
+              }
+            }
+          }
+          var dataHtml = "";
+          var packSeqList = "";
+          for (let indexpack = 0; indexpack < packset.length; indexpack++) {
+            // const element = array[indexpack];
+
+            // if(packset.length > 1){
+
+            packSeqList = packSeqList + packset[indexpack].packseq + ", ";
+
+            // }
+
+            // dataHtml = dataHtml +  "<tr><td><label>"+ packset[indexpack].packseq +"</label></td> <td><label>"+ packset[indexpack].packLen +"</label></td><td><label>*USED HOUSE HOLD GOODS AND PERSONAL EFFECTS*</label></td><td><label>"+packset[indexpack].TotalChargableWeight+"</label></td><td><label>"+ packset[indexpack].cft +"</label></td></tr>"
+          }
+
+          packSeqList = packSeqList.substring(0, packSeqList.length - 2);
+
+          var TotalCBM = (TotalcftH / 36).toFixed(2);
+          TotalChargableWeightHBL = TotalcftH * 7;
+          TotalChargableWeightHBL = (TotalChargableWeightHBL / 2.2).toFixed(2);
+
+          
+
+          this.setState({
+            DoDeliverTo: this.state.CustomsBroker,
+            DOConsignee: record.original.ToContactName ,
+            DONotifyParty:this.state.NotifyParty,
+            DoMBLNo:this.state.BOLNumber,
+            DoVessel:this.state.VesselNumber,
+            DoHBLNo: record.original.TrackingNumber + this.state.ContainerShortName,
+            DoLoadingPort:this.state.PortOfLoading,
+            DoIGMNo:this.state.IGMNumber,
+            DoITMSub:"",
+            DoContainerNum: this.state.ContainerNumber,
+            DoSealNumber:this.state.SealNumber,
+            DoDescription:this.state.DoDescription,
+
+            DOSequencelist: packSeqList,
+            DoPackageNumber: totalPackH,
+            DOWEIGHT: TotalChargableWeightHBL,
+            DOMEASUREMENT: TotalCBM,
+            
+          })
+
+          this.setState({
+            DOdocOpen: true,
+            // RemoveShipID: "",
+          });
+        } else {
+          cogoToast.error("Something went wrong");
+        }
+      })
+      .catch((err) => {
+        console.log("error.....", err);
+      });
+
+    
+    // this.setState({
+    //   DOdocOpen: true,
+    //     // RemoveShipID: "",
+    //   });
+
+
+  };
+  generatePLPDF = () =>{
+
+    
+    localStorage.setItem("TOAddress",document.getElementById("PLToAddress").value)
+    // localStorage.setItem("TOCitys",TOCitys)
+
+    // localStorage.setItem("fromCitys",fromCitys)
+    localStorage.setItem("FromAddress",document.getElementById("PLFromAddress").value)
+    var shipId = localStorage.getItem("shippid");
+    this.setState({
+      PLdocOpen: false,
+      // RemoveShipID: "",
+    });
+
+
+
+    window.open(
+      this.state.Base +
+        "auth/PL/" +
+        shipId +
+        "/" +
+        this.props.history.location.state.containerId,
+
+      "_blank"
+    );
+    
+
+  }
+  generatePL = (record) => {
+    localStorage.setItem("shippid", record.original.ShippingID);
+    console.log("Records = ", record);
+    var shipId = record.original.ShippingID;
+
+    var fromadd1 = record.original.FromAdd1;
+    var fromadd2 = record.original.FromAdd2;
+    var fromadd3 = record.original.FromAdd3;
+
+    var FromAddress = "";
+    if (fromadd1 != "") {
+      FromAddress = FromAddress + fromadd1;
+    }
+    if (fromadd2 != "") {
+      FromAddress = FromAddress + ", " + fromadd2;
+    }
+    if (fromadd3 != "") {
+      FromAddress = FromAddress + ", " + fromadd3;
+    }
+
+    var fromCity = record.original.FromCity;
+    var fromState = record.original.FromState;
+    var fromZipCo = record.original.fromZip;
+
+    var fromCitys = fromCity + ", " + fromState + " - " + fromZipCo;
+
+
+    var TOadd1 = record.original.ToAdd1;
+    var TOadd2 = record.original.ToAdd2;
+    var TOadd3 = record.original.ToAdd3;
+
+    var TOAddress = "";
+    if (TOadd1 != "") {
+      TOAddress = TOAddress + TOadd1;
+    }
+    if (TOadd2 != "") {
+      TOAddress = TOAddress + ", " + TOadd2;
+    }
+    if (TOadd3 != "") {
+      TOAddress = TOAddress + ", " + TOadd3;
+    }
+
+    var TOCity = record.original.ToCity;
+    var TOState = record.original.ToState;
+    var TOZipCo = record.original.toZip;
+
+    var TOCitys =
+      TOCity +
+      ", " +
+      TOState +
+      " - " +
+      TOZipCo ;
+    let data = {
+      ContainerID: this.props.history.location.state.containerId,
+      shipmentID: record.original.ShippingID,
+    };
+    api
+      .post("container/getShipmentsByContainerForPackageList", data)
+      .then((res) => {
+        if (res.success) {
+          console.log("Res = ", res);
+
+          var packdata = res.data.Packages;
+          var packset = [];
+          console.log("Res = ", packdata);
+
+          var srno = 1
+          var htmdata = ""
+
+          var seqarr = [];
+
+          for (let index = 0; index < packdata.length; index++) {
+            // const element = array[index];
+
+            for (let NextIndex = 0; NextIndex < packdata[index].length; NextIndex++) {
+              // const element = array[NextIndex];
+              var dataSets = {
+                Sequence: packdata[index][NextIndex].Sequence,
+                ContentDescription: packdata[index][NextIndex].ContentDescription
+              }
+              seqarr.push(dataSets)
+              console.log(packdata[index][NextIndex].ContentDescription);
+
+              
+            }
+            
+          }
+          console.log(seqarr)
+          seqarr.sort((a,b) => a.Sequence - b.Sequence);
+
+          for (let indextest = 0; indextest < seqarr.length; indextest++) {
+
+            htmdata = htmdata + "<tr><td> "+ srno +" </td> <td>" +seqarr[indextest].Sequence+ "</td><td class='Pl-td-des' colSpan={2}>" +seqarr[indextest].ContentDescription+ "</td></tr>"
+              srno = srno + 1;
+            
+            // const element = array[indextest];
+            
+          }
+
+          console.log(seqarr)
+          
+
+          localStorage.setItem("TrackingNumber",record.original.TrackingNumber)
+          localStorage.setItem("ContactName",record.original.ContactName)
+
+          localStorage.setItem("ContainerName",record.original.ContainerName)
+          localStorage.setItem("tableHTML",htmdata);
+
+
+          console.log(htmdata)
+
+          
+
+          this.setState({
+            PLFromAddress: FromAddress + ", " +  fromCitys,
+            PLToAddress: TOAddress + ", " +  TOCitys ,
+          });
+
+          this.setState({
+            PLdocOpen: true,
+            // RemoveShipID: "",
+          });
+
+
+
+          // window.open(
+          //   this.state.Base +
+          //     "auth/PL/" +
+          //     shipId +
+          //     "/" +
+          //     this.props.history.location.state.containerId,
+      
+          //   "_blank"
+          // );
+        } else {
+          cogoToast.error("Something went wrong");
+        }
+      })
+      .catch((err) => {
+        console.log("error.....", err);
+      });
+  };
+
+  generateDOPDF = () =>{
+    console.log('document.getElementById("DoDeliverTo").value = ',document.getElementById("DoDeliverTo").value);
+    debugger
+    localStorage.setItem("DoDeliverTo",document.getElementById("DoDeliverTo").value)
+    localStorage.setItem("DOConsignee",document.getElementById("DOConsignee").value)
+    localStorage.setItem("DONotifyParty",document.getElementById("DONotifyParty").value)
+    localStorage.setItem("DoMBLNo",document.getElementById("DoMBLNo").value)
+    localStorage.setItem("DoVessel",document.getElementById("DoVessel").value)
+    localStorage.setItem("DoHBLNo",document.getElementById("DoHBLNo").value)
+    localStorage.setItem("DoLoadingPort",document.getElementById("DoLoadingPort").value)
+
+    
+    localStorage.setItem("DoIGMNo",document.getElementById("DoIGMNo").value)
+    localStorage.setItem("DoITMSub",document.getElementById("DoITMSub").value)
+    localStorage.setItem("DoContainerNum",document.getElementById("DoContainerNum").value)
+    localStorage.setItem("DoSealNumber",document.getElementById("DoSealNumber").value)
+    localStorage.setItem("DoDescription",document.getElementById("DoDescription").value)
+    localStorage.setItem("DOSequencelist",document.getElementById("DOSequencelist").value)
+
+    
+    localStorage.setItem("DoPackageNumber",document.getElementById("DoPackageNumber").value)
+    localStorage.setItem("DOMEASUREMENT",document.getElementById("DOMEASUREMENT").value)
+    localStorage.setItem("DOWEIGHT",document.getElementById("DOWEIGHT").value)
+
+    localStorage.setItem("ContainerName",this.state.ContainerName)
+    localStorage.setItem("IGMDate",this.state.IGMDate)
+    localStorage.setItem("IGMInwardDate",this.state.IGMInwardDate)
+    localStorage.setItem("HBLDate",this.state.HBLDate)
+    localStorage.setItem("ETADate",this.state.ArrivalDate)
+    
+    var shipId = localStorage.getItem("shippid");
+    this.setState({
+      DOdocOpen: false,
+      // RemoveShipID: "",
+    });
+
+
+
+    window.open(
+      this.state.Base +
+        "auth/DO/" +
+        shipId +
+        "/" +
+        this.props.history.location.state.containerId,
+
+      "_blank"
+    );
+    
+
+  }
+
   generatePDF = () => {
     var shipId = localStorage.getItem("shippid");
     var containerName = document.getElementById("HContainerNumber").value;
@@ -2358,6 +2896,26 @@ class editContainer extends Component {
     });
   };
 
+  selectChangeTab2 = (event, type, idx) => {
+    // let index = this.state.PackageList.findIndex((x) => x.Index === idx);
+    
+    
+    console.log(event.target.value)
+    if(event.target.value == "HBL"){
+      this.generateHBL(idx)
+    }
+    if(event.target.value == "PL"){
+      this.generatePL(idx)
+    }
+
+    if(event.target.value == "DO"){
+      this.generateDO(idx)
+      
+    }
+    
+    
+  };
+
   render() {
     // const serviceNameDataHBL = this.state.HBLShipmentList.map((type) => {
     //   return { value: type.ShippingID, label: type.TrackingNumber };
@@ -2537,21 +3095,7 @@ class editContainer extends Component {
         width: 35,
       },
 
-      {
-        Header: "CFT",
-        accessor: "CFT",
-        Footer: (
-          <span>
-            {CommonConfig.isEmpty(this.state.TotalCFTCount)
-              ? ""
-              : parseFloat(this.state.TotalCFTCount)
-                  .toFixed(2)
-                  .toString()
-                  .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-          </span>
-        ),
-        width: 75,
-      },
+     
       {
         Header: "Status",
         accessor: "ShipmentStatus",
@@ -2619,7 +3163,7 @@ class editContainer extends Component {
       {
         Header: "Generate",
         accessor: "Generate",
-        width: 40,
+        width: 80,
         maxWidth: 50,
         filterable: false,
         Cell: (record) => {
@@ -2633,19 +3177,112 @@ class editContainer extends Component {
                 <i className="fas fa-plus"></i>
               </Button> */}
 
-              <Button
+                    <FormControl  fullWidth>
+                      <Select
+                        id="package_number"
+                        name="package_number"
+                        value={this.state.generatedata}
+                        className="form-control"
+                        onChange={(event) =>
+                          this.selectChangeTab2(
+                            event,
+                            "PackedType",
+                            record
+                          )
+                        }
+                        // onBlur={(event, value) =>
+                        //   this.state.identical === "Yes"
+                        //     ? this.PackTtypeOnBlur(
+                        //         event,
+                        //         "PackedType",
+                        //         packages.Index
+                        //       )
+                        //     : this.selectChangeTab2(
+                        //         event,
+                        //         "PackedType",
+                        //         packages.Index
+                        //       )
+                        // }
+                      >
+                        {this.packedBy()}
+                      </Select>
+                    </FormControl>
+
+              {/* <Button
                 justIcon
                 color="success"
                 className="Plus-btn"
                 onClick={() => this.generateHBL(record)}
               >
                 <i className={"fas fa-check"} />
-              </Button>
+              </Button> */}
             </div>
           );
         },
         sortable: false,
       },
+
+      // {
+      //   Header: "HBL",
+      //   accessor: "Generate",
+      //   width: 40,
+      //   maxWidth: 50,
+      //   filterable: false,
+      //   Cell: (record) => {
+      //     return (
+      //       <div className="table-common-btn">
+      //         {/* <Button
+      //           justIcon
+      //           color="info"
+      //           onClick={() => this.getShipmentByContainerMergeHBL(record)}
+      //         >
+      //           <i className="fas fa-plus"></i>
+      //         </Button> */}
+
+      //         <Button
+      //           justIcon
+      //           color="success"
+      //           className="Plus-btn"
+      //           onClick={() => this.generateHBL(record)}
+      //         >
+      //           <i className={"fas fa-check"} />
+      //         </Button>
+      //       </div>
+      //     );
+      //   },
+      //   sortable: false,
+      // },
+
+      // {
+      //   Header: "PL",
+      //   accessor: "Generate",
+      //   width: 40,
+      //   maxWidth: 50,
+      //   filterable: false,
+      //   Cell: (record) => {
+      //     return (
+      //       <div className="table-common-btn">
+      //         {/* <Button
+      //           justIcon
+      //           color="info"
+      //           onClick={() => this.getShipmentByContainerMergeHBL(record)}
+      //         >
+      //           <i className="fas fa-plus"></i>
+      //         </Button> */}
+
+      //         <Button
+      //           justIcon
+      //           color="success"
+      //           className="Plus-btn"
+      //           onClick={() => this.generatePL(record)}
+      //         >
+      //           <i className={"fas fa-check"} />
+      //         </Button>
+      //       </div>
+      //     );
+      //   },
+      //   sortable: false,
+      // },
     ];
 
     const shipColums = [
@@ -3001,6 +3638,9 @@ class editContainer extends Component {
       ContainerShortName,
       containershortnameHelperText,
       containershortnameErr,
+      IGMNumber,
+      IGMNumberHelperText,
+      IGMNumberErr,
       ContainerName,
       containernameErr,
       containernameHelperText,
@@ -3044,6 +3684,32 @@ class editContainer extends Component {
       HBLDate,
       hbldateErr,
       hbldateHelperText,
+
+      IGMDate,
+      IGMDateErr,
+      IGMDateHelperText,
+
+      IGMInwardDate,
+      IGMInwardDateErr,
+      IGMInwardDateHelperText,
+      DOConsignee,
+      DONotifyParty,
+      DoDeliverTo,
+      DoMBLNo,
+      DoVessel,
+      DoHBLNo,
+      DoLoadingPort,
+      DoIGMNo,
+      DoITMSub,
+      DoContainerNum,
+      DoSealNumber,
+      DoDescription,
+
+      DOSequencelist,
+      DoPackageNumber,
+      DOWEIGHT,
+      DOMEASUREMENT,
+
       CreatedOn,
       LoadDate,
       loaddateErr,
@@ -3084,6 +3750,8 @@ class editContainer extends Component {
       PnotifyPhone,
       TcontactName,
       FcontactName,
+      PLToAddress,
+      PLFromAddress,
       BLNumber,
       pTrackingNumber,
       Vessel,
@@ -3392,6 +4060,118 @@ class editContainer extends Component {
                         />
                       </FormControl>
                     </GridItem>
+                    {/* Pendingd */}
+
+                    <GridItem xs={12} sm={12} md={3}>
+                      <div className="dt-vs date-spl">
+                        <FormControl fullWidth>
+                          <Datetime
+                            dateFormat={"MM/DD/YYYY"}
+                            timeFormat={false}
+                            value={HBLDate}
+                            inputProps={{ placeholder: "HBL Date" }}
+                            onChange={(date) => this.handleDate(date, "hbl")}
+                            closeOnSelect={true}
+                            renderInput={(params) => (
+                              <TextField
+                                style={{ marginTop: "-15px" }}
+                                error={hbldateErr}
+                                helperText={hbldateHelperText}
+                                {...params}
+                                label="HBL/MBL/BOL Date"
+                                margin="normal"
+                                fullWidth
+                              />
+                            )}
+                          />
+                          <Icon className="date-icon tp-slam">date_range</Icon>
+                        </FormControl>
+                      </div>
+                    </GridItem>
+                    <GridItem xs={12} sm={12} md={3}>
+                      <div className="dt-vs date-spl">
+                        <FormControl fullWidth>
+                          <Datetime
+                            dateFormat={"MM/DD/YYYY"}
+                            timeFormat={false}
+                            value={LoadDate}
+                            inputProps={{ placeholder: "Load Date" }}
+                            onChange={(date) => this.handleDate(date, "load")}
+                            closeOnSelect={true}
+                            renderInput={(params) => (
+                              <TextField
+                                style={{ marginTop: "-15px" }}
+                                error={loaddateErr}
+                                helperText={loaddateHelperText}
+                                {...params}
+                                label="Load Date"
+                                margin="normal"
+                                fullWidth
+                              />
+                            )}
+                          />
+                          <Icon className="date-icon tp-slam">date_range</Icon>
+                        </FormControl>
+                      </div>
+                    </GridItem>
+                    <GridItem xs={12} sm={12} md={3}>
+                      <div className="dt-vs date-spl">
+                        <FormControl fullWidth>
+                          <Datetime
+                            dateFormat={"MM/DD/YYYY"}
+                            timeFormat={false}
+                            value={SailingDate}
+                            inputProps={{ placeholder: "Sailing Date" }}
+                            onChange={(date) =>
+                              this.handleDate(date, "sailing")
+                            }
+                            closeOnSelect={true}
+                            renderInput={(params) => (
+                              <TextField
+                                style={{ marginTop: "-15px" }}
+                                error={sailingdateErr}
+                                helperText={sailingdateHelperText}
+                                {...params}
+                                label="Sailing Date"
+                                margin="normal"
+                                fullWidth
+                              />
+                            )}
+                          />
+                          <Icon className="date-icon tp-slam">date_range</Icon>
+                        </FormControl>
+                      </div>
+                    </GridItem>
+
+                    <GridItem xs={12} sm={12} md={3}>
+                      <FormControl className="mb-0" fullWidth>
+                        <CustomInput
+                          labelText="Place of Delivery by On-Carrier"
+                          id="placeofdelivery"
+                          formControlProps={{ fullWidth: true }}
+                          error={placeofdeliveryErr}
+                          helperText={placeofdeliveryHelperText}
+                          inputProps={{
+                            value: PlaceOfDeliveryByOnCarrier,
+                            endAdornment: (
+                              <InputAdornment position="end">
+                                <Icon>perm_identity</Icon>
+                              </InputAdornment>
+                            ),
+                            onChange: (event) =>
+                              this.handleChange(event, "placeofdelivery"),
+                            onBlur: (event) =>
+                              this.handleBlur(event, "placeofdelivery"),
+                            onFocus: () =>
+                              this.setState({
+                                placeofdeliveryErr: false,
+                                placeofdeliveryHelperText: "",
+                              }),
+                          }}
+                        />
+                      </FormControl>
+                    </GridItem>
+
                     <GridItem xs={12} sm={12} md={3}>
                       <CustomInput
                         labelText="Point of Origin"
@@ -3474,114 +4254,7 @@ class editContainer extends Component {
                         />
                       </FormControl>
                     </GridItem>
-                    <GridItem xs={12} sm={12} md={3}>
-                      <FormControl className="mb-0" fullWidth>
-                        <CustomInput
-                          labelText="Place of Delivery by On-Carrier"
-                          id="placeofdelivery"
-                          formControlProps={{ fullWidth: true }}
-                          error={placeofdeliveryErr}
-                          helperText={placeofdeliveryHelperText}
-                          inputProps={{
-                            value: PlaceOfDeliveryByOnCarrier,
-                            endAdornment: (
-                              <InputAdornment position="end">
-                                <Icon>perm_identity</Icon>
-                              </InputAdornment>
-                            ),
-                            onChange: (event) =>
-                              this.handleChange(event, "placeofdelivery"),
-                            onBlur: (event) =>
-                              this.handleBlur(event, "placeofdelivery"),
-                            onFocus: () =>
-                              this.setState({
-                                placeofdeliveryErr: false,
-                                placeofdeliveryHelperText: "",
-                              }),
-                          }}
-                        />
-                      </FormControl>
-                    </GridItem>
-                    <GridItem xs={12} sm={12} md={3}>
-                      <div className="dt-vs date-spl">
-                        <FormControl fullWidth>
-                          <Datetime
-                            dateFormat={"MM/DD/YYYY"}
-                            timeFormat={false}
-                            value={HBLDate}
-                            inputProps={{ placeholder: "HBL Date" }}
-                            onChange={(date) => this.handleDate(date, "hbl")}
-                            closeOnSelect={true}
-                            renderInput={(params) => (
-                              <TextField
-                                style={{ marginTop: "-15px" }}
-                                error={hbldateErr}
-                                helperText={hbldateHelperText}
-                                {...params}
-                                label="HBL Date"
-                                margin="normal"
-                                fullWidth
-                              />
-                            )}
-                          />
-                          <Icon className="date-icon tp-slam">date_range</Icon>
-                        </FormControl>
-                      </div>
-                    </GridItem>
-                    <GridItem xs={12} sm={12} md={3}>
-                      <div className="dt-vs date-spl">
-                        <FormControl fullWidth>
-                          <Datetime
-                            dateFormat={"MM/DD/YYYY"}
-                            timeFormat={false}
-                            value={LoadDate}
-                            inputProps={{ placeholder: "Load Date" }}
-                            onChange={(date) => this.handleDate(date, "load")}
-                            closeOnSelect={true}
-                            renderInput={(params) => (
-                              <TextField
-                                style={{ marginTop: "-15px" }}
-                                error={loaddateErr}
-                                helperText={loaddateHelperText}
-                                {...params}
-                                label="Load Date"
-                                margin="normal"
-                                fullWidth
-                              />
-                            )}
-                          />
-                          <Icon className="date-icon tp-slam">date_range</Icon>
-                        </FormControl>
-                      </div>
-                    </GridItem>
-                    <GridItem xs={12} sm={12} md={3}>
-                      <div className="dt-vs date-spl">
-                        <FormControl fullWidth>
-                          <Datetime
-                            dateFormat={"MM/DD/YYYY"}
-                            timeFormat={false}
-                            value={SailingDate}
-                            inputProps={{ placeholder: "Sailing Date" }}
-                            onChange={(date) =>
-                              this.handleDate(date, "sailing")
-                            }
-                            closeOnSelect={true}
-                            renderInput={(params) => (
-                              <TextField
-                                style={{ marginTop: "-15px" }}
-                                error={sailingdateErr}
-                                helperText={sailingdateHelperText}
-                                {...params}
-                                label="Sailing Date"
-                                margin="normal"
-                                fullWidth
-                              />
-                            )}
-                          />
-                          <Icon className="date-icon tp-slam">date_range</Icon>
-                        </FormControl>
-                      </div>
-                    </GridItem>
+                    
                     <GridItem xs={12} sm={12} md={3}>
                       <div className="dt-vs date-spl">
                         <FormControl fullWidth>
@@ -3821,6 +4494,92 @@ class editContainer extends Component {
                         </FormControl>
                       </div>
                     </GridItem>
+
+                    <GridItem xs={12} sm={12} md={3}>
+                      <FormControl className="mb-0" fullWidth>
+                        <CustomInput
+                          labelText="IGM Number"
+                          id="IGMNumber"
+                          formControlProps={{ fullWidth: true }}
+                          // error={containershortnameErr}
+                          // helperText={containershortnameHelperText}
+                          inputProps={{
+                            value: IGMNumber,
+                            // endAdornment: (
+                            //   <InputAdornment position="end">
+                            //     <Icon className="requiredicon">
+                            //       perm_identity
+                            //     </Icon>
+                            //   </InputAdornment>
+                            // ),
+                            onChange: (event) =>
+                              this.handleChange(event, "IGMNumber"),
+                            onBlur: (event) =>
+                              this.handleBlur(event, "IGMNumber"),
+                            onFocus: () =>
+                              this.setState({
+                                IGMNumberErr: false,
+                                IGMNumberHelperText: "",
+                              }),
+                          }}
+                        />
+                      </FormControl>
+                    </GridItem>
+
+                    <GridItem xs={12} sm={12} md={3}>
+                      <div className="dt-vs date-spl">
+                        <FormControl fullWidth>
+                          <Datetime
+                            dateFormat={"MM/DD/YYYY"}
+                            timeFormat={false}
+                            value={IGMDate}
+                            inputProps={{ placeholder: "IGM Date" }}
+                            onChange={(date) => this.handleDate(date, "IGMDate")}
+                            closeOnSelect={true}
+                            renderInput={(params) => (
+                              <TextField
+                                style={{ marginTop: "-15px" }}
+                                error={IGMDateErr}
+                                helperText={IGMDateHelperText}
+                                {...params}
+                                label="IGM Date"
+                                margin="normal"
+                                fullWidth
+                              />
+                            )}
+                          />
+                          <Icon className="date-icon tp-slam">date_range</Icon>
+                        </FormControl>
+                      </div>
+                    </GridItem>
+
+                    <GridItem xs={12} sm={12} md={3}>
+                    <div className="dt-vs date-spl">
+                        <FormControl fullWidth>
+                          <Datetime
+                            dateFormat={"MM/DD/YYYY"}
+                            timeFormat={false}
+                            value={IGMInwardDate}
+                            inputProps={{ placeholder: "IGM Inward Date" }}
+                            onChange={(date) => this.handleDate(date, "IGMInwardDate")}
+                            closeOnSelect={true}
+                            renderInput={(params) => (
+                              <TextField
+                                style={{ marginTop: "-15px" }}
+                                error={IGMInwardDateErr}
+                                helperText={IGMInwardDateHelperText}
+                                {...params}
+                                label="IGM Inward Date"
+                                margin="normal"
+                                fullWidth
+                              />
+                            )}
+                          />
+                          <Icon className="date-icon tp-slam">date_range</Icon>
+                        </FormControl>
+                    </div>
+                    </GridItem>
+
                   </GridContainer>
                 </CardBody>
               </Card>
@@ -4795,6 +5554,621 @@ class editContainer extends Component {
                 </Button>
                 <Button
                   onClick={() => this.generatePDF()}
+                  color="primary"
+                  autoFocus
+                >
+                  Genrate
+                </Button>
+              </DialogActions>
+            </Dialog>
+          </div>
+
+
+
+
+          <div>
+            <Dialog
+              open={this.state.PLdocOpen}
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description"
+              className="large-Modal"
+            >
+              <DialogTitle id="alert-dialog-title">Genrate PL</DialogTitle>
+              <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                  <div className="hbl-outer">
+                    <div id="HBL" class="page">
+                      
+                      <table className="hbl-table">
+                        <tr>
+                          <td rowSpan={3} className="t-50">
+                          Origin Address<br></br>
+                            <textarea
+                              id="PLFromAddress"
+                              name="Body"
+                              style={{
+                                width: "100%",
+                                height: "120px",
+                                display: "block",
+                              }}
+                              labelText="Body"
+                              //KRUTIU
+                              value={this.state.PLFromAddress}
+                              onChange={(e) =>
+                                this.HselectChange(e, "PLFromAddress")
+                              }
+                            ></textarea>
+                            <div
+                              id="PLFromAddress"
+                              dangerouslySetInnerHTML={{
+                                __html: this.state.PLFromAddress,
+                              }}
+                              style={{
+                                display: "none",
+                                whiteSpace: "pre-line",
+                              }}
+                            />
+                          </td>
+                          <td rowSpan={3} className="t-50">
+                            Destination Address<br></br>
+                            <textarea
+                              id="PLToAddress"
+                              name="Body"
+                              style={{
+                                width: "100%",
+                                height: "120px",
+                                display: "block",
+                              }}
+                              labelText="Body"
+                              //KRUTIU
+                              value={this.state.PLToAddress}
+                              onChange={(e) =>
+                                this.HselectChange(e, "PLToAddress")
+                              }
+                            ></textarea>
+                            <div
+                              id="PLToAddress"
+                              dangerouslySetInnerHTML={{
+                                __html: this.state.PLToAddress,
+                              }}
+                              style={{
+                                display: "none",
+                                whiteSpace: "pre-line",
+                              }}
+                            />
+                          </td>
+                        
+
+                          
+                        </tr>
+                        
+                      </table>
+                      
+                    </div>
+                  </div>
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button
+                  onClick={() => this.setState({ PLdocOpen: false })}
+                  color="secondary"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={() => this.generatePLPDF()}
+                  color="primary"
+                  autoFocus
+                >
+                  Genrate
+                </Button>
+              </DialogActions>
+            </Dialog>
+          </div>
+
+
+          <div>
+            <Dialog
+              open={this.state.DOdocOpen}
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description"
+              className="large-Modal"
+            >
+              <DialogTitle id="alert-dialog-title">Genrate DO</DialogTitle>
+              <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                <div>
+                  <table style={{width: '100%', borderCollapse: 'collapse', fontFamily: 'sans-serif'}}>
+                    <tbody><tr>
+                        <td style={{width: '50%', padding: '5px', verticalAlign: 'top'}}>
+                          <b>Attention To :</b><br />
+                          The Manager<br />
+                          Speedy CFS<br />
+                          Uran, Nhava Sheva
+                        </td>
+                        <td style={{width: '50%', padding: '5px', verticalAlign: 'top', textAlign: 'right'}}>Date : 04/01/2024</td>
+                      </tr>
+                      <tr>
+                        <td colSpan={2} style={{padding: '5px', verticalAlign: 'top'}}>
+                          <p style={{margin: '15px 0 0 0'}}>Dear Sir</p>
+                        </td>
+                      </tr>
+                    </tbody></table>
+                  <table style={{width: '100%', borderCollapse: 'collapse', fontFamily: 'sans-serif'}}>
+                    <tbody><tr>
+                        <td style={{width: '30%', padding: '5px', border: '1px solid #000'}}>Please Deliver To :</td>
+                        <td style={{width: '70%', padding: '5px', border: '1px solid #000'}}>
+
+                        <input
+                              id="DoDeliverTo"
+                              style={{
+                                display: "block",
+                              }}
+                              value={DoDeliverTo}
+                              onChange={(e) =>
+                                this.HselectChange(e, "DoDeliverTo")
+                              }
+                            />
+                            <div
+                              id="DoDeliverTodiv"
+                              dangerouslySetInnerHTML={{
+                                __html: DoDeliverTo,
+                              }}
+                              style={{
+                                display: "none",
+                                whiteSpace: "pre-line",
+                              }}
+                            />
+
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style={{width: '30%', padding: '5px', border: '1px solid #000'}}>Consignee :</td>
+                        <td style={{width: '70%', padding: '5px', border: '1px solid #000'}}>
+                        <input
+                              id="DOConsignee"
+                              style={{
+                                display: "block",
+                              }}
+                              value={DOConsignee}
+                              onChange={(e) =>
+                                this.HselectChange(e, "DOConsignee")
+                              }
+                            />
+                            <div
+                              id="DOConsigneediv"
+                              dangerouslySetInnerHTML={{
+                                __html: DOConsignee,
+                              }}
+                              style={{
+                                display: "none",
+                                whiteSpace: "pre-line",
+                              }}
+                            />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style={{width: '30%', padding: '5px', border: '1px solid #000'}}>Notify Party :</td>
+                        <td style={{width: '70%', padding: '5px', border: '1px solid #000'}}>
+                        
+
+                            <textarea
+                              id="DONotifyParty"
+                              name="Body"
+                              style={{
+                                width: "100%",
+                                height: "120px",
+                                display: "block",
+                              }}
+                              labelText="Body"
+                              //KRUTIU
+                              value={this.state.DONotifyParty}
+                              onChange={(e) =>
+                                this.HselectChange(e, "DONotifyParty")
+                              }
+                            ></textarea>
+                         
+                          
+                          </td>
+                      </tr>
+                      <tr>
+                        <td style={{width: '30%', padding: '5px', border: '1px solid #000'}}>MBL Number / Date:</td>
+                        <td style={{width: '70%', padding: '5px', border: '1px solid #000'}}>
+                          <table style={{width: '100%', borderCollapse: 'collapse', fontFamily: 'sans-serif'}}>
+                            <tbody><tr>
+                                <td style={{width: '50%', padding: 0}}>
+
+                                <input
+                                  id="DoMBLNo"
+                                  style={{
+                                    display: "block",
+                                  }}
+                                  value={DoMBLNo}
+                                  onChange={(e) =>
+                                    this.HselectChange(e, "DoMBLNo")
+                                  }
+                                />
+                                <div
+                                  id="DoMBLNodiv"
+                                  dangerouslySetInnerHTML={{
+                                    __html: DoMBLNo,
+                                  }}
+                                  style={{
+                                    display: "none",
+                                    whiteSpace: "pre-line",
+                                  }}
+                                />
+
+                                </td>
+                                <td style={{width: '50%', padding: 0}}>Date: {this.state.HBLDate}</td>
+                              </tr>
+                            </tbody></table>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style={{width: '30%', padding: '5px', border: '1px solid #000'}}>Vessel / Voyage :</td>
+                        <td style={{width: '70%', padding: '5px', border: '1px solid #000'}}>
+                        <input
+                                  id="DoVessel"
+                                  style={{
+                                    display: "block",
+                                  }}
+                                  value={DoVessel}
+                                  onChange={(e) =>
+                                    this.HselectChange(e, "DoVessel")
+                                  }
+                                />
+                                <div
+                                  id="DoVesseldiv"
+                                  dangerouslySetInnerHTML={{
+                                    __html: DoVessel,
+                                  }}
+                                  style={{
+                                    display: "none",
+                                    whiteSpace: "pre-line",
+                                  }}
+                                />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style={{width: '30%', padding: '5px', border: '1px solid #000'}}>HBL Number / Date :</td>
+                        <td style={{width: '70%', padding: '5px', border: '1px solid #000'}}>
+                          <table style={{width: '100%', borderCollapse: 'collapse', fontFamily: 'sans-serif'}}>
+                            <tbody><tr>
+                                <td style={{width: '50%', padding: 0}}>
+                                <input
+                                  id="DoHBLNo"
+                                  style={{
+                                    display: "block",
+                                  }}
+                                  value={DoHBLNo}
+                                  onChange={(e) =>
+                                    this.HselectChange(e, "DoHBLNo")
+                                  }
+                                />
+                                <div
+                                  id="DoHBLNodiv"
+                                  dangerouslySetInnerHTML={{
+                                    __html: DoHBLNo,
+                                  }}
+                                  style={{
+                                    display: "none",
+                                    whiteSpace: "pre-line",
+                                  }}
+                                />
+                                </td>
+                                <td style={{width: '50%', padding: 0}}>Date: {this.state.HBLDate}</td>
+                              </tr>
+                            </tbody></table>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style={{width: '30%', padding: '5px', border: '1px solid #000'}}>Load Port :</td>
+                        <td style={{width: '70%', padding: '5px', border: '1px solid #000'}}>
+                        <input
+                                  id="DoLoadingPort"
+                                  style={{
+                                    display: "block",
+                                  }}
+                                  value={DoLoadingPort}
+                                  onChange={(e) =>
+                                    this.HselectChange(e, "DoLoadingPort")
+                                  }
+                                />
+                                <div
+                                  id="DoLoadingPortdiv"
+                                  dangerouslySetInnerHTML={{
+                                    __html: DoLoadingPort,
+                                  }}
+                                  style={{
+                                    display: "none",
+                                    whiteSpace: "pre-line",
+                                  }}
+                                />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style={{width: '30%', padding: '5px', border: '1px solid #000'}}>ETA :</td>
+                        <td style={{width: '70%', padding: '5px', border: '1px solid #000'}}>{this.state.ArrivalDate}</td>
+                      </tr>
+                      <tr>
+                        <td style={{width: '30%', padding: '5px', border: '1px solid #000'}}>IGM Number - Date :</td>
+                        <td style={{width: '70%', padding: '5px', border: '1px solid #000'}}>
+                          <table style={{width: '100%', borderCollapse: 'collapse', fontFamily: 'sans-serif'}}>
+                            <tbody><tr>
+                                <td style={{width: '50%', padding: 0}}>
+                                  
+                                <input
+                                  id="DoIGMNo"
+                                  style={{
+                                    display: "block",
+                                  }}
+                                  value={DoIGMNo}
+                                  onChange={(e) =>
+                                    this.HselectChange(e, "DoIGMNo")
+                                  }
+                                />
+                                <div
+                                  id="DoIGMNodiv"
+                                  dangerouslySetInnerHTML={{
+                                    __html: DoIGMNo,
+                                  }}
+                                  style={{
+                                    display: "none",
+                                    whiteSpace: "pre-line",
+                                  }}
+                                />
+                                   IGM Date : {this.state.IGMDate}</td>
+                                <td style={{width: '50%', padding: 0}}>Inward Date : {this.state.IGMInwardDate}</td>
+                              </tr>
+                            </tbody></table>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style={{width: '30%', padding: '5px', border: '1px solid #000'}}>Item No. / Sub Item No :</td>
+                        <td style={{width: '70%', padding: '5px', border: '1px solid #000'}}>
+                        <input
+                                  id="DoITMSub"
+                                  style={{
+                                    display: "block",
+                                  }}
+                                  value={DoITMSub}
+                                  onChange={(e) =>
+                                    this.HselectChange(e, "DoITMSub")
+                                  }
+                                />
+                                <div
+                                  id="DoITMSubdiv"
+                                  dangerouslySetInnerHTML={{
+                                    __html: DoITMSub,
+                                  }}
+                                  style={{
+                                    display: "none",
+                                    whiteSpace: "pre-line",
+                                  }}
+                                />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style={{width: '30%', padding: '5px', border: '1px solid #000', verticalAlign: 'top'}}>Unstuff Details :</td>
+                        <td style={{width: '70%', padding: '5px', border: '1px solid #000', verticalAlign: 'top'}}>
+                          <table style={{width: '100%', borderCollapse: 'collapse', fontFamily: 'sans-serif'}}>
+                            <tbody><tr>
+                                <td style={{padding: 0}}>
+                                  <u>No. Of Packages</u><br />
+                                  
+                                  <input
+                                  id="DoPackageNumber"
+                                  style={{
+                                    display: "block",
+                                  }}
+                                  value={DoPackageNumber}
+                                  onChange={(e) =>
+                                    this.HselectChange(e, "DoPackageNumber")
+                                  }
+                                />
+                                <div
+                                  id="DoPackageNumberdiv"
+                                  dangerouslySetInnerHTML={{
+                                    __html: DoPackageNumber,
+                                  }}
+                                  style={{
+                                    display: "none",
+                                    whiteSpace: "pre-line",
+                                  }}
+                                />
+                                </td>
+                                <td style={{padding: 0}}>
+                                  <u>Weight in Kgs</u><br />
+                                  <input
+                                  id="DOWEIGHT"
+                                  style={{
+                                    display: "block",
+                                  }}
+                                  value={DOWEIGHT}
+                                  onChange={(e) =>
+                                    this.HselectChange(e, "DOWEIGHT")
+                                  }
+                                />
+                                <div
+                                  id="DOWEIGHTdiv"
+                                  dangerouslySetInnerHTML={{
+                                    __html: DOWEIGHT,
+                                  }}
+                                  style={{
+                                    display: "none",
+                                    whiteSpace: "pre-line",
+                                  }}
+                                />
+                                  
+                                </td>
+                                <td style={{padding: 0}}>
+                                  <u>Volume</u><br />
+
+                                  <input
+                                  id="DOMEASUREMENT"
+                                  style={{
+                                    display: "block",
+                                  }}
+                                  value={DOMEASUREMENT}
+                                  onChange={(e) =>
+                                    this.HselectChange(e, "DOMEASUREMENT")
+                                  }
+                                />
+                                <div
+                                  id="DOMEASUREMENTdiv"
+                                  dangerouslySetInnerHTML={{
+                                    __html: DOMEASUREMENT,
+                                  }}
+                                  style={{
+                                    display: "none",
+                                    whiteSpace: "pre-line",
+                                  }}
+                                />
+                                </td>
+                              </tr>
+                            </tbody></table>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style={{width: '30%', padding: '5px', border: '1px solid #000'}}>Marks and Numbers :</td>
+                        <td style={{width: '70%', padding: '5px', border: '1px solid #000'}}>
+
+                        <textarea
+                              id="DOSequencelist"
+                              name="Body"
+                              style={{
+                                width: "100%",
+                                height: "120px",
+                                display: "block",
+                              }}
+                              labelText="Body"
+                              //KRUTIU
+                              value={this.state.DOSequencelist}
+                              onChange={(e) =>
+                                this.HselectChange(e, "DOSequencelist")
+                              }
+                            ></textarea>
+
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style={{width: '30%', padding: '5px', border: '1px solid #000'}}>Description :</td>
+                        <td style={{width: '70%', padding: '5px', border: '1px solid #000'}}>
+                        
+
+                            <textarea
+                              id="DoDescription"
+                              name="Body"
+                              style={{
+                                width: "100%",
+                                height: "120px",
+                                display: "block",
+                              }}
+                              labelText="Body"
+                              //KRUTIU
+                              value={this.state.DoDescription}
+                              onChange={(e) =>
+                                this.HselectChange(e, "DoDescription")
+                              }
+                            ></textarea>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style={{width: '30%', padding: '5px', border: '1px solid #000'}}>Container No. / Seal No. :</td>
+                        <td style={{width: '70%', padding: '5px', border: '1px solid #000'}}>
+                          <table style={{width: '100%', borderCollapse: 'collapse', fontFamily: 'sans-serif'}}>
+                            <tbody><tr>
+                                <td style={{width: '50%', padding: 0}}>
+                                <input
+                                  id="DoContainerNum"
+                                  style={{
+                                    display: "block",
+                                  }}
+                                  value={DoContainerNum}
+                                  onChange={(e) =>
+                                    this.HselectChange(e, "DoContainerNum")
+                                  }
+                                />
+                                <div
+                                  id="DoContainerNumdiv"
+                                  dangerouslySetInnerHTML={{
+                                    __html: DoContainerNum,
+                                  }}
+                                  style={{
+                                    display: "none",
+                                    whiteSpace: "pre-line",
+                                  }}
+                                />
+                                </td>
+                                <td style={{width: '50%', padding: 0}}>Seal Number : 
+                                
+                                <input
+                                  id="DoSealNumber"
+                                  style={{
+                                    display: "block",
+                                  }}
+                                  value={DoSealNumber}
+                                  onChange={(e) =>
+                                    this.HselectChange(e, "DoSealNumber")
+                                  }
+                                />
+                                <div
+                                  id="DoSealNumberdiv"
+                                  dangerouslySetInnerHTML={{
+                                    __html: DoSealNumber,
+                                  }}
+                                  style={{
+                                    display: "none",
+                                    whiteSpace: "pre-line",
+                                  }}
+                                />
+
+                                </td>
+                              </tr>
+                            </tbody></table>
+                        </td>
+                      </tr>
+                    </tbody></table>
+                  <table style={{width: '100%', borderCollapse: 'collapse', fontFamily: 'sans-serif', marginTop: '20px'}}>
+                    <tbody><tr>
+                        <td style={{padding: '5px', verticalAlign: 'top'}}>{this.state.ContainerName}</td>
+                        <td rowSpan={4} style={{width: '40%'}}><img src="stamp.png" alt="" /></td>
+                      </tr> 
+                      <tr>
+                        <td style={{padding: '5px', verticalAlign: 'top'}}>STAMP DUTY NOT COLLECTED</td>
+                      </tr>
+                      <tr>
+                        <td style={{padding: '5px', verticalAlign: 'top', color: 'blue'}}>SFL WORLDWIDE LOGISTICS PRIVATE LIMITED</td>
+                      </tr>
+                      <tr>
+                        <td style={{padding: '5px', verticalAlign: 'top'}}><img src="sign.png" alt="" /></td>
+                      </tr>
+                      <tr>
+                        <td style={{padding: '5px', verticalAlign: 'top', color: 'blue'}}>AUTHORISED SIGNATORY</td>
+                      </tr>
+                    </tbody></table>
+                  <table style={{width: '100%', borderCollapse: 'collapse', borderTop: '5px solid #800000', fontFamily: 'sans-serif', marginTop: '20px'}}>
+                    <tbody><tr>
+                        <td style={{textAlign: 'center', fontSize: '12px', paddingTop: '10px'}}>
+                          C-732-733, Siddhi Vinayak Towers, Behind DCP Office, Nr. DAV Internatioal School<br />
+                          Off. S. G. Highway, Makarba, Ahmedabad, Gujarat - 380051, India<br />
+                          T: +91 98250 40051 | E: contact@sflindia.com | W: www.SFLIndia.com | CIN: U63000GJ2004PTC044321 | GSTN: 24AABCN9389H1Z2
+                        </td>
+                      </tr>
+                    </tbody></table>
+                </div>
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button
+                  onClick={() => this.setState({ DOdocOpen: false })}
+                  color="secondary"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={() => this.generateDOPDF()}
                   color="primary"
                   autoFocus
                 >

@@ -377,7 +377,7 @@ class HBL extends React.Component {
                   <td colSpan={2} className="t-50 textalign-center">PARTICULARS FURNISHED BY SHIPPER</td>
                 </tr>
               </table>
-              <table className="hbl-table">
+              <table className="hbl-table spacificMargin">
                 <thead>
                   <tr>
                     <th>MARKS AND NUMBER</th>
@@ -387,7 +387,7 @@ class HBL extends React.Component {
                     <th>MEASUREMENT</th>
                   </tr>
                 </thead>
-                <tbody id = "dataHtml">
+                <tbody  id = "dataHtml">
 
                
 

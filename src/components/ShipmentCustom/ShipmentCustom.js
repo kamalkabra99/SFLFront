@@ -10017,6 +10017,23 @@ class ShipmentCustom extends React.Component {
                 }
               }
             }
+            var bankCount = 0
+            debugger
+            if(objdata.PaymentData){
+              for(i = 0 ; i < objdata.PaymentData.length ; i++){
+                if(objdata.PaymentData[i].Status == "Active"){
+                  if(objdata.PaymentData[i].card_number != ""){
+                    if(objdata.PaymentData[i].card_number.length < 10){
+                      bankCount = 1
+                      cogoToast.error(
+                        "Please enter valid credit card number"
+                      );
+                      return;   
+                    }
+                  }
+                }
+              }
+            }
             console.log("objdata = ", objdata);
             var formData = new FormData();
             formData.append("data", JSON.stringify(objdata));

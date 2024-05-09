@@ -67,6 +67,7 @@ class EditContactUs extends Component {
       emailaddressHelperText: "",
       emailaddressCheck: false,
 
+      dataAttachment: [],
       CustomerType: "",
       customertypeErr: false,
       customertypeHelperText: "",
@@ -154,7 +155,23 @@ class EditContactUs extends Component {
                 i++;
                 return Obj;
               });
+              var data = []
+              for (let index = 0; index < result.data.data.NoteList.length; index++) {
+                // const element = array[index];
+                if(result.data.data.NoteList[index].AttachmentPath == null){
+                  console.log("NO");
+                }else{
+                  data.push(result.data.data.NoteList[index])
+                  console.log("result.data.data.NoteList = " , result.data.data.NoteList[index].AttachmentPath);
+                }
+              }
+              if(data.length > 0){
+                // this.state.
+                this.setState({ dataAttachment: data });
+              }
+              console.log("Data = " , this.state.dataAttachment)
               this.setState({ notes: result.data.data.NoteList });
+              console.log(" Notes = " , this.state.notes)
             }
             var managedBY = this.state.WorkingonRequest.find(
               (x) => x.PersonID === Number(result.data.data.WorkingOnRequest)
@@ -656,6 +673,7 @@ class EditContactUs extends Component {
       this.showLoader();
       let data = {
         ContactUsID: this.state.ContactUsID,
+        dataAttachment: this.state.dataAttachment,
       };
       //deleteContactUsByIdNEW
       api.post("contactus/deleteContactUsById", data).then((result) => {

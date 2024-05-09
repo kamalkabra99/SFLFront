@@ -37,8 +37,15 @@ class LockedReports extends Component {
   }
 
   getLockedShipmentReport() {
+    console.log("data = " , CommonConfig.getUserAccess("Locked Shipment Report").AllAccess);
+    var userID = 0
+    if(CommonConfig.getUserAccess("Locked Shipment Report").AllAccess == 1 && CommonConfig.getUserAccess("Locked Shipment Report").DeleteAccess == 1){
+      userID = 0
+    }else{
+      userID = CommonConfig.loggedInUserData().PersonID
+    }
     let data = {
-      UserID: 0,
+      UserID: userID,
     };
     try {
       this.showLoader();

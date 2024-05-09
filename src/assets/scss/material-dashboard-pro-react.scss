@@ -2970,6 +2970,8 @@ button.aesfilling-btn span.MuiButton-label {
   .mobile-hide {
     display: none !important;
   }
+  
+
 
   table.res-table td ul {
     width: 100%;
@@ -6582,8 +6584,29 @@ button.file-doc {
 
 .hbl-table td,
 .hbl-table th{
-  padding: 3px !important;
+  padding: 2px !important;
 }
+
+.Pl-td-des{
+  width: 80% !important;
+  padding: 5 !important;
+  border: 1px solid #000 !important;
+
+}
+.Pl-td td{
+  width: 10% ;
+  padding: 5 ; 
+  border: 1px solid #000;
+
+}
+.spacificMargin{
+  min-height: 175px;
+}
+
+.hide {
+  display: none;
+}
+
 
 
 

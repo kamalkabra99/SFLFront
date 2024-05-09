@@ -71,6 +71,7 @@ import zebraPrintOut from "./components/Reports/zebraPrintout";
 import DownloadForms from "./components/Reports/DownloadForms";
 import SalesTeamProductivity from "./components/Reports/SalesTeamProductivity";
 import LeadShipmentReport from "./components/Reports/LeadShipmentReport";
+import EmailReports from "./components/Reports/EmailReports";
 import AddDownloadForms from "./components/Reports/AddDownloadForms";
 import AllSalesReports from "components/Reports/AllSalesReports";
 import ShipmentReport from "components/Reports/ShipmentReport";
@@ -81,6 +82,8 @@ import SalesLeadNavigation from "components/SalesLeads/SalesLeadNavigation";
 import ShipmentNavigation from "components/Shipment/ShipmentNavigation";
 import Proposal_client from "./components/Proposal/Proposal_client";
 import HBL_client from "../src/components/ShipmentCustom/HBL";
+import PackageList_client from "../src/components/ShipmentCustom/PL";
+import DO_client from "../src/components/ShipmentCustom/DO";
 import esign_employee from "components/Esign/esign_employee";
 // import esign_client from "components/Esign/esign_client";
 import esign_client_v3 from "components/Esign/Esign_Client_v3";
@@ -445,6 +448,14 @@ var dashRoutes = [
     name: "LeadShipmentReport",
     icon: User,
     component: LeadShipmentReport,
+    layout: "/admin",
+    invisible: true,
+  },
+  {
+    path: "/EmailReports",
+    name: "EmailReports",
+    icon: User,
+    component: EmailReports,
     layout: "/admin",
     invisible: true,
   },
@@ -961,6 +972,24 @@ var dashRoutes = [
     name: "HBL_client",
     icon: ScheduleShipmentIcon,
     component: HBL_client,
+    layout: "/auth",
+    invisible: false,
+  },
+
+  {
+    path: "/PL/:shipId/:contId",
+    name: "PackageList_client",
+    icon: ScheduleShipmentIcon,
+    component: PackageList_client,
+    layout: "/auth",
+    invisible: false,
+  },
+
+  {
+    path: "/DO/:shipId/:contId",
+    name: "DO_client",
+    icon: ScheduleShipmentIcon,
+    component: DO_client,
     layout: "/auth",
     invisible: false,
   },

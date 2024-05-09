@@ -140,6 +140,12 @@ class Reports extends Component {
           Icon: "fas fa-file",
           classname: "inactive",
         },
+        {
+          stepName: "Email Report",
+          stepId: "EmailReports",
+          Icon: "fas fa-file",
+          classname: "inactive",
+        },
       ],
       navigate: "",
     };
@@ -158,6 +164,8 @@ class Reports extends Component {
     this.DownloadForms();
     this.SalesTeamProductivity();
     this.LeadShipmentReport();
+    this.EmailReports();
+
   }
 
   activeInactive = () => {
@@ -381,9 +389,11 @@ class Reports extends Component {
         this.setState({ FedExSteps: currentSteps });
       }
     }
+  
   };
-  LeadShipmentReport = () => {
-    debugger;
+
+  LeadShipmentReport = () =>{
+
     if (CommonConfig.getUserAccess("Lead v/s Shipment Report")) {
       if (
         CommonConfig.getUserAccess("Lead v/s Shipment Report").ReadAccess === 0
@@ -391,6 +401,23 @@ class Reports extends Component {
         let currentSteps = this.state.FedExSteps;
         let index = this.state.FedExSteps.findIndex(
           (x) => x.stepId === "LeadShipmentReport"
+        );
+        currentSteps.splice(index, 1);
+        this.setState({ FedExSteps: currentSteps });
+      }
+    }
+
+  }
+
+  EmailReports = () => {
+    debugger;
+    if (CommonConfig.getUserAccess("Email Report")) {
+      if (
+        CommonConfig.getUserAccess("Email Report").ReadAccess === 0
+      ) {
+        let currentSteps = this.state.FedExSteps;
+        let index = this.state.FedExSteps.findIndex(
+          (x) => x.stepId === "EmailReports"
         );
         currentSteps.splice(index, 1);
         this.setState({ FedExSteps: currentSteps });
@@ -660,7 +687,17 @@ class Reports extends Component {
             id: step.stepId,
           },
         });
-      } else {
+      }
+      else if (step.stepId === "EmailReports") {
+        this.props.history.push({
+          pathname: "EmailReports",
+          state: {
+            id: step.stepId,
+          },
+        });
+      }  
+      
+      else {
         this.props.history.push({
           pathname: "FedExReport",
           state: {
