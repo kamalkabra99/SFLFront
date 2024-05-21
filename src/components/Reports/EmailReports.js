@@ -20,6 +20,7 @@ import moment from "moment";
 import zipcelx from "zipcelx";
 import ReactTable from "react-table";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import SimpleBackdrop from "../../utils/general";
 
 const useStyles = () => makeStyles(styles);
 const classes = useStyles();
@@ -59,7 +60,7 @@ class EmailReports extends Component {
         { value: "CallBack", label: "CallBack" },
         { value: "SalesLead", label: "SalesLead" },
         { value: "Shipment", label: "Shipment" },
-        // { value: "Vendor", label: "Vendor" },
+        { value: "Vendor", label: "Vendor" },
       ],
 
       EmailProvidersStatus: [
@@ -86,6 +87,7 @@ class EmailReports extends Component {
       api
         .get("location/getCountryList")
         .then((res) => {
+          this.hideLoader();
           if (res.success) {
             var Country = res.data;
             this.setState({ CountryList: Country });
@@ -110,13 +112,26 @@ class EmailReports extends Component {
     }
   };
   reset = () => {
+    this.setState({ FromDateAllSales: "" });
+    this.setState({ ToDateAllSales: "" });
     this.setState({
       ToDateAllSales: "",
       FromDateAllSales: "",
       SerachList: [],
+      LoginTypeValue:"",
+      EmailProvidersStatusvalue:"",
+      selectedCountry: "",
+      selectedCountryTo:"",
+      // LoginTypeValue:"",
+      StartDate: "",
+      EndDate: "",
+      
     });
+    document.getElementById("Country").style.display = "none"
+          document.getElementById("Country1").style.display = "none"
   };
   searchLeadShipmentReport = () => {
+   
     try {
       let data = {
         FromDate: CommonConfig.isEmpty(this.state.FromDateAllSales)
@@ -139,19 +154,79 @@ class EmailReports extends Component {
       debugger;
       if (data.FromDate === "" || data.ToDate === "") {
         return cogoToast.error("Please select From Date , To Date and Country");
-      }else if(this.state.LoginTypeValue == ""){
+      } 
+      if(this.state.LoginTypeValue == ""){
         return cogoToast.error("Please select Module Name");
       }
-      else if(this.state.EmailProvidersStatusvalue == ""){
+       
+      if(this.state.EmailProvidersStatusvalue == ""){
         return cogoToast.error("Please select provider status");
       } 
+
+      if(data.ModuleName == "SalesLead"){
+
+        var conditions = ""
+
+        
+        if(data.FromCountry == undefined && data.ToCountry != undefined){
+          conditions = "cu.`ToCountryID` = " + data.ToCountry
+        }
+        
+        if(data.FromCountry != undefined && data.ToCountry ==undefined){
+          conditions = "cu.`FromCountryID` = "+ data.FromCountry
+        }
+
+        if(data.FromCountry != undefined && data.ToCountry !=undefined){
+          conditions = "cu.`FromCountryID` = "+ data.FromCountry + "AND cu.`ToCountryID` = " + data.ToCountry
+        }
+
+        if(data.FromCountry == undefined && data.ToCountry ==undefined){
+          return cogoToast.error("Please select Sender or Receiver Country");
+        }
+
+        data.Conditions = conditions;
+
+
+
+      }
+
+      if(data.ModuleName == "Shipment"){
+
+        var conditions = ""
+
+        
+        if(data.FromCountry == undefined && data.ToCountry != undefined){
+          conditions = "cu1.`CountryID` = " + data.ToCountry
+        }
+        
+        if(data.FromCountry != undefined && data.ToCountry ==undefined){
+          conditions = "cu.`CountryID` = "+ data.FromCountry
+        }
+
+        if(data.FromCountry != undefined && data.ToCountry !=undefined){
+          conditions = "cu.`CountryID` = "+ data.FromCountry + "AND cu1.`CountryID` = " + data.ToCountry
+        }
+
+        if(data.FromCountry == undefined && data.ToCountry ==undefined){
+          return cogoToast.error("Please select Sender or Receiver Country");
+        }
+
+        data.Conditions = conditions;
+
+
+
+      }
+
+      this.showLoader();
+      
       // else if(this.state.LoginTypeValue.label == "SalesLead" || this.state.LoginTypeValue.label == "Shipment"){
       //   if(this.state.selectedCountry == "" || this.state.selectedCountryTo){
       //     return cogoToast.error("Please select Sender and Receiver country");
       //   }
       // }
       
-      else {
+      // else {
+
         api
           .post("reports/GetEmailsReport", data)
           .then((res) => {
@@ -161,7 +236,7 @@ class EmailReports extends Component {
                 this.setState({ fileSetName: fileNameSet });
               this.setState({ SerachList: res.data[0] });
 
-              // this.hideLoader();
+              this.hideLoader();
             } else {
               cogoToast.error("Something went wrong");
             }
@@ -171,7 +246,7 @@ class EmailReports extends Component {
             cogoToast.error("Something went wrong");
             console.log("error...", err);
           });
-      }
+      // }
     } catch (err) {
       this.hideLoader();
       console.log("error....", err);
@@ -218,13 +293,19 @@ class EmailReports extends Component {
         = this.state.EmailProvidersStatus.map((x) => {
         return { value: x.value, label: x.label };
     });
-    const { fileSetName,StartDate, EndDate, SerachList, selectedCountry,selectedCountryTo,LoginTypeValue,EmailProvidersStatusvalue } = this.state;
+    const { fileSetName,FromDateAllSales, ToDateAllSales, SerachList, selectedCountry,selectedCountryTo,LoginTypeValue,EmailProvidersStatusvalue } = this.state;
     const columnsSearch = [
       {
         Header: "Enter Date",
         id: "EnterDate",
         accessor: "EnterDate",
         width: 80,
+      },
+      {
+        Header: "Name",
+        accessor: "CustomerName",
+
+        width: 220,
       },
       {
         Header: "Email Id",
@@ -282,6 +363,12 @@ class EmailReports extends Component {
         zipcelx(config);
       };
     return (
+      <div>
+        {this.state.Loading === true ? (
+          <div className="loading">
+            <SimpleBackdrop />
+          </div>
+        ) : null}
       <GridContainer justify="center" className="schedule-pickup-main-outer">
         <GridItem xs={12} sm={12}>
           <Card className="z-index-9">
@@ -305,7 +392,7 @@ class EmailReports extends Component {
                         <Datetime
                           dateFormat={"MM/DD/YYYY"}
                           timeFormat={false}
-                          value={StartDate}
+                          value={FromDateAllSales}
                           onChange={(date) =>
                             this.dateChangeAllSales(date, "FromDate")
                           }
@@ -326,7 +413,7 @@ class EmailReports extends Component {
                         <Datetime
                           dateFormat={"MM/DD/YYYY"}
                           timeFormat={false}
-                          value={EndDate}
+                          value={ToDateAllSales}
                           onChange={(date) =>
                             this.dateChangeAllSales(date, "ToDate")
                           }
@@ -338,7 +425,7 @@ class EmailReports extends Component {
                       </FormControl>
                     </div>
                   </GridItem>
-                  <GridItem xs={12} sm={3} md={2} className="z-index-9">
+                  <GridItem xs={12} sm={3} md={2} className="">
                     <Autocomplete
                       id="combo-box-demo"
                       options={ModulesName}
@@ -354,7 +441,7 @@ class EmailReports extends Component {
                     />
                   </GridItem>
 
-                  <GridItem xs={12} sm={3} md={2} className="z-index-9">
+                  <GridItem xs={12} sm={3} md={2} className="">
                     <Autocomplete
                       id="combo-box-demo"
                       options={EmailProvidersStatus}
@@ -378,6 +465,8 @@ class EmailReports extends Component {
                       >
                         Search
                       </Button>
+
+                      
                       <Button
                         justIcon
                         color="danger"
@@ -385,12 +474,18 @@ class EmailReports extends Component {
                         >
                         <i class="fas fa-download"></i>
                         </Button>
+                        <Button
+                        color="secondary"
+                        onClick={() => this.reset()}
+                      >
+                        Reset
+                      </Button>
                     </div>
                   </GridItem>
                 </GridContainer>
                 <GridContainer >
                 
-                  <GridItem xs={12} sm={3} md={2} className="z-index-9 hide" id = "Country">
+                  <GridItem xs={12} sm={3} md={2} className="hide" id = "Country">
                     <Autocomplete
                       options={CountryOption}
                       id="FromCountry"
@@ -414,7 +509,7 @@ class EmailReports extends Component {
                       )}
                     />
                   </GridItem>
-                  <GridItem xs={12} sm={3} md={2} className="z-index-9 hide" id = "Country1">
+                  <GridItem xs={12} sm={3} md={2} className="hide" id = "Country1">
                     <Autocomplete
                       options={CountryOption}
                       id="ToCountry"
@@ -465,6 +560,7 @@ class EmailReports extends Component {
           </Card>
         </GridItem>
       </GridContainer>
+      </div>
     );
   }
 }

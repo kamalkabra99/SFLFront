@@ -10023,7 +10023,16 @@ class ShipmentCustom extends React.Component {
               for(i = 0 ; i < objdata.PaymentData.length ; i++){
                 if(objdata.PaymentData[i].Status == "Active"){
                   if(objdata.PaymentData[i].card_number != ""){
-                    if(objdata.PaymentData[i].card_number.length < 10){
+                    let letter = objdata.PaymentData[i].card_number.charAt(0);
+
+                    var Cardlengths = 0
+                    if(letter == "2" || letter == "5" || letter == "4"){
+                      Cardlengths = 16
+                    }
+                    if(letter == "3"){
+                      Cardlengths = 15
+                    }
+                    if(objdata.PaymentData[i].card_number.length < Cardlengths){
                       bankCount = 1
                       cogoToast.error(
                         "Please enter valid credit card number"
