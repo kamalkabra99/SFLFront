@@ -2141,7 +2141,7 @@ class ShipmentCustom extends React.Component {
             (this.state.ServiceName.value === "SFL" &&
               this.state.ShipmentType.value === "Air" &&
               this.state.SubServiceName.value === "SFL Saver") ||
-            ((this.state.ServiceName.value == "SFL Worldwide" &&
+            ((this.state.ServiceName.value == "Consolidation" &&
               this.state.ShipmentType.value === "Ocean" &&
               this.state.SubServiceName.value === "Texas Console") ||
               /////////////////for prepaid label genrated ocean tacking//////////////
@@ -8864,7 +8864,7 @@ class ShipmentCustom extends React.Component {
           </div>
         ) : cellInfo.original.hasOwnProperty("isGenerated") &&
           (this.state.ServiceName.value === "FedEx" ||
-            ((this.state.ServiceName.value === "SFL Worldwide" &&
+            ((this.state.ServiceName.value === "Consolidation" &&
               this.state.ShipmentType.value === "Ocean" &&
               this.state.SubServiceName.value === "Texas Console") ||
               this.state.SubServiceName.value === "New Jersey Console" ||
@@ -10023,7 +10023,16 @@ class ShipmentCustom extends React.Component {
               for(i = 0 ; i < objdata.PaymentData.length ; i++){
                 if(objdata.PaymentData[i].Status == "Active"){
                   if(objdata.PaymentData[i].card_number != ""){
-                    if(objdata.PaymentData[i].card_number.length < 10){
+                    let letter = objdata.PaymentData[i].card_number.charAt(0);
+
+                    var Cardlengths = 0
+                    if(letter == "2" || letter == "5" || letter == "4"){
+                      Cardlengths = 16
+                    }
+                    if(letter == "3"){
+                      Cardlengths = 15
+                    }
+                    if(objdata.PaymentData[i].card_number.length < Cardlengths){
                       bankCount = 1
                       cogoToast.error(
                         "Please enter valid credit card number"
@@ -10657,7 +10666,7 @@ class ShipmentCustom extends React.Component {
           (this.state.ServiceName.value === "SFL" &&
             this.state.ShipmentType.value === "Air" &&
             this.state.SubServiceName.value === "SFL Saver") ||
-          (this.state.ServiceName.value === "SFL Worldwide" &&
+          (this.state.ServiceName.value === "Consolidation" &&
             this.state.ShipmentType.value === "Ocean" &&
             (this.state.SubServiceName.value === "Texas Console" ||
               this.state.SubServiceName.value === "New Jersey Console" ||
@@ -10853,7 +10862,7 @@ class ShipmentCustom extends React.Component {
         (this.state.ServiceName.value === "SFL" &&
           this.state.ShipmentType.value === "Air" &&
           this.state.SubServiceName.value === "SFL Saver") ||
-        (this.state.ServiceName.value === "SFL Worldwide" &&
+        (this.state.ServiceName.value === "Consolidation" &&
           this.state.ShipmentType.value === "Ocean" &&
           (this.state.SubServiceName.value === "Texas Console" ||
             this.state.SubServiceName.value === "New Jersey Console" ||
@@ -11810,7 +11819,7 @@ class ShipmentCustom extends React.Component {
                 </Button>
               ) : (record.original.hasOwnProperty("isGenerated") &&
                   (this.state.ServiceName.value === "FedEx" ||
-                    ((this.state.ServiceName.value === "SFL Worldwide" &&
+                    ((this.state.ServiceName.value === "Consolidation" &&
                       this.state.ShipmentType.value === "Ocean" &&
                       this.state.SubServiceName.value === "Texas Console") ||
                       this.state.SubServiceName.value ===
@@ -11893,7 +11902,7 @@ class ShipmentCustom extends React.Component {
                   this.state.ShipmentType.value === "Air" &&
                   this.state.SubServiceName.value === "SFL Saver")) ||
               ((this.state.ServiceName.value === "FedEx" ||
-                (this.state.ServiceName.value === "SFL Worldwide" &&
+                (this.state.ServiceName.value === "Consolidation" &&
                   this.state.ShipmentType.value === "Ocean" &&
                   (this.state.SubServiceName.value === "Texas Console" ||
                     this.state.SubServiceName.value === "New Jersey Console" ||

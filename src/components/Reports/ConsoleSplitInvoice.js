@@ -114,6 +114,42 @@ class ConsoleSplitInvoice extends Component {
     });
   }
   updatePaymentIsused() {
+    debugger;
+    var datafrom = ""
+    var pTotalAmount = parseFloat(this.state.finalTotal).toFixed(2)
+    var pInvoiceAmount = parseFloat(this.state.InvoiceAmount).toFixed(2)
+    
+    if(this.state.FromDate == ""){
+      datafrom = ""
+    }else{
+      datafrom = moment(this.state.FromDate)
+      .format(CommonConfig.dateFormat.dbDateOnly)
+      .toString()
+    }
+
+    var dataTO = ""
+    if(this.state.ToDate == ""){
+      dataTO = ""
+    }else{
+      dataTO = moment(this.state.ToDate)
+      .format(CommonConfig.dateFormat.dbDateOnly)
+      .toString()
+    }
+
+     if (this.state.InvoiceNumber === "") {
+      return cogoToast.error("Please enter Invoice Number");
+    }
+    else if (this.state.PaidStatus === "") {
+      return cogoToast.error("Please select Paid status");
+    } else if (this.state.ContainerName === "") {
+      return cogoToast.error("Please select Container");
+    } else if (this.state.InvoiceAmount === "") {
+      return cogoToast.error("Please enter Invoice Amount");
+    }
+    
+    else if (pTotalAmount != pInvoiceAmount) {
+      return cogoToast.error("Invoice Amount and Total Amount not match");
+    }
     var input = {
       ConfirmationNumber: this.state.Confirmation,
       containerId: this.state.ContainerName.value,
@@ -121,17 +157,13 @@ class ConsoleSplitInvoice extends Component {
       InvoiceAmount: this.state.InvoiceAmount,
       InvoiceNumber: this.state.InvoiceNumber,
       PaidStatus: this.state.PaidStatus.value,
-      DatePaid: moment(this.state.FromDate)
-        .format(CommonConfig.dateFormat.dbDateOnly)
-        .toString(),
-      PaymentIssuedDate: moment(this.state.ToDate)
-        .format(CommonConfig.dateFormat.dbDateOnly)
-        .toString(),
+      DatePaid: datafrom,
+      PaymentIssuedDate: dataTO,
       paymentIssued: this.state.ConsoleSplitRecord,
       userid: CommonConfig.loggedInUserData().PersonID,
     };
     this.showLoader();
-    debugger;
+    
     try {
       api
         .post("reports/InsertPaymentIssued", input)
@@ -160,11 +192,17 @@ class ConsoleSplitInvoice extends Component {
   spiltCharges() {
     debugger;
     if (this.state.PaidStatus === "") {
-      return cogoToast.error("please select Paid status");
+      return cogoToast.error("Please select Paid status");
     } else if (this.state.ContainerName === "") {
-      return cogoToast.error("please select Container");
+      return cogoToast.error("Please select Container");
     } else if (this.state.InvoiceAmount === "") {
-      return cogoToast.error("please enter Invoice Amount");
+      return cogoToast.error("Please enter Invoice Amount");
+    }
+    else if (this.state.InvoiceNumber === "") {
+      return cogoToast.error("Please enter Invoice Number");
+    }
+    else if (this.state.vendorName === "") {
+      return cogoToast.error("Please select vendor name");
     }
     var input = {
       Confirmation: this.state.Confirmation,
@@ -463,18 +501,28 @@ class ConsoleSplitInvoice extends Component {
               <GridItem xs={12} sm={12} md={3}>
                 <div className="date-spl">
                   <InputLabel className={classes.label}>
-                    Payment Date
+                    Date Entered
                   </InputLabel>
                   <FormControl fullWidth>
                     <Datetime
                       dateFormat={"MM/DD/YYYY"}
                       timeFormat={false}
+                      disabled={true}
+                      open={false}
                       value={ToDate}
                       onChange={(date) => this.dateChange(date, "ToDate")}
                       closeOnSelect={true}
                       renderInput={(params) => (
                         <TextField {...params} fullWidth />
                       )}
+                      inputProps={{
+                        // placeholder: 'DD-MM-YYYY',
+                        id: 'patDOB',
+                        name: 'patDOB',
+                        // readOnly: true,
+                        disabled:true
+                        // className: formik.errors.patDOB && formik.touched.patDOB ? "form-control is-invalid": "form-control"
+                    }}
                     />
                   </FormControl>
                 </div>

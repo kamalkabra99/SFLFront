@@ -1113,14 +1113,14 @@ class Scheduleshipment extends React.Component {
           this.setState({
             fromCompanyName: event.target.value,
             fromCompanyNameErr: true,
-            fromCompanyNameHelperText: "Company name is not valid.",
+            fromCompanyNameHelperText: "Please enter valid Company name.",
           });
         }
         else if(CommonConfig.arabicvalidate(event.target.value) == "no"){
           this.setState({
             fromCompanyName: event.target.value,
             fromCompanyNameErr: true,
-            fromCompanyNameHelperText: "Please enter valid company name from A to Z",
+            fromCompanyNameHelperText: "Please enter valid Company name",
           });
         }
         
@@ -1149,14 +1149,14 @@ class Scheduleshipment extends React.Component {
         this.setState({
           fromContactName: event.target.value,
           fromContactNameErr: true,
-          fromContactNameHelperText: "Company name is not valid.",
+          fromContactNameHelperText: "Please enter valid Contact name",
         });
       }
       else if(CommonConfig.arabicvalidate(event.target.value) == "no"){
         this.setState({
           fromContactName: event.target.value,
           fromContactNameErr: true,
-          fromContactNameHelperText: "Please enter valid contact name from A to Z",
+          fromContactNameHelperText: "Please enter valid Contact name",
         });
       } 
       
@@ -1189,7 +1189,7 @@ class Scheduleshipment extends React.Component {
           fromAddressLine1: event.target.value,
           fromAddressLine1Err: true,
           fromAddressLine1HelperText:
-            "Please enter valid AddressLine 1 from A to Z",
+            "Please enter valid AddressLine 1",
         });
       } 
       
@@ -1216,7 +1216,7 @@ class Scheduleshipment extends React.Component {
             fromAddressLine2: event.target.value,
             fromAddressLine2Err: true,
             fromAddressLine2HelperText:
-              "Please enter valid AddressLine 2 from A to Z",
+              "Please enter valid AddressLine 2",
           });
         } 
         else {
@@ -1241,7 +1241,7 @@ class Scheduleshipment extends React.Component {
           this.setState({
             fromAddressLine3: event.target.value,
             fromAddressLine3Err: true,
-            fromAddressLine3HelperText: "Please enter valid AddressLine 3 from A to Z",
+            fromAddressLine3HelperText: "Please enter valid AddressLine 3",
           });
         } 
         
@@ -1270,7 +1270,7 @@ class Scheduleshipment extends React.Component {
         this.setState({
           fromZipCode: event.target.value,
           fromZipCodeErr: true,
-          fromZipCodeHelperText: "Zipcode is not valid ",
+          fromZipCodeHelperText: "Please enter valid Zipcode",
         });
       } else if (event.target.value.length > 12) {
         this.setState({
@@ -1301,7 +1301,7 @@ class Scheduleshipment extends React.Component {
         this.setState({
           fromCity: event.target.value,
           fromCityErr: true,
-          fromCityHelperText: "City is not valid",
+          fromCityHelperText: "Please enter valid City.",
         });
       } else if (event.target.value.length > 35) {
         this.setState({
@@ -1331,7 +1331,7 @@ class Scheduleshipment extends React.Component {
         this.setState({
           fromState: event.target.value,
           fromStateErr: true,
-          fromStateHelperText: "State is not valid",
+          fromStateHelperText: "Please enter valid State",
         });
       } else if (event.target.value.length > 35) {
         this.setState({
@@ -1357,7 +1357,7 @@ class Scheduleshipment extends React.Component {
         this.setState({
           fromPhone1: event.target.value,
           fromPhone1Err: true,
-          fromPhone1HelperText: "Please enter valid Phone No.",
+          fromPhone1HelperText: "Please enter valid Phone No",
         });
       } else if (
         event.target.value.length < 5 ||
@@ -1366,7 +1366,7 @@ class Scheduleshipment extends React.Component {
         this.setState({
           fromPhone1: event.target.value,
           fromPhone1Err: true,
-          fromPhone1HelperText: "Please enter valid Phone No.",
+          fromPhone1HelperText: "Please enter valid Phone No",
         });
       } else {
         this.setState({
@@ -1381,7 +1381,7 @@ class Scheduleshipment extends React.Component {
           this.setState({
             fromPhone2: event.target.value,
             fromPhone2Err: true,
-            fromPhone2HelperText: "Please enter valid Phone No.",
+            fromPhone2HelperText: "Please enter valid Phone No",
           });
         } else if (
           event.target.value.length < 5 ||
@@ -1390,7 +1390,7 @@ class Scheduleshipment extends React.Component {
           this.setState({
             fromPhone2: event.target.value,
             fromPhone2Err: true,
-            fromPhone2HelperText: "Please enter valid Phone No.",
+            fromPhone2HelperText: "Please enter valid Phone No",
           });
         } else {
           this.setState({
