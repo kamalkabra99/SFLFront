@@ -201,6 +201,9 @@ class ConsoleSplitInvoice extends Component {
     else if (this.state.InvoiceNumber === "") {
       return cogoToast.error("Please enter Invoice Number");
     }
+    else if (this.state.vendorName === "") {
+      return cogoToast.error("Please select vendor name");
+    }
     var input = {
       Confirmation: this.state.Confirmation,
       containerId: this.state.ContainerName.value,

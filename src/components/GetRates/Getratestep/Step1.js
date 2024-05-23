@@ -2120,7 +2120,27 @@ class Step1 extends React.Component {
     FinalGetRate.WeightType = this.state.SelectedWeightType;
     UpsData.FromCountry = JSON.stringify(this.state.GetRate.FromCountry);
 
-    UpsData.FromCity =
+    if(this.state.GetRate.FromCountry.IsFedexCity === 1){
+
+      UpsData.FromCity =
+      this.state.GetRate.FromCity != null &&
+      this.state.GetRate.FromCity.value &&
+      this.state.GetRate.FromCity.value !== undefined
+        ? this.state.GetRate.FromCity.value
+        : this.state.GetRate.FromCity;
+    UpsData.FromUPSCity = this.state.GetRate.FromFedExCity.label;
+    UpsData.FromFedExCity = this.state.GetRate.FromFedExCity.label;
+    UpsData.FromZipCode = this.state.GetRate.FromZipCode;
+    UpsData.FromStateProvinceCode = this.state.GetRate.FromState
+      ? this.state.GetRate.FromState
+      : "";
+
+    UpsData.ToCountry = JSON.stringify(this.state.GetRate.ToCountry);
+
+
+    }else{
+
+      UpsData.FromCity =
       this.state.GetRate.FromCity != null &&
       this.state.GetRate.FromCity.value &&
       this.state.GetRate.FromCity.value !== undefined
@@ -2135,7 +2155,29 @@ class Step1 extends React.Component {
 
     UpsData.ToCountry = JSON.stringify(this.state.GetRate.ToCountry);
 
-    UpsData.ToCity =
+
+    }
+
+    
+    if(this.state.GetRate.ToCountry.IsFedexCity === 1){
+      
+        UpsData.ToCity =
+        this.state.GetRate.ToCity !== null &&
+        this.state.GetRate.ToCity.value &&
+        this.state.GetRate.ToCity.value !== undefined
+          ? this.state.GetRate.ToCity.value
+          : this.state.GetRate.ToCity;
+      UpsData.ToUPSCity = this.state.GetRate.ToFedExCity.label;
+      UpsData.ToFedExCity = this.state.GetRate.ToFedExCity.label;
+      UpsData.ToZipCode = this.state.GetRate.ToZipCode;
+      UpsData.ToStateProvinceCode = this.state.GetRate.ToState
+        ? this.state.GetRate.ToState
+        : "";
+
+    }else{
+
+      
+      UpsData.ToCity =
       this.state.GetRate.ToCity !== null &&
       this.state.GetRate.ToCity.value &&
       this.state.GetRate.ToCity.value !== undefined
@@ -2147,6 +2189,9 @@ class Step1 extends React.Component {
     UpsData.ToStateProvinceCode = this.state.GetRate.ToState
       ? this.state.GetRate.ToState
       : "";
+
+    }
+
     // if (
     //   (UpsData.ToCity === undefined || UpsData.ToCity === "") &&
     //   UpsData.ToZipCode === "" &&

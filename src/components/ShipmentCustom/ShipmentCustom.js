@@ -2141,7 +2141,7 @@ class ShipmentCustom extends React.Component {
             (this.state.ServiceName.value === "SFL" &&
               this.state.ShipmentType.value === "Air" &&
               this.state.SubServiceName.value === "SFL Saver") ||
-            ((this.state.ServiceName.value == "SFL Worldwide" &&
+            ((this.state.ServiceName.value == "Consolidation" &&
               this.state.ShipmentType.value === "Ocean" &&
               this.state.SubServiceName.value === "Texas Console") ||
               /////////////////for prepaid label genrated ocean tacking//////////////
@@ -8864,7 +8864,7 @@ class ShipmentCustom extends React.Component {
           </div>
         ) : cellInfo.original.hasOwnProperty("isGenerated") &&
           (this.state.ServiceName.value === "FedEx" ||
-            ((this.state.ServiceName.value === "SFL Worldwide" &&
+            ((this.state.ServiceName.value === "Consolidation" &&
               this.state.ShipmentType.value === "Ocean" &&
               this.state.SubServiceName.value === "Texas Console") ||
               this.state.SubServiceName.value === "New Jersey Console" ||
@@ -10666,7 +10666,7 @@ class ShipmentCustom extends React.Component {
           (this.state.ServiceName.value === "SFL" &&
             this.state.ShipmentType.value === "Air" &&
             this.state.SubServiceName.value === "SFL Saver") ||
-          (this.state.ServiceName.value === "SFL Worldwide" &&
+          (this.state.ServiceName.value === "Consolidation" &&
             this.state.ShipmentType.value === "Ocean" &&
             (this.state.SubServiceName.value === "Texas Console" ||
               this.state.SubServiceName.value === "New Jersey Console" ||
@@ -10862,7 +10862,7 @@ class ShipmentCustom extends React.Component {
         (this.state.ServiceName.value === "SFL" &&
           this.state.ShipmentType.value === "Air" &&
           this.state.SubServiceName.value === "SFL Saver") ||
-        (this.state.ServiceName.value === "SFL Worldwide" &&
+        (this.state.ServiceName.value === "Consolidation" &&
           this.state.ShipmentType.value === "Ocean" &&
           (this.state.SubServiceName.value === "Texas Console" ||
             this.state.SubServiceName.value === "New Jersey Console" ||
@@ -11819,7 +11819,7 @@ class ShipmentCustom extends React.Component {
                 </Button>
               ) : (record.original.hasOwnProperty("isGenerated") &&
                   (this.state.ServiceName.value === "FedEx" ||
-                    ((this.state.ServiceName.value === "SFL Worldwide" &&
+                    ((this.state.ServiceName.value === "Consolidation" &&
                       this.state.ShipmentType.value === "Ocean" &&
                       this.state.SubServiceName.value === "Texas Console") ||
                       this.state.SubServiceName.value ===
@@ -11902,7 +11902,7 @@ class ShipmentCustom extends React.Component {
                   this.state.ShipmentType.value === "Air" &&
                   this.state.SubServiceName.value === "SFL Saver")) ||
               ((this.state.ServiceName.value === "FedEx" ||
-                (this.state.ServiceName.value === "SFL Worldwide" &&
+                (this.state.ServiceName.value === "Consolidation" &&
                   this.state.ShipmentType.value === "Ocean" &&
                   (this.state.SubServiceName.value === "Texas Console" ||
                     this.state.SubServiceName.value === "New Jersey Console" ||
