@@ -125,7 +125,7 @@ class Step1 extends React.Component {
       passwordErr: false,
       mobileErr: false,
       Loading: false,
-
+      ShipmentCount: 0,
       fullnameHelperText: "",
       usernameHelperText: "",
       emailHelperText: "",
@@ -149,7 +149,7 @@ class Step1 extends React.Component {
       checkAccountNumber: false,
       accountNumberErr: false,
       accountNumberHelperText: "",
-
+      isAccountAlready:false,
       ManagedBy: "",
       managedByErr: false,
       managedByHelperText: "",
@@ -234,7 +234,7 @@ class Step1 extends React.Component {
     this.getPaperSizeList();
     this.setState({ LoginpersonId: CommonConfig.loggedInUserData().PersonID });
   }
-
+  
   generatePreviewLink = () => {
     return this.state.PaperSizeList.map((value) => {
       return (
@@ -472,11 +472,16 @@ class Step1 extends React.Component {
         .then((res) => {
           if (res.success) {
             let userData = res.data;
-
+            
             this.setState({
               userModules: userData.userModule,
               serviceList: userData.userMarkup,
             });
+            
+            this.setState({
+              ShipmentCount: userData
+            });
+
             if (userData.UserData) {
               this.setState({
                 Status: !CommonConfig.isEmpty(this.props.location.state)
@@ -561,6 +566,11 @@ class Step1 extends React.Component {
                           : userData.userDetails[0].ManagedByName,
                     }
                   : "";
+                  if(userData.userDetails[0].AccountNumber=="")
+                    this.setState({isAccountAlready:false});
+                  else
+                    this.setState({isAccountAlready:true});
+                  
                 this.setState({
                   AccountNumber: userData.userDetails[0].AccountNumber,
                   ManagedBy: managedBy,
@@ -720,13 +730,14 @@ class Step1 extends React.Component {
     } else if (type === "accountnumber") {
       this.setState({ checkaccountNumber: true });
       let accountVal = event.target.value.replace(/\D/g, "");
-      if (accountVal === "" || accountVal === null) {
-        this.setState({
-          AccountNumber: accountVal,
-          accountNumberErr: true,
-          accountNumberHelperText: "Please enter Account Number",
-        });
-      } else if (accountVal.trim() !== accountVal) {
+      // if (accountVal === "" || accountVal === null) {
+      //   this.setState({
+      //     AccountNumber: accountVal,
+      //     accountNumberErr: true,
+      //     accountNumberHelperText: "Please enter Account Number",
+      //   });
+      // } else 
+      if (accountVal.trim() !== accountVal) {
         this.setState({
           AccountNumber: accountVal,
           accountNumberErr: true,
@@ -1115,12 +1126,14 @@ class Step1 extends React.Component {
       }
     });
   };
-  saveUser = (redirect) => {
+  saveUser = (redirect) => {debugger
     if (this.validate()) {
       try {
         this.showLoader();
+        
         let UserDetails = {
           AccountNumber: this.state.AccountNumber,
+          isAccountAlready:this.state.isAccountAlready,
           ManagedBy: this.state.ManagedBy.value,
           CompanyName: this.state.CompanyName,
           AddressLine1: this.state.AddressLine1,
@@ -2039,7 +2052,8 @@ class Step1 extends React.Component {
                 <div className="shipment-nav">
                   <ul>
                     {this.state.Steps.map((step, key) => {
-                      return (
+                      return ( 
+                        this.state.isAccountAlready==false && step.stepName != "Markup Details"?(
                         <li>
                           <a
                             className={step.classname}
@@ -2049,9 +2063,21 @@ class Step1 extends React.Component {
                               this.navigateChange(key);
                             }}
                           >
-                            <span>{step.stepName}</span>
+                            <span>{/*console.log("lok",this.state.AccountNumber,"esh ",step.stepName)*/}{step.stepName}</span>
                           </a>
-                        </li>
+                        </li>): this.state.isAccountAlready==true?(
+                        <li>
+                          <a
+                            className={step.classname}
+                            href="#"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              this.navigateChange(key);
+                            }}
+                          >
+                            <span>{console.log("lok",this.state.AccountNumber,"esh ",step.stepName)}{step.stepName}</span>
+                          </a>
+                        </li>):("")
                       );
                     })}
                   </ul>
@@ -2154,6 +2180,7 @@ class Step1 extends React.Component {
                           error={this.state.accountNumberErr}
                           helperText={this.state.accountNumberHelperText}
                           formControlProps={{ fullWidth: true }}
+                          
                           inputProps={{
                             onFocus: () =>
                               this.setState({
@@ -2166,6 +2193,7 @@ class Step1 extends React.Component {
                             onChange: (event) =>
                               this.handleChange(event, "accountnumber"),
                             value: AccountNumber,
+                            disabled : this.state.ShipmentCount && this.state.isAccountAlready? true :false,
                             endAdornment:
                               this.state.checkAccountNumber !== true ? (
                                 <Icon>person</Icon>
@@ -2829,7 +2857,7 @@ class Step1 extends React.Component {
               </Cardbody>
             </Card>
             {this.state.LoginpersonId === 1 ||
-            this.state.LoginpersonId === 18 ? (
+            this.state.LoginpersonId === 18 || this.state.LoginpersonId == 12122 ? (
               <div className="shipment-submit">
                 <div className="left">
                   <Button
