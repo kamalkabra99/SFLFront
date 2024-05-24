@@ -456,7 +456,7 @@ class Step1 extends React.Component {
     }
   };
 
-  getUserDetail() {
+  getUserDetail() {debugger
     try {
       this.showLoader();
       this.setState({ Attachments: [], AttachmentList: [] });
@@ -479,9 +479,9 @@ class Step1 extends React.Component {
             });
             
             this.setState({
-              ShipmentCount: userData
+              ShipmentCount: userData.UserShipmentData[0].AlreadyShippment
             });
-
+            console.log(this.state.ShipmentCount);
             if (userData.UserData) {
               this.setState({
                 Status: !CommonConfig.isEmpty(this.props.location.state)
@@ -2193,7 +2193,7 @@ class Step1 extends React.Component {
                             onChange: (event) =>
                               this.handleChange(event, "accountnumber"),
                             value: AccountNumber,
-                            disabled : this.state.ShipmentCount && this.state.isAccountAlready? true :false,
+                            disabled:this.state.ShipmentCount && this.state.isAccountAlready? true:false,
                             endAdornment:
                               this.state.checkAccountNumber !== true ? (
                                 <Icon>person</Icon>
