@@ -1304,18 +1304,24 @@ class Step1 extends React.Component {
   };
 
   renderMarkup = () => {
+    console.log("this.state.serviceList = " , this.state.serviceList)
     return this.state.serviceList.map((service) => {
       const {
         ServiceID,
+        ServiceType, 
+        MainServiceName,
         ServiceName,
         DisplayName,
         Markup,
         EnvelopMarkup,
         MarkupType,
+        Status
       } = service;
 
       return (
         <tr key={ServiceID}>
+          <td>{ServiceType}</td>
+          <td>{MainServiceName}</td>
           <td>{ServiceName}</td>
           <td>{DisplayName}</td>
           <td>
@@ -1381,6 +1387,7 @@ class Step1 extends React.Component {
               </Select>
             </FormControl>
           </td>
+          <td>{Status}</td>
         </tr>
       );
     });
@@ -2193,7 +2200,7 @@ class Step1 extends React.Component {
                             onChange: (event) =>
                               this.handleChange(event, "accountnumber"),
                             value: AccountNumber,
-                            disabled : this.state.ShipmentCount && this.state.isAccountAlready? true :false,
+                            disabled : this.state.ShipmentCount  && this.state.isAccountAlready? true :false,
                             endAdornment:
                               this.state.checkAccountNumber !== true ? (
                                 <Icon>person</Icon>
@@ -2822,11 +2829,14 @@ class Step1 extends React.Component {
                       <table>
                         <thead>
                           <tr>
+                            <th>Shipment Type</th>
                             <th>Service Name</th>
+                            <th>Sub Service Name</th>
                             <th>Display Name</th>
                             <th>Package Markup</th>
                             <th>Envelop Markup</th>
                             <th>Markup Type</th>
+                            <th>Status</th>
                           </tr>
                         </thead>
                         <tbody>{this.renderMarkup()}</tbody>
