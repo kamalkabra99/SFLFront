@@ -2295,7 +2295,7 @@ class Scheduleshipment extends React.Component {
             <SimpleBackdrop />
           </div>
         ) : null}
-        <form className="datePicker" autoComplete="off">
+        <form className="datePicker" autoComplete="false" >
           <GridContainer>
             <GridItem sm={4} md={4}>
               <CustomInput
@@ -2321,10 +2321,12 @@ class Scheduleshipment extends React.Component {
                 maxLength="11"
                 labelText="Company Name"
                 error={fromCompanyNameErr}
+                
                 helperText={fromCompanyNameHelperText}
                 formControlProps={{ fullWidth: true }}
                 inputProps={{
                   value: fromCompanyName,
+                  autoComplete:"none",
                   onBlur: (event) => this.handleBlur(event, "fromcompanyname"),
                   onChange: (event) =>
                     this.handleChange(event, "fromcompanyname"),
@@ -2352,6 +2354,7 @@ class Scheduleshipment extends React.Component {
                       formControlProps={{ fullWidth: true }}
                       inputProps={{
                         value: fromContactName,
+                        autoComplete:"none",
                         onBlur: (event) =>
                           this.handleBlur(event, "fromcontactname"),
                         onChange: (event) =>
@@ -2405,6 +2408,7 @@ class Scheduleshipment extends React.Component {
                     formControlProps={{ fullWidth: true }}
                     inputProps={{
                       value: fromContactName,
+                      autoComplete:"none",
                       onBlur: (event) =>
                         this.handleBlur(event, "fromcontactname"),
                       onChange: (event) =>
@@ -2518,6 +2522,7 @@ class Scheduleshipment extends React.Component {
                 formControlProps={{ fullWidth: true }}
                 inputProps={{
                   value: fromAddressLine1,
+                  autoComplete:"none",
                   onBlur: (event) => this.handleBlur(event, "fromaddressline1"),
                   onChange: (event) =>
                     this.handleChange(event, "fromaddressline1"),
@@ -2546,6 +2551,7 @@ class Scheduleshipment extends React.Component {
                 formControlProps={{ fullWidth: true }}
                 inputProps={{
                   value: fromAddressLine2,
+                  autoComplete:"none",
                   onBlur: (event) => this.handleBlur(event, "fromaddressline2"),
                   onChange: (event) =>
                     this.handleChange(event, "fromaddressline2"),
@@ -2569,6 +2575,7 @@ class Scheduleshipment extends React.Component {
                 formControlProps={{ fullWidth: true }}
                 inputProps={{
                   value: fromAddressLine3,
+                  autoComplete:"none",
                   onBlur: (event) => this.handleBlur(event, "fromaddressline3"),
                   onChange: (event) =>
                     this.handleChange(event, "fromaddressline3"),
@@ -2599,6 +2606,7 @@ class Scheduleshipment extends React.Component {
                     : this.state.disablefromState
                     ? "Not Required"
                     : fromZipCode,
+                    autoComplete:"none",
                   disabled: this.state.disablefromZipcode,
                   onBlur: (event) => this.handleBlur(event, "fromzipcode"),
                   onChange: (event) => this.handleChange(event, "fromzipcode"),
@@ -2633,11 +2641,14 @@ class Scheduleshipment extends React.Component {
                     getOptionLabel={(option) => option.label}
                     value={this.state.FromFedExSelectedCity}
                     autoSelect
+                  
                     onBlur={(e) => this.handleChange_Value1("FromFedExCity")}
                     onChange={(event, value) =>
                       this.ChangeFromFedexCity(value, "FedEx")
                     }
+                    
                     renderInput={(params) => (
+                      params.inputProps.autoComplete = 'new-password',
                       <TextField
                         {...params}
                         label="From City"
@@ -2646,6 +2657,7 @@ class Scheduleshipment extends React.Component {
                         helperText={this.state.fromFedexCityHelperText}
                       />
                     )}
+                  
                   />
                 </FormControl>
               </GridItem>
@@ -2660,6 +2672,7 @@ class Scheduleshipment extends React.Component {
                     formControlProps={{ fullWidth: true }}
                     inputProps={{
                       value: fromCity.label ? fromCity.label : fromCity,
+                      autoComplete:"none",
                       disabled: this.state.disablefromCity,
                       onBlur: (event) => this.handleBlur(event, "fromcity"),
                       onChange: (event) => this.handleChange(event, "fromcity"),
@@ -2687,6 +2700,7 @@ class Scheduleshipment extends React.Component {
                     formControlProps={{ fullWidth: true }}
                     inputProps={{
                       value: fromCity.label ? fromCity.label : fromCity,
+                      autoComplete:"none",
                       disabled: this.state.disablefromCity,
                       onBlur: (event) => this.handleBlur(event, "fromcity"),
                       onChange: (event) => this.handleChange(event, "fromcity"),
@@ -2741,6 +2755,7 @@ class Scheduleshipment extends React.Component {
                       ? "Not Required"
                       : fromState,
                     disabled: this.state.disablefromState,
+                    autoComplete:"none",
                     onBlur: (event) => this.handleBlur(event, "fromstate"),
                     onChange: (event) => this.handleChange(event, "fromstate"),
                     onFocus: () =>
@@ -2797,6 +2812,7 @@ class Scheduleshipment extends React.Component {
                 formControlProps={{ fullWidth: true }}
                 inputProps={{
                   value: fromPhone1,
+                  autoComplete:"none",
                   onBlur: (event) => this.handleBlur(event, "fromphone1"),
                   onChange: (event) => this.handleChange(event, "fromphone1"),
                   onFocus: () =>
@@ -2824,6 +2840,7 @@ class Scheduleshipment extends React.Component {
                 formControlProps={{ fullWidth: true }}
                 inputProps={{
                   value: fromPhone2,
+                  autoComplete:"none",
                   onBlur: (event) => this.handleBlur(event, "fromphone2"),
                   onChange: (event) => this.handleChange(event, "fromphone2"),
                   onFocus: (event) =>
@@ -2851,6 +2868,7 @@ class Scheduleshipment extends React.Component {
                 formControlProps={{ fullWidth: true }}
                 inputProps={{
                   value: fromEmail,
+                  autoComplete:"none",
                   onBlur: (event) => this.handleBlur(event, "fromemail"),
                   onChange: (event) => this.handleChange(event, "fromemail"),
                   onFocus: (event) =>
