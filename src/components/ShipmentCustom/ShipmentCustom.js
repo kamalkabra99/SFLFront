@@ -1602,93 +1602,53 @@ class ShipmentCustom extends React.Component {
       api.post("scheduleshipment/getShipmentInfo", data).then((res) => {
         if (res.success) {
           console.log("Ansdhu = ", res);
-          var shipmentType = {
-            value: res.data[0].ShipmentType,
-            label: res.data[0].ShipmentType,
-          };
-          var managedBy = {
-            value: res.data[0].ManagedBy,
-            label: res.data[0].ManagedByName,
-          };
-          this.setState({ previousAllClear: res.data[0].AllClear });
-          if (res.data[0].AllClear === 1) {
-            this.setState({ viewAllClear: true });
-          }
-          var allclearlist = {
-            value:
-              res.data[0].AllClear === 3 // ? "Ready for Yes"
-                ? "Ready for Yes"
-                : res.data[0].AllClear === 4 // ? "Ready for Yes"
-                ? "Collections"
-                : !CommonConfig.isEmpty(res.data[0].AllClear)
-                ? res.data[0].AllClear === 0
-                  ? "No"
-                  : "Yes"
-                : "Not Ready",
-            label:
-              res.data[0].AllClear === 3 // ? "Ready for Yes"
-                ? "Ready for Yes"
-                : res.data[0].AllClear === 4 // ? "Ready for Yes"
-                ? "Collections"
-                : !CommonConfig.isEmpty(res.data[0].AllClear)
-                ? res.data[0].AllClear === 0
-                  ? "No"
-                  : "Yes"
-                : "Not Ready",
-          };
-          // AllClear:
-          // res.data[0].AllClear === 3 // ? "Ready for Yes"
-          //   ? "Ready for Yes"
-          //   : !CommonConfig.isEmpty(res.data[0].AllClear)
-          //   ? res.data[0].AllClear === 0
-          //     ? false
-          //     : true
-          //   : "Not Ready",
-
-          var serviceName = {
-            value: res.data[0].ServiceName,
-            label: res.data[0].ServiceName,
-          };
-
-          var subServiceName = {
-            value: res.data[0].SubServiceName,
-            label: res.data[0].SubServiceName,
-          };
-
-          var containerName = {
-            value: res.data[0].ContainerID,
-            label: res.data[0].ContainerName,
-          };
-          // console.log('IsPackageAccess',res.data[0].IsPackageAccess);
-          if (res.data[0].ServiceName === "FedEx") {
-            this.getEtdCommercialInvoice(res.data[0].TrackingNumber);
+          var datatoaccess = 0 
+          if(CommonConfig.getUserAccess("Shipment").AllAccess === 1){
+            datatoaccess = 1
+          }else{
+            if(CommonConfig.loggedInUserData().PersonID == res.data[0].ManagedBy){
+              datatoaccess = 1
+            }
           }
 
-          this.setState({
-            ManagedBy: managedBy,
-            DocumentManagedBy: res.data[0].ManagedByName,
-            TrackingNumber: res.data[0].TrackingNumber,
-            CreatedBy: res.data[0].CreatedBy,
-            PersonID: res.data[0].PersonID,
-            CreatedByName: res.data[0].CreatedByName,
-            // ipAddress: res.data[0].ipAddress,
-            // ipLocation: res.data[0].ipLocation,
-            userdetailsTooltip: "Name: " + res.data[0].CreatedByName,
-            ServiceName: serviceName,
-            SubServiceName: subServiceName,
-            ContainerType: res.data[0].SubServiceName,
-            Subservicename: false,
-            DocumentServiceType: res.data[0].ServiceName,
-            ShipmentDate: res.data[0].ShipmentDate,
-            DocumentManagedBy: res.data[0].ManagedByName,
-            ShipmentType: shipmentType,
+          if(datatoaccess == 1){
 
-            InvoiceDueDate: res.data[0].InvoiceDueDate,
-            DocumentInvoiceDueDate: res.data[0].InvoiceDueDate,
-
-            ShipmentStatus: res.data[0].ShipmentStatus,
-            ContainerName: containerName,
-            AllClear: allclearlist,
+            console.log("Ansdhu = ", res);
+            var shipmentType = {
+              value: res.data[0].ShipmentType,
+              label: res.data[0].ShipmentType,
+            };
+            var managedBy = {
+              value: res.data[0].ManagedBy,
+              label: res.data[0].ManagedByName,
+            };
+            this.setState({ previousAllClear: res.data[0].AllClear });
+            if (res.data[0].AllClear === 1) {
+              this.setState({ viewAllClear: true });
+            }
+            var allclearlist = {
+              value:
+                res.data[0].AllClear === 3 // ? "Ready for Yes"
+                  ? "Ready for Yes"
+                  : res.data[0].AllClear === 4 // ? "Ready for Yes"
+                  ? "Collections"
+                  : !CommonConfig.isEmpty(res.data[0].AllClear)
+                  ? res.data[0].AllClear === 0
+                    ? "No"
+                    : "Yes"
+                  : "Not Ready",
+              label:
+                res.data[0].AllClear === 3 // ? "Ready for Yes"
+                  ? "Ready for Yes"
+                  : res.data[0].AllClear === 4 // ? "Ready for Yes"
+                  ? "Collections"
+                  : !CommonConfig.isEmpty(res.data[0].AllClear)
+                  ? res.data[0].AllClear === 0
+                    ? "No"
+                    : "Yes"
+                  : "Not Ready",
+            };
+            // AllClear:
             // res.data[0].AllClear === 3 // ? "Ready for Yes"
             //   ? "Ready for Yes"
             //   : !CommonConfig.isEmpty(res.data[0].AllClear)
@@ -1697,23 +1657,84 @@ class ShipmentCustom extends React.Component {
             //     : true
             //   : "Not Ready",
 
-            viewAllClear:
-              res.data[0].AllClear === 3 // ? "Ready for Yes"
-                ? "Ready for Yes"
-                : !CommonConfig.isEmpty(res.data[0].AllClear)
-                ? res.data[0].AllClear === 0
-                  ? false
-                  : true
-                : false,
-            IsPackageAccess: !CommonConfig.isEmpty(res.data[0].IsPackageAccess)
-              ? res.data[0].IsPackageAccess.data[0] === 0
-                ? true
-                : false
-              : true,
-          });
+            var serviceName = {
+              value: res.data[0].ServiceName,
+              label: res.data[0].ServiceName,
+            };
 
-          this.getServiceByShipmentType(shipmentType.value);
-          this.getSubserviceName(serviceName.value, shipmentType.value);
+            var subServiceName = {
+              value: res.data[0].SubServiceName,
+              label: res.data[0].SubServiceName,
+            };
+
+            var containerName = {
+              value: res.data[0].ContainerID,
+              label: res.data[0].ContainerName,
+            };
+            // console.log('IsPackageAccess',res.data[0].IsPackageAccess);
+            if (res.data[0].ServiceName === "FedEx") {
+              this.getEtdCommercialInvoice(res.data[0].TrackingNumber);
+            }
+
+            this.setState({
+              ManagedBy: managedBy,
+              DocumentManagedBy: res.data[0].ManagedByName,
+              TrackingNumber: res.data[0].TrackingNumber,
+              CreatedBy: res.data[0].CreatedBy,
+              PersonID: res.data[0].PersonID,
+              CreatedByName: res.data[0].CreatedByName,
+              // ipAddress: res.data[0].ipAddress,
+              // ipLocation: res.data[0].ipLocation,
+              userdetailsTooltip: "Name: " + res.data[0].CreatedByName,
+              ServiceName: serviceName,
+              SubServiceName: subServiceName,
+              ContainerType: res.data[0].SubServiceName,
+              Subservicename: false,
+              DocumentServiceType: res.data[0].ServiceName,
+              ShipmentDate: res.data[0].ShipmentDate,
+              DocumentManagedBy: res.data[0].ManagedByName,
+              ShipmentType: shipmentType,
+
+              InvoiceDueDate: res.data[0].InvoiceDueDate,
+              DocumentInvoiceDueDate: res.data[0].InvoiceDueDate,
+
+              ShipmentStatus: res.data[0].ShipmentStatus,
+              ContainerName: containerName,
+              AllClear: allclearlist,
+              // res.data[0].AllClear === 3 // ? "Ready for Yes"
+              //   ? "Ready for Yes"
+              //   : !CommonConfig.isEmpty(res.data[0].AllClear)
+              //   ? res.data[0].AllClear === 0
+              //     ? false
+              //     : true
+              //   : "Not Ready",
+
+              viewAllClear:
+                res.data[0].AllClear === 3 // ? "Ready for Yes"
+                  ? "Ready for Yes"
+                  : !CommonConfig.isEmpty(res.data[0].AllClear)
+                  ? res.data[0].AllClear === 0
+                    ? false
+                    : true
+                  : false,
+              IsPackageAccess: !CommonConfig.isEmpty(res.data[0].IsPackageAccess)
+                ? res.data[0].IsPackageAccess.data[0] === 0
+                  ? true
+                  : false
+                : true,
+            });
+
+            this.getServiceByShipmentType(shipmentType.value);
+            this.getSubserviceName(serviceName.value, shipmentType.value);
+
+          }else{
+            cogoToast.error("You dont have access for this shipment");
+            setTimeout(() => {
+              this.props.history.push("/admin/Scheduleshipment");
+            }, 2000);
+          }
+
+          
         }
 
         if (

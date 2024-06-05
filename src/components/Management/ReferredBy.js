@@ -41,7 +41,12 @@ class ReferredBy extends Component {
       previousFilterList: [],
       previousSortList: [],
       showReviewDialog: false,
+      showURLDialog: false,
+      viewURL:"",
+      SourceName:"",
+      SourceMedium:"",
       SiteName: "",
+      SiteURL:"",
       SiteNameEdit: null,
       SiteIdEdit: null,
       reviewSiteData: [],
@@ -87,7 +92,7 @@ class ReferredBy extends Component {
   addReferredSite = () => {
     this.showLoador();
     var reviewSiteData = {
-      refference: this.state.SiteName,
+      refference: this.state.SiteName? this.state.SiteName:this.state.SiteNameEdit,
       refferenceId: this.state.SiteIdEdit ? this.state.SiteIdEdit : "",
     };
 
@@ -193,6 +198,36 @@ class ReferredBy extends Component {
     });
   };
 
+  handleURL = (record) => {
+
+    var data = {
+      msgTmpId: record.id,
+    };
+    api.post("contactus/getReferddatabyId", data).then((res) => {
+      if (res.success) {
+        console.log(res.Data[0][0])
+        // this.setState({ EmailSubject: res.data[0].TemplateSubject });
+        // this.setState({ MessageTemplate: res.data[0].TemplateMessage });
+
+        this.setState({
+          showURLDialog: true,
+          SiteNameEdit: record.label,
+          SiteIdEdit: record.id,
+          SiteURL:res.Data[0][0].SiteUrl != null ? res.Data[0][0].SiteUrl:"" ,
+          SourceName:res.Data[0][0].SourceName != null ? res.Data[0][0].SourceName:"",
+          SourceMedium:res.Data[0][0].SourceMedium != null ? res.Data[0][0].SourceMedium:"",
+          viewURL:res.Data[0][0].FinalURL != null ? res.Data[0][0].FinalURL:""
+    
+          // dataMode: "Update",
+        });
+        this.hideLoador();
+      }
+    });
+
+    
+
+  }
+
   selectChange = (event, value, type) => {
     if (type === "ReviewTemplateName") {
       this.showLoador();
@@ -219,21 +254,105 @@ class ReferredBy extends Component {
     this.setState({ Loading: false });
   };
 
+  openDialogAddNewRef = () => {
+    this.setState({
+      SiteNameEdit:"",
+      SiteIdEdit:"",
+      showReviewDialog: true,
+    });
+  };
+
   openDialog = () => {
     this.setState({
       showReviewDialog: true,
-      SiteName: "",
-      SiteIdEdit: "",
     });
   };
 
   CloseDialog = () => {
     this.setState({ showReviewDialog: false });
+    this.setState({
+      
+      SiteName:"",
+      SiteNameEdit:""
+
+      // dataMode: "Update",
+    });
   };
+
+  CloseURLDialog = () => {
+    this.setState({ showURLDialog: false });
+    this.setState({
+      
+      SiteURL:"" ,
+      SourceName:"",
+      SourceMedium:"",
+      viewURL:""
+
+      // dataMode: "Update",
+    });
+  };
+
+  generateUrlData = () =>{
+    console.log("this = " , this.state.SiteNameEdit , " / " , this.state.SiteIdEdit , " / " , this.state.SiteURL)
+
+    if(this.state.SiteURL == ""){
+      cogoToast.error("Please enter Site URL");
+      return
+
+    }
+    else if(this.state.SourceName == ""){
+      cogoToast.error("Please enter Source Name");
+      return
+    }
+    else if(this.state.SourceMedium == ""){
+      cogoToast.error("Please enter Source Medium");
+      return
+    }
+    else{
+      this.showLoador();
+      let sit2eData = this.state.SiteURL + "?utm_source=" + this.state.SourceName + "&utm_medium="+ this.state.SourceMedium +"&utm_id=" + this.state.SiteIdEdit
+
+      var data = {
+        SourceName: this.state.SourceName,
+        SourceMedium: this.state.SourceMedium,
+        SiteURL:this.state.SiteURL,
+        FinalUrl: sit2eData,
+        referId: this.state.SiteIdEdit
+
+      }
+
+      
+
+
+      api.post("contactus/updateSiteUrlData", data).then((res) => {
+        if (res.success) {
+
+          this.setState({ viewURL: sit2eData });
+          this.hideLoador();
+        }
+      });
+      //
+
+    }
+
+
+
+
+  }
 
   handleChangeFrom = (event, value) => {
     if (value == "SiteName") {
       this.setState({ SiteName: event.target.value });
+    }
+    if (value == "SiteURL") {
+      this.setState({ SiteURL: event.target.value });
+    }
+
+    if (value == "SourceName") {
+      this.setState({ SourceName: event.target.value });
+    }
+    if (value == "SourceMedium") {
+      this.setState({ SourceMedium: event.target.value });
     }
   };
 
@@ -265,7 +384,7 @@ class ReferredBy extends Component {
     const columns = [
       {
         Header: "Site Name",
-        maxWidth: 150,
+        maxWidth: 350,
         accessor: "label",
       },
 
@@ -371,6 +490,41 @@ class ReferredBy extends Component {
         },
         filterable: false,
       },
+
+      {
+        Header: "Generate URL",
+        accessor: "actions",
+        sortable: false,
+        width: 100,
+        maxWidth: 100,
+        
+        Cell: (record) => {
+          const rowIdx = record.row._original;
+          console.log("checkeditdatttae", rowIdx);
+          return (
+            <div className="table-common-btn">
+
+              <Button
+                justIcon
+                color="success"
+                className="Plus-btn"
+                onClick={() => this.handleURL(rowIdx)}
+              >
+                <i className={"fas fa-check"} />
+              </Button>
+              {/* <Button
+                justIcon
+                color="success"
+                onClick={() => this.handleURL(rowIdx)}
+              >
+                <i className="fas fa-edit"></i>
+              </Button> */}
+            </div>
+          );
+        },
+        filterable: false,
+      },
+
       {
         Header: "Delete",
         accessor: "delete",
@@ -427,7 +581,7 @@ class ReferredBy extends Component {
                 <h4 className="margin-right-auto text-color-black">
                   Referred Management
                 </h4>
-                <Button color="primary" onClick={() => this.openDialog()}>
+                <Button color="primary" onClick={() => this.openDialogAddNewRef()}>
                   Referred By
                 </Button>
               </CardHeader>
@@ -508,6 +662,119 @@ class ReferredBy extends Component {
               </Button>
               <Button onClick={() => this.addReferredSite()} color="primary">
                 Save
+              </Button>
+            </DialogActions>
+          </Dialog>
+
+
+          <Dialog
+            open={this.state.showURLDialog}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+            fullWidth={true}
+          >
+            <DialogContent>
+              <DialogContentText id="alert-dialog-description">
+                <GridContainer>
+                  
+                <GridItem xs={12} sm={12} md={12}>
+                    <CustomInput
+                      labelText="Site URL"
+                      id="proposaltype"
+                      formControlProps={{
+                        fullWidth: true,
+                      }}
+                      inputProps={{
+                        value: this.state.SiteURL
+                          ? this.state.SiteURL
+                          : this.state.SiteURL,
+                        onChange: (event) =>
+                          this.handleChangeFrom(event, "SiteURL"),
+                      }}
+                    />
+                  </GridItem>
+
+                  
+                  <GridItem xs={12} sm={12} md={12}>
+                    <CustomInput
+                      labelText="Source Name"
+                      id="proposaltype"
+                      formControlProps={{
+                        fullWidth: true,
+                      }}
+                      inputProps={{
+                        value: this.state.SourceName
+                          ? this.state.SourceName
+                          : this.state.SourceName,
+                        onChange: (event) =>
+                          this.handleChangeFrom(event, "SourceName"),
+                      }}
+                    />
+                  </GridItem>
+
+                  <GridItem xs={12} sm={12} md={12}>
+                    <CustomInput
+                      labelText="Source Medium"
+                      id="proposaltype"
+                      formControlProps={{
+                        fullWidth: true,
+                      }}
+                      inputProps={{
+                        value: this.state.SourceMedium
+                          ? this.state.SourceMedium
+                          : this.state.SourceMedium,
+                        onChange: (event) =>
+                          this.handleChangeFrom(event, "SourceMedium"),
+                      }}
+                    />
+                  </GridItem>
+                  
+                  <GridItem xs={12} sm={12} md={12}>
+                    <CustomInput
+                      labelText="Site Name"
+                      id="proposaltype"
+                      formControlProps={{
+                        fullWidth: true,
+                      }}
+                      inputProps={{
+                        value: this.state.SiteName
+                          ? this.state.SiteName
+                          : this.state.SiteNameEdit,
+                        onChange: (event) =>
+                          this.handleChangeFrom(event, "SiteName"),
+                      }}
+                    />
+                  </GridItem>
+
+
+
+                  <GridItem xs={12} sm={12} md={12}>
+                    <CustomInput
+                      labelText="Generated URL"
+                      id="proposaltype"
+                      formControlProps={{
+                        fullWidth: true,
+                      }}
+                      inputProps={{
+                        disabled:true,
+                        value: this.state.viewURL
+                          ? this.state.viewURL
+                          : this.state.viewURL,
+                       
+                      }}
+                    />
+                  </GridItem>
+
+
+                </GridContainer>
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => this.CloseURLDialog()} color="secondary">
+                Cancel
+              </Button>
+              <Button onClick={() => this.generateUrlData()} color="primary">
+                Generate
               </Button>
             </DialogActions>
           </Dialog>

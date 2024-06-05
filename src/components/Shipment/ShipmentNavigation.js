@@ -316,18 +316,25 @@ class ShipmentNavigation extends Component {
     );
 
     console.log("this.state.sortProps = ", this.state.sortProps);
-
+    if (
+      CommonConfig.getUserAccess("Shipment").AllAccess ||
+      Number(record.original.ManagedBy) ===
+        Number(CommonConfig.loggedInUserData().PersonID)
+    ) {
     debugger;
-    history.push({
-      pathname: "ShipmentNew",
-      state: {
-        ShipppingID: record.original.ShippingID,
-        filterlist: this.state.filterProps,
-        type: "Shipment",
-        shipmentstatusList: this.state.shipmentstatusList,
-        sortlist: this.state.sortProps,
-      },
-    });
+        history.push({
+          pathname: "ShipmentNew",
+          state: {
+            ShipppingID: record.original.ShippingID,
+            filterlist: this.state.filterProps,
+            type: "Shipment",
+            shipmentstatusList: this.state.shipmentstatusList,
+            sortlist: this.state.sortProps,
+          },
+        });
+    } else {
+        cogoToast.error("You don't have access to this record.");
+      }
   };
 
   filterMethod = (event, value) => {

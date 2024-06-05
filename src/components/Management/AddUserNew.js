@@ -456,7 +456,7 @@ class Step1 extends React.Component {
     }
   };
 
-  getUserDetail() {debugger
+  getUserDetail() {
     try {
       this.showLoader();
       this.setState({ Attachments: [], AttachmentList: [] });
@@ -592,14 +592,28 @@ class Step1 extends React.Component {
           }
         })
         .catch((err) => {
-          console.log("err....", err);
-          this.hideLoader();
-          cogoToast.error("Something Went Wrong");
+          debugger
+          console.log("this.props.location.state = ",this.props.location.state)
+          if(this.props.location.state != undefined){
+            this.hideLoader();
+            console.log("err....", err);
+            cogoToast.error("Something Went Wrong");
+          }else{
+            this.hideLoader();
+            console.log("err....", err);
+          }
         });
     } catch (error) {
-      this.hideLoader();
-      console.log("err....", error);
-      cogoToast.error("Something Went Wrong");
+      debugger
+      if(this.props.location.state != undefined){
+        this.hideLoader();
+        console.log("err....", error);
+        cogoToast.error("Something Went Wrong");
+      }else{
+        this.hideLoader();
+        console.log("err....", error);
+      }
+      
     }
   }
 

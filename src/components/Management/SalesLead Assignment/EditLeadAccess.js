@@ -365,7 +365,7 @@ class EditLeadAccess extends Component {
               </h4>
             </CardHeader>
             <Cardbody>
-              <div className="package-table lead-access-table">
+              {/* <div className="package-table lead-access-table">
                 <table style={{ tableLayout: "fixed" }}>
                   <thead>
                     <tr>
@@ -493,7 +493,7 @@ class EditLeadAccess extends Component {
                     </tr>
                   </thead>
                 </table>
-              </div>
+              </div> */}
               <div className="package-table lead-access-table">
                 <table style={{ tableLayout: "fixed" }}>
                   <thead>

@@ -757,6 +757,7 @@ class Scheduleshipment extends React.Component {
                       })
                     }
                     inputProps={{
+                      autoComplete:"none",
                       name: "selectshipmenttype",
                       id: "selectshipmenttype",
                     }}
@@ -785,6 +786,9 @@ class Scheduleshipment extends React.Component {
                       fromCountryHelperText: "",
                     })
                   }
+                  inputProps={{
+                    autoComplete: "new-password",
+                  }}
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -815,6 +819,9 @@ class Scheduleshipment extends React.Component {
                       toCountryHelperText: "",
                     })
                   }
+                  inputProps={{
+                    autoComplete: "new-password",
+                  }}
                   renderInput={(params) => (
                     <TextField
                       {...params}

@@ -55,6 +55,7 @@ class EmailReports extends Component {
       selectedCountryTo:"",
       LoginTypeValue:"",
       EmailProvidersStatusvalue:"",
+      SFLStatusvalue:"",
       ModulesName: [
         { value: "Contact Us", label: "Contact Us" },
         { value: "CallBack", label: "CallBack" },
@@ -75,6 +76,11 @@ class EmailReports extends Component {
         { value: "invalid", label: "invalid" },
         { value: "spam-trap", label: "spam-trap" },
         { value: "rejected", label: "rejected" },
+      ],
+      SFLEmailStatus: [
+        { value: "Active", label: "Active" },
+        { value: "Hard Bounce", label: "Hard Bounce" },
+        { value: "Unsubscribed", label: "Unsubscribed" },
       ],
     };
   }
@@ -120,6 +126,7 @@ class EmailReports extends Component {
       SerachList: [],
       LoginTypeValue:"",
       EmailProvidersStatusvalue:"",
+      SFLStatusvalue:"",
       selectedCountry: "",
       selectedCountryTo:"",
       // LoginTypeValue:"",
@@ -149,7 +156,8 @@ class EmailReports extends Component {
         ModuleName: this.state.LoginTypeValue.label,
         ProviderStatus: this.state.EmailProvidersStatusvalue.label,
         FromCountry: this.state.selectedCountry.value,
-        ToCountry: this.state.selectedCountryTo.value
+        ToCountry: this.state.selectedCountryTo.value,
+        SFLStatus: this.state.SFLStatusvalue.label,      
       };
       debugger;
       if (data.FromDate === "" || data.ToDate === "") {
@@ -161,6 +169,10 @@ class EmailReports extends Component {
        
       if(this.state.EmailProvidersStatusvalue == ""){
         return cogoToast.error("Please select provider status");
+      } 
+
+      if(this.state.SFLStatusvalue == ""){
+        return cogoToast.error("Please select sfl status");
       } 
 
       if(data.ModuleName == "SalesLead"){
@@ -283,6 +295,11 @@ class EmailReports extends Component {
         this.setState({ EmailProvidersStatusvalue: value });
 
       }
+      if(type === "SFLStatus"){
+
+        this.setState({ SFLStatusvalue: value });
+
+      }
     }
   };
   render() {
@@ -293,7 +310,13 @@ class EmailReports extends Component {
         = this.state.EmailProvidersStatus.map((x) => {
         return { value: x.value, label: x.label };
     });
-    const { fileSetName,FromDateAllSales, ToDateAllSales, SerachList, selectedCountry,selectedCountryTo,LoginTypeValue,EmailProvidersStatusvalue } = this.state;
+
+    const SFLEmailStatus
+        = this.state.SFLEmailStatus.map((x) => {
+        return { value: x.value, label: x.label };
+    });
+
+    const { fileSetName,FromDateAllSales, ToDateAllSales, SerachList, selectedCountry,selectedCountryTo,LoginTypeValue,EmailProvidersStatusvalue,SFLStatusvalue } = this.state;
     const columnsSearch = [
       {
         Header: "Enter Date",
@@ -452,18 +475,37 @@ class EmailReports extends Component {
                       }
                       getOptionLabel={(option) => option.label}
                       renderInput={(params) => (
-                          <TextField {...params} label="Email Status" />
+                          <TextField {...params} label="Provider Status" />
+                      )}
+                    />
+                  </GridItem>
+
+                  <GridItem xs={12} sm={3} md={2} className="">
+                    <Autocomplete
+                      id="combo-box-demo"
+                      options={SFLEmailStatus}
+                      value={SFLStatusvalue}
+                      //   disabled={viewAllClear === false ? false : true}
+                      onChange={(event, value) =>
+                          this.selectChange(event, value, "SFLStatus")
+                      }
+                      getOptionLabel={(option) => option.label}
+                      renderInput={(params) => (
+                          <TextField {...params} label="SFL Status" />
                       )}
                     />
                   </GridItem>
                   
                   <GridItem>
                     <div className="right mt-20">
+                     
+
                       <Button
-                        color="rose"
-                        onClick={() => this.searchLeadShipmentReport()}
+                          justIcon
+                          color="rose"
+                          onClick={() => this.searchLeadShipmentReport()}
                       >
-                        Search
+                          <i class="fa fa-search"></i>
                       </Button>
 
                       
@@ -474,12 +516,23 @@ class EmailReports extends Component {
                         >
                         <i class="fas fa-download"></i>
                         </Button>
+
+                        
+
                         <Button
+                        justIcon
+                          color="secondary"
+                          onClick={() => this.reset()}
+                      >
+                          <i class="fa fa-sync"></i>
+                      </Button>
+                        
+                        {/* <Button
                         color="secondary"
                         onClick={() => this.reset()}
                       >
                         Reset
-                      </Button>
+                      </Button> */}
                     </div>
                   </GridItem>
                 </GridContainer>
