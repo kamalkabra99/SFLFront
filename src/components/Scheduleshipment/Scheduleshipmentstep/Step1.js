@@ -737,7 +737,7 @@ class Scheduleshipment extends React.Component {
       <div>
         <GridContainer className="MuiGrid-justify-xs-center schedulecenter">
           <GridItem xs={12} sm={12} md={6}>
-            <form>
+            <form autoComplete="false">
               <div className="select-spl">
                 <FormControl fullWidth error={this.state.shipmentTypeErr}>
                   <InputLabel className={classes.selectLabel}>
@@ -777,7 +777,7 @@ class Scheduleshipment extends React.Component {
                   getOptionLabel={(option) => option.label}
                   value={this.state.FromSelectedCountry}
                   autoSelect
-                  autoComplete='new-password'
+                  autoComplete='none'
                   disabled={this.state.disableGetrate}
                   onChange={(event, value) => this.ChangeFromCountry(value)}
                   onFocus={() => 
@@ -787,13 +787,13 @@ class Scheduleshipment extends React.Component {
                     })
                   }
                   inputProps={{
-                    autoComplete: "new-password",
+                    autoComplete: "none",
                   }}
                   renderInput={(params) => (
                     <TextField
                       {...params}
                       label="From Country"
-                      autoComplete='SFLNEWPASS'
+                      autoComplete='none'
                       // name={`${"From Country"}${Date()}`}
                       error={this.state.fromCountryErr}
                       helperText={this.state.fromCountryHelperText}
@@ -820,7 +820,7 @@ class Scheduleshipment extends React.Component {
                     })
                   }
                   inputProps={{
-                    autoComplete: "new-password",
+                    autoComplete: "none",
                   }}
                   renderInput={(params) => (
                     <TextField

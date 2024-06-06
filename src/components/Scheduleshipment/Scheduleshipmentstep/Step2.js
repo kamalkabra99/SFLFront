@@ -2438,8 +2438,9 @@ class Scheduleshipment extends React.Component {
                     id="contactname"
                     autoSelect
                     className="contact-name-autocomplete"
+                    autoComplete= "off"
                     inputProps={{
-                      autoComplete: "new-password",
+                      autoComplete: "none",
                     }}
                     // autoComplete="new-password"
                     // disabled={this.state.disablefromState}
@@ -2462,6 +2463,7 @@ class Scheduleshipment extends React.Component {
                         error={fromContactNameErr}
                         helperText={fromContactNameHelperText}
                         fullWidth
+                      
                       />
                     )}
                     noOptionsText={

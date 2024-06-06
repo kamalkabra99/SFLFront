@@ -657,7 +657,7 @@ class Scheduleshipment extends React.Component {
   }
 
   getUsersList(countryData) {
-    debugger;
+  
     try {
       let data = {
         countryId: countryData.value,
@@ -1971,6 +1971,7 @@ class Scheduleshipment extends React.Component {
                 error={toCompanyNameErr}
                 helperText={toCompanyNameHelperText}
                 formControlProps={{ fullWidth: true }}
+                autoComplete="off"
                 inputProps={{
                   value: toCompanyName,
                   autoComplete:"none",
@@ -1998,6 +1999,7 @@ class Scheduleshipment extends React.Component {
                       error={toContactNameErr}
                       helperText={toContactNameHelperText}
                       formControlProps={{ fullWidth: true }}
+                      autoComplete="off" 
                       inputProps={{
                         value: toContactName,
                         autoComplete:"none", 
@@ -2056,9 +2058,10 @@ class Scheduleshipment extends React.Component {
                     error={toContactNameErr}
                     helperText={toContactNameHelperText}
                     formControlProps={{ fullWidth: true }}
+                    autoComplete="off"
                     inputProps={{
                       value: toContactName,
-                      autoComplete:"none",
+                      autoComplete:"off",
                       onBlur: (event) =>
                         this.handleBlur(event, "tocontactname"),
                       onChange: (event) =>
@@ -2089,7 +2092,8 @@ class Scheduleshipment extends React.Component {
                     helperText={toContactNameHelperText}
                     id="contactname"
                     autoSelect
-                    inputProps={{ autoComplete: "new-password" }}
+                    autoComplete= "off" 
+                    inputProps={{ autoComplete: "none" }}
                     // autoComplete="new-password"
                     // disabled={this.state.disablefromState}
                     getOptionLabel={(option) => option.label}
@@ -2105,7 +2109,7 @@ class Scheduleshipment extends React.Component {
                       })
                     }
                     renderInput={(params) => (
-                      params.inputProps.autoComplete = 'new-password',
+                      
                       <TextField
                         {...params}
                         margin="normal"
@@ -2113,6 +2117,7 @@ class Scheduleshipment extends React.Component {
                         error={toContactNameErr}
                         helperText={toContactNameHelperText}
                         fullWidth
+                     
                       />
                     )}
                     // filterOptions={(options, params) => {
