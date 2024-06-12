@@ -1185,8 +1185,9 @@ class EditSalesLeads extends Component {
       PickupState: "",
     });
     let res = await this.getState(value);
-
-    if (res.success) {
+console.log("ressssssssssssssssss",res);
+if(res!=undefined)   
+if (res.success) {
       this.setState({
         fromStateList: res.data,
         fromStateAutoComplete: res.data.length ? true : false,
@@ -1213,7 +1214,7 @@ class EditSalesLeads extends Component {
     });
 
     let res = await this.getState(value);
-
+   if(res!=undefined)
     if (res.success) {
       this.setState({
         toStateList: res.data,
@@ -2042,600 +2043,835 @@ class EditSalesLeads extends Component {
 
   handleZipChange = (event, type) => {
     if (type === "pickupcityzip") {
-      var Zipcode = event.target.value;
-
+      
       var FinalCity = [];
-      fetch(
-        CommonConfig.zipCodeAPIKey(
-          Zipcode,
-          this.state.selectedPickUPCountry.label
-        )
+      var Zipcode = event.target.value;
+      var PickCountry = this.state.selectedPickUPCountry.value;
+      var PickCountryName = this.state.selectedPickUPCountry.label;
+      let citydata={
+        "PostalCode" : Zipcode,
+        "CountryID": PickCountry
+      }
+      api
+      .post(
+        "https://hubapi.sflworldwide.com/contactus/SflPostalCode",
+        citydata
       )
-        .then((result) => result.json())
-        .then((data) => {
-          if (data["status"] === "OK") {
+      .then((res) => {
+        if (res.success) {
+          if (res.success === true) {
             var IsValidCountry = false;
-            var countryShortName = _.filter(
-              data["results"][0]["address_components"],
-              function(data) {
-                return data.types[0] === "country";
-              }
-            )[0].long_name;
+           let data = res.Data.data;
+           // this.hideLoador();
+          //  this.CloseDialog();
+          //  this.getReferredSite();
+          let RecCount = data.length;
+          if(RecCount !=0)
+            {
+           var countryShortName = data[0].Country
+           if (this.state.selectedPickUPCountry.label === countryShortName) {
+                     IsValidCountry = true;
+                   }
+                   if (IsValidCountry) {
 
-            if (this.state.selectedPickUPCountry.label === countryShortName) {
-              IsValidCountry = true;
-            }
-            if (IsValidCountry) {
-              if (
-                data["results"][0] &&
-                data["results"][0].hasOwnProperty("postcode_localities")
-              ) {
-                // var CityData = data["results"][0]["postcode_localities"];
-                // _.forEach(CityData, function(value, key) {
-                //   FinalCity.push({
-                //     City_code: value,
-                //     CityName: value,
-                //   });
-                // });
+                    
+                   
+                    for(let i=0;i<RecCount;i++)
+                      FinalCity.push({
+                      City_code: data[i].City,
+                      CityName: data[i].City,
+                    });
+                    var state = data[0].State;
+                    var SelectedState = { value: data[0].StateID, label: data[0].State };   
+                    
+                    if (FinalCity[0].CityName === "" ||FinalCity[0].CityName === null || FinalCity[0].CityName === undefined )
+                       {
+                                  this.setState({ PickupCityInput: true });
+                                } else {
+                                  this.setState({ PickupCityInput: false });
+                                }
+                                
+                                this.setState({
+                                              PickupCityList: FinalCity,
+                                              PickupCity: FinalCity[0].CityName,
+                                              PickupState: this.state.fromStateList.length
+                                                ? SelectedState
+                                                : state,
+                                              fromStateAutoComplete: this.state.fromStateList.length
+                                                ? true
+                                                : false,
+                                            });
 
-                // var CityData = _.filter(
-                //   data["results"][0]["address_components"],
-                //   function(data) {
-                //     return data.types[0] === "locality";
-                //   }
-                // )[0].long_name;
+                                          }
+                                                              
 
-                // FinalCity.push({
-                //   City_code: CityData,
-                //   CityName: CityData,
-                // });
 
-                var CityData = _.filter(
-                  data["results"][0]["address_components"],
-                  function(data) {
-                    if (data.types[0] == "locality") {
-                      return data.types[0] === "locality";
-                    }
-                  }
-                );
+                                      }
+                                      else {
 
-                var CityData2 = _.filter(
-                  data["results"][0]["address_components"],
-                  function(data) {
-                    if (data.types[0] == "neighborhood") {
-                      return data.types[0] === "neighborhood";
-                    }
-                  }
-                );
+                               fetch(
+                                      CommonConfig.zipCodeAPIKey(
+                                        Zipcode,
+                                        this.state.selectedPickUPCountry.label
+                                      )
+                                    )
+                                      .then((result) => result.json())
+                                      .then((data) => {debugger
+                                        if (data["status"] === "OK") {
+                                          var IsValidCountry = false;
+                                          var countryShortName = _.filter(
+                                            data["results"][0]["address_components"],
+                                            function(data) {
+                                              return data.types[0] === "country";
+                                            }
+                                          )[0].long_name;
 
-                var CityData3 = _.filter(
-                  data["results"][0]["address_components"],
-                  function(data) {
-                    if (data.types[0] == "administrative_area_level_2") {
-                      return data.types[0] === "administrative_area_level_2";
-                    }
-                  }
-                );
+                                          if (this.state.selectedPickUPCountry.label === countryShortName) {
+                                            IsValidCountry = true;
+                                          }
+                                          if (IsValidCountry) {
+                                            if (
+                                              data["results"][0] &&
+                                              data["results"][0].hasOwnProperty("postcode_localities")
+                                            ) {
+                                              // var CityData = data["results"][0]["postcode_localities"];
+                                              // _.forEach(CityData, function(value, key) {
+                                              //   FinalCity.push({
+                                              //     City_code: value,
+                                              //     CityName: value,
+                                              //   });
+                                              // });
 
-                var CityData4 = _.filter(
-                  data["results"][0]["address_components"],
-                  function(data) {
-                    if (data.types[0] == "administrative_area_level_1") {
-                      return data.types[0] === "administrative_area_level_1";
-                    }
-                  }
-                );
+                                              // var CityData = _.filter(
+                                              //   data["results"][0]["address_components"],
+                                              //   function(data) {
+                                              //     return data.types[0] === "locality";
+                                              //   }
+                                              // )[0].long_name;
 
-                if (CityData.length > 0) {
-                  CityData = CityData[0].long_name;
-                  FinalCity.push({
-                    City_code: CityData,
-                    CityName: CityData,
-                  });
-                } else if (CityData2.length > 0) {
-                  CityData2 = CityData2[0].long_name;
-                  FinalCity.push({
-                    City_code: CityData2,
-                    CityName: CityData2,
-                  });
-                } else if (CityData3.length > 0) {
-                  CityData3 = CityData3[0].long_name;
-                  FinalCity.push({
-                    City_code: CityData3,
-                    CityName: CityData3,
-                  });
-                } else if (CityData4.length > 0) {
-                  CityData4 = CityData4[0].long_name;
-                  FinalCity.push({
-                    City_code: CityData4,
-                    CityName: CityData4,
-                  });
-                }
+                                              // FinalCity.push({
+                                              //   City_code: CityData,
+                                              //   CityName: CityData,
+                                              // });
 
-                var state = _.filter(
-                  data["results"][0]["address_components"],
-                  function(data) {
-                    return data.types[0] === "administrative_area_level_1";
-                  }
-                )[0].long_name;
+                                              var CityData = _.filter(
+                                                data["results"][0]["address_components"],
+                                                function(data) {
+                                                  if (data.types[0] == "locality") {
+                                                    return data.types[0] === "locality";
+                                                  }
+                                                }
+                                              );
 
-                var SelectedState = { value: state, label: state };
+                                              var CityData2 = _.filter(
+                                                data["results"][0]["address_components"],
+                                                function(data) {
+                                                  if (data.types[0] == "neighborhood") {
+                                                    return data.types[0] === "neighborhood";
+                                                  }
+                                                }
+                                              );
 
-                if (
-                  FinalCity[0].CityName === "" ||
-                  FinalCity[0].CityName === null ||
-                  FinalCity[0].CityName === undefined
-                ) {
-                  this.setState({ PickupCityInput: true });
-                } else {
-                  this.setState({ PickupCityInput: false });
-                }
+                                              var CityData3 = _.filter(
+                                                data["results"][0]["address_components"],
+                                                function(data) {
+                                                  if (data.types[0] == "administrative_area_level_2") {
+                                                    return data.types[0] === "administrative_area_level_2";
+                                                  }
+                                                }
+                                              );
 
-                this.setState({
-                  PickupCityList: FinalCity,
-                  PickupCity: FinalCity[0].CityName,
-                  PickupState: this.state.fromStateList.length
-                    ? SelectedState
-                    : state,
-                  fromStateAutoComplete: this.state.fromStateList.length
-                    ? true
-                    : false,
-                });
-              } else if (data["results"][0]) {
-                var city = "";
+                                              var CityData4 = _.filter(
+                                                data["results"][0]["address_components"],
+                                                function(data) {
+                                                  if (data.types[0] == "administrative_area_level_1") {
+                                                    return data.types[0] === "administrative_area_level_1";
+                                                  }
+                                                }
+                                              );
 
-                if (
-                  city === "" &&
-                  _.filter(data["results"][0]["address_components"], function(
-                    data
-                  ) {
-                    return data.types[0] === "locality";
-                  }).length > 0
-                ) {
-                  city = _.filter(
-                    data["results"][0]["address_components"],
-                    function(data) {
-                      return data.types[0] === "locality";
-                    }
-                  )[0].short_name;
-                } else if (
-                  city === "" &&
-                  _.filter(data["results"][0]["address_components"], function(
-                    data
-                  ) {
-                    return data.types[0] === "administrative_area_level_3";
-                  }).length > 0
-                ) {
-                  city = _.filter(
-                    data["results"][0]["address_components"],
-                    function(data) {
-                      return data.types[0] === "administrative_area_level_3";
-                    }
-                  )[0].short_name;
-                } else if (
-                  city === "" &&
-                  _.filter(data["results"][0]["address_components"], function(
-                    data
-                  ) {
-                    return data.types[0] === "political";
-                  }).length > 0
-                ) {
-                  city = _.filter(
-                    data["results"][0]["address_components"],
-                    function(data) {
-                      return data.types[0] === "political";
-                    }
-                  )[0].short_name;
-                } else if (
-                  city === "" &&
-                  _.filter(data["results"][0]["address_components"], function(
-                    data
-                  ) {
-                    return data.types[0] === "neighborhood";
-                  }).length > 0
-                ) {
-                  city = _.filter(
-                    data["results"][0]["address_components"],
-                    function(data) {
-                      return data.types[0] === "neighborhood";
-                    }
-                  )[0].short_name;
-                } else if (
-                  city == "" &&
-                  _.filter(data["results"][0]["address_components"], function(
-                    data
-                  ) {
-                    return data.types[0] === "administrative_area_level_1";
-                  }).length > 0
-                ) {
-                  city = _.filter(
-                    data["results"][0]["address_components"],
-                    function(data) {
-                      return data.types[0] === "administrative_area_level_2";
-                    }
-                  )[0].long_name;
-                } else if (
-                  city == "" &&
-                  _.filter(data["results"][0]["address_components"], function(
-                    data
-                  ) {
-                    return data.types[0] === "administrative_area_level_1";
-                  }).length > 0
-                ) {
-                  city = _.filter(
-                    data["results"][0]["address_components"],
-                    function(data) {
-                      return data.types[0] === "administrative_area_level_1";
-                    }
-                  )[0].long_name;
-                } else if (city === "") {
-                  city = "";
-                }
+                                              if (CityData.length > 0) {
+                                                CityData = CityData[0].long_name;
+                                                FinalCity.push({
+                                                  City_code: CityData,
+                                                  CityName: CityData,
+                                                });
+                                              } else if (CityData2.length > 0) {
+                                                CityData2 = CityData2[0].long_name;
+                                                FinalCity.push({
+                                                  City_code: CityData2,
+                                                  CityName: CityData2,
+                                                });
+                                              } else if (CityData3.length > 0) {
+                                                CityData3 = CityData3[0].long_name;
+                                                FinalCity.push({
+                                                  City_code: CityData3,
+                                                  CityName: CityData3,
+                                                });
+                                              } else if (CityData4.length > 0) {
+                                                CityData4 = CityData4[0].long_name;
+                                                FinalCity.push({
+                                                  City_code: CityData4,
+                                                  CityName: CityData4,
+                                                });
+                                              }
+                                              if(data["results"][0]["address_components"][0].long_name!=undefined)
+                                              var state = _.filter(
+                                                data["results"][0]["address_components"],
+                                                function(data) {
+                                                  return data.types[0] === "administrative_area_level_1";
+                                                }
+                                              )[0].long_name;
 
-                state = _.filter(
-                  data["results"][0]["address_components"],
-                  function(data) {
-                    return data.types[0] === "administrative_area_level_1";
-                  }
-                )[0].long_name;
+                                              var SelectedState = { value: state, label: state };
 
-                FinalCity.push({
-                  Citycode: city,
-                  CityName: city,
-                });
+                                              if (
+                                                FinalCity[0].CityName === "" ||
+                                                FinalCity[0].CityName === null ||
+                                                FinalCity[0].CityName === undefined
+                                              ) {
+                                                this.setState({ PickupCityInput: true });
+                                              } else {
+                                                this.setState({ PickupCityInput: false });
+                                              }
 
-                if (
-                  FinalCity[0].CityName === "" ||
-                  FinalCity[0].CityName === null ||
-                  FinalCity[0].CityName === undefined
-                ) {
-                  this.setState({ PickupCityInput: true });
-                } else {
-                  this.setState({ PickupCityInput: false });
-                }
+                                              this.setState({
+                                                PickupCityList: FinalCity,
+                                                PickupCity: FinalCity[0].CityName,
+                                                PickupState: this.state.fromStateList.length
+                                                  ? SelectedState
+                                                  : state,
+                                                fromStateAutoComplete: this.state.fromStateList.length
+                                                  ? true
+                                                  : false,
+                                              });
+                                            } else if (data["results"][0]) {
+                                              var city = "";
 
-                var SelectedState = { value: state, label: state };
+                                              if (
+                                                city === "" &&
+                                                _.filter(data["results"][0]["address_components"], function(
+                                                  data
+                                                ) {
+                                                  return data.types[0] === "locality";
+                                                }).length > 0
+                                              ) {
+                                                city = _.filter(
+                                                  data["results"][0]["address_components"],
+                                                  function(data) {
+                                                    return data.types[0] === "locality";
+                                                  }
+                                                )[0].short_name;
+                                              } else if (
+                                                city === "" &&
+                                                _.filter(data["results"][0]["address_components"], function(
+                                                  data
+                                                ) {
+                                                  return data.types[0] === "administrative_area_level_3";
+                                                }).length > 0
+                                              ) {
+                                                city = _.filter(
+                                                  data["results"][0]["address_components"],
+                                                  function(data) {
+                                                    return data.types[0] === "administrative_area_level_3";
+                                                  }
+                                                )[0].short_name;
+                                              } else if (
+                                                city === "" &&
+                                                _.filter(data["results"][0]["address_components"], function(
+                                                  data
+                                                ) {
+                                                  return data.types[0] === "political";
+                                                }).length > 0
+                                              ) {
+                                                city = _.filter(
+                                                  data["results"][0]["address_components"],
+                                                  function(data) {
+                                                    return data.types[0] === "political";
+                                                  }
+                                                )[0].short_name;
+                                              } else if (
+                                                city === "" &&
+                                                _.filter(data["results"][0]["address_components"], function(
+                                                  data
+                                                ) {
+                                                  return data.types[0] === "neighborhood";
+                                                }).length > 0
+                                              ) {
+                                                city = _.filter(
+                                                  data["results"][0]["address_components"],
+                                                  function(data) {
+                                                    return data.types[0] === "neighborhood";
+                                                  }
+                                                )[0].short_name;
+                                              } else if (
+                                                city == "" &&
+                                                _.filter(data["results"][0]["address_components"], function(
+                                                  data
+                                                ) {
+                                                  return data.types[0] === "administrative_area_level_1";
+                                                }).length > 0
+                                              ) {
+                                                city = _.filter(
+                                                  data["results"][0]["address_components"],
+                                                  function(data) {
+                                                    return data.types[0] === "administrative_area_level_2";
+                                                  }
+                                                )[0].long_name;
+                                              } else if (
+                                                city == "" &&
+                                                _.filter(data["results"][0]["address_components"], function(
+                                                  data
+                                                ) {
+                                                  return data.types[0] === "administrative_area_level_1";
+                                                }).length > 0
+                                              ) {
+                                                city = _.filter(
+                                                  data["results"][0]["address_components"],
+                                                  function(data) {
+                                                    return data.types[0] === "administrative_area_level_1";
+                                                  }
+                                                )[0].long_name;
+                                              } else if (city === "") {
+                                                city = "";
+                                              }
+                                              if(data["results"][0]["address_components"][0].long_name!=undefined) 
+                                              state = _.filter(
+                                                data["results"][0]["address_components"],
+                                                function(data) {
+                                                  return data.types[0] === "administrative_area_level_1";
+                                                }
+                                              )[0].long_name;
 
-                this.setState({
-                  PickupState: this.state.fromStateList.length
-                    ? SelectedState
-                    : state,
-                  fromStateAutoComplete: this.state.fromStateList.length
-                    ? true
-                    : false,
-                  PickupCity: FinalCity[0].CityName,
-                  PickupCityList: FinalCity,
-                });
-              } else {
-                this.setState({
-                  PickupCity: "",
-                  fromStateAutoComplete: this.state.fromStateList.length
-                    ? true
-                    : false,
-                  PickupCityInput: true,
-                  PickupState: "",
-                  PickupCityList: [],
-                });
-              }
-            } else {
-              this.setState({
-                PickupCity: "",
-                fromStateAutoComplete: this.state.fromStateList.length
-                  ? true
-                  : false,
-                PickupState: "",
-                PickupCityList: [],
-                PickupCityInput: true,
-              });
-            }
+                                              FinalCity.push({
+                                                Citycode: city,
+                                                CityName: city,
+                                              });
+
+                                              if (
+                                                FinalCity[0].CityName === "" ||
+                                                FinalCity[0].CityName === null ||
+                                                FinalCity[0].CityName === undefined
+                                              ) {
+                                                this.setState({ PickupCityInput: true });
+                                              } else {
+                                                this.setState({ PickupCityInput: false });
+                                              }
+
+                                              var SelectedState = { value: state, label: state };
+
+                                              this.setState({
+                                                PickupState: this.state.fromStateList.length
+                                                  ? SelectedState
+                                                  : state,
+                                                fromStateAutoComplete: this.state.fromStateList.length
+                                                  ? true
+                                                  : false,
+                                                PickupCity: FinalCity[0].CityName,
+                                                PickupCityList: FinalCity,
+                                              });
+                                            } else {
+                                              this.setState({
+                                                PickupCity: "",
+                                                fromStateAutoComplete: this.state.fromStateList.length
+                                                  ? true
+                                                  : false,
+                                                PickupCityInput: true,
+                                                PickupState: "",
+                                                PickupCityList: [],
+                                              });
+                                            }
+                                          } else {
+                                            this.setState({
+                                              PickupCity: "",
+                                              fromStateAutoComplete: this.state.fromStateList.length
+                                                ? true
+                                                : false,
+                                              PickupState: "",
+                                              PickupCityList: [],
+                                              PickupCityInput: true,
+                                            });
+                                          }
+                                          if(PickCountryName == "United States" ||PickCountryName == "India" ||PickCountryName == "Canada"  )
+                                            {
+                                              
+                                              var newZipcodedata = {
+                                              "Pincode" : Zipcode,
+                                              "PickupCityList": this.state.PickupCity,
+                                              "CountryID": PickCountry,
+                                              "CountryName": PickCountryName,
+                                              "StateName" : state,
+                                              
+                                            };
+                                            console.log("newZipcodedata",newZipcodedata);
+                                            api
+                                            .post(
+                                              "https://hubapi.sflworldwide.com/contactus/SflInsertPostalCode",
+                                              newZipcodedata
+                                            )
+                                            .then((res) => {debugger
+                                              if (res.success) {
+                                                console.log("CheckRessData", res);
+                                                if (res.success === true) {
+                                                 
+                                                  console.log("New Zipcode Enter Successfully");
+                                                } else {
+                                                  console.log("Something Went Wrong");
+                                                }
+                                              }
+                                            })
+                                            .catch((err) => {
+                                                console.log("err...", err);
+                                               
+                                              });
+                                          }
+
+                                        } else {
+                                          cogoToast.error("Zip code not found");
+                                          this.setState({
+                                            fromStateAutoComplete: this.state.fromStateList.length
+                                              ? true
+                                              : false,
+                                            PickupCity: "",
+                                            PickupState: "",
+                                            PickupCityList: [],
+                                            PickupCityInput: true,
+                                          });
+                                        }
+                                      });
+                                        
+                               }
+            
+            
           } else {
-            cogoToast.error("Zip code not found");
-            // this.setState({
-            //   fromStateAutoComplete: this.state.fromStateList.length
-            //     ? true
-            //     : false,
-            //   PickupCity: "",
-            //   PickupState: "",
-            //   PickupCityList: [],
-            //   PickupCityInput: true,
-            // });
+            cogoToast.error("Something went wrong");
           }
+        }
+      })
+      .catch((err) => {
+          console.log("err...", err);
+          cogoToast.error("Something Went Wrong");
         });
+    
+      
+     
     } else if (type === "dropoffcityzip") {
-      var zip = event.target.value;
-      var finalCity = [];
-      fetch(
-        CommonConfig.zipCodeAPIKey(zip, this.state.selectedDropoffCountry.label)
-      )
-        .then((result) => result.json())
-        .then((data) => {
-          if (data["status"] === "OK") {
-            var IsValidCountry = false;
-            var countryShortName = _.filter(
-              data["results"][0]["address_components"],
-              function(data) {
-                return data.types[0] === "country";
-              }
-            )[0].long_name;
-
-            if (this.state.selectedDropoffCountry.label === countryShortName) {
-              IsValidCountry = true;
-            }
-
-            if (IsValidCountry) {
-              if (
-                data["results"][0] &&
-                data["results"][0].hasOwnProperty("postcode_localities")
-              ) {
-                // var CityData = data["results"][0]["postcode_localities"];
-                // _.forEach(CityData, function(value, key) {
-                //   finalCity.push({
-                // Citycode: value,
-                // CityName: value,
-                //   });
-                // });
-                var CityData = _.filter(
-                  data["results"][0]["address_components"],
-                  function(data) {
-                    return data.types[0] === "locality";
-                  }
-                )[0].long_name;
-
-                finalCity.push({
-                  Citycode: CityData,
-                  CityName: CityData,
-                });
-
-                var CityData = _.filter(
-                  data["results"][0]["address_components"],
-                  function(data) {
-                    if (data.types[0] == "locality") {
-                      return data.types[0] === "locality";
-                    }
-                  }
-                );
-
-                var CityData2 = _.filter(
-                  data["results"][0]["address_components"],
-                  function(data) {
-                    if (data.types[0] == "neighborhood") {
-                      return data.types[0] === "neighborhood";
-                    }
-                  }
-                );
-
-                var CityData3 = _.filter(
-                  data["results"][0]["address_components"],
-                  function(data) {
-                    if (data.types[0] == "administrative_area_level_2") {
-                      return data.types[0] === "administrative_area_level_2";
-                    }
-                  }
-                );
-
-                var CityData4 = _.filter(
-                  data["results"][0]["address_components"],
-                  function(data) {
-                    if (data.types[0] == "administrative_area_level_1") {
-                      return data.types[0] === "administrative_area_level_1";
-                    }
-                  }
-                );
-
-                if (CityData.length > 0) {
-                  CityData = CityData[0].long_name;
-                  finalCity.push({
-                    Citycode: CityData,
-                    CityName: CityData,
-                  });
-                } else if (CityData2.length > 0) {
-                  CityData2 = CityData2[0].long_name;
-                  finalCity.push({
-                    Citycode: CityData2,
-                    CityName: CityData2,
-                  });
-                } else if (CityData3.length > 0) {
-                  CityData3 = CityData3[0].long_name;
-                  finalCity.push({
-                    Citycode: CityData3,
-                    CityName: CityData3,
-                  });
-                } else if (CityData4.length > 0) {
-                  CityData4 = CityData4[0].long_name;
-                  finalCity.push({
-                    Citycode: CityData4,
-                    CityName: CityData4,
-                  });
-                }
-
-                var state = _.filter(
-                  data["results"][0]["address_components"],
-                  function(data) {
-                    return data.types[0] === "administrative_area_level_1";
-                  }
-                )[0].long_name;
-
-                var SelectedState = { value: state, label: state };
-
-                if (
-                  finalCity[0].CityName === "" ||
-                  finalCity[0].CityName === null ||
-                  finalCity[0].CityName === undefined
-                ) {
-                  this.setState({ DropoffCityInput: true });
-                } else {
-                  this.setState({ DropoffCityInput: false });
-                }
-
-                this.setState({
-                  DropoffState: this.state.toStateList.length
-                    ? SelectedState
-                    : state,
-                  toStateAutoComplete: this.state.toStateList.length
-                    ? true
-                    : false,
-                  DropoffCityList: finalCity,
-                  DropoffCity: finalCity[0].CityName,
-                });
-              } else if (data["results"][0]) {
-                var city = "";
-
-                if (
-                  city === "" &&
-                  _.filter(data["results"][0]["address_components"], function(
-                    data
-                  ) {
-                    return data.types[0] === "locality";
-                  }).length > 0
-                ) {
-                  city = _.filter(
-                    data["results"][0]["address_components"],
-                    function(data) {
-                      return data.types[0] === "locality";
-                    }
-                  )[0].short_name;
-                } else if (
-                  city === "" &&
-                  _.filter(data["results"][0]["address_components"], function(
-                    data
-                  ) {
-                    return data.types[0] === "administrative_area_level_3";
-                  }).length > 0
-                ) {
-                  city = _.filter(
-                    data["results"][0]["address_components"],
-                    function(data) {
-                      return data.types[0] === "administrative_area_level_3";
-                    }
-                  )[0].short_name;
-                } else if (
-                  city === "" &&
-                  _.filter(data["results"][0]["address_components"], function(
-                    data
-                  ) {
-                    return data.types[0] === "political";
-                  }).length > 0
-                ) {
-                  city = _.filter(
-                    data["results"][0]["address_components"],
-                    function(data) {
-                      return data.types[0] === "political";
-                    }
-                  )[0].short_name;
-                } else if (
-                  city === "" &&
-                  _.filter(data["results"][0]["address_components"], function(
-                    data
-                  ) {
-                    return data.types[0] === "neighborhood";
-                  }).length > 0
-                ) {
-                  city = _.filter(
-                    data["results"][0]["address_components"],
-                    function(data) {
-                      return data.types[0] === "neighborhood";
-                    }
-                  )[0].short_name;
-                } else if (
-                  city == "" &&
-                  _.filter(data["results"][0]["address_components"], function(
-                    data
-                  ) {
-                    return data.types[0] === "administrative_area_level_2";
-                  }).length > 0
-                ) {
-                  city = _.filter(
-                    data["results"][0]["address_components"],
-                    function(data) {
-                      return data.types[0] === "administrative_area_level_2";
-                    }
-                  )[0].long_name;
-                } else if (
-                  city == "" &&
-                  _.filter(data["results"][0]["address_components"], function(
-                    data
-                  ) {
-                    return data.types[0] === "administrative_area_level_1";
-                  }).length > 0
-                ) {
-                  city = _.filter(
-                    data["results"][0]["address_components"],
-                    function(data) {
-                      return data.types[0] === "administrative_area_level_1";
-                    }
-                  )[0].long_name;
-                } else if (city === "") {
-                  city = "";
-                }
-
-                state = _.filter(
-                  data["results"][0]["address_components"],
-                  function(data) {
-                    return data.types[0] === "administrative_area_level_1";
-                  }
-                )[0].long_name;
-
-                finalCity.push({
-                  Citycode: city,
-                  CityName: city,
-                });
-
-                if (
-                  finalCity[0].CityName === "" ||
-                  finalCity[0].CityName === null ||
-                  finalCity[0].CityName === undefined
-                ) {
-                  this.setState({ DropoffCityInput: true });
-                } else {
-                  this.setState({ DropoffCityInput: false });
-                }
-
-                var SelectedState = { value: state, label: state };
-
-                this.setState({
-                  DropoffState: this.state.toStateList.length
-                    ? SelectedState
-                    : state,
-                  toStateAutoComplete: this.state.toStateList.length
-                    ? true
-                    : false,
-                  DropoffCity: finalCity[0].CityName,
-                  DropoffCityList: finalCity,
-                });
-              } else {
-                this.setState({
-                  DropoffCity: "",
-                  DropoffState: "",
-                  DropoffCityList: [],
-                  DropoffCityInput: true,
-                  toStateAutoComplete: this.state.toStateList.length
-                    ? true
-                    : false,
-                });
-              }
-            } else {
-              this.setState({
-                DropoffCity: "",
-                toStateAutoComplete: this.state.toStateList.length
-                  ? true
-                  : false,
-                DropoffState: "",
-                DropoffCityList: [],
-                DropoffCityInput: true,
-              });
-            }
-          } else {
-            cogoToast.error("Zip code not found");
-            // this.setState({
-            //   DropoffCityInput: true,
-            //   DropoffCityList: [],
-            //   toStateAutoComplete: this.state.toStateList.length ? true : false,
-            //   DropoffCity: "",
-            //   DropoffState: "",
-            // });
-          }
-        });
+     
+        var zip = event.target.value;
+        var finalCity = [];
+    var DropCountry = this.state.selectedDropoffCountry.value;
+    var DropCountryName = this.state.selectedDropoffCountry.label;
+    let citydata={
+      "PostalCode" : zip,
+      "CountryID": DropCountry
     }
+    api
+    .post(
+      "https://hubapi.sflworldwide.com/contactus/SflPostalCode",
+      citydata
+    )
+    .then((res) => {
+      if (res.success) {
+        console.log("CheckRessData", res);
+        if (res.success === true) {
+          var IsValidCountry = false;
+         let data = res.Data.data;
+         // this.hideLoador();
+        //  this.CloseDialog();
+        //  this.getReferredSite();
+        let RecCount = data.length;
+        if(RecCount !=0)
+          {
+         var countryShortName = data[0].Country
+         if (this.state.selectedDropoffCountry.label === countryShortName) {
+                   IsValidCountry = true;
+                 }
+                 if (IsValidCountry) {
+                  for(let i=0;i<RecCount;i++)
+                    finalCity.push({
+                    City_code: data[i].City,
+                    CityName: data[i].City,
+                  });
+                  var state = data[0].State;
+                  var SelectedState = { value: data[0].StateID, label: data[0].State };   
+                  
+                  if (finalCity[0].CityName === "" ||finalCity[0].CityName === null || finalCity[0].CityName === undefined )
+                    {
+                      this.setState({ DropoffCityInput: true });
+                    } else {
+                      this.setState({ DropoffCityInput: false });
+                    }
+                              
+                              this.setState({
+                                            DropoffCityList: finalCity,
+                                            DropoffCity: finalCity[0].CityName,
+                                            DropoffState: this.state.fromStateList.length
+                                              ? SelectedState
+                                              : state,
+                                            fromStateAutoComplete: this.state.fromStateList.length
+                                              ? true
+                                              : false,
+                                          });
+                                  this.setState({
+                                    DropoffState: this.state.toStateList.length
+                                      ? SelectedState
+                                      : state,
+                                    toStateAutoComplete: this.state.toStateList.length
+                                      ? true
+                                      : false,
+                                    DropoffCityList: finalCity,
+                                    DropoffCity: finalCity[0].CityName,
+                                  });              
+                                        }
+                                                            
+
+
+                                    }
+                                    else {
+                                       
+                                        
+                                        fetch(
+                                          CommonConfig.zipCodeAPIKey(zip, this.state.selectedDropoffCountry.label)
+                                        )
+                                          .then((result) => result.json())
+                                          .then((data) => {
+                                            if (data["status"] === "OK") {
+                                              var IsValidCountry = false;
+                                              var countryShortName = _.filter(
+                                                data["results"][0]["address_components"],
+                                                function(data) {
+                                                  return data.types[0] === "country";
+                                                }
+                                              )[0].long_name;
+
+                                              if (this.state.selectedDropoffCountry.label === countryShortName) {
+                                                IsValidCountry = true;
+                                              }
+
+                                              if (IsValidCountry) {
+                                                if (
+                                                  data["results"][0] &&
+                                                  data["results"][0].hasOwnProperty("postcode_localities")
+                                                ) {
+                                                  // var CityData = data["results"][0]["postcode_localities"];
+                                                  // _.forEach(CityData, function(value, key) {
+                                                  //   finalCity.push({
+                                                  // Citycode: value,
+                                                  // CityName: value,
+                                                  //   });
+                                                  // });
+                                                  var CityData = _.filter(
+                                                    data["results"][0]["address_components"],
+                                                    function(data) {
+                                                      return data.types[0] === "locality";
+                                                    }
+                                                  )[0].long_name;
+
+                                                  finalCity.push({
+                                                    Citycode: CityData,
+                                                    CityName: CityData,
+                                                  });
+
+                                                  var CityData = _.filter(
+                                                    data["results"][0]["address_components"],
+                                                    function(data) {
+                                                      if (data.types[0] == "locality") {
+                                                        return data.types[0] === "locality";
+                                                      }
+                                                    }
+                                                  );
+
+                                                  var CityData2 = _.filter(
+                                                    data["results"][0]["address_components"],
+                                                    function(data) {
+                                                      if (data.types[0] == "neighborhood") {
+                                                        return data.types[0] === "neighborhood";
+                                                      }
+                                                    }
+                                                  );
+
+                                                  var CityData3 = _.filter(
+                                                    data["results"][0]["address_components"],
+                                                    function(data) {
+                                                      if (data.types[0] == "administrative_area_level_2") {
+                                                        return data.types[0] === "administrative_area_level_2";
+                                                      }
+                                                    }
+                                                  );
+
+                                                  var CityData4 = _.filter(
+                                                    data["results"][0]["address_components"],
+                                                    function(data) {
+                                                      if (data.types[0] == "administrative_area_level_1") {
+                                                        return data.types[0] === "administrative_area_level_1";
+                                                      }
+                                                    }
+                                                  );
+
+                                                  if (CityData.length > 0) {
+                                                    CityData = CityData[0].long_name;
+                                                    finalCity.push({
+                                                      Citycode: CityData,
+                                                      CityName: CityData,
+                                                    });
+                                                  } else if (CityData2.length > 0) {
+                                                    CityData2 = CityData2[0].long_name;
+                                                    finalCity.push({
+                                                      Citycode: CityData2,
+                                                      CityName: CityData2,
+                                                    });
+                                                  } else if (CityData3.length > 0) {
+                                                    CityData3 = CityData3[0].long_name;
+                                                    finalCity.push({
+                                                      Citycode: CityData3,
+                                                      CityName: CityData3,
+                                                    });
+                                                  } else if (CityData4.length > 0) {
+                                                    CityData4 = CityData4[0].long_name;
+                                                    finalCity.push({
+                                                      Citycode: CityData4,
+                                                      CityName: CityData4,
+                                                    });
+                                                  }
+
+                                                  var state = _.filter(
+                                                    data["results"][0]["address_components"],
+                                                    function(data) {
+                                                      return data.types[0] === "administrative_area_level_1";
+                                                    }
+                                                  )[0].long_name;
+
+                                                  var SelectedState = { value: state, label: state };
+
+                                                  if (
+                                                    finalCity[0].CityName === "" ||
+                                                    finalCity[0].CityName === null ||
+                                                    finalCity[0].CityName === undefined
+                                                  ) {
+                                                    this.setState({ DropoffCityInput: true });
+                                                  } else {
+                                                    this.setState({ DropoffCityInput: false });
+                                                  }
+
+                                                  this.setState({
+                                                    DropoffState: this.state.toStateList.length
+                                                      ? SelectedState
+                                                      : state,
+                                                    toStateAutoComplete: this.state.toStateList.length
+                                                      ? true
+                                                      : false,
+                                                    DropoffCityList: finalCity,
+                                                    DropoffCity: finalCity[0].CityName,
+                                                  });
+                                                } else if (data["results"][0]) {
+                                                  var city = "";
+
+                                                  if (
+                                                    city === "" &&
+                                                    _.filter(data["results"][0]["address_components"], function(
+                                                      data
+                                                    ) {
+                                                      return data.types[0] === "locality";
+                                                    }).length > 0
+                                                  ) {
+                                                    city = _.filter(
+                                                      data["results"][0]["address_components"],
+                                                      function(data) {
+                                                        return data.types[0] === "locality";
+                                                      }
+                                                    )[0].short_name;
+                                                  } else if (
+                                                    city === "" &&
+                                                    _.filter(data["results"][0]["address_components"], function(
+                                                      data
+                                                    ) {
+                                                      return data.types[0] === "administrative_area_level_3";
+                                                    }).length > 0
+                                                  ) {
+                                                    city = _.filter(
+                                                      data["results"][0]["address_components"],
+                                                      function(data) {
+                                                        return data.types[0] === "administrative_area_level_3";
+                                                      }
+                                                    )[0].short_name;
+                                                  } else if (
+                                                    city === "" &&
+                                                    _.filter(data["results"][0]["address_components"], function(
+                                                      data
+                                                    ) {
+                                                      return data.types[0] === "political";
+                                                    }).length > 0
+                                                  ) {
+                                                    city = _.filter(
+                                                      data["results"][0]["address_components"],
+                                                      function(data) {
+                                                        return data.types[0] === "political";
+                                                      }
+                                                    )[0].short_name;
+                                                  } else if (
+                                                    city === "" &&
+                                                    _.filter(data["results"][0]["address_components"], function(
+                                                      data
+                                                    ) {
+                                                      return data.types[0] === "neighborhood";
+                                                    }).length > 0
+                                                  ) {
+                                                    city = _.filter(
+                                                      data["results"][0]["address_components"],
+                                                      function(data) {
+                                                        return data.types[0] === "neighborhood";
+                                                      }
+                                                    )[0].short_name;
+                                                  } else if (
+                                                    city == "" &&
+                                                    _.filter(data["results"][0]["address_components"], function(
+                                                      data
+                                                    ) {
+                                                      return data.types[0] === "administrative_area_level_2";
+                                                    }).length > 0
+                                                  ) {
+                                                    city = _.filter(
+                                                      data["results"][0]["address_components"],
+                                                      function(data) {
+                                                        return data.types[0] === "administrative_area_level_2";
+                                                      }
+                                                    )[0].long_name;
+                                                  } else if (
+                                                    city == "" &&
+                                                    _.filter(data["results"][0]["address_components"], function(
+                                                      data
+                                                    ) {
+                                                      return data.types[0] === "administrative_area_level_1";
+                                                    }).length > 0
+                                                  ) {
+                                                    city = _.filter(
+                                                      data["results"][0]["address_components"],
+                                                      function(data) {
+                                                        return data.types[0] === "administrative_area_level_1";
+                                                      }
+                                                    )[0].long_name;
+                                                  } else if (city === "") {
+                                                    city = "";
+                                                  }
+
+                                                  state = _.filter(
+                                                    data["results"][0]["address_components"],
+                                                    function(data) {
+                                                      return data.types[0] === "administrative_area_level_1";
+                                                    }
+                                                  )[0].long_name;
+
+                                                  finalCity.push({
+                                                    Citycode: city,
+                                                    CityName: city,
+                                                  });
+
+                                                  if (
+                                                    finalCity[0].CityName === "" ||
+                                                    finalCity[0].CityName === null ||
+                                                    finalCity[0].CityName === undefined
+                                                  ) {
+                                                    this.setState({ DropoffCityInput: true });
+                                                  } else {
+                                                    this.setState({ DropoffCityInput: false });
+                                                  }
+
+                                                  var SelectedState = { value: state, label: state };
+
+                                                  this.setState({
+                                                    DropoffState: this.state.toStateList.length
+                                                      ? SelectedState
+                                                      : state,
+                                                    toStateAutoComplete: this.state.toStateList.length
+                                                      ? true
+                                                      : false,
+                                                    DropoffCity: finalCity[0].CityName,
+                                                    DropoffCityList: finalCity,
+                                                  });
+                                                } else {
+                                                  this.setState({
+                                                    DropoffCity: "",
+                                                    DropoffState: "",
+                                                    DropoffCityList: [],
+                                                    DropoffCityInput: true,
+                                                    toStateAutoComplete: this.state.toStateList.length
+                                                      ? true
+                                                      : false,
+                                                  });
+                                                }
+                                              } else {
+                                                this.setState({
+                                                  DropoffCity: "",
+                                                  toStateAutoComplete: this.state.toStateList.length
+                                                    ? true
+                                                    : false,
+                                                  DropoffState: "",
+                                                  DropoffCityList: [],
+                                                  DropoffCityInput: true,
+                                                });
+                                              }
+                                              if(DropCountryName == "United States" ||DropCountryName == "India" ||DropCountryName == "Canada"  )
+                                                {
+                                                  
+                                                  var newZipcodedata = {
+                                                  "Pincode" : zip,
+                                                  "PickupCityList": this.state.DropoffCity,
+                                                  "CountryID": DropCountry,
+                                                  "CountryName": DropCountryName,
+                                                  "StateName" : state,
+                                                  
+                                                };
+                                                console.log("newZipcodedata",newZipcodedata);
+                                                api
+                                                .post(
+                                                  "https://hubapi.sflworldwide.com/contactus/SflInsertPostalCode",
+                                                  newZipcodedata
+                                                )
+                                                .then((res) => {debugger
+                                                  if (res.success) {
+                                                    console.log("CheckRessData", res);
+                                                    if (res.success === true) {
+                                                     
+                                                      console.log("New Zipcode Enter Successfully");
+                                                    } else {
+                                                      console.log("Something Went Wrong");
+                                                    }
+                                                  }
+                                                })
+                                                .catch((err) => {
+                                                    console.log("err...", err);
+                                                   
+                                                  });
+                                              }
+                                            } else {
+                                              cogoToast.error("Zip code not found");
+                                              this.setState({
+                                                DropoffCityInput: true,
+                                                DropoffCityList: [],
+                                                toStateAutoComplete: this.state.toStateList.length ? true : false,
+                                                DropoffCity: "",
+                                                DropoffState: "",
+                                              });
+                                            }
+                                          });
+                                      }
+                                     
+          
+          
+        } else {
+          cogoToast.error("Something went wrong");
+        }
+      }
+    })
+    .catch((err) => {
+        console.log("err...", err);
+        cogoToast.error("Something Went Wrong");
+      });
+  
+    
+    
+}
+   
   };
 
   handleAddRow = () => {
@@ -5507,9 +5743,11 @@ class EditSalesLeads extends Component {
                     id="contactname"
                     //error={this.state.contactnameErr}
                     // helperText={this.state.contactnameHelperText}
+                    autoComplete= "off"
                     formControlProps={{ fullWidth: true }}
                     inputProps={{
                       value: ContactName,
+                      autoComplete: "none",
                       onChange: (event) =>
                         this.handlechange(event, "contactname"),
                       onFocus: () =>
@@ -5554,6 +5792,7 @@ class EditSalesLeads extends Component {
                     formControlProps={{ fullWidth: true }}
                     inputProps={{
                       value: EmailAddress,
+                      autoComplete: "none",
                       disabled:
                         this.props.history.location.state.id !== ""
                           ? DeleteAccess === 1
@@ -5598,6 +5837,7 @@ class EditSalesLeads extends Component {
                     formControlProps={{ fullWidth: true }}
                     inputProps={{
                       value: Phone,
+                      autoComplete: "none",
                       disabled:
                         this.props.history.location.state.id !== ""
                           ? DeleteAccess === 1
@@ -5640,6 +5880,8 @@ class EditSalesLeads extends Component {
                     onChange={(event, value) =>
                       this.requestChange(event, value, "managedby")
                     }
+                    autoComplete= "off" 
+                    inputProps={{ autoComplete: "none" }}
                     renderInput={(params) => (
                       <TextField
                         {...params}
@@ -5663,8 +5905,11 @@ class EditSalesLeads extends Component {
                       }
                       value={selectedPickUPCountry}
                       autoSelect
+                      autoComplete= "off" 
+                      
                       onChange={(event, value) => this.FromCountry(value)}
                       renderInput={(params) => (
+                        params.inputProps.autoComplete = 'new-password',
                         <TextField
                           {...params}
                           // error={this.state.pickupcountryErr}
@@ -5692,6 +5937,7 @@ class EditSalesLeads extends Component {
                       formControlProps={{ fullWidth: true }}
                       inputProps={{
                         value: PickupCityZip,
+                        autoComplete: "none" ,
                         onBlur: (event) =>
                           this.handleZipChange(event, "pickupcityzip"),
                         onChange: (event) =>
@@ -5731,6 +5977,7 @@ class EditSalesLeads extends Component {
                         formControlProps={{ fullWidth: true }}
                         inputProps={{
                           value: PickupCity,
+                          autoComplete : "none",
                           onBlur: (event) =>
                             this.handlechange(event, "pickupcity"),
                           onChange: (event) =>
@@ -5760,6 +6007,7 @@ class EditSalesLeads extends Component {
                           this.requestChange(event, value, "pickupcity")
                         }
                         renderInput={(params) => (
+                          params.inputProps.autoComplete = "none",
                           <TextField
                             {...params}
                             label="Pickup City"
@@ -5786,6 +6034,7 @@ class EditSalesLeads extends Component {
                       formControlProps={{ fullWidth: true }}
                       inputProps={{
                         value: PickupState,
+                        autoComplete:"none",
                         onChange: (event) =>
                           this.handlechange(event, "pickupstate"),
                         onBlur: (event) =>
@@ -5805,12 +6054,14 @@ class EditSalesLeads extends Component {
                       options={fromStateOptions}
                       id="toState"
                       autoSelect
+                 
                       getOptionLabel={(option) => option.label}
                       value={PickupState}
                       onChange={(event, value) =>
                         this.requestChange(event, value, "pickupstate")
                       }
                       renderInput={(params) => (
+                        params.inputProps.autoComplete = "none",
                         <TextField {...params} label="Pickup State" fullWidth />
                       )}
                     />
@@ -5829,6 +6080,7 @@ class EditSalesLeads extends Component {
                     onChange={(event, value) => this.ToCountry(value)}
                     value={selectedDropoffCountry}
                     renderInput={(params) => (
+                      params.inputProps.autoComplete = "none",
                       <TextField
                         {...params}
                         // error={this.state.dropoffcountryErr}
@@ -5854,6 +6106,7 @@ class EditSalesLeads extends Component {
                     formControlProps={{ fullWidth: true }}
                     inputProps={{
                       value: DropoffCityZip,
+                      autoComplete : "none",
                       onBlur: (event) =>
                         this.handleZipChange(event, "dropoffcityzip"),
                       onChange: (event) =>
@@ -5886,6 +6139,7 @@ class EditSalesLeads extends Component {
                       formControlProps={{ fullWidth: true }}
                       inputProps={{
                         value: DropoffCity,
+                        autoComplete:"none",
                         onBlur: (event) =>
                           this.handlechange(event, "dropoffcity"),
                         onChange: (event) =>
@@ -5915,6 +6169,7 @@ class EditSalesLeads extends Component {
                         this.requestChange(event, value, "dropoffcity")
                       }
                       renderInput={(params) => (
+                        params.inputProps.autoComplete="none",
                         <TextField {...params} label="Dropoff City" fullWidth />
                       )}
                     />
@@ -5936,6 +6191,7 @@ class EditSalesLeads extends Component {
                       formControlProps={{ fullWidth: true }}
                       inputProps={{
                         value: DropoffState,
+                        autoComplete:"none",
                         onChange: (event) =>
                           this.handlechange(event, "dropoffstate"),
                         endAdornment: (
@@ -5959,6 +6215,7 @@ class EditSalesLeads extends Component {
                         this.requestChange(event, value, "dropoffstate")
                       }
                       renderInput={(params) => (
+                        params.inputProps.autoComplete="none",
                         <TextField
                           {...params}
                           label="Dropoff State"
@@ -5999,7 +6256,7 @@ class EditSalesLeads extends Component {
                         Proposal Type
                       </InputLabel>
                       <Select
-                        fullWidth={true}
+                        fullWidth={true}  
                         // id="package_number"
                         name="package_number"
                         value={ProposalType}
