@@ -677,8 +677,10 @@ class Step1 extends React.Component {
     }
   };
 
-  ChangeFromZipUS = (e) => {
+  ChangeFromZipUS = (e) => {debugger
     var zip = e.target.value;
+    var FinalCity = [];
+    var state = "";
     // console.log("this.state.GetRate.FromCountry.CountryCode = ",this.state.GetRate.FromCountry.CountryCode);
     // console.log("this.state.FromSelectedCountry = ",this.state.FromSelectedCountry);
     // alert("this.state.FromSelectedCountry.label = ",this.state.GetRate.FromCountry.CountryCode)
@@ -686,6 +688,8 @@ class Step1 extends React.Component {
       "this.state.FromSelectedCountry = ",
       this.state.FromSelectedCountry.label
     );
+
+
     if (this.state.FromSelectedCountry.label != "Argentina") {
       if (zip.length) {
         if (zip.length) {
@@ -699,7 +703,102 @@ class Step1 extends React.Component {
             FromUPSSelectedCity: SelectedCity,
             FromSelectedCity: SelectedCity,
           });
+          let citydata={
+            "PostalCode" : zip,
+            "CountryID": this.state.FromSelectedCountry.value
+          }
+          api
+          .post(
+            "https://hubapi.sflworldwide.com/contactus/SflPostalCode",
+            citydata
+          )
+          .then((res) => {
+            if (res.success) {
+              console.log("CheckRessData", res);
+              if (res.success === true) {
+                var IsValidCountry = false;
+               let data = res.Data.data;
+               // this.hideLoador();
+              //  this.CloseDialog();
+              //  this.getReferredSite();
+              let RecCount = data.length;
+              if(RecCount !=0)
+                {
+                        var countryShortName = data[0].Country
+                        for(let i=0;i<RecCount;i++)
+                          FinalCity.push({
+                          City_code: data[i].City,
+                          CityName: data[i].City,
+                        });
+                        this.setState({ FromCityList: FinalCity });
+                        var fromStatename = data[0].State;
+                        state = fromStatename;
+                        var GetRate = this.state.GetRate;
+                        GetRate.FromCity =
+                          FinalCity.length > 0 ? FinalCity[0].City_code : "";
+                        GetRate.FromFedExCity = null;
+                        GetRate.FromUPSCity = null;
+                        GetRate.FromState = state && state.length === 2 ? state : "";
+                        GetRate.FromZipCode = zip;
+                        if (GetRate.FromCountry.CountryCode === "CN") {
+                          var SelectedCity =
+                            FinalCity.length > 0
+                              ? {
+                                  value: FinalCity[0].City_code,
+                                  label: FinalCity[0].CityName,
+                                }
+                              : { label: "Select City" };
+                          this.setState({
+                            GetRate: GetRate,
+                            FromState: state,
+                            FromFedExSelectedCity: SelectedCity,
+                            fromStateName: fromStatename,
+                          });
+                        } else {
+                          var SelectedCity =
+                            GetRate.FromCountry.CountryCode === "US"
+                              ? {
+                                  value: FinalCity[0].City_code,
+                                  label: FinalCity[0].CityName,
+                                }
+                              : { value: "Not Required", label: "Not Required" };
+                          this.setState({
+                            GetRate: GetRate,
+                            FromState: state,
+                            FromSelectedCity: SelectedCity,
+                            fromStateName: fromStatename,
+                          });
+                        }
 
+                        if (FinalCity.length === 0) {
+                          var CityData = {
+                            CityType: "FedEx",
+                            CountryId: GetRate.FromCountry.CountryID,
+                          };
+                          this.showLoader();
+                          api
+                            .post("location/getCityList", CityData)
+                            .then((res) => {
+                              if (res.success) {
+                                this.setState({ FromFedExCityList: res.data });
+                                this.hideLoader();
+                              } else {
+                                this.setState({ FromFedExCityList: [] });
+                                this.hideLoader();
+                              }
+                            })
+                            .catch((err) => {
+                              console.log("No FedEx city found", err);
+                            });
+                        } else {
+                          this.setState({ FromFedExCityList: [] });
+                          this.hideLoader();
+                        }
+                        
+
+                } else if (RecCount ==0)
+                {
+          
           fetch(
             CommonConfig.zipCodeAPIKey(
               zip,
@@ -1108,7 +1207,12 @@ class Step1 extends React.Component {
               }
               this.hideLoader();
             });
-        } else if (this.state.GetRate.FromCountry.IsFedexCity === 0) {
+          }
+        }
+      }
+    });
+  }
+        else if (this.state.GetRate.FromCountry.IsFedexCity === 0) {
           var GetRate = this.state.GetRate;
           GetRate.FromCity = null;
           GetRate.FromFedExCity = null;
@@ -1133,7 +1237,8 @@ class Step1 extends React.Component {
     this.setState({ disableBtn: 1 });
   };
 
-  ChangeToZipUS = (e) => {
+
+  ChangeToZipUS = (e) => {debugger
     this.setState({ disableBtn: 0 });
     if (e.target.name === "ToZipCode") {
       if (
@@ -1146,10 +1251,10 @@ class Step1 extends React.Component {
       } else {
         this.setState({ ToZipError: false });
         this.show("ToZipCode", false, "ToZipError", "");
+        }
       }
-    }
-    var zip = e.target.value;
-    if (zip.length) {
+      var zip = e.target.value;
+      if (zip.length) {
       this.showLoader();
       var SelectedCity = { value: null, label: null };
       this.setState({
@@ -1160,8 +1265,108 @@ class Step1 extends React.Component {
       });
       this.setState({ ToUPSSelectedCity: SelectedCity });
       this.setState({ ToSelectedCity: SelectedCity });
-
-      fetch(CommonConfig.zipCodeAPIKey(zip, this.state.ToSelectedCountry.label))
+      let citydata={
+        "PostalCode" : zip,
+        "CountryID": this.state.FromSelectedCountry.value
+      }
+      api
+      .post(
+        "https://hubapi.sflworldwide.com/contactus/SflPostalCode",
+        citydata
+      )
+      .then((res) => {
+        if (res.success) {
+          console.log("CheckRessData", res);
+          if (res.success === true) {
+            var IsValidCountry = false;
+           let data = res.Data.data;
+           let RecCount = data.length;
+        if(RecCount !=0)
+          {   var FinalCity = [];
+            var state = "";
+            var countryShortName = data[0].Country
+            for(let i=0;i<RecCount;i++)
+              FinalCity.push({
+              City_code: data[i].City,
+              CityName: data[i].City,
+            });
+          
+         
+           
+            var SelectedCity = {
+              value: FinalCity[0].City_code,
+              label: FinalCity[0].Name,
+            };
+            this.setState({ ToCityList: FinalCity });
+              let toStatename = data[0].State;
+              var GetRate = this.state.GetRate;
+              GetRate.ToCity =
+                FinalCity.length > 0 ? FinalCity[0].City_code : "";
+              GetRate.ToFedExCity = null;
+              GetRate.ToUPSCity = null;
+              GetRate.ToState = state && state.length === 2 ? state : "";
+              GetRate.ToZipCode = zip;
+              this.setState({
+                GetRate: GetRate,
+                toStateName: toStatename,
+                ToState: state,
+              });
+              if (GetRate.ToCountry.CountryCode === "CN") {
+                var SelectedCity =
+                  FinalCity.length > 0
+                    ? {
+                        value: FinalCity[0].City_code,
+                        label: FinalCity[0].Name,
+                      }
+                    : { label: "Select City" };
+                this.setState({
+                  GetRate: GetRate,
+                  ToState: state,
+                  ToFedExSelectedCity: SelectedCity,
+                });
+              } else {
+                var SelectedCity =
+                  GetRate.ToCountry.CountryCode === "US"
+                    ? {
+                        value: FinalCity[0].City_code,
+                        label: FinalCity[0].CityName,
+                      }
+                    : { value: "Not Required", label: "Not Required" };
+                this.setState({
+                  GetRate: GetRate,
+                  ToState: state,
+                  ToSelectedCity: SelectedCity,
+                });
+                console.log("ToSelectedCity",this.state.ToSelectedCity);
+              }
+              if (FinalCity.length === 0) {
+                var CityData = {
+                  CityType: "FedEx",
+                  CountryId: GetRate.ToCountry.CountryID,
+                };
+                this.showLoader();
+                api
+                  .post("location/getCityList", CityData)
+                  .then((res) => {
+                    if (res.success) {
+                      this.setState({ ToFedExCityList: res.data });
+                      this.hideLoader();
+                    } else {
+                      this.setState({ ToFedExCityList: [] });
+                      this.hideLoader();
+                    }
+                  })
+                  .catch((err) => {
+                    console.log("No FedEx city found", err);
+                  });
+              } else {
+                this.setState({ ToFedExCityList: [] });
+                this.hideLoader();
+              }
+              
+        }
+      else
+      {fetch(CommonConfig.zipCodeAPIKey(zip, this.state.ToSelectedCountry.label))
         .then((result) => result.json())
         .then((data) => {
           if (data["status"] === "OK") {
@@ -1567,6 +1772,12 @@ class Step1 extends React.Component {
           }
           this.hideLoader();
         });
+      }
+    }
+    else
+    cogoToast.error("Somthing went wrong!");
+  }
+  });
     } else {
       var GetRate = this.state.GetRate;
       GetRate.ToZipCode = zip;
@@ -1574,6 +1785,10 @@ class Step1 extends React.Component {
     }
     this.setState({ disableBtn: 1 });
   };
+
+
+
+
   changeWeightType(e) {
     if (e.target.value === "KG") {
       this.setState({

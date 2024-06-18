@@ -503,7 +503,64 @@ class Step2 extends React.Component {
     var zip = e.target.value;
 
     if (zip.length) {
-      fetch(
+      let citydata={
+        "PostalCode" : zip,
+        "CountryID": this.state.FromSelectedCountry.value
+      }
+      api
+      .post(
+        "https://hubapi.sflworldwide.com/contactus/SflPostalCode",
+        citydata
+      )
+      .then((res) => {
+        if (res.success) {
+          console.log("CheckRessData", res);
+          if (res.success === true) {
+            var IsValidCountry = false;
+           let data = res.Data.data;
+           // this.hideLoador();
+          //  this.CloseDialog();
+          //  this.getReferredSite();
+          let RecCount = data.length;
+            if(RecCount !=0)
+             {
+              var FinalCity = [];
+              var countryShortName = data[0].Country
+              FinalCity.push({
+                City_code: data[0].City,
+                Name: data[0].City,
+              });
+              var selectedCity = {
+                value: FinalCity[0].City_code,
+                label: FinalCity[0].Name,
+              };
+              var fromStatename = data[0].State;
+              var state = fromStatename;
+              if (countryShortName === this.state.FromSelectedCountry.label) {
+                this.setState({
+                  FromCityList: FinalCity,
+                  FromZipCode: zip,
+                  FromState: state,
+                  FromSelectedCity: selectedCity,
+                });
+              }else {
+                this.setState({
+                  FromCityList: [],
+                  FromZipCode: zip,
+                  FromState: "",
+                  FromSelectedCity: {},
+                });
+              }
+             }
+            }
+            else
+            { cogoToast.error("Something went wrong");}
+        }
+        });
+        }
+     else
+      { 
+        fetch(
         CommonConfig.zipCodeAPIKey(zip, this.state.FromSelectedCountry.label)
       )
         .then((result) => result.json())
@@ -785,14 +842,71 @@ class Step2 extends React.Component {
             cogoToast.error("Zip code not found");
           }
         });
-    }
+      }
+    
   };
 
-  ChangeToZipUS = (e) => {
+  ChangeToZipUS = (e) => {debugger
     var zip = e.target.value;
 
     if (zip.length) {
-      fetch(CommonConfig.zipCodeAPIKey(zip, this.state.ToSelectedCountry.label))
+     
+      var SelectedCity = { value: null, label: null };
+
+      let citydata={
+        "PostalCode" : zip,
+        "CountryID": this.state.FromSelectedCountry.value
+      }
+      api
+      .post(
+        "https://hubapi.sflworldwide.com/contactus/SflPostalCode",
+        citydata
+      )
+      .then((res) => {
+        if (res.success) {
+          console.log("CheckRessData", res);
+          if (res.success === true) {
+            var IsValidCountry = false;
+           let data = res.Data.data;
+           let RecCount = data.length;
+        if(RecCount !=0)
+          {   var FinalCity = [];
+            var state = "";
+            var countryShortName = data[0].Country
+            FinalCity.push({
+              City_code: data[0].city,
+              Name: data[0].city,
+            });
+            var selectedCity = {
+              value: FinalCity[0].City_code,
+              label: FinalCity[0].Name,
+            };
+            if (countryShortName === this.state.ToSelectedCountry.label) {
+              this.setState({
+                ToCityList: FinalCity,
+                ToZipCode: zip,
+                ToState: state,
+                ToSelectedCity: selectedCity,
+              });
+            
+            } else {
+              this.setState({
+                ToCityList: [],
+                ToZipCode: zip,
+                ToState: "",
+                ToSelectedCity: {},
+              });
+              
+            }
+           
+
+
+
+
+          }
+       
+      else{ 
+        fetch(CommonConfig.zipCodeAPIKey(zip, this.state.ToSelectedCountry.label))
         .then((result) => result.json())
         .then((data) => {
           if (data["status"] === "OK") {
@@ -1057,8 +1171,20 @@ class Step2 extends React.Component {
             });
           }
         });
+      }
+      }
+      else
+      {
+        cogoToast.error("Something went wrong!");
+      }
     }
+    });
+    }
+    
+
   };
+
+
 
   async GetOceanRate() {
     this.showLoader();
