@@ -737,7 +737,7 @@ class Scheduleshipment extends React.Component {
       <div>
         <GridContainer className="MuiGrid-justify-xs-center schedulecenter">
           <GridItem xs={12} sm={12} md={6}>
-            <form autoComplete="false">
+            <form autoComplete="none">
               <div className="select-spl">
                 <FormControl fullWidth error={this.state.shipmentTypeErr}>
                   <InputLabel className={classes.selectLabel}>

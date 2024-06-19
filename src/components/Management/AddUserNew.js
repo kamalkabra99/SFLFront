@@ -949,7 +949,7 @@ class Step1 extends React.Component {
         }
       }
     }
-    this.setState({ serviceList: MarkupData });
+    this.setState({ serviceList: MarkupData });    
   };
 
   handleBlur = (e, id, MarkupType, Type) => {
@@ -1966,6 +1966,144 @@ class Step1 extends React.Component {
     const CountryOptions = this.state.CountryList.map((fromCountry) => {
       return { value: fromCountry.CountryID, label: fromCountry.CountryName };
     });
+    const columns1 = [
+      {
+        Header: "Shipment Type",
+        accessor: "ServiceType",
+        width: 110,
+        maxWidth: 110,
+      },
+      {
+        Header: "Service Name",
+        accessor: "MainServiceName",
+        width: 100,
+        maxWidth: 100,
+      },
+      {
+        Header: "Sub Service Name",
+        accessor: "ServiceName",
+        width: 320,
+        maxWidth: 320,
+      },
+      {
+        Header: "Display Name",
+        accessor: "DisplayName",
+        width: 180,
+        maxWidth: 180,
+      },
+      {
+        Header: "Package Markup",
+        accessor: "Markup",
+        width: 120,
+        maxWidth: 120,
+        Cell: (record) => {
+          return (
+            <div className="table-common-btn">
+              <input
+              size={10}
+              type="text"
+              name={"Markup"+ record.original.ServiceID}
+              id={"Markup"+ record.original.ServiceID}
+              className="form-control"
+              value={record.original.Markup}
+              onChange={(event) =>
+                this.handledInput(event, record.original.ServiceID, record.original.MarkupType, "Markup")
+              }
+              onBlur={(e) =>
+                this.handleBlur(e, record.original.ServiceID, record.original.MarkupType, "Markup")
+              }
+            />
+            </div>
+          );
+        },
+      },
+      {
+        Header: "Envelop Markup",
+        accessor: "test",
+        width: 120,
+        sortMethod: (a, b) => {
+          return CommonConfig.dateSortMethod(a, b);
+        },
+        maxWidth: 120,
+        Cell: (record) => {
+          console.log("record = " , record)
+          console.log("record = " , record.index)
+          var ids = "EnvelopMarkup"+ record.original.ServiceID;
+          return (
+            <div className="table-common-btn">
+             
+              <input
+              size={10}
+              type="text"
+              name={"EnvelopMarkup"+ record.original.ServiceID}
+              id={"EnvelopMarkup"+ record.original.ServiceID}
+              className="form-control"
+              value={record.original.EnvelopMarkup}
+              
+              onChange={(event) =>
+                this.handledInput(event, record.original.ServiceID, record.original.MarkupType, "EnvelopMarkup")
+              }
+              onBlur={(e) =>
+                this.handleBlur(e, record.original.ServiceID, record.original.MarkupType, "EnvelopMarkup")
+              }
+            />
+            
+            </div>
+          );
+        },
+      },
+      {
+        Header: "Markup Type",
+        accessor: "MarkupType",
+        width: 100,
+        maxWidth: 100,
+        Cell: (record) => {
+          return (<FormControl  className={classes.selectFormControl}>
+        <Select
+        size={50}
+          MenuProps={{ className: classes.selectMenu }}
+          classes={{ select: classes.select }}
+          value={record.original.MarkupType}
+          inputProps={{
+            name: "simpleSelect",
+            id: "simple-select",
+          }}
+          onChange={(event) => this.handledropdown(event, record.original.ServiceID)}
+        >
+          <MenuItem
+            classes={{
+              root: classes.selectMenuItem,
+              selected: classes.selectMenuItemSelected,
+            }}
+            value="Percentage"
+          >
+            Percentage
+          </MenuItem>
+          <MenuItem
+            classes={{
+              root: classes.selectMenuItem,
+              selected: classes.selectMenuItemSelected,
+            }}
+            value="USD"
+          >
+            USD
+          </MenuItem>
+        </Select>
+      </FormControl>
+      
+    );
+  },
+      
+        
+        
+     
+      },
+      {
+        Header: "Status",
+        accessor: "Status",
+        width: 80,
+      }
+    ];
 
     const columns = [
       {
@@ -2840,7 +2978,7 @@ class Step1 extends React.Component {
                   </div>
                   <div className="shipment-pane mt-20" id="markupdetails">
                     <div className="package-table">
-                      <table>
+                      {/* <table>
                         <thead>
                           <tr>
                             <th>Shipment Type</th>
@@ -2854,7 +2992,21 @@ class Step1 extends React.Component {
                           </tr>
                         </thead>
                         <tbody>{this.renderMarkup()}</tbody>
-                      </table>
+                      </table> */}
+
+                        <ReactTable
+                          
+                          data={this.state.serviceList}
+                          
+                          minRows={0}
+                          filterable
+                          defaultFilterMethod={CommonConfig.filterCaseInsensitive}
+                          resizable={false}
+                          columns={columns1}
+                          defaultPageSize={10}
+                          showPaginationBottom={true}
+                          className="-striped -highlight"
+                        />
                     </div>
                   </div>
 

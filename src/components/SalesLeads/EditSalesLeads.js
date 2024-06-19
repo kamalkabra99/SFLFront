@@ -97,6 +97,8 @@ class EditSalesLeads extends Component {
       CancelationReason: "",
       CancelationReasonErr: false,
       CancelationReasonHelperText: "",
+      tempCountryCodeList: [],
+      countryCodeListValue:[],
       ProposalLog: [],
       previousManaged:"",
       OpenproposalLog: false,
@@ -296,6 +298,10 @@ class EditSalesLeads extends Component {
       AbsolutePath: "",
       managedby: [],
       selectedWorkingOnRequest: "",
+      SelectedCountryCode:{
+        label: "1",
+        value: "1",
+      },
       dropoffCountry: [],
       packageType: [
         { value: 1, label: "Boxes" },
@@ -1256,7 +1262,12 @@ if (res.success) {
         managedbyHelperText: "",
       });
       
-    } else if (type === "proposaltype") {
+    }else if(type === "CountryCode"){
+      debugger
+      this.setState({ SelectedCountryCode: value });
+
+    }
+     else if (type === "proposaltype") {
       this.setState({ ProposalType: value.props.value });
     } else if (type === "proposalstatus") {
       this.setState({
@@ -1603,6 +1614,37 @@ if (res.success) {
       }
     }
   };
+   GetCountryCode() {
+    try {
+       api
+        .get("contactus/getCountryCode")
+        .then((res) => {
+          if (res.success) {
+            var CountryCode = res.data;
+            this.state.tempCountryCodeList.push(res.data);
+            this.setState({ countryCodeList: CountryCode });
+
+            // --------------checkdata-----------this.state.CountryList
+            let mainCountryList = [];
+            this.setState({ countryCodeListValue: res.data });
+            // for (var i = 0; i < CountryCode?.length; i++) {
+            //   let mainCountryObject = {};
+            //   mainCountryObject.label = CountryCode[i]?.phonecode;
+            //   mainCountryObject.value = CountryCode[i]?.phonecode;
+            //   mainCountryList.push(mainCountryObject);
+
+            //   this.setState({ countryCodeListValue: mainCountryList });
+            //   console.log("ccccccc", this.state.countryCodeListValue);
+            // }
+            // --------------checkdata-----------------
+            
+          }
+        })
+        .catch((err) => {
+          console.log("err...", err);
+        });
+    } catch (error) {}
+  }
 
   GetCountry = () => {
     try {
@@ -1644,6 +1686,7 @@ if (res.success) {
     });
     await this.GetCountry();
     await this.managedBy();
+    await this.GetCountryCode();
     if (this.props.history.location.state.id !== "") {
       await this.getCommunicationList();
     }
@@ -1712,6 +1755,22 @@ if (res.success) {
 
       let result = await api.post("salesLead/getSalesLeadDetailsById", data);
       if (result.data.success) {
+
+        var countryCode = {
+          label: "1",
+          value: "1",
+        }
+
+        if(result.data.data.CountryCallCode !=""){
+          countryCode = {
+            label: result.data.data.CountryCallCode,
+            value: result.data.data.CountryCallCode,
+          }
+        }
+
+        console.log("countryCode = ",countryCode)
+
+
         var pickupcountry = _.filter(this.state.CountryList, {
           CountryID: result.data.data.FromCountryID,
         });
@@ -1822,6 +1881,7 @@ if (res.success) {
           ProposalStatus: result.data.data.ProposalStatus,
           selectedWorkingOnRequest: selectedManagedby,
           previousManaged: selectedManagedby,
+          SelectedCountryCode:countryCode,
           DeliveryType: result.data.data.DeliveryType,
           ContactName: result.data.data.ContactName,
           CompanyName: result.data.data.CompanyName,
@@ -4937,6 +4997,7 @@ if (res.success) {
               .format("YYYY-MM-DD HH:mm:ss")
               .toString(),
             FromCountryID: this.state.selectedPickUPCountry.value,
+            CountryCallCode: this.state.SelectedCountryCode.label,
             ToCountryID: this.state.selectedDropoffCountry.value,
             SalesLeadsType: this.state.ProposalType,
             ContactName: this.state.ContactName,
@@ -5554,6 +5615,7 @@ if (res.success) {
       selectedDropoffCountry,
       selectedPickUPCountry,
       selectedWorkingOnRequest,
+      SelectedCountryCode,
       ProposalType,
       ProposalStatus,
       EmailAddress,
@@ -5693,6 +5755,13 @@ if (res.success) {
         label: pickupCountry.CountryName,
       };
     });
+
+    const countryCodeList = this.state.countryCodeListValue.map((countryCode) => {
+      return {
+        value: countryCode.phonecode,
+        label: countryCode.phonecode,
+      };
+    });
     const toStateOptions = this.state.toStateList.map((state) => {
       return { value: state.StateName, label: state.StateName };
     });
@@ -5829,7 +5898,34 @@ if (res.success) {
                   </span>
                 </GridItem>
                 <GridItem xs={12} sm={12} md={3}>
-                  <CustomInput
+                  <GridContainer>
+                    <GridItem xs={12} sm={12} md={3}>
+                    <Autocomplete
+                      options={countryCodeList}
+                      id="CountryCode"
+                      getOptionLabel={(option) => option.label}
+                      value={SelectedCountryCode}
+                      onChange={(event, value) =>
+                        this.requestChange(event, value, "CountryCode")
+                      }
+                      autoComplete= "off" 
+                      inputProps={{ autoComplete: "none" }}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          error={this.state.CountryCodeErr}
+                          helperText={this.state.CountryCodeHelperText}
+                          label="Code"
+                          fullWidth
+                        />
+                      )}
+                    />
+                      
+                    </GridItem>
+
+                    <GridItem xs={12} sm={12} md={9}>
+
+                    <CustomInput
                     labelText="Phone"
                     id="phone "
                     // error={this.state.phoneErr}
@@ -5870,6 +5966,11 @@ if (res.success) {
                   <span id="cphone" style={{ color: "red", fontSize: "12px" }}>
                     {this.state.phoneHelperText}
                   </span>
+                      
+                      </GridItem>
+                  </GridContainer>
+                  
+                  
                 </GridItem>
                 <GridItem xs={12} sm={12} md={3}>
                   <Autocomplete

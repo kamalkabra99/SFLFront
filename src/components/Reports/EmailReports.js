@@ -154,10 +154,10 @@ class EmailReports extends Component {
               .format(CommonConfig.dateFormat.dbDateTime)
               .toString(),
         ModuleName: this.state.LoginTypeValue.label,
-        ProviderStatus: this.state.EmailProvidersStatusvalue.label,
+        ProviderStatus: this.state.EmailProvidersStatusvalue.label?this.state.EmailProvidersStatusvalue.label:"",
         FromCountry: this.state.selectedCountry.value,
         ToCountry: this.state.selectedCountryTo.value,
-        SFLStatus: this.state.SFLStatusvalue.label,      
+        SFLStatus: this.state.SFLStatusvalue.label?this.state.SFLStatusvalue.label:"",      
       };
       debugger;
       if (data.FromDate === "" || data.ToDate === "") {
@@ -166,14 +166,7 @@ class EmailReports extends Component {
       if(this.state.LoginTypeValue == ""){
         return cogoToast.error("Please select Module Name");
       }
-       
-      if(this.state.EmailProvidersStatusvalue == ""){
-        return cogoToast.error("Please select provider status");
-      } 
-
-      if(this.state.SFLStatusvalue == ""){
-        return cogoToast.error("Please select sfl status");
-      } 
+      
 
       if(data.ModuleName == "SalesLead"){
 
@@ -189,7 +182,7 @@ class EmailReports extends Component {
         }
 
         if(data.FromCountry != undefined && data.ToCountry !=undefined){
-          conditions = "cu.`FromCountryID` = "+ data.FromCountry + "AND cu.`ToCountryID` = " + data.ToCountry
+          conditions = "cu.`FromCountryID` = "+ data.FromCountry + " AND cu.`ToCountryID` = " + data.ToCountry
         }
 
         if(data.FromCountry == undefined && data.ToCountry ==undefined){
@@ -216,7 +209,7 @@ class EmailReports extends Component {
         }
 
         if(data.FromCountry != undefined && data.ToCountry !=undefined){
-          conditions = "cu.`CountryID` = "+ data.FromCountry + "AND cu1.`CountryID` = " + data.ToCountry
+          conditions = "cu.`CountryID` = "+ data.FromCountry + " AND cu1.`CountryID` = " + data.ToCountry
         }
 
         if(data.FromCountry == undefined && data.ToCountry ==undefined){
@@ -545,15 +538,20 @@ class EmailReports extends Component {
                       getOptionLabel={(option) =>
                         option.label ? option.label : option
                       }
+                      autoComplete='disabled'
                       value={selectedCountry}
                       autoSelect
                       onChange={(event, value) =>
                         this.selectChange(event, value, "FromCountry")
                       }
+                      inputProps={{
+                        autoComplete: "disabled",
+                      }}
                       renderInput={(params) => (
                         <TextField
                           {...params}
                           error={this.state.countryErr}
+                          autoComplete='disabled'
                           helperText={this.state.countryHelperText}
                           label="Sender Country"
                           margin="normal"
@@ -569,14 +567,19 @@ class EmailReports extends Component {
                       getOptionLabel={(option) =>
                         option.label ? option.label : option
                       }
+                      autoComplete='disabled'
                       value={selectedCountryTo}
                       autoSelect
                       onChange={(event, value) =>
                         this.selectChange(event, value, "ToCountry")
                       }
+                      inputProps={{
+                        autoComplete: "disabled",
+                      }}
                       renderInput={(params) => (
                         <TextField
                           {...params}
+                          autoComplete='disabled'
                           error={this.state.countryErr}
                           helperText={this.state.countryHelperText}
                           label="Receiver Country"

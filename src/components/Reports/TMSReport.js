@@ -82,6 +82,10 @@ class TMSReport extends Component {
             notCommitedLength: 0,
             notCommitedList: [],
             fileName: "",
+            deleteType:"",
+            deleteID:"",
+            updateID:"",
+            updateType:"",
             FromDate: new Date(),
             ToDate: new Date(),
             ManagedBy: "",
@@ -92,6 +96,8 @@ class TMSReport extends Component {
             IpAddress: "",
             totalRowCount: "",
             LoginType: "",
+            open: false,
+            updateopen: false,
             logintype: [
                 { value: "Login", label: "Login" },
                 { value: "Break", label: "Break" },
@@ -99,12 +105,18 @@ class TMSReport extends Component {
             logintypevalue: [],
             LoginTypeValue: "",
             UserNameValue: "",
+            TmsDeleteAccess:"",
+            TmsWriteAccess:"",
+            updateLogin:"",
+            updateLogout:""
         };
     }
 
     componentDidMount() {
 
         // this.getUserTMSReport()
+        this.state.TmsDeleteAccess = CommonConfig.getUserAccess("Time Booking Report").DeleteAccess
+        this.state.TmsWriteAccess =  CommonConfig.getUserAccess("Time Booking Report").WriteAccess
         this.getManagedBy();
 
     }
@@ -265,7 +277,7 @@ class TMSReport extends Component {
                                 for (let dayindex = 0; dayindex < setArr.length; dayindex++) {
                                     if(requestData[index].LoginDate == setArr[dayindex].Date){
                                         // requestData[index].DayName = setArr[dayindex].Day;
-                                        
+                                        setArr[dayindex].tmsID=requestData[index].tmsID;
                                         setArr[dayindex].IPDetails=requestData[index].IPDetails;
                                         setArr[dayindex].IpAddress=requestData[index].IpAddress;
                                         
@@ -276,6 +288,7 @@ class TMSReport extends Component {
                                         setArr[dayindex].UserID=requestData[index].UserID;
                                         setArr[dayindex].totalBreak=requestData[index].totalBreak;
                                         setArr[dayindex].totalWorking=requestData[index].totalWorking;
+                                        setArr[dayindex].userTimeZone=requestData[index].userTimeZone;
     
                                         break;
     
@@ -391,6 +404,60 @@ class TMSReport extends Component {
         }
     };
 
+    handleEdit = (record,type) =>{
+        console.log("record = ",record)
+
+        console.log(record.original.tmsID)
+        this.setState({
+            updateopen: true,
+            updateID:record.original.tmsID,
+            updateType: type,
+            updateLogin:record.original.LoginTime,
+            updateLogout:record.original.LogoutTime,
+        });
+
+    }
+
+    deleteLoginReport = (record,type) =>{
+        console.log(record.original.tmsID)
+        this.setState({
+            open: true,
+            deleteID:record.original.tmsID,
+            deleteType: type
+          });
+    }
+
+    handleClickCancel = ()=>{
+        this.setState({
+            open: false,
+            
+          });
+    }
+
+    handleDelete = () =>{
+        console.log(this.state.deleteID,this.state.deleteType)
+        var datatoDelete = {
+            deleteID:this.state.deleteID,
+            typesdata:this.state.deleteType
+        }
+
+        api.post("contactus/deletetmsReport", datatoDelete).then((res) => {
+            if (res.success) {
+            //   console.log(res.Data[0][0])
+              // this.setState({ EmailSubject: res.data[0].TemplateSubject });
+              // this.setState({ MessageTemplate: res.data[0].TemplateMessage });
+      
+              this.setState({
+                open: false,
+          
+                // dataMode: "Update",
+              });
+              this.getUserTMSReport();
+            //   this.hideLoador();
+              cogoToast.success("Delete Successfully")
+            }
+          });
+    }
 
 
     render() {
@@ -463,6 +530,45 @@ class TMSReport extends Component {
                 Header: "Total",
                 accessor: "totalWorking",
                 width: 100,
+            },
+
+            {
+                Header: "Action",
+                accessor: "Actions",
+                width: 100,
+                Cell: (record) => {
+                    return (
+                      <div className="table-common-btn">
+          
+                        {this.state.TmsDeleteAccess == "1" ? (
+                            <Button
+                                justIcon
+                                color="danger"
+                                onClick={() => this.deleteLoginReport(record,this.state.LoginTypeValue.label)}
+                            >
+                                <i class="fas fa-trash"></i>
+                            </Button>
+                        ) :
+                          ""
+                        }
+
+                        {/* {this.state.TmsWriteAccess == "1" ? (
+                        
+                          <Button
+                            justIcon
+                            color="info"
+                            onClick={() => this.handleEdit(record,this.state.LoginTypeValue.label)}
+                          >
+                            <i className="fas fa-edit"></i>
+                          </Button>
+                     
+                        ) :
+                          ""
+                        } */}
+          
+                      </div>
+                    );
+                  },
             },
 
 
@@ -671,8 +777,96 @@ class TMSReport extends Component {
                     </Card>
                 </GridItem>
 
+                <div>
+                <Dialog
+              open={this.state.open}
+            //   onClose={this.state.close}
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description"
+            >
+              <DialogTitle id="alert-dialog-title">
+                {"Confirm Delete"}
+              </DialogTitle>
+              <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                  Are you sure want to delete?
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={this.handleClickCancel} color="primary">
+                  Cancel
+                </Button>
+                <Button onClick={this.handleDelete} color="primary" autoFocus>
+                  Delete
+                </Button>
+              </DialogActions>
+            </Dialog>
+
+{/*             
+            <Dialog
+            open={this.state.showURLDialog}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+            fullWidth={true}
+          >
+            <DialogContent>
+              <DialogContentText id="alert-dialog-description">
+                <GridContainer>
+                  
+                <GridItem xs={12} sm={12} md={12}>
+                    <CustomInput
+                      labelText="Site URL"
+                      id="proposaltype"
+                      formControlProps={{
+                        fullWidth: true,
+                      }}
+                      inputProps={{
+                        value: this.state.SiteURL
+                          ? this.state.SiteURL
+                          : this.state.SiteURL,
+                        onChange: (event) =>
+                          this.handleChangeFrom(event, "SiteURL"),
+                      }}
+                    />
+                  </GridItem>
+
+                  
+                  
+                  <GridItem xs={12} sm={12} md={12}>
+                    <CustomInput
+                      labelText="Site Name"
+                      id="proposaltype"
+                      formControlProps={{
+                        fullWidth: true,
+                      }}
+                      inputProps={{
+                        value: this.state.SiteName
+                          ? this.state.SiteName
+                          : this.state.SiteNameEdit,
+                        onChange: (event) =>
+                          this.handleChangeFrom(event, "SiteName"),
+                      }}
+                    />
+                  </GridItem>
+                </GridContainer>
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => this.CloseURLDialog()} color="secondary">
+                Cancel
+              </Button>
+              <Button onClick={() => this.generateUrlData()} color="primary">
+                Generate
+              </Button>
+            </DialogActions>
+          </Dialog> */}
+
+
+            </div>
+
 
             </GridContainer>
+            
         );
     }
 }
