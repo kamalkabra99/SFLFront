@@ -677,7 +677,7 @@ class Step1 extends React.Component {
     }
   };
 
-  ChangeFromZipUS = (e) => {debugger
+  ChangeFromZipUS = (e) => {
     var zip = e.target.value;
     var FinalCity = [];
     var state = "";
@@ -1194,6 +1194,39 @@ class Step1 extends React.Component {
                   GetRate.FromZipCode = "";
                   this.setState({ GetRate: GetRate });
                 }
+                if(this.state.FromSelectedCountry.label == "United States" ||this.state.FromSelectedCountry.label == "India" ||this.state.FromSelectedCountry.label == "Canada"  )
+                  {
+                    
+                    var newZipcodedata = {
+                    "Pincode" : zip,
+                    "PickupCityList": this.state.FromCity,
+                    "CountryID": this.state.FromSelectedCountry.value,
+                    "CountryName": this.state.FromSelectedCountry.label,
+                    "StateName" : this.state.fromStateName,
+                    
+                  };
+                  console.log("newZipcodedata",newZipcodedata);
+                  api
+                  .post(
+                    "https://hubapi.sflworldwide.com/contactus/SflInsertPostalCode",
+                    newZipcodedata
+                  )
+                  .then((res) => {
+                    if (res.success) {
+                      console.log("CheckRessData", res);
+                      if (res.success === true) {
+                       
+                        console.log("New Zipcode Enter Successfully");
+                      } else {
+                        console.log("Something Went Wrong");
+                      }
+                    }
+                  })
+                  .catch((err) => {
+                      console.log("err...", err);
+                     
+                    });
+                  }
               } else {
                 cogoToast.error("Zip code not found");
                 this.setState({ FromCityList: [] });
@@ -1238,7 +1271,7 @@ class Step1 extends React.Component {
   };
 
 
-  ChangeToZipUS = (e) => {debugger
+  ChangeToZipUS = (e) => {
     this.setState({ disableBtn: 0 });
     if (e.target.name === "ToZipCode") {
       if (
@@ -1295,7 +1328,7 @@ class Step1 extends React.Component {
            
             var SelectedCity = {
               value: FinalCity[0].City_code,
-              label: FinalCity[0].Name,
+              label: FinalCity[0].CityName,
             };
             this.setState({ ToCityList: FinalCity });
               let toStatename = data[0].State;
@@ -1759,6 +1792,39 @@ class Step1 extends React.Component {
               GetRate.ToZipCode = "";
               this.setState({ GetRate: GetRate });
             }
+            if(this.state.ToSelectedCountry.label == "United States" ||this.state.ToSelectedCountry.label == "India" ||this.state.ToSelectedCountry.label == "Canada"  )
+              {
+                
+                var newZipcodedata = {
+                "Pincode" : zip,
+                "PickupCityList": this.state.ToCity,
+                "CountryID": this.state.ToSelectedCountry.value,
+                "CountryName": this.state.ToSelectedCountry.label,
+                "StateName" : this.state.toStateName,
+                
+              };
+              console.log("newZipcodedata",newZipcodedata);
+              api
+              .post(
+                "https://hubapi.sflworldwide.com/contactus/SflInsertPostalCode",
+                newZipcodedata
+              )
+              .then((res) => {
+                if (res.success) {
+                  console.log("CheckRessData", res);
+                  if (res.success === true) {
+                   
+                    console.log("New Zipcode Enter Successfully");
+                  } else {
+                    console.log("Something Went Wrong");
+                  }
+                }
+              })
+              .catch((err) => {
+                  console.log("err...", err);
+                 
+                });
+            }
           } else {
             cogoToast.error("Zip code not found");
             this.setState({ ToCityList: [] });
@@ -1772,6 +1838,7 @@ class Step1 extends React.Component {
           }
           this.hideLoader();
         });
+        
       }
     }
     else
@@ -2006,7 +2073,7 @@ class Step1 extends React.Component {
         if (PackageDetails[i].PackageHeight) {
           HE = PackageDetails[i].PackageHeight;
         }
-        debugger;
+        ;
         if (
           this.state.GetRate.FromCountry.CountryCode == "US" &&
           this.state.GetRate.ToCountry.CountryCode == "US"
@@ -2558,7 +2625,7 @@ class Step1 extends React.Component {
     var data = JSON.stringify({ quoteData: FinalGetRate });
 
     let res = await api.post("getQuote/getRates", data);
-    debugger;
+    ;
     if (res.success) {
       for (var i = 0; i < res.data.length; i++) {}
       this.setState({ finalGetResults: res.data, Loading: false });
@@ -2856,7 +2923,7 @@ class Step1 extends React.Component {
       api.post("getQuote/GetRateImages").then((res) => {
         if (res.data) {
           let imgArr = res.data[0];
-          debugger;
+          ;
           rateArr.map((rate) => {
             let imgURL = imgArr.filter(
               (x) => x.MainServiceName === rate.MainServiceName
@@ -3027,11 +3094,11 @@ class Step1 extends React.Component {
                                 IsResidential: this.state.IsResidential,
                                 RateType: "Hub",
                               };
-                              debugger;
+                              ;
                               api
                                 .post("salesLead/sendGetRateEmail", emailData)
                                 .then((response) => {
-                                  debugger;
+                                  ;
                                   this.hideLoader();
                                   if (response.success) {
                                     cogoToast.success(response.data.message);
