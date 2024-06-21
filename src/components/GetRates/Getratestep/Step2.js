@@ -1291,8 +1291,8 @@ class Step2 extends React.Component {
         : this.state.ToSelectedCity;
     FinalGetRate.FromZipCode = this.state.FromZipCode;
     FinalGetRate.ToZipCode = this.state.ToZipCode;
-    FinalGetRate.FromStateProvinceCode = this.state.FromState || "";
-    FinalGetRate.ToStateProvinceCode = this.state.ToState || "";
+    FinalGetRate.FromStateProvinceCode =  "";
+    FinalGetRate.ToStateProvinceCode = "";
     FinalGetRate.ShipDate = moment().toDate();
 
     var PackageNumber = [];
