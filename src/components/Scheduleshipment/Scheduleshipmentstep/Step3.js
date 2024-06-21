@@ -745,7 +745,70 @@ class Scheduleshipment extends React.Component {
   recipientZipChange = (zip) => {
     if (this.state.ToSelectedCountry.value !== 107) {
       if (zip.length && (!this.state.isDisableFields || !this.state.isSkip)) {
-        fetch(
+        let citydata={
+          "PostalCode" : zip,
+          "CountryID": this.state.ToSelectedCountry.value
+        }
+        api
+        .post(
+          "https://hubapi.sflworldwide.com/contactus/SflPostalCode",
+          citydata
+        )
+        .then((res) => {
+          if (res.success) {
+            console.log("CheckRessData", res);
+            if (res.success === true) {
+              var IsValidCountry = false;
+             let data = res.Data.data;
+             // this.hideLoador();
+            //  this.CloseDialog();
+            //  this.getReferredSite();
+            let RecCount = data.length;
+            if(RecCount !=0)
+              {
+                var FinalCity = [];
+                var city = "";
+              
+                      var countryShortName = data[0].Country
+                      for(let i=0;i<RecCount;i++)
+                        FinalCity.push({
+                        City_code: data[i].City,
+                        CityName: data[i].City,
+                      });
+                      var SelectedCity = {
+                        value: FinalCity[0].City_code,
+                        label: FinalCity[0].CityName,
+                      };
+                      var state = data[0].State;
+                      console.log("this.state.toStateList",this.state.toStateList);
+                      var SelectedState = { value: state, label: state };
+                      if (countryShortName === this.state.ToSelectedCountry.label) {
+                        debugger;
+                        this.setState({
+                          toCityAutoComplete: FinalCity.length ? true : false,
+                          toStateAutoComplete: this.state.toStateList.length
+                            ? true
+                            : false,
+                          toGoogleAPICityList: FinalCity,
+                          toState: this.state.toStateList.length
+                            ? SelectedState
+                            : state,
+                          toCity: SelectedCity,
+                        });
+                      } else {
+                        this.setState({
+                          toCityAutoComplete: false,
+                          toStateAutoComplete: this.state.toStateList.length
+                            ? true
+                            : false,
+                          toGoogleAPICityList: [],
+                          toState: "",
+                          toCity: "",
+                        });
+                      }
+                    }
+        else
+        {fetch(
           CommonConfig.zipCodeAPIKey(zip, this.state.ToSelectedCountry.label)
         )
           .then((result) => result.json())
@@ -1057,6 +1120,40 @@ class Scheduleshipment extends React.Component {
                   });
                 }
               }
+
+              if(this.state.ToSelectedCountry.label == "United States" ||this.state.ToSelectedCountry.label == "India" ||this.state.ToSelectedCountry.label == "Canada"  )
+                {
+                  
+                  var newZipcodedata = {
+                  "Pincode" : zip,
+                  "PickupCityList": SelectedCity.label,
+                  "CountryID": this.state.ToSelectedCountry.value,
+                  "CountryName": this.state.ToSelectedCountry.label,
+                  "StateName" : state,
+                  
+                };
+                console.log("newZipcodedata",newZipcodedata);
+                api
+                .post(
+                  "https://hubapi.sflworldwide.com/contactus/SflInsertPostalCode",
+                  newZipcodedata
+                )
+                .then((res) => {
+                  if (res.success) {
+                    console.log("CheckRessData", res);
+                    if (res.success === true) {
+                     
+                      console.log("New Zipcode Enter Successfully");
+                    } else {
+                      console.log("Something Went Wrong");
+                    }
+                  }
+                })
+                .catch((err) => {
+                    console.log("err...", err);
+                   
+                  });
+              }
             } else {
               // cogoToast.error("Zip code not found");
               console.log("55555", this.state.toState);
@@ -1078,11 +1175,15 @@ class Scheduleshipment extends React.Component {
               console.log("66666", this.state.toStateAutoComplete);
             }
           });
+        }
+      }
+    }
+          });
       }
     }
   };
   handleRefresh = () => {
-    debugger;
+  
 
     document.getElementById("showTextBoxTO").style.display = "none";
     document.getElementById("showAutocompleteTO").style.display = "block";
