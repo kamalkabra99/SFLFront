@@ -1622,9 +1622,66 @@ class Step1 extends React.Component {
     document.getElementById("documentation").style.display = "none";
   }
 
-  zipChange = (zip) => {
+  zipChange = (zip) => {debugger
     if (zip.length) {
-      fetch(CommonConfig.zipCodeAPIKey(zip, this.state.Country.label))
+      let citydata={
+        "PostalCode" : zip,
+        "CountryID": this.state.Country.value
+      }
+      api
+      .post(
+        "https://hubapi.sflworldwide.com/contactus/SflPostalCode",
+        citydata
+      )
+      .then((res) => {
+        if (res.success) {
+          console.log("CheckRessData", res);
+          if (res.success === true) {
+            var IsValidCountry = false;
+           let data = res.Data.data;
+           // this.hideLoador();
+          //  this.CloseDialog();
+          //  this.getReferredSite();
+          let RecCount = data.length;
+          if(RecCount !=0)
+            {
+              var FinalCity = [];
+              var city = "";
+            
+                    var countryShortName = data[0].Country
+                    for(let i=0;i<RecCount;i++)
+                      FinalCity.push({
+                      City_code: data[i].City,
+                      CityName: data[i].City,
+                    });
+                    var SelectedCity = {
+                      value: FinalCity[0].City_code,
+                      label: FinalCity[0].CityName,
+                    };
+                    var state = data[0].State;
+                    console.log("this.state.toStateList",this.state.toStateList);
+                    var SelectedState = { value: state, label: state };
+                    if (countryShortName === this.state.Country.label) {
+                      this.setState({
+                        CityAutoComplete: FinalCity.length ? true : false,
+                        StateAutoComplete: this.state.StateList.length ? true : false,
+                        GoogleAPICityList: FinalCity,
+                        State: this.state.StateList.length ? SelectedState : state,
+                        City: SelectedCity,
+                      });
+                    } else {
+                      this.setState({
+                        CityAutoComplete: false,
+                        StateAutoComplete: this.state.StateList.length ? true : false,
+                        GoogleAPICityList: [],
+                        State: "",
+                        City: "",
+                      });
+                    }
+                    this.hideLoader();
+                  }
+      else
+     { fetch(CommonConfig.zipCodeAPIKey(zip, this.state.Country.label))
         .then((result) => result.json())
         .then((data) => {
           this.showLoader();
@@ -1883,6 +1940,41 @@ class Step1 extends React.Component {
                 });
               }
               this.hideLoader();
+            
+             
+            }
+            if(this.state.Country.label == "United States" ||this.state.Country.label == "India" ||this.state.Country.label == "Canada"  )
+              {
+                
+                var newZipcodedata = {
+                "Pincode" : zip,
+                "PickupCityList": SelectedCity.label,
+                "CountryID": this.state.Country.value,
+                "CountryName": this.state.Country.label,
+                "StateName" : state,
+                
+              };
+              console.log("newZipcodedata",newZipcodedata);
+              api
+              .post(
+                "https://hubapi.sflworldwide.com/contactus/SflInsertPostalCode",
+                newZipcodedata
+              )
+              .then((res) => {
+                if (res.success) {
+                  console.log("CheckRessData", res);
+                  if (res.success === true) {
+                   
+                    console.log("New Zipcode Enter Successfully");
+                  } else {
+                    console.log("Something Went Wrong");
+                  }
+                }
+              })
+              .catch((err) => {
+                  console.log("err...", err);
+                 
+                });
             }
           } else {
             this.setState({
@@ -1895,6 +1987,10 @@ class Step1 extends React.Component {
             this.hideLoader();
           }
         });
+      }
+      }
+    }
+  });
     }
   };
 

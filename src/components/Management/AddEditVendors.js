@@ -517,7 +517,70 @@ class AddEditVendors extends Component {
       VendorcityHelperText: "",
     });
     if (zip.length) {
-      fetch(
+      let citydata={
+        "PostalCode" : zip,
+        "CountryID": this.state.selectedVendorCountry.value,
+      }
+      api
+      .post(
+        "https://hubapi.sflworldwide.com/contactus/SflPostalCode",
+        citydata
+      )
+      .then((res) => {debugger
+        if (res.success) {
+          console.log("CheckRessData", res);
+          if (res.success === true) {
+            var IsValidCountry = false;
+           let data = res.Data.data;
+           // this.hideLoador();
+          //  this.CloseDialog();
+          //  this.getReferredSite();
+          let RecCount = data.length;
+          if(RecCount !=0)
+            {
+              var FinalCity = [];
+              var city = "";
+            
+                    var countryShortName = data[0].Country
+                    for(let i=0;i<RecCount;i++)
+                      FinalCity.push({
+                      City_code: data[i].City,
+                      CityName: data[i].City,
+                    });
+                    var SelectedCity = {
+                      value: FinalCity[0].City_code,
+                      label: FinalCity[0].CityName,
+                    };
+                    var state = data[0].State;
+                    console.log("this.state.toStateList",this.state.toStateList);
+                    var SelectedState = { value: state, label: state };
+                    if (countryShortName === this.state.selectedVendorCountry.label) {
+                      this.setState({
+                        VendorcityAutoComplete: FinalCity.length ? true : false,
+                        VendorstateAutoComplete: this.state.stateList.length
+                          ? true
+                          : false,
+                        VendorgoogleApiCityList: FinalCity,
+                        Vendorstate: this.state.stateList.length
+                          ? SelectedState
+                          : state,
+                        Vendorcity: SelectedCity,
+                      });
+                    } else {
+                      this.setState({
+                        VendorcityAutoComplete: false,
+                        VendorstateAutoComplete: this.state.stateList.length
+                          ? true
+                          : false,
+                        VendorgoogleApiCityList: [],
+                        Vendorstate: "",
+                        Vendorcity: "",
+                      });
+                    }
+                    this.hideLoader();
+                  }
+      else
+      {fetch(
         CommonConfig.zipCodeAPIKey(zip, this.state.selectedVendorCountry.label)
       )
         .then((result) => result.json())
@@ -792,6 +855,40 @@ class AddEditVendors extends Component {
               }
               this.hideLoader();
             }
+            if(this.state.selectedVendorCountry.label == "United States" ||this.state.selectedVendorCountry.label == "India" ||this.state.selectedVendorCountry.label == "Canada"  )
+              {
+                
+                var newZipcodedata = {
+                "Pincode" : zip,
+                "PickupCityList": SelectedCity.label,
+                "CountryID": this.state.selectedVendorCountry.value,
+                "CountryName": this.state.selectedVendorCountry.label,
+                "StateName" : state,
+                
+              };
+              console.log("newZipcodedata",newZipcodedata);
+              api
+              .post(
+                "https://hubapi.sflworldwide.com/contactus/SflInsertPostalCode",
+                newZipcodedata
+              )
+              .then((res) => {
+                if (res.success) {
+                  console.log("CheckRessData", res);
+                  if (res.success === true) {
+                   
+                    console.log("New Zipcode Enter Successfully");
+                  } else {
+                    console.log("Something Went Wrong");
+                  }
+                }
+              })
+              .catch((err) => {
+                  console.log("err...", err);
+                 
+                });
+            }
+          
           } else {
             cogoToast.error("Zip code not found");
             this.setState({
@@ -805,7 +902,8 @@ class AddEditVendors extends Component {
             });
             this.hideLoader();
           }
-        });
+        });}
+      }}});
     }
   };
   zipChange = (zip) => {
