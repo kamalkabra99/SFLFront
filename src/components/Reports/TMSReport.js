@@ -108,7 +108,9 @@ class TMSReport extends Component {
             TmsDeleteAccess:"",
             TmsWriteAccess:"",
             updateLogin:"",
-            updateLogout:""
+            updateLogout:"",
+            updateFullLogout:"",
+            updateFullLogin:""
         };
     }
 
@@ -408,13 +410,18 @@ class TMSReport extends Component {
         console.log("record = ",record)
 
         console.log(record.original.tmsID)
-        this.setState({
+        // if(type == "Login"){
+
+          this.setState({
             updateopen: true,
             updateID:record.original.tmsID,
             updateType: type,
             updateLogin:record.original.LoginTime,
             updateLogout:record.original.LogoutTime,
-        });
+          });
+
+        // }
+        
 
     }
 
@@ -433,6 +440,103 @@ class TMSReport extends Component {
             
           });
     }
+
+    handleClickUpdate = () =>{
+        this.setState({
+            updateopen: false,
+            
+          });
+    }
+
+    set24hoursformat = (Times,types) =>{
+        var time = Times;
+        var data = time.split(":");
+        var hours = parseInt(data[0]);
+        var minutes = parseInt(data[1]);
+        var seconds = parseInt(data[2]);
+        var AMPM = time.match(/\s(.*)$/)[1];
+
+        if(AMPM == "PM" && hours<12) hours = hours+12;
+        if(AMPM == "AM" && hours==12) hours = hours-12;
+        var sHours = hours.toString();
+        var sMinutes = minutes.toString();
+        var sSeconds = seconds.toString();
+        
+        if(hours<10) sHours = "0" + sHours;
+        if(minutes<10) sMinutes = "0" + sMinutes;
+        if(seconds<10) sSeconds = "0" + sSeconds;
+        var datatosend = sHours + ":" + sMinutes +":" + sSeconds
+        console.log(sHours + ":" + sMinutes +":" + sSeconds)
+        if (types == "logout") {
+          this.setState({ updateFullLogout: datatosend });
+        }
+        if (types == "login") {
+          this.setState({ updateFullLogin: datatosend });
+        }
+
+    }
+
+    
+  showLoador = () => {
+    this.setState({ Loading: true });
+  };
+
+  hideLoador = () => {
+    this.setState({ Loading: false });
+  };
+
+
+    handleClickUpdateUpload = ()=> {
+      this.showLoador();
+      this.set24hoursformat(this.state.updateLogin,"login")
+      this.set24hoursformat(this.state.updateLogout,"logout")
+
+      setTimeout(() => {
+
+        var data = {
+            dataupdateType: this.state.updateType,
+            LoginTime:this.state.updateLogin,
+            LogoutTime:this.state.updateLogout,
+            FullLogin: this.state.updateFullLogin,
+            FullLogout: this.state.updateFullLogout,
+            dataId: this.state.updateID
+
+      }
+
+      api.post("contactus/updatetmsReport", data).then((res) => {
+        if (res.success) {
+          this.hideLoador();
+        //   console.log(res.Data[0][0])
+          // this.setState({ EmailSubject: res.data[0].TemplateSubject });
+          // this.setState({ MessageTemplate: res.data[0].TemplateMessage });
+  
+          this.setState({
+            updateopen: false,
+      
+            // dataMode: "Update",
+          });
+          this.getUserTMSReport();
+          // this.hideLoador();
+          cogoToast.success("Update Successfully")
+        }
+      });
+        
+      }, 3000);
+
+      
+
+    }
+
+    handleChangeFrom = (event, value) => {
+        if (value == "logout") {
+          this.setState({ updateLogout: event.target.value });
+          this.set24hoursformat(event.target.value,"logout")
+        }
+        if (value == "login") {
+          this.setState({ updateLogin: event.target.value });
+          this.set24hoursformat(event.target.value,"login")
+        }
+      };
 
     handleDelete = () =>{
         console.log(this.state.deleteID,this.state.deleteType)
@@ -552,7 +656,7 @@ class TMSReport extends Component {
                           ""
                         }
 
-                        {/* {this.state.TmsWriteAccess == "1" ? (
+                        {this.state.TmsWriteAccess == "1" ? (
                         
                           <Button
                             justIcon
@@ -564,7 +668,7 @@ class TMSReport extends Component {
                      
                         ) :
                           ""
-                        } */}
+                        }
           
                       </div>
                     );
@@ -801,6 +905,66 @@ class TMSReport extends Component {
                 </Button>
               </DialogActions>
             </Dialog>
+
+            <Dialog
+            className="test-zIndex"
+            open={this.state.updateopen}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+            fullWidth={true}
+          >
+            <DialogContent>
+              <DialogContentText id="alert-dialog-description">
+                Are you sure want to update login and logout time?
+                <GridContainer>
+                  
+                <GridItem xs={12} sm={12} md={12}>
+                    <CustomInput
+                      labelText="Start Time"
+                      id="proposaltype"
+                      formControlProps={{
+                        fullWidth: true,
+                      }}
+                      inputProps={{
+                        value: this.state.updateLogin
+                          ? this.state.updateLogin
+                          : this.state.updateLogin,
+                        onChange: (event) =>
+                          this.handleChangeFrom(event, "login"),
+                      }}
+                    />
+                  </GridItem>
+
+                  
+                  <GridItem xs={12} sm={12} md={12}>
+                    <CustomInput
+                      labelText="End Time"
+                      id="proposaltype"
+                      formControlProps={{
+                        fullWidth: true,
+                      }}
+                      inputProps={{
+                        value: this.state.updateLogout
+                          ? this.state.updateLogout
+                          : this.state.updateLogout,
+                        onChange: (event) =>
+                          this.handleChangeFrom(event, "logout"),
+                      }}
+                    />
+                  </GridItem>
+
+                </GridContainer>
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={this.handleClickUpdate} color="secondary">
+                Cancel
+              </Button>
+              <Button onClick={this.handleClickUpdateUpload} color="primary">
+                Update
+              </Button>
+            </DialogActions>
+          </Dialog>
 
 {/*             
             <Dialog

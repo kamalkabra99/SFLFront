@@ -60,6 +60,7 @@ class Container extends Component {
       api
         .get("container/containerList")
         .then((res) => {
+          console.log("res = ", res.data)
           if (res.success) {
             if (this.state.Access.AllAccess === 1) {
               this.setState({ containerList: res.data, Loading: false });
@@ -74,11 +75,11 @@ class Container extends Component {
               });
             }
           } else {
-            cogoToast.error("Something Went Wrong");
+            cogoToast.error("Something Went Wrong1");
           }
         })
         .catch((err) => {
-          cogoToast.error("Something Went Wrong");
+          cogoToast.error("Something Went Wrong2");
         });
     } catch (error) {}
   }
@@ -164,9 +165,7 @@ class Container extends Component {
           if (CommonConfig.isEmpty(data.LoadDate)) {
             return null;
           } else {
-            return moment(data.LoadDate).format(
-              CommonConfig.dateFormat.dateOnly
-            );
+            return data.LoadDate;
           }
         },
         width: 84,
@@ -188,9 +187,7 @@ class Container extends Component {
           if (CommonConfig.isEmpty(data.ArrivalDate)) {
             return null;
           } else {
-            return moment(data.ArrivalDate).format(
-              CommonConfig.dateFormat.dateOnly
-            );
+            return data.ArrivalDate;
           }
         },
         width: 85,
