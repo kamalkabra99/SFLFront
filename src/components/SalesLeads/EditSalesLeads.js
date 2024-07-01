@@ -2142,7 +2142,7 @@ if (res.success) {
                       CityName: data[i].City,
                     });
                     var state = data[0].State;
-                    var SelectedState = { value: data[0].StateID, label: data[0].State };   
+                    var SelectedState = { value: data[0].State, label: data[0].State };   
                     
                     if (FinalCity[0].CityName === "" ||FinalCity[0].CityName === null || FinalCity[0].CityName === undefined )
                        {
@@ -2553,7 +2553,7 @@ if (res.success) {
                     CityName: data[i].City,
                   });
                   var state = data[0].State;
-                  var SelectedState = { value: data[0].StateID, label: data[0].State };   
+                  var SelectedState = { value: data[0].State, label: data[0].State };   
                   
                   if (finalCity[0].CityName === "" ||finalCity[0].CityName === null || finalCity[0].CityName === undefined )
                     {
