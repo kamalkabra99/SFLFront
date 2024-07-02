@@ -949,7 +949,7 @@ class Step1 extends React.Component {
         }
       }
     }
-    this.setState({ serviceList: MarkupData });
+    this.setState({ serviceList: MarkupData });    
   };
 
   handleBlur = (e, id, MarkupType, Type) => {
@@ -998,7 +998,6 @@ class Step1 extends React.Component {
 
     this.setState({ serviceList: MarkupData });
   };
-
 
   handledropdown = (e, id) => {
     let serviceNameList = this.state.serviceList;
@@ -2065,6 +2064,12 @@ class Step1 extends React.Component {
     });
     const columns1 = [
       {
+        Header: "Country",
+        accessor: "CountryName",
+        width: 110,
+        maxWidth: 110,
+      },
+      {
         Header: "Shipment Type",
         accessor: "ServiceType",
         width: 110,
@@ -3075,7 +3080,7 @@ class Step1 extends React.Component {
                   </div>
                   <div className="shipment-pane mt-20" id="markupdetails">
                     <div className="package-table">
-                      <table>
+                      {/* <table>
                         <thead>
                           <tr>
                             <th>Shipment Type</th>
@@ -3089,8 +3094,8 @@ class Step1 extends React.Component {
                           </tr>
                         </thead>
                         <tbody>{this.renderMarkup()}</tbody>
-                      </table>
-{/* 
+                      </table> */}
+
                         <ReactTable
                           
                           data={this.state.serviceList}
@@ -3103,7 +3108,7 @@ class Step1 extends React.Component {
                           defaultPageSize={10}
                           showPaginationBottom={true}
                           className="-striped -highlight"
-                        /> */}
+                        />
                     </div>
                   </div>
 

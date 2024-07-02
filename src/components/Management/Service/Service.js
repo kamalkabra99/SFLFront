@@ -11,7 +11,10 @@ import Card from "components/Card/Card.js";
 import CardBody from "components/Card/CardBody.js";
 import CardIcon from "components/Card/CardIcon.js";
 import CardHeader from "components/Card/CardHeader.js";
-
+import FormControl from "@material-ui/core/FormControl";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import TextField from "@material-ui/core/TextField";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 class Service extends Component {
   constructor(props) {
     super(props);
@@ -21,10 +24,24 @@ class Service extends Component {
       serviceList: [],
       filterProps: [],
       sortProps: [],
+      countryName:[],
       previousFilterList: [],
       previousSortList: [],
+      countryWise:[
+        { value: "37", label: "Canada" , Index:0,IsSelected:false},
+        { value: "89", label: "India", Index:1,IsSelected:false },
+        { value: "202", label: "United State", Index:2,IsSelected:false },
+        { value: "0", label: "Others", Index:3,IsSelected:false },
+      ],
+     
     };
   }
+
+  filterMethod = (event, value) => {debugger
+    console.log("value= ", value);
+    this.setState({ countryName: value });
+    console.log("serviceValue = ", this.state.serviceValue);
+  };
 
   activeInactiveUser = (record) => {
     let data = {
@@ -59,7 +76,55 @@ class Service extends Component {
       });
     }
   }
+  handleCheckboxChange = (e, record, type) => {
+    debugger;
+    let checkedArr = this.state.countryWise;
+    if (type === "37" || type === "89" || type === "202" || type === "0"  ) {
+      checkedArr
+        .filter((x) => x.value !== type) 
+        .map((OBJ) => {
+          OBJ.IsSelected = false;
+          return OBJ;
+        });
+      checkedArr[record.Index]["IsSelected"] = e.target.checked;
+      this.setState({
+        checkAll: e.target.checked,
+        //StatusList[0].IsSelected:true
+      });
+      let previousList = checkedArr.filter((x) => x.IsSelected === true);
+      this.setState({ serviceValue: previousList });
+    //  let arrType = "previousSelected" + this.state.chatlist;
 
+      this.filterMethod("Hello", previousList);
+    } else {debugger
+      // else {
+      this.setState({ shipmentquery: "" });
+      checkedArr.map((OBJ) => {
+        OBJ.IsSelected = e.target.checked;
+        return OBJ;
+      });
+      this.state.shipmentquery = this.state.StatusQuery;
+      this.setState({
+        checkAll: e.target.checked,
+      });
+      let previousList = checkedArr.filter((x) => x.IsSelected === true);
+      let arrType = "previousSelectedStatusList";
+      if (previousList.length === 0) {
+        this.state.checkdata = "";
+      } else {
+        this.state.checkdata = `All`;
+      }
+      this.setState({
+        StatusList: checkedArr,
+        [arrType]: previousList,
+        StatusQuery: this.state.shipmentquery,
+      });
+
+      this.filterMethod("Hello", previousList);
+      // }
+    }
+    // console.log("checkedArr = ",checkdata);
+  };
   gotoedit = (record) => {
     let ServiceID = record.original.ServiceID;
     const { history } = this.props;
@@ -77,13 +142,20 @@ class Service extends Component {
     this.props.history.push("/admin/AddService");
   };
 
-  getServiceList() {
+  getServiceList() {debugger
     try {
       this.setState({ Loading: true });
       api
         .get("userManagement/getServiceList")
         .then((res) => {
           if (res.success) {
+            var i = 0;
+            res.data.map((OBJ) => {
+              OBJ.IsSelected = false;
+              OBJ.Index = i;
+              i++;
+              return OBJ;
+            });
             this.setState({ serviceList: res.data, Loading: false });
           } else {
             cogoToast.error("Something Went Wrong");
@@ -112,8 +184,52 @@ class Service extends Component {
   };
   render() {
     const { serviceList } = this.state;
-
+    
     const columns = [
+      {
+        Header: "Country",
+        accessor: "CountryName",
+        width: 100,
+        maxWidth: 100,
+        minWidth: 100,
+        // id: "CCountryName",
+        // // Cell: (record) => {
+        // //   if (Object.values(record.value).length) {
+        // //     return record.value.map((content, index) => {
+        // //       return record.value[record.value.length - 1]["CountryName"] ===
+        // //         content.countryName ? (
+        // //         <span>{content.countryName}</span>
+        // //       ) : (
+        // //         <span>{content.countryName} | </span>
+        // //       );
+        // //     });
+        // //   } else {
+        // //     return null;
+        // //   }
+        // // },
+        // Filter: ({ filter, onChange }) => {
+        //   return <input type="text" />;
+        // },
+        // filterable: true,
+        // filterMethod: (filter, row) => {debugger
+        //   if (this.state.CountryName.length) {
+        //     if (row.services.length) {
+        //       for (var i = 0; i < this.state.CountryName.length; i++) {
+        //         for (var j = 0; j < row.servicesList.length; j++) {
+        //           if (
+        //             row.servicesList[j]["country"] ===
+        //             this.state.countryName[i].value
+        //           ) {
+        //             return row;
+        //           }
+        //         }
+        //       }
+        //     }
+        //   } else {
+        //     return row;
+        //   }
+        // },
+      },
       {
         Header: "Shipment Type",
         accessor: "ServiceType",
@@ -124,7 +240,7 @@ class Service extends Component {
       {
         Header: "Service Name",
         accessor: "MainServiceName",
-        width: 155,
+        width: 100,
         maxWidth: 100,
         minWidth: 100,
       },
@@ -209,6 +325,7 @@ class Service extends Component {
     ];
     return (
       <GridContainer className="UserList-outer">
+       
         <GridItem xs={12}>
           <Card>
             <CardHeader className="btn-right-outer" color="primary" icon>
@@ -225,6 +342,8 @@ class Service extends Component {
               >
                 Add Service
               </Button>
+              
+        
             </CardHeader>
             <CardBody>
               <ReactTable
@@ -242,6 +361,7 @@ class Service extends Component {
                 className="-striped -highlight"
               />
             </CardBody>
+            
           </Card>
         </GridItem>
       </GridContainer>
