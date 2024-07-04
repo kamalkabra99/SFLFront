@@ -15,6 +15,7 @@ import FormControl from "@material-ui/core/FormControl";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import TextField from "@material-ui/core/TextField";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import { cssNumber } from "jquery";
 class Service extends Component {
   constructor(props) {
     super(props);
@@ -28,20 +29,17 @@ class Service extends Component {
       previousFilterList: [],
       previousSortList: [],
       countryWise:[
-        { value: "37", label: "Canada" , Index:0,IsSelected:false},
-        { value: "89", label: "India", Index:1,IsSelected:false },
-        { value: "202", label: "United State", Index:2,IsSelected:false },
-        { value: "0", label: "Others", Index:3,IsSelected:false },
+        {value: "All", label: "All" , Index:0,IsSelected:false},
+        { value: "37", label: "Canada" , Index:1,IsSelected:false},
+        { value: "89", label: "India", Index:2,IsSelected:true },
+        { value: "202", label: "United State", Index:3,IsSelected:false },
+        { value: "0", label: "Others", Index:4,IsSelected:false },
       ],
      
     };
   }
 
-  filterMethod = (event, value) => {debugger
-    console.log("value= ", value);
-    this.setState({ countryName: value });
-    console.log("serviceValue = ", this.state.serviceValue);
-  };
+ 
 
   activeInactiveUser = (record) => {
     let data = {
@@ -65,7 +63,8 @@ class Service extends Component {
     } catch (error) {}
   };
   componentDidMount() {
-    this.getServiceList();
+    //this.getServiceList();
+    this.getServiceListFiltered(89);
     if (
       this.props.history.location.state !== undefined &&
       this.props.history.location.state !== null
@@ -76,12 +75,14 @@ class Service extends Component {
       });
     }
   }
-  handleCheckboxChange = (e, record, type) => {
+
+
+  handleServiceCheckboxChange = (e, record, type) => {
     debugger;
     let checkedArr = this.state.countryWise;
-    if (type === "37" || type === "89" || type === "202" || type === "0"  ) {
+    if (type !== "All") {
       checkedArr
-        .filter((x) => x.value !== type) 
+        .filter((x) => x.value === "All")
         .map((OBJ) => {
           OBJ.IsSelected = false;
           return OBJ;
@@ -93,10 +94,17 @@ class Service extends Component {
       });
       let previousList = checkedArr.filter((x) => x.IsSelected === true);
       this.setState({ serviceValue: previousList });
-    //  let arrType = "previousSelected" + this.state.chatlist;
-
+      let arrType = "previousSelected" + this.state.chatlist;
+      let SelectedCountryCode="1";
       this.filterMethod("Hello", previousList);
-    } else {debugger
+      checkedArr.filter((x) => x.IsSelected === true)
+        .map((OBJ) => {
+
+          SelectedCountryCode = SelectedCountryCode+","+OBJ.value;
+          return OBJ;
+        });
+      this.getServiceListFiltered(SelectedCountryCode)
+    } else {
       // else {
       this.setState({ shipmentquery: "" });
       checkedArr.map((OBJ) => {
@@ -119,12 +127,13 @@ class Service extends Component {
         [arrType]: previousList,
         StatusQuery: this.state.shipmentquery,
       });
-
+      this.getServiceList();
       this.filterMethod("Hello", previousList);
       // }
     }
     // console.log("checkedArr = ",checkdata);
   };
+
   gotoedit = (record) => {
     let ServiceID = record.original.ServiceID;
     const { history } = this.props;
@@ -167,6 +176,38 @@ class Service extends Component {
     } catch (error) {}
   }
 
+  getServiceListFiltered(CountryParam) {debugger
+    try {
+      this.setState({ Loading: true });
+     const data={
+        CountryIds :CountryParam,
+      }
+      api
+        .post("https://hubapi.sflworldwide.com/userManagement/getServiceListFilter",data)
+        .then((res) => {
+          if (res.success) {
+            var i = 0;
+            res.data.map((OBJ) => {
+              OBJ.IsSelected = false;
+              OBJ.Index = i;
+              i++;
+              return OBJ;
+            });
+            this.setState({ serviceList: res.data, Loading: false });
+          } else {
+            cogoToast.error("Something Went Wrong");
+          }
+        })
+        .catch((err) => {
+          cogoToast.error("Something Went Wrong");
+        });
+    } catch (error) {}
+  }
+  filterMethod = (event, value) => {debugger
+    console.log("value= ", value);
+    this.setState({ countryName: value });
+    console.log("serviceValue = ", this.state.serviceValue);
+  };
   setFilterProps = (filterValue) => {
     this.setState({
       filterProps: filterValue.filtered,
@@ -189,46 +230,9 @@ class Service extends Component {
       {
         Header: "Country",
         accessor: "CountryName",
-        width: 100,
-        maxWidth: 100,
-        minWidth: 100,
-        // id: "CCountryName",
-        // // Cell: (record) => {
-        // //   if (Object.values(record.value).length) {
-        // //     return record.value.map((content, index) => {
-        // //       return record.value[record.value.length - 1]["CountryName"] ===
-        // //         content.countryName ? (
-        // //         <span>{content.countryName}</span>
-        // //       ) : (
-        // //         <span>{content.countryName} | </span>
-        // //       );
-        // //     });
-        // //   } else {
-        // //     return null;
-        // //   }
-        // // },
-        // Filter: ({ filter, onChange }) => {
-        //   return <input type="text" />;
-        // },
-        // filterable: true,
-        // filterMethod: (filter, row) => {debugger
-        //   if (this.state.CountryName.length) {
-        //     if (row.services.length) {
-        //       for (var i = 0; i < this.state.CountryName.length; i++) {
-        //         for (var j = 0; j < row.servicesList.length; j++) {
-        //           if (
-        //             row.servicesList[j]["country"] ===
-        //             this.state.countryName[i].value
-        //           ) {
-        //             return row;
-        //           }
-        //         }
-        //       }
-        //     }
-        //   } else {
-        //     return row;
-        //   }
-        // },
+        width: 50,
+        maxWidth: 50,
+        minWidth: 50,
       },
       {
         Header: "Shipment Type",
@@ -343,6 +347,62 @@ class Service extends Component {
                 Add Service
               </Button>
               
+            <div
+                    className="filter-top-right"
+                    onMouseLeave={() =>
+                      this.setState({ IsDropDownShow: false })
+                    }
+                    onMouseOver={() => this.setState({ IsDropDownShow: true })}
+                  >
+                    <Button
+                      className="cm-toggle"
+                      color="rose"
+                      // onClick={() =>
+                      //   this.setState({
+                      //     IsDropDownShow:
+                      //       this.state.IsDropDownShow === true ? false : true,
+                      //   })
+                      // }
+                    >
+                      Country <ExpandMoreIcon />
+                    </Button>
+                    {this.state.IsDropDownShow === true ? (
+                      <div className="cm-dropdown" ref={this.state.ref}>
+                        <div className="overflow-handle">
+                          {this.state.countryWise.map((step, key) => {
+                            return (
+                              <li>
+                                <label>
+                                  <input
+                                    type="checkbox"
+                                    checked={step.IsSelected}
+                                    onChange={(e, value) =>
+                                      this.handleServiceCheckboxChange(
+                                        e,
+                                        step,
+                                        step.value
+                                      )
+                                    }
+                                    value={this.state.countryWise}
+                                  />{" "}
+                                  {step.label}
+                                </label>
+                              </li>
+                            );
+                          })}
+                        </div>
+                        <div className="cms-wrap">
+                          {/* <Button
+                            className="cm-search-btn"
+                            color="rose"
+                          // onClick={() => this.showSearchFilter("Shipment")}
+                          >
+                            Search
+                          </Button> */}
+                        </div>
+                      </div>
+                    ) : null}
+                  </div>
         
             </CardHeader>
             <CardBody>
