@@ -1321,6 +1321,7 @@ class Step1 extends React.Component {
     console.log("this.state.serviceList = " , this.state.serviceList)
     return this.state.serviceList.map((service) => {
       const {
+        CountryName,
         ServiceID,
         ServiceType, 
         MainServiceName,
@@ -1334,6 +1335,7 @@ class Step1 extends React.Component {
 
       return (
         <tr key={ServiceID}>
+          <td>{CountryName}</td>
           <td>{ServiceType}</td>
           <td>{MainServiceName}</td>
           <td>{ServiceName}</td>
@@ -3080,9 +3082,10 @@ class Step1 extends React.Component {
                   </div>
                   <div className="shipment-pane mt-20" id="markupdetails">
                     <div className="package-table">
-                      {/* <table>
+                      <table>
                         <thead>
                           <tr>
+                            <th>Country Name</th>
                             <th>Shipment Type</th>
                             <th>Service Name</th>
                             <th>Sub Service Name</th>
@@ -3094,9 +3097,9 @@ class Step1 extends React.Component {
                           </tr>
                         </thead>
                         <tbody>{this.renderMarkup()}</tbody>
-                      </table> */}
+                      </table>
 
-                        <ReactTable
+                        {/* <ReactTable
                           
                           data={this.state.serviceList}
                           
@@ -3108,7 +3111,7 @@ class Step1 extends React.Component {
                           defaultPageSize={10}
                           showPaginationBottom={true}
                           className="-striped -highlight"
-                        />
+                        /> */}
                     </div>
                   </div>
 

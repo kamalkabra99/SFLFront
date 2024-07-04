@@ -1634,7 +1634,7 @@ if (res.success) {
             //   mainCountryList.push(mainCountryObject);
 
             //   this.setState({ countryCodeListValue: mainCountryList });
-            //   console.log("ccccccc", this.state.countryCodeListValue);
+              console.log("ccccccc", this.state.countryCodeListValue);
             // }
             // --------------checkdata-----------------
             
@@ -5903,13 +5903,13 @@ if (res.success) {
                     <Autocomplete
                       options={countryCodeList}
                       id="CountryCode"
-                      getOptionLabel={(option) => option.label}
+                      getOptionLabel={(option) => option.label.toString()}
                       value={SelectedCountryCode}
                       onChange={(event, value) =>
                         this.requestChange(event, value, "CountryCode")
                       }
                       autoComplete= "off" 
-                      inputProps={{ autoComplete: "none" }}
+                      // inputProps={{ autoComplete: "none" }}
                       renderInput={(params) => (
                         <TextField
                           {...params}
