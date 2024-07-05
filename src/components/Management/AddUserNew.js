@@ -40,7 +40,7 @@ import { fileBase } from "../../utils/config";
 import { Attachment } from "@material-ui/icons";
 import Tooltip from "@material-ui/core/Tooltip";
 import HelpIcon from "@material-ui/icons/Help";
-
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 const useStyles = makeStyles(styles);
 
 const classes = () => {
@@ -144,7 +144,7 @@ class Step1 extends React.Component {
       checkSpecialCharacter: false,
       LeadAssignment: false,
       LeadWriteClick: false,
-
+      IsDropDownShow: false,
       AccountNumber: "",
       checkAccountNumber: false,
       accountNumberErr: false,
@@ -222,6 +222,13 @@ class Step1 extends React.Component {
         Description: CommonConfig.loggedInUserData().Name,
       },
       Access: [],
+      countryWise:[
+        {value: "All", label: "All" , Index:0,IsSelected:false},
+        { value: "37", label: "Canada" , Index:1,IsSelected:false},
+        { value: "89", label: "India", Index:2,IsSelected:true },
+        { value: "202", label: "United State", Index:3,IsSelected:false },
+        { value: "0", label: "Others", Index:4,IsSelected:false },
+      ],
     };
   }
 
@@ -231,6 +238,7 @@ class Step1 extends React.Component {
     this.getCountry();
     this.getManagedBy();
     this.getUserDetail();
+    this.getServiceListFiltered(89);
     this.getPaperSizeList();
     this.setState({ LoginpersonId: CommonConfig.loggedInUserData().PersonID });
   }
@@ -556,7 +564,7 @@ class Step1 extends React.Component {
                       label: Country[0].CountryName,
                     }
                   : "";
-                debugger;
+                
                 var managedBy = userData.userDetails[0]
                   ? {
                       value: userData.userDetails[0].ManagedBy,
@@ -616,7 +624,34 @@ class Step1 extends React.Component {
       
     }
   }
-
+  getServiceListFiltered(CountryParam) {
+    try {
+      this.setState({ Loading: true });
+     const data={
+        CountryIds :CountryParam,
+        userID: this.props.location.state
+      }
+      api
+        .post("https://hubapi.sflworldwide.com/userManagement/getServiceListUserMarkupFilter",data)
+        .then((res) => {
+          if (res.success) {
+            var i = 0;
+            res.data.map((OBJ) => {
+              OBJ.IsSelected = false;
+              OBJ.Index = i;
+              i++;
+              return OBJ;
+            });
+            this.setState({ serviceList: res.data, Loading: false });
+          } else {
+            cogoToast.error("Something Went Wrong");
+          }
+        })
+        .catch((err) => {
+          cogoToast.error("Something Went Wrong");
+        });
+    } catch (error) {}
+  }
   showLoader = () => {
     this.setState({ Loading: true });
   };
@@ -1073,6 +1108,78 @@ class Step1 extends React.Component {
     }
   };
 
+  handleServiceCheckboxChange = (e, record, type) => {
+    
+    let checkedArr = this.state.countryWise;
+    if (type !== "All") {
+      checkedArr
+        .filter((x) => x.value === "All")
+        .map((OBJ) => {
+          OBJ.IsSelected = false;
+          return OBJ;
+        });
+      checkedArr[record.Index]["IsSelected"] = e.target.checked;
+      this.setState({
+        checkAll: e.target.checked,
+        //StatusList[0].IsSelected:true
+      });
+      let previousList = checkedArr.filter((x) => x.IsSelected === true);
+      this.setState({ serviceValue: previousList });
+      let arrType = "previousSelected" + this.state.chatlist;
+      let SelectedCountryCode="1";
+      //this.filterMethod("Hello", previousList);
+      checkedArr.filter((x) => x.IsSelected === true)
+        .map((OBJ) => {
+
+          SelectedCountryCode = SelectedCountryCode+","+OBJ.value;
+          return OBJ;
+        });
+        if(SelectedCountryCode === undefined || SelectedCountryCode === "1")
+          SelectedCountryCode = "1,37,89,202,0";
+      this.getServiceListFiltered(SelectedCountryCode)
+    } else {
+      // else {
+      this.setState({ shipmentquery: "" });
+      checkedArr.map((OBJ) => {
+        OBJ.IsSelected = e.target.checked;
+        return OBJ;
+      });
+      this.state.shipmentquery = this.state.StatusQuery;
+      this.setState({
+        checkAll: e.target.checked,
+      });
+      let previousList = checkedArr.filter((x) => x.IsSelected === true);
+      let arrType = "previousSelectedStatusList";
+      if (previousList.length === 0) {
+        this.state.checkdata = "";
+      } else {
+        this.state.checkdata = `All`;
+      }
+      this.setState({
+        StatusList: checkedArr,
+        [arrType]: previousList,
+        StatusQuery: this.state.shipmentquery,
+      });
+      let SelectedCountryCode="1";
+      checkedArr.filter((x) => x.IsSelected === true)
+      .map((OBJ) => {
+        if(OBJ.value !== "All")
+        SelectedCountryCode = SelectedCountryCode+","+OBJ.value;
+        return OBJ;
+      });
+      if(SelectedCountryCode === undefined || SelectedCountryCode === "1")
+        SelectedCountryCode = "1,37,89,202,0";
+      this.getServiceListFiltered(SelectedCountryCode);
+
+    //  this.filterMethod("Hello", previousList);
+      // }
+    }
+    // console.log("checkedArr = ",checkdata);
+  };
+
+
+
+
   validate() {
     let IsFormValid = true;
     if (this.state.usernameErr) {
@@ -1306,7 +1413,7 @@ class Step1 extends React.Component {
       cogoToast.error("Please correct error and resubmit the form");
     }
   };
-
+ 
   cancelUser = () => {
     this.props.history.push({
       pathname: "/admin/UserList",
@@ -3081,8 +3188,66 @@ class Step1 extends React.Component {
                     </div>
                   </div>
                   <div className="shipment-pane mt-20" id="markupdetails">
+                    <div className="ft-outer">
+                      <div
+                        className="filter-top-right"
+                        onMouseLeave={() =>
+                          this.setState({ IsDropDownShow: false })
+                        }
+                        onMouseOver={() => this.setState({ IsDropDownShow: true })}
+                      >
+                        <Button
+                          className="cm-toggle"
+                          color="rose"
+                          // onClick={() =>
+                          //   this.setState({
+                          //     IsDropDownShow:
+                          //       this.state.IsDropDownShow === true ? false : true,
+                          //   })
+                          // }
+                        >
+                          Country <ExpandMoreIcon />
+                        </Button>
+                        {this.state.IsDropDownShow === true ? (
+                          <div className="cm-dropdown" ref={this.state.ref}>
+                            <div className="overflow-handle">
+                              {this.state.countryWise.map((step, key) => {
+                                return (
+                                  <li>
+                                    <label>
+                                      <input
+                                        type="checkbox"
+                                        checked={step.IsSelected}
+                                        onChange={(e, value) =>
+                                          this.handleServiceCheckboxChange(
+                                            e,
+                                            step,
+                                            step.value
+                                          )
+                                        }
+                                        value={this.state.countryWise}
+                                      />{" "}
+                                      {step.label}
+                                    </label>
+                                  </li>
+                                );
+                              })}
+                            </div>
+                            <div className="cms-wrap">
+                              {/* <Button
+                                className="cm-search-btn"
+                                color="rose"
+                              // onClick={() => this.showSearchFilter("Shipment")}
+                              >
+                                Search
+                              </Button> */}
+                            </div>
+                          </div>
+                        ) : null}
+                      </div>
+                    </div>
                     <div className="package-table">
-                      <table>
+                    {/*  <table>
                         <thead>
                           <tr>
                             <th>Country Name</th>
@@ -3097,9 +3262,9 @@ class Step1 extends React.Component {
                           </tr>
                         </thead>
                         <tbody>{this.renderMarkup()}</tbody>
-                      </table>
-
-                        {/* <ReactTable
+                      </table> */}
+                       
+                        <ReactTable
                           
                           data={this.state.serviceList}
                           
@@ -3111,7 +3276,7 @@ class Step1 extends React.Component {
                           defaultPageSize={10}
                           showPaginationBottom={true}
                           className="-striped -highlight"
-                        /> */}
+                        />
                     </div>
                   </div>
 
