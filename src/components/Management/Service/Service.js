@@ -28,6 +28,9 @@ class Service extends Component {
       countryName:[],
       previousFilterList: [],
       previousSortList: [],
+      eValue:[],
+      recordValue:[],
+      typeValue:[],
       countryWise:[
         {value: "All", label: "All" , Index:0,IsSelected:false},
         { value: "37", label: "Canada" , Index:1,IsSelected:false},
@@ -76,9 +79,8 @@ class Service extends Component {
     }
   }
 
-
-  handleServiceCheckboxChange = (e, record, type) => {
-    debugger;
+  handleStepValue = (e, record, type) => {
+    this.setState({eValue :e,recordValue:record,typeValue :type});
     let checkedArr = this.state.countryWise;
     if (type !== "All") {
       checkedArr
@@ -103,7 +105,7 @@ class Service extends Component {
           SelectedCountryCode = SelectedCountryCode+","+OBJ.value;
           return OBJ;
         });
-      this.getServiceListFiltered(SelectedCountryCode)
+     
     } else {
       // else {
       this.setState({ shipmentquery: "" });
@@ -127,8 +129,44 @@ class Service extends Component {
         [arrType]: previousList,
         StatusQuery: this.state.shipmentquery,
       });
-      this.getServiceList();
+  
       this.filterMethod("Hello", previousList);
+      // }
+    }
+    
+  };
+  handleServiceCheckboxChange = (e, record, type) => {
+    debugger;
+    let checkedArr = this.state.countryWise;
+    if (type !== "All") {
+      checkedArr
+        .filter((x) => x.value === "All")
+        .map((OBJ) => {
+          OBJ.IsSelected = false;
+          return OBJ;
+        });
+      
+  
+   
+
+      let SelectedCountryCode="1";
+
+      checkedArr.filter((x) => x.IsSelected === true)
+        .map((OBJ) => {
+
+          SelectedCountryCode = SelectedCountryCode+","+OBJ.value;
+          return OBJ;
+        });
+      this.getServiceListFiltered(SelectedCountryCode)
+    } else {
+      // else {
+    
+  
+
+     
+    
+      this.getServiceList();
+
       // }
     }
     // console.log("checkedArr = ",checkdata);
@@ -230,16 +268,16 @@ class Service extends Component {
       {
         Header: "Country",
         accessor: "CountryName",
-        width: 50,
-        maxWidth: 50,
-        minWidth: 50,
+        width: 100,
+        maxWidth: 100,
+        minWidth: 100,
       },
       {
         Header: "Shipment Type",
         accessor: "ServiceType",
-        width: 100,
-        maxWidth: 100,
-        minWidth: 100,
+        width: 65,
+        maxWidth: 65,
+        minWidth: 65,
       },
       {
         Header: "Service Name",
@@ -252,8 +290,8 @@ class Service extends Component {
         Header: "Sub Service Name",
         accessor: "ServiceName",
         width: 155,
-        maxWidth: 100,
-        minWidth: 100,
+        maxWidth: 155,
+        minWidth: 155,
       },
 
       {
@@ -263,17 +301,17 @@ class Service extends Component {
         width: 155,
       },
       {
-        Header: "Package Markup",
+        Header: "Pkg Markup",
         accessor: "Markup",
         width: 70,
       },
       {
-        Header: "Envelop Markup",
+        Header: "Env Markup",
         accessor: "EnvelopMarkup",
         width: 70,
       },
       {
-        Header: "Default MarkUp Type",
+        Header: "Dflt Markup",
         accessor: "MarkupType",
         width: 105,
       },
@@ -339,6 +377,68 @@ class Service extends Component {
               <h4 className="margin-right-auto text-color-black">
                 Service List
               </h4>
+              <div className="filter-wrap">
+                <div
+                      className="filter-top-right"
+                      onMouseLeave={() =>
+                        this.setState({ IsDropDownShow: false })
+                      }
+                      onMouseOver={() => this.setState({ IsDropDownShow: true })}
+                    >
+                      <Button
+                        className="cm-toggle"
+                        color="rose"
+                        // onClick={() =>
+                        //   this.setState({
+                        //     IsDropDownShow:
+                        //       this.state.IsDropDownShow === true ? false : true,
+                        //   })
+                        // }
+                      >
+                        Country <ExpandMoreIcon />
+                      </Button>
+                      {this.state.IsDropDownShow === true ? (
+                        <div className="cm-dropdown" ref={this.state.ref}>
+                          <div className="overflow-handle">
+                            {this.state.countryWise.map((step, key) => {
+                              return (
+                                <li>
+                                  <label>
+                                    <input
+                                      type="checkbox"
+                                      checked={step.IsSelected}
+                                      onChange={(e, value) =>
+                                        this.handleStepValue(
+                                          e,
+                                          step,
+                                          step.value
+                                        )
+                                      }
+                                      value={this.state.countryWise}
+                                    />{" "}
+                                    {step.label}
+                                  </label>
+                                </li>
+                              );
+                            })}
+                          </div>
+                          <div className="cms-wrap">
+                            <Button
+                              className="cm-search-btn"
+                              color="rose"
+                            onClick={() => this.handleServiceCheckboxChange(
+                              this.state.eValue,
+                              this.state.recordValue,
+                              this.state.typeValue
+                            )}
+                            >
+                              Search
+                            </Button>
+                          </div>
+                        </div>
+                      ) : null}
+                </div>
+              </div>
               <Button
                 color="primary"
                 className=""
@@ -347,62 +447,7 @@ class Service extends Component {
                 Add Service
               </Button>
               
-            <div
-                    className="filter-top-right"
-                    onMouseLeave={() =>
-                      this.setState({ IsDropDownShow: false })
-                    }
-                    onMouseOver={() => this.setState({ IsDropDownShow: true })}
-                  >
-                    <Button
-                      className="cm-toggle"
-                      color="rose"
-                      // onClick={() =>
-                      //   this.setState({
-                      //     IsDropDownShow:
-                      //       this.state.IsDropDownShow === true ? false : true,
-                      //   })
-                      // }
-                    >
-                      Country <ExpandMoreIcon />
-                    </Button>
-                    {this.state.IsDropDownShow === true ? (
-                      <div className="cm-dropdown" ref={this.state.ref}>
-                        <div className="overflow-handle">
-                          {this.state.countryWise.map((step, key) => {
-                            return (
-                              <li>
-                                <label>
-                                  <input
-                                    type="checkbox"
-                                    checked={step.IsSelected}
-                                    onChange={(e, value) =>
-                                      this.handleServiceCheckboxChange(
-                                        e,
-                                        step,
-                                        step.value
-                                      )
-                                    }
-                                    value={this.state.countryWise}
-                                  />{" "}
-                                  {step.label}
-                                </label>
-                              </li>
-                            );
-                          })}
-                        </div>
-                        <div className="cms-wrap">
-                          {/* <Button
-                            className="cm-search-btn"
-                            color="rose"
-                          // onClick={() => this.showSearchFilter("Shipment")}
-                          >
-                            Search
-                          </Button> */}
-                        </div>
-                      </div>
-                    ) : null}
-                  </div>
+            
         
             </CardHeader>
             <CardBody>
@@ -418,7 +463,7 @@ class Service extends Component {
                 columns={columns}
                 defaultPageSize={10}
                 showPaginationBottom={true}
-                className="-striped -highlight"
+                className="-striped -highlight with-linebreak"
               />
             </CardBody>
             
