@@ -1108,9 +1108,8 @@ class Step1 extends React.Component {
       this.setState({ userModules: userModules });
     }
   };
-
-  handleServiceCheckboxChange = (e, record, type) => {
-    
+  handleStepValue = (e, record, type) => {
+    this.setState({eValue :e,recordValue:record,typeValue :type});
     let checkedArr = this.state.countryWise;
     if (type !== "All") {
       checkedArr
@@ -1128,16 +1127,14 @@ class Step1 extends React.Component {
       this.setState({ serviceValue: previousList });
       let arrType = "previousSelected" + this.state.chatlist;
       let SelectedCountryCode="1";
-      //this.filterMethod("Hello", previousList);
+   
       checkedArr.filter((x) => x.IsSelected === true)
         .map((OBJ) => {
 
           SelectedCountryCode = SelectedCountryCode+","+OBJ.value;
           return OBJ;
         });
-        if(SelectedCountryCode === undefined || SelectedCountryCode === "1")
-          SelectedCountryCode = "1,37,89,202,0";
-      this.getServiceListFiltered(SelectedCountryCode)
+     
     } else {
       // else {
       this.setState({ shipmentquery: "" });
@@ -1161,6 +1158,34 @@ class Step1 extends React.Component {
         [arrType]: previousList,
         StatusQuery: this.state.shipmentquery,
       });
+  
+     // this.filterMethod("Hello", previousList);
+      // }
+    }
+    
+  };
+  handleServiceCheckboxChange = (e, record, type) => {
+    
+    let checkedArr = this.state.countryWise;
+    if (type !== "All") {
+     
+   
+      let SelectedCountryCode="1";
+      //this.filterMethod("Hello", previousList);
+      checkedArr.filter((x) => x.IsSelected === true)
+        .map((OBJ) => {
+
+          SelectedCountryCode = SelectedCountryCode+","+OBJ.value;
+          return OBJ;
+        });
+        if(SelectedCountryCode === undefined || SelectedCountryCode === "1")
+          SelectedCountryCode = "1,37,89,202,0";
+      this.getServiceListFiltered(SelectedCountryCode)
+    } else {
+      // else {
+    
+      
+     
       let SelectedCountryCode="1";
       checkedArr.filter((x) => x.IsSelected === true)
       .map((OBJ) => {
@@ -3190,7 +3215,7 @@ class Step1 extends React.Component {
                   </div>
                   <div className="shipment-pane mt-20" id="markupdetails">
                     <div className="ft-outer">
-                      <div
+                      {/* <div
                         className="filter-top-right"
                         onMouseLeave={() =>
                           this.setState({ IsDropDownShow: false })
@@ -3235,29 +3260,88 @@ class Step1 extends React.Component {
                               })}
                             </div>
                             <div className="cms-wrap">
-                              {/* <Button
+                              { <Button
                                 className="cm-search-btn"
                                 color="rose"
                               // onClick={() => this.showSearchFilter("Shipment")}
                               >
                                 Search
-                              </Button> */}
+                              </Button> }
                             </div>
                           </div>
                         ) : null}
-                      </div>
+                      </div> */}
                     </div>
                     <div className="package-table">
                      <table>
                         <thead>
                           <tr>
-                            <th>Country Name</th>
+                            <th><div
+                        className="filter-top-right filter-top-right-user-markup"
+                        onMouseLeave={() =>
+                          this.setState({ IsDropDownShow: false })
+                        }
+                        onMouseOver={() => this.setState({ IsDropDownShow: true })}
+                      >
+                        <Button
+                          className="cm-toggle"
+                          color="rose"
+                          // onClick={() =>
+                          //   this.setState({
+                          //     IsDropDownShow:
+                          //       this.state.IsDropDownShow === true ? false : true,
+                          //   })
+                          // }
+                        >
+                          Country <ExpandMoreIcon />
+                        </Button>
+                        {this.state.IsDropDownShow === true ? (
+                          <div className="cm-dropdown " ref={this.state.ref}>
+                            <div className="overflow-handle">
+                              {this.state.countryWise.map((step, key) => {
+                                return (
+                                  <li>
+                                    <label>
+                                      <input
+                                        type="checkbox"
+                                        checked={step.IsSelected}
+                                        onChange={(e, value) =>
+                                          this.handleStepValue(
+                                            e,
+                                            step,
+                                            step.value
+                                          )
+                                        }
+                                        value={this.state.countryWise}
+                                      />{" "}
+                                      {step.label}
+                                    </label>
+                                  </li>
+                                );
+                              })}
+                            </div>
+                            <div className="cms-wrap">
+                              <Button
+                                className="cm-search-btn"
+                                color="rose"
+                                onClick={() => this.handleServiceCheckboxChange(
+                                  this.state.eValue,
+                                  this.state.recordValue,
+                                  this.state.typeValue
+                                )}
+                              >
+                                Search
+                              </Button>
+                            </div>
+                          </div>
+                        ) : null}
+                      </div></th>
                             <th>Shipment Type</th>
                             <th>Service Name</th>
                             <th>Sub Service Name</th>
                             <th>Display Name</th>
-                            <th>Package Markup</th>
-                            <th>Envelop Markup</th>
+                            <th>Pkg Markup</th>
+                            <th>Env Markup</th>
                             <th>Markup Type</th>
                             <th>Status</th>
                           </tr>
