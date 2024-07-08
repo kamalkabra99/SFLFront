@@ -134,6 +134,7 @@ class Scheduleshipment extends React.Component {
       BankAccountNumber: "",
       BankAccountNumberErr: false,
       BankAccountNumberHelperText: "",
+      cvvlength:3,
 
       ConfirmBankAccountNumber: "",
       ConfirmBankAccountNumberErr: false,
@@ -171,9 +172,7 @@ class Scheduleshipment extends React.Component {
       ],
 
       Year: [
-        { value: "2021", label: "2021" },
-        { value: "2022", label: "2022" },
-        { value: "2023", label: "2023" },
+       
         { value: "2024", label: "2024" },
         { value: "2025", label: "2025" },
         { value: "2026", label: "2026" },
@@ -186,7 +185,7 @@ class Scheduleshipment extends React.Component {
         { value: "2033", label: "2033" },
         { value: "2034", label: "2034" },
         { value: "2035", label: "2035" },
-        { value: "2036", label: "2036" },
+        // { value: "2036", label: "2036" },
       ],
 
       selectedPaymentType: "Pay Online",
@@ -422,6 +421,17 @@ class Scheduleshipment extends React.Component {
     if (type === "cardnumber") {
       let cardNo = event.target.value.replace(/\D/g, "");
       let cardType = creditCardType(cardNo);
+      console.log("Hello , " , cardType);
+
+      var len = 16;
+      if(cardNo.length > 10){
+        console.log("cardType = ",cardType[0].lengths[0])
+        len = cardType[0].lengths[0]
+
+        this.setState({cvvlength:cardType[0].code.size})
+
+      }
+
 
       if (CommonConfig.isEmpty(cardNo)) {
         this.setState({
@@ -429,11 +439,11 @@ class Scheduleshipment extends React.Component {
           cardNumberErr: true,
           cardNumberHelperText: "Please enter Card Number",
         });
-      } else if (cardNo.length > 16) {
+      } else if (cardNo.length > len) {
         this.setState({
           cardNumber: cardNo,
           cardNumberErr: true,
-          cardNumberHelperText: "card number should be max 16 digit",
+          cardNumberHelperText: "card number should be max "+ len +" digit",
         });
       } else if (!valid.number(cardNo).isValid) {
         this.setState({
@@ -495,11 +505,11 @@ class Scheduleshipment extends React.Component {
           cvvErr: true,
           cvvHelperText: "cvv is not valid",
         });
-      } else if (cvvNo.length > 3) {
+      } else if (cvvNo.length > this.state.cvvlength) {
         this.setState({
           Cvv: cvvNo,
           cvvErr: true,
-          cvvHelperText: "cvv should be max 3 digit",
+          cvvHelperText: "cvv should be max "+ this.state.cvvlength +" digit",
         });
       } else {
         this.setState({ Cvv: cvvNo, cvvErr: false, cvvHelperText: "" });

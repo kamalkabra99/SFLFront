@@ -299,8 +299,8 @@ class EditSalesLeads extends Component {
       managedby: [],
       selectedWorkingOnRequest: "",
       SelectedCountryCode:{
-        label: "1",
-        value: "1",
+        label: "United States(+1)",
+        value: "United States(+1)",
       },
       dropoffCountry: [],
       packageType: [
@@ -5899,7 +5899,7 @@ if (res.success) {
                 </GridItem>
                 <GridItem xs={12} sm={12} md={3}>
                   <GridContainer>
-                    <GridItem xs={12} sm={12} md={3}>
+                    <GridItem xs={12} sm={12} md={6}>
                     <Autocomplete
                       options={countryCodeList}
                       id="CountryCode"
@@ -5923,7 +5923,7 @@ if (res.success) {
                       
                     </GridItem>
 
-                    <GridItem xs={12} sm={12} md={9}>
+                    <GridItem xs={12} sm={12} md={6}>
 
                     <CustomInput
                     labelText="Phone"
