@@ -635,6 +635,7 @@ class Step1 extends React.Component {
         .post("https://hubapi.sflworldwide.com/userManagement/getServiceListUserMarkupFilter",data)
         .then((res) => {
           if (res.success) {
+            this.setState({ serviceList: [] });
             var i = 0;
             res.data.map((OBJ) => {
               OBJ.IsSelected = false;
@@ -3247,7 +3248,7 @@ class Step1 extends React.Component {
                       </div>
                     </div>
                     <div className="package-table">
-                    {/*  <table>
+                     <table>
                         <thead>
                           <tr>
                             <th>Country Name</th>
@@ -3262,9 +3263,9 @@ class Step1 extends React.Component {
                           </tr>
                         </thead>
                         <tbody>{this.renderMarkup()}</tbody>
-                      </table> */}
+                      </table>
                        
-                        <ReactTable
+                        {/* <ReactTable
                           
                           data={this.state.serviceList}
                           
@@ -3276,7 +3277,7 @@ class Step1 extends React.Component {
                           defaultPageSize={10}
                           showPaginationBottom={true}
                           className="-striped -highlight"
-                        />
+                        /> */}
                     </div>
                   </div>
 
