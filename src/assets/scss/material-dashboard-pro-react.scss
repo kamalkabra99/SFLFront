@@ -6626,8 +6626,12 @@ button.file-doc {
   white-space: normal;
 }
 
+.left .cm-dropdown {
+  left: 0;
+  right: inherit;
+  width: 160px;
+}
 
-
-
-
-
+.filter-top-right-user-markup.left button.cm-search-btn {
+  width: 100%;
+}

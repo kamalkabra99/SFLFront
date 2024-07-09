@@ -3276,8 +3276,10 @@ class Step1 extends React.Component {
                      <table>
                         <thead>
                           <tr>
-                            <th><div
-                        className="filter-top-right filter-top-right-user-markup"
+                            <th>
+                              <div className="relative">
+                              <div
+                        className="filter-top-right filter-top-right-user-markup left"
                         onMouseLeave={() =>
                           this.setState({ IsDropDownShow: false })
                         }
@@ -3335,7 +3337,7 @@ class Step1 extends React.Component {
                             </div>
                           </div>
                         ) : null}
-                      </div></th>
+                      </div></div></th>
                             <th>Shipment Type</th>
                             <th>Service Name</th>
                             <th>Sub Service Name</th>
