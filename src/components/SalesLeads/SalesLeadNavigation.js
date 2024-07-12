@@ -447,6 +447,7 @@ class SalesLeadNavigation extends Component {
         .then((result) => {
           if (result.success) {
             this.setState({ Loading: false });
+            console.log("this.state.AllAccess = " ,this.state.AllAccess )
             if (this.state.AllAccess === 1) {
               this.setState({ ProposalData: result.Data });
             } else {
@@ -1335,7 +1336,15 @@ class SalesLeadNavigation extends Component {
     });
     localStorage.removeItem("SearchCount");
     if (CommonConfig.getUserAccess("Sales Lead").AllAccess === 0) {
-      this.setState({ AllAccess: 0 });
+      if(this.state.AllAccess == 1){
+        this.setState({ AllAccess: 0 });
+      }else{
+        this.setState({ AllAccess: 0 });
+      }
+
+      let newFilter = [{ label: "New", value: "New" },{ value: "Auto Quote", label: "Auto Quote" }];
+      this.filterMethod("", newFilter);
+      
     }
   };
 
@@ -2098,6 +2107,7 @@ class SalesLeadNavigation extends Component {
       .post("salesLead/getSalesLead", data)
       .then((result) => {
         if (result.success) {
+          console.log("this.state.AllAccess = " , this.state.AllAccess)
           this.setState({ Loading: false });
           if (this.state.AllAccess === 1) {
             this.setState({ SearchSalesLeadList: result.Data });

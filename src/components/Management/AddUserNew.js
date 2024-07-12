@@ -3338,7 +3338,7 @@ class Step1 extends React.Component {
                           </div>
                         ) : null}
                       </div></div></th>
-                            <th>Shipment Type</th>
+                            <th>Type</th>
                             <th>Service Name</th>
                             <th>Sub Service Name</th>
                             <th>Display Name</th>
@@ -3389,34 +3389,72 @@ class Step1 extends React.Component {
                 </div>
               </Cardbody>
             </Card>
-            {this.state.LoginpersonId === 1 ||
-            this.state.LoginpersonId === 18 || this.state.LoginpersonId == 12122 ? (
+           
               <div className="shipment-submit">
-                <div className="left">
-                  <Button
-                    justify="center"
-                    color="danger"
-                    onClick={() => this.deleteUser()}
-                  >
-                    Delete
-                  </Button>
-                </div>
 
-                <div className="right">
-                  {CommonConfig.isEmpty(this.props.location.state) ? null : (
-                    <Button color="rose" onClick={() => this.saveUser(false)}>
-                      Save
+                {CommonConfig.getUserAccess("User Management").DeleteAccess === 1 ?(
+                  <div className="left">
+                    <Button
+                      justify="center"
+                      color="danger"
+                      onClick={() => this.deleteUser()}
+                    >
+                      Delete
                     </Button>
-                  )}
-                  <Button color="primary" onClick={() => this.saveUser(true)}>
-                    Save & Exit
-                  </Button>
+                  </div>
+                ):null}
+
+                
+                {CommonConfig.getUserAccess("User Management").WriteAccess === 1 && (CommonConfig.loggedInUserData().PersonID == this.props.location.state) ?(
+                  <div className="right">
+                  
+                    {/* <div> */}
+                      {CommonConfig.isEmpty(this.props.location.state) ? null : (
+                        <Button color="rose" onClick={() => this.saveUser(false)}>
+                          Save
+                        </Button>
+                      )}
+                      <Button color="primary" onClick={() => this.saveUser(true)}>
+                        Save & Exit
+                      </Button>
+                    {/* </div> */}
+                  
+                    
+                    <Button color="secondary" onClick={() => this.cancelUser()}>
+                      Cancel
+                    </Button>
+                  </div>
+                ):
+                CommonConfig.getUserAccess("User Management").WriteAccess === 1 && CommonConfig.getUserAccess("User Management").AllAccess === 1 ?(
+                  <div className="right">
+                  
+                  {/* <div> */}
+                    {CommonConfig.isEmpty(this.props.location.state) ? null : (
+                      <Button color="rose" onClick={() => this.saveUser(false)}>
+                        Save
+                      </Button>
+                    )}
+                    <Button color="primary" onClick={() => this.saveUser(true)}>
+                      Save & Exit
+                    </Button>
+                  {/* </div> */}
+                
+                  
                   <Button color="secondary" onClick={() => this.cancelUser()}>
                     Cancel
                   </Button>
                 </div>
+                ):
+                  <div className="right">
+                    <Button color="secondary" onClick={() => this.cancelUser()}>
+                      Cancel
+                    </Button>
+                  </div>
+                }
+
+               
               </div>
-            ) : null}
+         
           </GridItem>
         </GridContainer>
         {this.state.Loading === true ? (

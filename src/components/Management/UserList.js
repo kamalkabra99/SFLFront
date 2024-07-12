@@ -54,7 +54,18 @@ class UserLists extends Component {
         .get("userManagement/getUserList")
         .then((res) => {
           if (res.success) {
-            this.setState({ userList: res.data, Loading: false });
+
+            if(CommonConfig.getUserAccess("User Management").AllAccess === 1){
+              this.setState({ userList: res.data, Loading: false });
+            }else{
+              let proposalData = res.data.filter(
+                (x) => x.PersonID === CommonConfig.loggedInUserData().PersonID
+              );
+              this.setState({ userList: proposalData, Loading: false });
+
+            }
+
+            
           } else {
             cogoToast.error("Something Went Wrong");
           }

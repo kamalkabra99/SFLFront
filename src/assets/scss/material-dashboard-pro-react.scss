@@ -5586,6 +5586,8 @@ ul.chat-window li {
 .filter-top-right-user-markup button {
   line-height: 33px;
   width: 100px;
+  padding: 0px 0px !important;
+  margin-top: 0 !important;
 
 }
 .filter-top-right .cms-wrap button {
@@ -5596,6 +5598,7 @@ ul.chat-window li {
   padding: 4px 15px;
   margin-top: 0;
 }
+
 .filter-wrap {
   position: relative;
 }
