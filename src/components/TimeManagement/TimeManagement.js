@@ -150,6 +150,7 @@ class TimeManagement extends React.Component {
   };
 
   getTmsUserName = (values) => {
+    this.showLoador();
     console.log(CommonConfig.getUserAccess("Time Booking").AllAccess);
     var userdata = 0
     if (CommonConfig.getUserAccess("Time Booking").AllAccess == 1) {
@@ -188,6 +189,7 @@ class TimeManagement extends React.Component {
             }
           }
           this.setState({ ProposalData: res.Data[0] });
+          this.hideLoador();
         }
       } else {
 
@@ -276,10 +278,12 @@ class TimeManagement extends React.Component {
       console.log("Res = ", res);
       if (res.success) {
 
-        this.hideLoador();
+        
         this.setState({ loggedUser: 1 })
         cogoToast.success("Login Successfully");
         this.getTmsUserName(this.state.userTimeZone.value);
+
+        this.hideLoador();
 
 
 
