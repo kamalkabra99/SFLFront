@@ -206,6 +206,7 @@ class Step1 extends React.Component {
       UsertypeEmail2: "",
       Email: "",
       EmailID: "",
+      EmployeementID:"",
       department:"",
       employeeId:"",
       Password: "",
@@ -711,6 +712,16 @@ class Step1 extends React.Component {
             });
             console.log(this.state.ShipmentCount);
             if (userData.UserData) {
+
+              if(userData.UserData[0].UserType=="Employee"){
+                this.setState({
+                  EmployeementID: !CommonConfig.isEmpty(this.props.location.state)
+                  ? userData.EmployeeData[0].EmployeeDetailID
+                  : null,
+                })
+              
+              }
+
               this.setState({
                 Status: !CommonConfig.isEmpty(this.props.location.state)
                   ? {
@@ -745,6 +756,9 @@ class Step1 extends React.Component {
                   : "",
                 EmailID: !CommonConfig.isEmpty(this.props.location.state)
                   ? userData.UserData[0].EmailID
+                  : null,
+                EmployeementID: !CommonConfig.isEmpty(this.props.location.state)
+                  ? userData.EmployeeData[0].EmployeeDetailID
                   : null,
                 MobileID: !CommonConfig.isEmpty(this.props.location.state)
                   ? userData.UserData[0].PhoneID
@@ -2003,7 +2017,7 @@ handleTimeChange = (time, type) => {debugger
             SelectedPaperSize: this.state.PaperSize.value,
             Status: this.state.Status.value,
             DocumentList: finalAttachment,
-            EmployeeDetailID:1,
+            EmployeeDetailID:this.state.EmployeementID,
             usertypeTimeZone:this.state.usertypeTimeZone.value,
             UserType:this.state.userType.value,
             usertypeStartTime:this.state.StartTime==""?"NULL":this.state.StartTime,
