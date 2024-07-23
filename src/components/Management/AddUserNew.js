@@ -418,8 +418,9 @@ class Step1 extends React.Component {
 
   componentDidMount() {debugger
     this.setState({ Access: CommonConfig.getUserAccess("User Management") });
-    this.showHide();
     this.getCountry();
+    this.showHide();
+    
     this.getManagedBy();
     this.getUserDetail();
     this.getServiceListFiltered(89);
@@ -862,6 +863,13 @@ class Step1 extends React.Component {
                     ? Department[0]
                       
                     : "";
+                    let selectedCity ="";
+                    if(userData.EmployeeData[0].City!="")
+                    selectedCity = {"label":userData.EmployeeData[0].City,"value":userData.EmployeeData[0].City};
+                    let selectedState ="";
+                    if(userData.EmployeeData[0].State!="")
+                    selectedState = {"label":userData.EmployeeData[0].State,"value":userData.EmployeeData[0].State};
+
               this.setState({
                 usertypeTimeZone: timezon,
                 StartTime:userData.EmployeeData[0].StartTime,
@@ -873,8 +881,8 @@ class Step1 extends React.Component {
                 UsertypeAddressLine2:userData.EmployeeData[0].Addr2,
                 UsertypeCountry:selectedCountry,
                 UsertypeZipCode:userData.EmployeeData[0].Zipcode,
-                UsertypeCity:userData.EmployeeData[0].City,
-                UsertypeState:userData.EmployeeData[0].State,
+                UsertypeCity:selectedCity.label,
+                UsertypeState:selectedState.label,
                 UsertypeMobile:userData.EmployeeData[0].Phone1,
                 UsertypeMobile1:userData.EmployeeData[0].Phone2,
                 UsertypeEmail1:userData.EmployeeData[0].Email1,
@@ -2035,8 +2043,8 @@ handleTimeChange = (time, type) => {debugger
             usertypeAddr2:this.state.UsertypeAddressLine2,
             usertypeCountry:this.state.UsertypeCountry=="" ?"":this.state.UsertypeCountry.value,
             usertypeZip:this.state.UsertypeZipCode,
-            usertypeCity:this.state.UsertypeCity,
-            usertypeState:this.state.UsertypeState==""?"":this.state.UsertypeState.value,
+            usertypeCity:this.state.UsertypeCity==""?"":this.state.UsertypeCity,
+            usertypeState:this.state.UsertypeState==""?"":this.state.UsertypeState,
             usertypeMobile1:this.state.UsertypeMobile,
             usertypeMobile2:this.state.UsertypeMobile1,
             usertypeEmail1:this.state.UsertypeEmail1,
@@ -2081,7 +2089,7 @@ handleTimeChange = (time, type) => {debugger
             usertypeAddr2:this.state.UsertypeAddressLine2,
             usertypeCountry:this.state.UsertypeCountry=="" ?"":this.state.UsertypeCountry.value,
             usertypeZip:this.state.UsertypeZipCode,
-            usertypeCity:this.state.UsertypeCity,
+            usertypeCity:this.state.UsertypeCity==""?"":this.state.UsertypeCity.value,
             usertypeState:this.state.UsertypeState==""?"":this.state.UsertypeState.value,
             usertypeMobile1:this.state.UsertypeMobile,
             usertypeMobile2:this.state.UsertypeMobile1,
@@ -2916,7 +2924,7 @@ handleTimeChange = (time, type) => {debugger
                           UsertypeStateAutoComplete: this.state.UsertypeStateList.length ? true : false,
                           UsertypeGoogleAPICityList: FinalCity,
                           UsertypeState: this.state.UsertypeStateList.length ? SelectedState : state,
-                          UsertypeCity: SelectedCity.label,
+                          UsertypeCity: SelectedCity,
                         });
                       } else {
                         this.setState({
