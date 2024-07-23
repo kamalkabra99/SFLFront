@@ -654,6 +654,7 @@ class Step1 extends React.Component {
         this.setState({ ToFedExSelectedCity: event });
         let GetRate = this.state.GetRate;
         GetRate.ToFedExCity = event;
+        console.log("GetRate = ",this.state.GetRate);
         this.setState({ GetRate: GetRate });
       }
     } else if (type === "UPS") {
@@ -1335,8 +1336,8 @@ class Step1 extends React.Component {
               var GetRate = this.state.GetRate;
               GetRate.ToCity =
                 FinalCity.length > 0 ? FinalCity[0].City_code : "";
-              GetRate.ToFedExCity = null;
-              GetRate.ToUPSCity = null;
+              // GetRate.ToFedExCity = null;
+              // GetRate.ToUPSCity = null;
               GetRate.ToState = state && state.length === 2 ? state : "";
               GetRate.ToZipCode = zip;
               this.setState({
@@ -1515,8 +1516,8 @@ class Step1 extends React.Component {
               var GetRate = this.state.GetRate;
               GetRate.ToCity =
                 FinalCity.length > 0 ? FinalCity[0].City_code : "";
-              GetRate.ToFedExCity = null;
-              GetRate.ToUPSCity = null;
+              // GetRate.ToFedExCity = null;
+              // GetRate.ToUPSCity = null;
               GetRate.ToState = state && state.length === 2 ? state : "";
               GetRate.ToZipCode = zip;
               this.setState({
@@ -2442,6 +2443,7 @@ class Step1 extends React.Component {
 
     
     if(this.state.GetRate.ToCountry.IsFedexCity === 1){
+      console.log("this.state.GetRate.ToFedExCity= ",this.state.GetRate);
       
         UpsData.ToCity =
         this.state.GetRate.ToCity !== null &&

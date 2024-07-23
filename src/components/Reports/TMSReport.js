@@ -34,12 +34,12 @@ import MenuItem from "@material-ui/core/MenuItem";
 import { DownloadTableExcel } from "react-export-table-to-excel";
 import zipcelx from "zipcelx";
 import {
-    Checkbox,
-    Box,
-    FormControlLabel,
-    FormGroup,
-    Switch,
-    Typography,
+  Checkbox,
+  Box,
+  FormControlLabel,
+  FormGroup,
+  Switch,
+  Typography,
 } from "@material-ui/core";
 import Modal from "@material-ui/core/Modal";
 import styles from "assets/jss/material-dashboard-pro-react/views/validationFormsStyle.js";
@@ -64,849 +64,1040 @@ setInterval(() => {
 }, 1000);
 
 class TMSReport extends Component {
-    constructor(props) {
-        super(props);
+  constructor(props) {
+    super(props);
 
-        this.tableRef = React.createRef(null);
-        this.state = {
-            file: "",
-            fileSetName: "",
-            ExcelJSONData: [],
-            KeywordListAllData: [],
-            Loading: false,
-            ProposalData: [],
-            setweekendsCount:0,
-            setTimeOff:0,
-            isCommitted: false,
-            committedLength: 0,
-            notCommitedLength: 0,
-            notCommitedList: [],
-            fileName: "",
-            deleteType:"",
-            deleteID:"",
-            updateID:"",
-            updateType:"",
-            FromDate: new Date(),
-            ToDate: new Date(),
-            ManagedBy: "",
-            setWeekandTimeoff: 0,
-            isPreviewClicked: false,
-            ManagedBy: "",
-            managedByList: [],
-            IpAddress: "",
-            totalRowCount: "",
-            LoginType: "",
-            open: false,
-            updateopen: false,
-            logintype: [
-                { value: "Login", label: "Login" },
-                { value: "Break", label: "Break" },
-            ],
-            logintypevalue: [],
-            LoginTypeValue: "",
-            UserNameValue: "",
-            TmsDeleteAccess:"",
-            TmsWriteAccess:"",
-            updateLogin:"",
-            updateLogout:"",
-            updateFullLogout:"",
-            updateFullLogin:""
-        };
-    }
+    this.tableRef = React.createRef(null);
+    this.state = {
+      file: "",
+      fileSetName: "",
+      ExcelJSONData: [],
+      KeywordListAllData: [],
+      Loading: false,
+      ProposalData: [],
+      TimeoffProposalData:[],
+      setweekendsCount: 0,
+      setTimeOff: 0,
+      isCommitted: false,
+      committedLength: 0,
+      notCommitedLength: 0,
+      notCommitedList: [],
+      fileName: "",
+      deleteType: "",
+      deleteID: "",
+      updateID: "",
+      updateType: "",
+      FromDate: new Date(),
+      ToDate: new Date(),
+      ManagedBy: "",
+      setWeekandTimeoff: 0,
+      isPreviewClicked: false,
+      SetShiprecord:false,
+      ManagedBy: "",
+      managedByList: [],
+      IpAddress: "",
+      totalRowCount: "",
+      LoginType: "",
+      open: false,
+      updateopen: false,
+      logintype: [
+        { value: "Login", label: "Login" },
+        { value: "Break", label: "Break" },
+        { value: "Leave", label: "Leave" },
+      ],
+      logintypevalue: [],
+      LoginTypeValue: "",
+      UserNameValue: "",
+      TmsDeleteAccess: "",
+      TmsWriteAccess: "",
+      updateLogin: "",
+      updateLogout: "",
+      updateFullLogout: "",
+      updateFullLogin: "",
+      TmsTimeOffcount:0,
+      timeoffStyle: "hide",
+      totalLeave:0
+      // timeoffStyle:"table-pane.active"
 
-    componentDidMount() {
-
-        // this.getUserTMSReport()
-        this.state.TmsDeleteAccess = CommonConfig.getUserAccess("Time Booking Report").DeleteAccess
-        this.state.TmsWriteAccess =  CommonConfig.getUserAccess("Time Booking Report").WriteAccess
-        this.getManagedBy();
-
-    }
-
-    getManagedBy() {
-        try {
-            api
-                .get("contactus/getUsersForTMSList")
-                .then((result) => {
-                    console.log("result", result)
-                    this.setState({ managedByList: result.Data });
-                })
-                .catch((err) => {
-                    console.log(err);
-                });
-        } catch (err) {
-            console.log("error", err);
-        }
-    }
-
-
-    dateChange = (date, type) => {
-        this.setState({
-            [type]: date,
-        });
     };
+  }
 
+  componentDidMount() {
+    // this.getUserTMSReport()
+    this.state.TmsDeleteAccess = CommonConfig.getUserAccess(
+      "Time Booking Report"
+    ).DeleteAccess;
+    this.state.TmsWriteAccess = CommonConfig.getUserAccess(
+      "Time Booking Report"
+    ).WriteAccess;
+    this.getManagedBy();
+  }
 
-    getUserTMSReport() {
-        this.state.ProposalData = []
-        this.setState({ ProposalData: []});
-        var setArr = [];
+  getManagedBy() {
+    try {
+      api
+        .get("contactus/getUsersForTMSList")
+        .then((result) => {
+          console.log("result", result);
+          this.setState({ managedByList: result.Data });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (err) {
+      console.log("error", err);
+    }
+  }
 
-        debugger
+  dateChange = (date, type) => {
+    this.setState({
+      [type]: date,
+    });
+  };
 
-        var managedByValue = 0
-        if (CommonConfig.getUserAccess("Time Booking Report").AllAccess ===
-            1) {
-            managedByValue = this.state.ManagedBy.value
+  getTimeOffData(setArrprev){
+
+    var managedByValue = 0;
+    if (CommonConfig.getUserAccess("Time Booking Report").AllAccess === 1) {
+      managedByValue = this.state.ManagedBy.value;
+    } else {
+      managedByValue = CommonConfig.loggedInUserData().PersonID;
+    }
+
+    var pData = {
+      fromDate: moment(this.state.FromDate)
+        .format(CommonConfig.dateFormat.dbDateOnly)
+        .toString(),
+
+      toDate: moment(this.state.ToDate)
+        .format(CommonConfig.dateFormat.dbDateOnly)
+        .toString(),
+      puserdata: managedByValue,
+      
+    };
+    api.post("contactus/getTmsUserTimeOff", pData).then((res) => {
+      if (res.success) {
+
+        console.log("Data = ",res);
+        let requestData = res.Data[0];
+        
+        
+        if(requestData.length > 0){
+          // this.state.timeoffStyle = "table-pane.active"
+          for (let index = 0; index < requestData.length; index++) {
+            for (let dayindex = 0; dayindex < setArrprev.length; dayindex++) {
+              if (requestData[index].LeaveFromDate == setArrprev[dayindex].Date) {
+                requestData[index].Day = setArrprev[dayindex].Day;
+              }
+            }
+
+          }
+          console.log("requestData = ",setArrprev)
+          console.log("requestData = ",requestData)
+          
+
+          // console.log("requestData = ", setArr);
+              this.setState({ fileSetName: fileNameSet });
+              this.setState({ ProposalData: requestData });
+
+          // this.setState({ timeoffStyle: "table-pane.active" });
+          // this.setState({TimeoffProposalData : res.Data[0]})
+          // this.setState({totalLeave : requestData.length})
+        }
+       
+
+        
+
         } else {
-            managedByValue = CommonConfig.loggedInUserData().PersonID
+          this.hideLoador();
+          // this.setState({loggedUser:0})
+          cogoToast.error("Something went wrong. Please try again...");
         }
+      });
 
-        if(managedByValue == 0 || managedByValue == undefined){
-            cogoToast.error("Please Select Managed By");
+  }
 
-        }else if(this.state.LoginTypeValue == ""){
-            cogoToast.error("Please Select Data Type");
-        }
-        else{
-            
-            var pData = {
-                fromDate: moment(this.state.FromDate)
-                    .format(CommonConfig.dateFormat.dbDateOnly)
-                    .toString(),
-    
-                toDate: moment(this.state.ToDate)
-                    .format(CommonConfig.dateFormat.dbDateOnly)
-                    .toString(),
-                puserdata: managedByValue,
-                logintypes:this.state.LoginTypeValue.label
-            }
+  getUserTMSReport() {
+    this.state.ProposalData = [];
+    this.setState({ ProposalData: [] });
+    var setArr = [];
 
-            var daysArr = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+    debugger;
 
-            var d1 = new Date(this.state.FromDate);   
-            var d2 = new Date(this.state.ToDate);   
-                
-            var diff = d2.getTime() - d1.getTime();   
-                
-            var daydiff = diff / (1000 * 60 * 60 * 24);   
-    
-            console.log(daydiff);
-
-            for (let index = 0; index <= daydiff; index++) {
-                // const element = array[index];
-
-                // console.log("I = ",index);
-
-                const ds = new Date(this.state.FromDate);
-                ds.setDate(ds.getDate() + index);
-
-                // console.log("ds = ",ds);
-                
-                const d = new Date(ds);
-                let day = d.getDay();
-
-                var weekends = ""
-                if(daysArr[day] == "Sunday" || daysArr[day] == "Saturday"){
-                    weekends = "Weekends"
-                }
-
-                // console.log("day = ", day);
-
-                // console.log("DayName = " , daysArr[day] )
-                setArr.push({
-                    Date: moment(d)
-                    .format(CommonConfig.dateFormat.dateOnly),
-                    Day: daysArr[day],
-                    IPDetails:weekends,
-                    IpAddress:"",
-                    LoginDate:moment(d)
-                    .format(CommonConfig.dateFormat.dateOnly),
-                    LoginID:"",
-                    LoginLogOff:"",
-                    LoginTime:"",
-                    LogoutTime:"",
-                    UserID:"",
-                    totalBreak:"",
-                    totalWorking:"",
-                    
-                   
-                  });
-
-
-                
-            }
-    
-            api.post("contactus/getTmsUserReport", pData).then((res) => {
-                if (res.success) {
-                    
-                    // this.setState({ ProposalData: requestData });
-                    // console.log("res14 = ", res);
-                    let requestData = res.Data[0];
-                    if (requestData.length > 0) {
-
-                        // console.log("setArr = " , setArr);
-
-                        
-    
-                        for (let index = 0; index < requestData.length; index++) {
-                            
-                            if(this.state.LoginTypeValue.label == "Login"){
-                                var startTime = moment(requestData[index].totalBreak, 'HH:mm:ss');
-                                var endTime = moment(requestData[index].LoginLogOff, 'HH:mm:ss');
-        
-                                // calculate total duration
-                                var duration = moment.duration(endTime.diff(startTime));
-                                debugger
-                                // duration in hours
-                                var hours = parseInt(duration.asHours());
-                                // duration in minutes
-                                var minutes = parseInt(duration.asMinutes()) % 60;
-                                var seconds  = parseInt((duration.asSeconds() * 0.001)) 
-                                // console.log("SECS = ",seconds);
-                                // console.log(requestData[index]);
-                                // console.log("Hours = ", hours, ":", minutes);
-                                var totalTome =""
-                                if(requestData[index].LoginLogOff == null){
-                                    totalTome = "NA"
-                                }else{
-
-                                
-                                    totalTome = hours + ":" + minutes  + ":" + seconds + " hours"
-                                }
-                                requestData[index].totalWorking = totalTome;
-
-                                for (let dayindex = 0; dayindex < setArr.length; dayindex++) {
-                                    if(requestData[index].LoginDate == setArr[dayindex].Date){
-                                        // requestData[index].DayName = setArr[dayindex].Day;
-                                        setArr[dayindex].tmsID=requestData[index].tmsID;
-                                        setArr[dayindex].IPDetails=requestData[index].IPDetails;
-                                        setArr[dayindex].IpAddress=requestData[index].IpAddress;
-                                        
-                                        setArr[dayindex].LoginID=requestData[index].LoginID;
-                                        setArr[dayindex].LoginLogOff=requestData[index].LoginLogOff;
-                                        setArr[dayindex].LoginTime=requestData[index].LoginTime;
-                                        setArr[dayindex].LogoutTime=requestData[index].LogoutTime;
-                                        setArr[dayindex].UserID=requestData[index].UserID;
-                                        setArr[dayindex].totalBreak=requestData[index].totalBreak;
-                                        setArr[dayindex].totalWorking=requestData[index].totalWorking;
-                                        setArr[dayindex].userTimeZone=requestData[index].userTimeZone;
-    
-                                        break;
-    
-                                    }
-                                    
-                                }
-    
-                                var weekendsCount = 0
-                                var TimeOffCount = 0
-                                for (let indesSet = 0; indesSet < setArr.length; indesSet++) {
-                                    // const element = array[indesSet];
-                                    if(setArr[indesSet].IPDetails == "Weekends"){
-                                        weekendsCount = weekendsCount + 1
-                                    }
-    
-                                    if(setArr[indesSet].IPDetails == ""){
-                                        // TimeOffCount = TimeOffCount + 1
-                                        setArr[indesSet].IPDetails = "TimeOff"
-                                        
-                                    }
-                                }
-    
-                                for (let indesSetTime = 0; indesSetTime < setArr.length; indesSetTime++) {
-                                    // const element = array[indesSetTime];
-                                   
-    
-                                    if(setArr[indesSetTime].IPDetails == "TimeOff"){
-                                        TimeOffCount = TimeOffCount + 1
-                                        // setArr[indesSetTime].IPDetails = "TimeOff"
-                                        console.log("TimeOffCount = " , TimeOffCount)
-                                        
-                                    }
-                                }
-    
-                                
-    
-                                this.setState({setTimeOff : TimeOffCount});
-                                console.log("TimeOff = " , TimeOffCount)
-                                this.setState({setweekendsCount : weekendsCount});
-    
-    
-        
-                            }else{
-                                for (let dayindex = 0; dayindex < setArr.length; dayindex++) {
-                                    if(requestData[index].LoginDate == setArr[dayindex].Date){
-                                        requestData[index].Day =  setArr[dayindex].Day
-                                    }
-                                }
-                                requestData[index].totalBreak = "N/A";
-
-                            }
-
-
-                           
-                            // alert(hours + ' hour and ' + minutes + ' minutes.');
-    
-                        }
-                        if(this.state.LoginTypeValue.label == "Break"){
-                            setArr =  requestData
-                            this.setState({setWeekandTimeoff : 0});
-                        }else{
-                            this.setState({setWeekandTimeoff : 1});
-                            
-                        }
-                        console.log("requestData = ",setArr);
-                        this.setState({ fileSetName: fileNameSet });
-                        this.setState({ ProposalData: setArr});
-                    }
-                } else {
-    
-                    this.hideLoador();
-                    // this.setState({loggedUser:0})
-                    cogoToast.error("Something went wrong. Please try again...");
-    
-                }
-    
-            });
-    
-
-        }
-
-        
+    var managedByValue = 0;
+    if (CommonConfig.getUserAccess("Time Booking Report").AllAccess === 1) {
+      managedByValue = this.state.ManagedBy.value;
+    } else {
+      managedByValue = CommonConfig.loggedInUserData().PersonID;
     }
 
-    LoginTypeOption = () => {
-        return this.state.logintypevalue.map((content) => {
-          return (
-            <MenuItem classes={{ root: classes.selectMenuItem }} value={content.id}>
-              {" "}
-              {content.label}{" "}
-            </MenuItem>
-          );
-        });
+    if (managedByValue == 0 || managedByValue == undefined) {
+      cogoToast.error("Please Select Managed By");
+    } else if (this.state.LoginTypeValue == "") {
+      cogoToast.error("Please Select Data Type");
+    } else {
+      var pData = {
+        fromDate: moment(this.state.FromDate)
+          .format(CommonConfig.dateFormat.dbDateOnly)
+          .toString(),
+
+        toDate: moment(this.state.ToDate)
+          .format(CommonConfig.dateFormat.dbDateOnly)
+          .toString(),
+        puserdata: managedByValue,
+        logintypes: this.state.LoginTypeValue.label,
       };
+      // this.getTimeOffData()
 
-    selectChange = (event, value, type) => {
-        if (value != null) {
-            if (type === "ManagedBy") {
-                this.setState({ ManagedBy: value });
-                console.log(this.state.ManagedBy);
-                this.state.ManagedBy = value
-                console.log(this.state.ManagedBy);
-                // this.getUserTMSReport()
-            }
+      var daysArr = [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+      ];
 
-            if (type === "logintypevalue") {
-                this.setState({ LoginTypeValue: value });
-                console.log(this.state.LoginTypeValue);
-                this.state.LoginTypeValue = value
-                console.log(this.state.LoginTypeValue);
-                // this.getUserTMSReport()
-            }
+      var d1 = new Date(this.state.FromDate);
+      var d2 = new Date(this.state.ToDate);
+
+      var diff = d2.getTime() - d1.getTime();
+
+      var daydiff = diff / (1000 * 60 * 60 * 24);
+
+      console.log(daydiff);
+
+      for (let index = 0; index <= daydiff; index++) {
+        // const element = array[index];
+
+        // console.log("I = ",index);
+
+        const ds = new Date(this.state.FromDate);
+        ds.setDate(ds.getDate() + index);
+
+        // console.log("ds = ",ds);
+
+        const d = new Date(ds);
+        let day = d.getDay();
+
+        var weekends = "";
+        if (daysArr[day] == "Sunday" || daysArr[day] == "Saturday") {
+          weekends = "Weekends";
         }
-    };
 
-    handleEdit = (record,type) =>{
-        console.log("record = ",record)
+        // console.log("day = ", day);
 
-        console.log(record.original.tmsID)
-        // if(type == "Login"){
+        // console.log("DayName = " , daysArr[day] )
 
-          this.setState({
-            updateopen: true,
-            updateID:record.original.tmsID,
-            updateType: type,
-            updateLogin:record.original.LoginTime,
-            updateLogout:record.original.LogoutTime,
-          });
+        if(this.state.LoginTypeValue.label == "Leave"){
 
-        // }
-        
-
-    }
-
-    deleteLoginReport = (record,type) =>{
-        console.log(record.original.tmsID)
-        this.setState({
-            open: true,
-            deleteID:record.original.tmsID,
-            deleteType: type
-          });
-    }
-
-    handleClickCancel = ()=>{
-        this.setState({
-            open: false,
+          setArr.push({
+            Date: moment(d).format(CommonConfig.dateFormat.dateOnly),
+            Day: daysArr[day],
+            Reason:"",
+            LeaveType:""
             
           });
-    }
 
-    handleClickUpdate = () =>{
-        this.setState({
-            updateopen: false,
-            
+        }else{
+
+          setArr.push({
+            Date: moment(d).format(CommonConfig.dateFormat.dateOnly),
+            Day: daysArr[day],
+            IPDetails: weekends,
+            IpAddress: "",
+            LoginDate: moment(d).format(CommonConfig.dateFormat.dateOnly),
+            LoginID: "",
+            LoginLogOff: "",
+            LoginTime: "",
+            LogoutTime: "",
+            UserID: "",
+            totalBreak: "",
+            totalWorking: "",
           });
-    }
 
-    set24hoursformat = (Times,types) =>{
-        var time = Times;
-        var data = time.split(":");
-        var hours = parseInt(data[0]);
-        var minutes = parseInt(data[1]);
-        var seconds = parseInt(data[2]);
-        var AMPM = time.match(/\s(.*)$/)[1];
-
-        if(AMPM == "PM" && hours<12) hours = hours+12;
-        if(AMPM == "AM" && hours==12) hours = hours-12;
-        var sHours = hours.toString();
-        var sMinutes = minutes.toString();
-        var sSeconds = seconds.toString();
+        }
         
-        if(hours<10) sHours = "0" + sHours;
-        if(minutes<10) sMinutes = "0" + sMinutes;
-        if(seconds<10) sSeconds = "0" + sSeconds;
-        var datatosend = sHours + ":" + sMinutes +":" + sSeconds
-        console.log(sHours + ":" + sMinutes +":" + sSeconds)
-        if (types == "logout") {
-          this.setState({ updateFullLogout: datatosend });
-        }
-        if (types == "login") {
-          this.setState({ updateFullLogin: datatosend });
-        }
+      }
+
+
+      if(this.state.LoginTypeValue.label == "Leave"){
+
+        this.getTimeOffData(setArr)
+
+      }else{
+
+        api.post("contactus/getTmsUserReport", pData).then((res) => {
+          if (res.success) {
+            // this.setState({ ProposalData: requestData });
+            // console.log("res14 = ", res);
+            let requestData = res.Data[0];
+            if (requestData.length > 0) {
+              // console.log("setArr = " , setArr);
+  
+              for (let index = 0; index < requestData.length; index++) {
+                if (this.state.LoginTypeValue.label == "Login") {
+                  var startTime = moment(
+                    requestData[index].totalBreak,
+                    "HH:mm:ss"
+                  );
+                  var endTime = moment(
+                    requestData[index].LoginLogOff,
+                    "HH:mm:ss"
+                  );
+  
+                  // calculate total duration
+                  var duration = moment.duration(endTime.diff(startTime));
+                  debugger;
+                  // duration in hours
+                  var hours = parseInt(duration.asHours());
+                  // duration in minutes
+                  var minutes = parseInt(duration.asMinutes()) % 60;
+                  var seconds = parseInt(duration.asSeconds() * 0.001);
+                  // console.log("SECS = ",seconds);
+                  // console.log(requestData[index]);
+                  // console.log("Hours = ", hours, ":", minutes);
+                  var totalTome = "";
+                  if (requestData[index].LoginLogOff == null) {
+                    totalTome = "NA";
+                  } else {
+                    totalTome = hours + ":" + minutes + ":" + seconds + " hours";
+                  }
+                  requestData[index].totalWorking = totalTome;
+  
+                  for (let dayindex = 0; dayindex < setArr.length; dayindex++) {
+                    if (requestData[index].LoginDate == setArr[dayindex].Date) {
+                      // requestData[index].DayName = setArr[dayindex].Day;
+                      setArr[dayindex].tmsID = requestData[index].tmsID;
+                      setArr[dayindex].IPDetails = requestData[index].IPDetails;
+                      setArr[dayindex].IpAddress = requestData[index].IpAddress;
+  
+                      setArr[dayindex].LoginID = requestData[index].LoginID;
+                      setArr[dayindex].LoginLogOff =
+                        requestData[index].LoginLogOff;
+                      setArr[dayindex].LoginTime = requestData[index].LoginTime;
+                      setArr[dayindex].LogoutTime = requestData[index].LogoutTime;
+                      setArr[dayindex].UserID = requestData[index].UserID;
+                      setArr[dayindex].totalBreak = requestData[index].totalBreak;
+                      setArr[dayindex].totalWorking =
+                        requestData[index].totalWorking;
+                      setArr[dayindex].userTimeZone =
+                        requestData[index].userTimeZone;
+  
+                      break;
+                    }
+                  }
+  
+                  var weekendsCount = 0;
+                  var TimeOffCount = 0;
+                  for (let indesSet = 0; indesSet < setArr.length; indesSet++) {
+                    // const element = array[indesSet];
+                    if (setArr[indesSet].IPDetails == "Weekends") {
+                      weekendsCount = weekendsCount + 1;
+                    }
+  
+                    if (setArr[indesSet].IPDetails == "") {
+                      // TimeOffCount = TimeOffCount + 1
+                      setArr[indesSet].IPDetails = "TimeOff";
+                    }
+                  }
+  
+                  for (
+                    let indesSetTime = 0;
+                    indesSetTime < setArr.length;
+                    indesSetTime++
+                  ) {
+                    // const element = array[indesSetTime];
+  
+                    if (setArr[indesSetTime].IPDetails == "TimeOff") {
+                      TimeOffCount = TimeOffCount + 1;
+                      // setArr[indesSetTime].IPDetails = "TimeOff"
+                      console.log("TimeOffCount = ", TimeOffCount);
+                    }
+                  }
+                  if(this.state.TimeoffProposalData.length > 0){
+                    for (let indextimeoff = 0; indextimeoff < this.state.TimeoffProposalData.length; indextimeoff++) {
+                      for (let indexSetArr2 = 0; indexSetArr2 < setArr.length; indexSetArr2++) {
+                        // const element = array[indexSetArr2];
+  
+                        if ((this.state.TimeoffProposalData[indextimeoff].LeaveFromDate == setArr[indexSetArr2].Date) && setArr[indexSetArr2].IPDetails == "TimeOff") {
+  
+                          setArr[indexSetArr2].IPDetails = "Leave"
+  
+  
+  
+  
+                        }
+                        
+                      }
+                      // const element = array[indextimeoff];
+  
+                     
+                      
+                    }
+  
+                  }
+                  
+  
+                  this.setState({ setTimeOff: TimeOffCount });
+                  console.log("TimeOff = ", TimeOffCount);
+                  this.setState({ setweekendsCount: weekendsCount });
+                } else {
+                  for (let dayindex = 0; dayindex < setArr.length; dayindex++) {
+                    if (requestData[index].LoginDate == setArr[dayindex].Date) {
+                      requestData[index].Day = setArr[dayindex].Day;
+                    }
+                  }
+                  requestData[index].totalBreak = "N/A";
+                }
+  
+                // alert(hours + ' hour and ' + minutes + ' minutes.');
+              }
+              if (this.state.LoginTypeValue.label == "Break") {
+                setArr = requestData;
+                this.setState({ setWeekandTimeoff: 0 });
+              } else {
+                this.setState({ setWeekandTimeoff: 1 });
+              }
+              console.log("requestData = ", setArr);
+              this.setState({ fileSetName: fileNameSet });
+              this.setState({ ProposalData: setArr });
+            }
+            
+          } else {
+            this.hideLoador();
+            // this.setState({loggedUser:0})
+            cogoToast.error("Something went wrong. Please try again...");
+          }
+        });
+
+      }
+
+
+      
+    }
+  }
+
+  LoginTypeOption = () => {
+    return this.state.logintypevalue.map((content) => {
+      return (
+        <MenuItem classes={{ root: classes.selectMenuItem }} value={content.id}>
+          {" "}
+          {content.label}{" "}
+        </MenuItem>
+      );
+    });
+  };
+
+  selectChange = (event, value, type) => {
+    if (value != null) {
+      if (type === "ManagedBy") {
+        this.setState({ ManagedBy: value });
+        console.log(this.state.ManagedBy);
+        this.state.ManagedBy = value;
+        console.log(this.state.ManagedBy);
+        // this.getUserTMSReport()
+      }
+
+      if (type === "logintypevalue") {
+        this.setState({ LoginTypeValue: value });
+        console.log(this.state.LoginTypeValue);
+        this.state.LoginTypeValue = value;
+        console.log(this.state.LoginTypeValue);
+        // this.getUserTMSReport()
+      }
+    }
+  };
+
+  handleEdit = (record, type) => {
+    console.log("record = ", record);
+
+    console.log(record.original.tmsID);
+    // if(type == "Login"){
+
+    this.setState({
+      updateopen: true,
+      updateID: record.original.tmsID,
+      updateType: type,
+      updateLogin: record.original.LoginTime,
+      updateLogout: record.original.LogoutTime,
+    });
+
+    // }
+  };
+
+  deleteLoginReport = (record, type) => {
+    console.log(record.original.tmsID);
+
+    if(type == "Leave"){
+
+      this.setState({
+        open: true,
+        deleteID: record.original.LeaveId,
+        deleteType: type,
+      });
+
+    }else{
+
+      this.setState({
+        open: true,
+        deleteID: record.original.tmsID,
+        deleteType: type,
+      });
 
     }
 
     
+  };
+
+  handleClickCancel = () => {
+    this.setState({
+      open: false,
+    });
+  };
+
+  handleClickUpdate = () => {
+    this.setState({
+      updateopen: false,
+    });
+  };
+
+  set24hoursformat = (Times, types) => {
+    var time = Times;
+    var data = time.split(":");
+    var hours = parseInt(data[0]);
+    var minutes = parseInt(data[1]);
+    var seconds = parseInt(data[2]);
+    var AMPM = time.match(/\s(.*)$/)[1];
+
+    if (AMPM == "PM" && hours < 12) hours = hours + 12;
+    if (AMPM == "AM" && hours == 12) hours = hours - 12;
+    var sHours = hours.toString();
+    var sMinutes = minutes.toString();
+    var sSeconds = seconds.toString();
+
+    if (hours < 10) sHours = "0" + sHours;
+    if (minutes < 10) sMinutes = "0" + sMinutes;
+    if (seconds < 10) sSeconds = "0" + sSeconds;
+    var datatosend = sHours + ":" + sMinutes + ":" + sSeconds;
+    console.log(sHours + ":" + sMinutes + ":" + sSeconds);
+    if (types == "logout") {
+      this.setState({ updateFullLogout: datatosend });
+    }
+    if (types == "login") {
+      this.setState({ updateFullLogin: datatosend });
+    }
+  };
+
   showLoador = () => {
     this.setState({ Loading: true });
   };
+
+
+  handelTimeOffData = () => {
+    this.setState({ SetShiprecord: true });
+  };
+
+  closeDiv = () => {
+    this.setState({ SetShiprecord: false });
+  };
+
+  
 
   hideLoador = () => {
     this.setState({ Loading: false });
   };
 
+  handleClickUpdateUpload = () => {
+    this.showLoador();
+    this.set24hoursformat(this.state.updateLogin, "login");
+    this.set24hoursformat(this.state.updateLogout, "logout");
 
-    handleClickUpdateUpload = ()=> {
-      this.showLoador();
-      this.set24hoursformat(this.state.updateLogin,"login")
-      this.set24hoursformat(this.state.updateLogout,"logout")
-
-      setTimeout(() => {
-
-        var data = {
-            dataupdateType: this.state.updateType,
-            LoginTime:this.state.updateLogin,
-            LogoutTime:this.state.updateLogout,
-            FullLogin: this.state.updateFullLogin,
-            FullLogout: this.state.updateFullLogout,
-            dataId: this.state.updateID
-
-      }
+    setTimeout(() => {
+      var data = {
+        dataupdateType: this.state.updateType,
+        LoginTime: this.state.updateLogin,
+        LogoutTime: this.state.updateLogout,
+        FullLogin: this.state.updateFullLogin,
+        FullLogout: this.state.updateFullLogout,
+        dataId: this.state.updateID,
+      };
 
       api.post("contactus/updatetmsReport", data).then((res) => {
         if (res.success) {
           this.hideLoador();
-        //   console.log(res.Data[0][0])
+          //   console.log(res.Data[0][0])
           // this.setState({ EmailSubject: res.data[0].TemplateSubject });
           // this.setState({ MessageTemplate: res.data[0].TemplateMessage });
-  
+
           this.setState({
             updateopen: false,
-      
+
             // dataMode: "Update",
           });
           this.getUserTMSReport();
           // this.hideLoador();
-          cogoToast.success("Update Successfully")
+          cogoToast.success("Update Successfully");
         }
       });
-        
-      }, 3000);
+    }, 3000);
+  };
 
-      
-
+  handleChangeFrom = (event, value) => {
+    if (value == "logout") {
+      this.setState({ updateLogout: event.target.value });
+      this.set24hoursformat(event.target.value, "logout");
     }
+    if (value == "login") {
+      this.setState({ updateLogin: event.target.value });
+      this.set24hoursformat(event.target.value, "login");
+    }
+  };
 
-    handleChangeFrom = (event, value) => {
-        if (value == "logout") {
-          this.setState({ updateLogout: event.target.value });
-          this.set24hoursformat(event.target.value,"logout")
-        }
-        if (value == "login") {
-          this.setState({ updateLogin: event.target.value });
-          this.set24hoursformat(event.target.value,"login")
-        }
+  handleDelete = () => {
+    console.log(this.state.deleteID, this.state.deleteType);
+    var datatoDelete = {
+      deleteID: this.state.deleteID,
+      typesdata: this.state.deleteType,
+    };
+
+    api.post("contactus/deletetmsReport", datatoDelete).then((res) => {
+      if (res.success) {
+        //   console.log(res.Data[0][0])
+        // this.setState({ EmailSubject: res.data[0].TemplateSubject });
+        // this.setState({ MessageTemplate: res.data[0].TemplateMessage });
+
+        this.setState({
+          open: false,
+
+          // dataMode: "Update",
+        });
+        this.getUserTMSReport();
+        //   this.hideLoador();
+        cogoToast.success("Delete Successfully");
+      }
+    });
+  };
+
+  render() {
+    const logintype = this.state.logintype.map((x) => {
+      return { value: x.value, label: x.label };
+    });
+
+    const KeywordListData = [
+      {
+        Header: "Login Date",
+        accessor: "LoginDate",
+        width: 100,
+      },
+
+      {
+        Header: "Login Day",
+        accessor: "Day",
+        width: 100,
+      },
+
+      {
+        Header: "Ip Address",
+        accessor: "IpAddress",
+        width: 100,
+      },
+
+      {
+        Header: "Location",
+        accessor: "IPDetails",
+        width: 160,
+        Footer: (
+          <span>
+            <b>
+              {this.state.setWeekandTimeoff == 0
+                ? ""
+                : "Weekend:- " + this.state.setweekendsCount}
+            </b>
+          </span>
+        ),
+      },
+
+      {
+        Header: "Start Time",
+        accessor: "LoginTime",
+        width: 100,
+        Footer: (
+          <span>
+            <b>
+              {this.state.setWeekandTimeoff == 0
+                ? ""
+                : "TimeOff:- " + this.state.setTimeOff}
+            </b>
+          </span>
+        ),
+      },
+      {
+        Header: "End Time",
+        accessor: "LogoutTime",
+        width: 100,
+      },
+      {
+        Header: "Total Break",
+        accessor: "totalBreak",
+        width: 100,
+      },
+      {
+        Header: "Total",
+        accessor: "totalWorking",
+        width: 100,
+      },
+
+      {
+        Header: "Action",
+        accessor: "Actions",
+        width: 100,
+        Cell: (record) => {
+          return (
+            <div className="table-common-btn">
+              {this.state.TmsDeleteAccess == "1" ? (
+                <Button
+                  justIcon
+                  color="danger"
+                  onClick={() =>
+                    this.deleteLoginReport(
+                      record,
+                      this.state.LoginTypeValue.label
+                    )
+                  }
+                >
+                  <i class="fas fa-trash"></i>
+                </Button>
+              ) : (
+                ""
+              )}
+
+              {this.state.TmsWriteAccess == "1" ? (
+                <Button
+                  justIcon
+                  color="info"
+                  onClick={() =>
+                    this.handleEdit(record, this.state.LoginTypeValue.label)
+                  }
+                >
+                  <i className="fas fa-edit"></i>
+                </Button>
+              ) : (
+                ""
+              )}
+            </div>
+          );
+        },
+      },
+    ];
+
+    const shipColumsDataHBL = [
+
+      {
+        Header: "From Date",
+        accessor: "LeaveFromDate",
+        width: 100,
+      },
+
+      {
+        Header: "Leave Day",
+        accessor: "Day",
+        width: 100,
+      },
+
+      {
+        Header: "To Date",
+        accessor: "LeaveToDate",
+        width: 100,
+      },
+
+      {
+        Header: "Reason",
+        accessor: "Reason",
+        width: 100,
+      },
+
+      {
+        Header: "Leave Type",
+        accessor: "LeaveType",
+        width: 100,
+      },
+
+      {
+        Header: "Action",
+        accessor: "Actions",
+        width: 100,
+        Cell: (record) => {
+          return (
+            <div className="table-common-btn">
+              {this.state.TmsDeleteAccess == "1" ? (
+                <Button
+                  justIcon
+                  color="danger"
+                  onClick={() =>
+                    this.deleteLoginReport(
+                      record,
+                      this.state.LoginTypeValue.label
+                    )
+                  }
+                >
+                  <i class="fas fa-trash"></i>
+                </Button>
+              ) : (
+                ""
+              )}
+
+              
+            </div>
+          );
+        },
+      },
+
+
+    ]
+
+    
+
+    const managedBy = this.state.managedByList.map((type) => {
+      return { value: type.PersonId, label: type.LoginID };
+    });
+
+    const {
+      ProposalData,
+      FromDate,
+      ToDate,
+      ManagedBy,
+      LoginTypeValue,
+      fileSetName,
+    } = this.state;
+
+    const handelExportToExcel = (evt) => {
+      const headData = Object.keys(ProposalData[0]).map((col) => ({
+        value: col,
+        type: "string",
+      }));
+      const bodyData = ProposalData.map((item) =>
+        Object.values(item).map((value) => ({
+          value,
+          type: typeof value,
+        }))
+      );
+      const config = {
+        filename: fileSetName,
+        sheet: {
+          data: [headData, ...bodyData],
+          columns: headData.map((col) => ({ wch: 2000 })),
+        },
       };
+      console.log("hello = ", config);
+      zipcelx(config);
+    };
 
-    handleDelete = () =>{
-        console.log(this.state.deleteID,this.state.deleteType)
-        var datatoDelete = {
-            deleteID:this.state.deleteID,
-            typesdata:this.state.deleteType
-        }
+    return (
+      <GridContainer className="UserList-outer">
+        {this.state.Loading === true ? (
+          <div className="loading">
+            <SimpleBackdrop />
+          </div>
+        ) : null}
 
-        api.post("contactus/deletetmsReport", datatoDelete).then((res) => {
-            if (res.success) {
-            //   console.log(res.Data[0][0])
-              // this.setState({ EmailSubject: res.data[0].TemplateSubject });
-              // this.setState({ MessageTemplate: res.data[0].TemplateMessage });
-      
-              this.setState({
-                open: false,
-          
-                // dataMode: "Update",
-              });
-              this.getUserTMSReport();
-            //   this.hideLoador();
-              cogoToast.success("Delete Successfully")
-            }
-          });
-    }
+        <GridItem xs={12}>
+          <Card>
+            <CardHeader className="btn-right-outer" color="primary" icon>
+              <CardIcon color="primary">
+                <HeadsetMic />
+              </CardIcon>
+              <h4 className="margin-right-auto text-color-black">
+                Time Management Report
+              </h4>
 
-
-    render() {
-
-        const logintype = this.state.logintype.map((x) => {
-            return { value: x.value, label: x.label };
-        });
-
-        const KeywordListData = [
-            {
-                Header: "Login Date",
-                accessor: "LoginDate",
-                width: 100,
-            },
-
-            {
-                Header: "Login Day",
-                accessor: "Day",
-                width: 100,
-                
-            },
-
-            {
-                Header: "Ip Address",
-                accessor: "IpAddress",
-                width: 100,
-            },
-
-            {
-                Header: "Location",
-                accessor: "IPDetails",
-                width: 160,
-                Footer: (
-                    <span><b>
-                      {this.state.setWeekandTimeoff == 0 
-                        ? ""
-                        : "Weekend:- " + this.state.setweekendsCount
-                          }
-                          </b>
-                    </span>
-                  ),
-            },
-
-
-            {
-                Header: "Start Time",
-                accessor: "LoginTime",
-                width: 100,
-                Footer: (
-                    <span><b>
-                      {this.state.setWeekandTimeoff == 0 
-                        ? ""
-                        : "TimeOff:- " + this.state.setTimeOff
-                          }
-                          </b>
-                    </span>
-                  ),
-            },
-            {
-                Header: "End Time",
-                accessor: "LogoutTime",
-                width: 100,
-            },
-            {
-                Header: "Total Break",
-                accessor: "totalBreak",
-                width: 100,
-            },
-            {
-                Header: "Total",
-                accessor: "totalWorking",
-                width: 100,
-            },
-
-            {
-                Header: "Action",
-                accessor: "Actions",
-                width: 100,
-                Cell: (record) => {
-                    return (
-                      <div className="table-common-btn">
-          
-                        {this.state.TmsDeleteAccess == "1" ? (
-                            <Button
-                                justIcon
-                                color="danger"
-                                onClick={() => this.deleteLoginReport(record,this.state.LoginTypeValue.label)}
-                            >
-                                <i class="fas fa-trash"></i>
-                            </Button>
-                        ) :
-                          ""
-                        }
-
-                        {this.state.TmsWriteAccess == "1" ? (
-                        
-                          <Button
-                            justIcon
-                            color="info"
-                            onClick={() => this.handleEdit(record,this.state.LoginTypeValue.label)}
-                          >
-                            <i className="fas fa-edit"></i>
-                          </Button>
-                     
-                        ) :
-                          ""
-                        }
-          
-                      </div>
-                    );
-                  },
-            },
-
-
-        ];
-
-        const managedBy = this.state.managedByList.map((type) => {
-            return { value: type.PersonId, label: type.LoginID };
-        });
-
-        
-
-        const {
-            ProposalData, FromDate,
-            ToDate, ManagedBy,LoginTypeValue,fileSetName
-        } = this.state;
-
-        const handelExportToExcel = (evt) => {
-            const headData = Object.keys(ProposalData[0]).map((col) => ({
-              value: col,
-              type: "string",
-            }));
-            const bodyData = ProposalData.map((item) =>
-              Object.values(item).map((value) => ({
-                value,
-                type: typeof value,
-              }))
-            );
-            const config = {
-              filename: fileSetName,
-              sheet: {
-                data: [headData, ...bodyData],
-                columns: headData.map((col) => ({ wch: 2000 })),
-              },
-            };
-            console.log("hello = ", config);
-            zipcelx(config);
-          };
-
-        return (
-
-            <GridContainer className="UserList-outer">
-                {this.state.Loading === true ? (
-                    <div className="loading">
-                        <SimpleBackdrop />
+              <div className="filter-wrap"></div>
+            </CardHeader>
+            <GridItem xs={12} sm={12} md={12}>
+              <div className="user-report-filter" id="myDIVcloseOpen">
+                <GridContainer>
+                  <GridItem xs={12} sm={12} md={2}>
+                    <div className="date-spl">
+                      <InputLabel className={classes.label}>
+                        From Date
+                      </InputLabel>
+                      <FormControl fullWidth>
+                        <Datetime
+                          dateFormat={"MM/DD/YYYY"}
+                          timeFormat={false}
+                          value={FromDate}
+                          onChange={(date) => this.dateChange(date, "FromDate")}
+                          closeOnSelect={true}
+                          renderInput={(params) => (
+                            <TextField {...params} fullWidth />
+                          )}
+                        />
+                      </FormControl>
                     </div>
-                ) : null}
+                  </GridItem>
+                  <GridItem xs={12} sm={12} md={2}>
+                    <div className="date-spl">
+                      <InputLabel className={classes.label}>To Date</InputLabel>
+                      <FormControl fullWidth>
+                        <Datetime
+                          dateFormat={"MM/DD/YYYY"}
+                          timeFormat={false}
+                          value={ToDate}
+                          onChange={(date) => this.dateChange(date, "ToDate")}
+                          closeOnSelect={true}
+                          renderInput={(params) => (
+                            <TextField {...params} fullWidth />
+                          )}
+                        />
+                      </FormControl>
+                    </div>
+                  </GridItem>
 
-                <GridItem xs={12}>
-                    <Card>
-                        <CardHeader className="btn-right-outer" color="primary" icon>
-                            <CardIcon color="primary">
-                                <HeadsetMic />
-                            </CardIcon>
-                            <h4 className="margin-right-auto text-color-black">
-                                Time Management Report
-                            </h4>
+                  <GridItem xs={12} sm={12} md={3}>
+                    <div className="spl">
+                      <FormControl fullWidth>
+                        <Autocomplete
+                          id="combo-box-demo"
+                          options={logintype}
+                          value={LoginTypeValue}
+                          //   disabled={viewAllClear === false ? false : true}
+                          onChange={(event, value) =>
+                            this.selectChange(event, value, "logintypevalue")
+                          }
+                          getOptionLabel={(option) => option.label}
+                          renderInput={(params) => (
+                            <TextField {...params} label="Data Type" />
+                          )}
+                        />
+                      </FormControl>
+                    </div>
+                  </GridItem>
 
-                            <div className="filter-wrap"></div>
-                        </CardHeader>
-                        <GridItem xs={12} sm={12} md={12}>
-                            <div className="user-report-filter" id="myDIVcloseOpen">
-                                <GridContainer>
-                                    <GridItem xs={12} sm={12} md={2}>
-                                        <div className="date-spl">
-                                            <InputLabel className={classes.label}>
-                                                From Date
-                                            </InputLabel>
-                                            <FormControl fullWidth>
-                                                <Datetime
-                                                    dateFormat={"MM/DD/YYYY"}
-                                                    timeFormat={false}
-                                                    value={FromDate}
-                                                    onChange={(date) => this.dateChange(date, "FromDate")}
-                                                    closeOnSelect={true}
-                                                    renderInput={(params) => (
-                                                        <TextField {...params} fullWidth />
-                                                    )}
-                                                />
-                                            </FormControl>
-                                        </div>
-                                    </GridItem>
-                                    <GridItem xs={12} sm={12} md={2}>
-                                        <div className="date-spl">
-                                            <InputLabel className={classes.label}>To Date</InputLabel>
-                                            <FormControl fullWidth>
-                                                <Datetime
-                                                    dateFormat={"MM/DD/YYYY"}
-                                                    timeFormat={false}
-                                                    value={ToDate}
-                                                    onChange={(date) => this.dateChange(date, "ToDate")}
-                                                    closeOnSelect={true}
-                                                    renderInput={(params) => (
-                                                        <TextField {...params} fullWidth />
-                                                    )}
-                                                />
-                                            </FormControl>
-                                        </div>
-                                    </GridItem>
+                  <GridItem xs={12} sm={12} md={3}>
+                    <div className="date-spl">
+                      {CommonConfig.getUserAccess("Time Booking Report")
+                        .AllAccess === 1 &&
+                      CommonConfig.getUserAccess("Time Booking Report")
+                        .ReadAccess === 1 ? (
+                        <Autocomplete
+                          id="combo-box-demo"
+                          options={managedBy}
+                          value={ManagedBy}
+                          //   disabled={viewAllClear === false ? false : true}
+                          onChange={(event, value) =>
+                            this.selectChange(event, value, "ManagedBy")
+                          }
+                          getOptionLabel={(option) => option.label}
+                          renderInput={(params) => (
+                            <TextField {...params} label="Managed By" />
+                          )}
+                        />
+                      ) : null}
 
-                                    <GridItem xs={12} sm={12} md={3}>
-                                        <div className="spl">
-                                            <FormControl fullWidth>
-                                               
+                      {/* </div> */}
+                    </div>
+                  </GridItem>
 
-                                                <Autocomplete
-                                                    id="combo-box-demo"
-                                                    options={logintype}
-                                                    value={LoginTypeValue}
-                                                    //   disabled={viewAllClear === false ? false : true}
-                                                    onChange={(event, value) =>
-                                                        this.selectChange(event, value, "logintypevalue")
-                                                    }
-                                                    getOptionLabel={(option) => option.label}
-                                                    renderInput={(params) => (
-                                                        <TextField {...params} label="Data Type" />
-                                                    )}
-                                                />
-
-                                            </FormControl>
-                                        </div>
-                                    </GridItem>
-
-                                    <GridItem xs={12} sm={12} md={3}>
-                                        <div className="date-spl">
-                                            {CommonConfig.getUserAccess("Time Booking Report").AllAccess ===
-                                                1 && CommonConfig.getUserAccess("Time Booking Report").ReadAccess ===
-                                                1 ? (
-                                                <Autocomplete
-                                                    id="combo-box-demo"
-                                                    options={managedBy}
-                                                    value={ManagedBy}
-                                                    //   disabled={viewAllClear === false ? false : true}
-                                                    onChange={(event, value) =>
-                                                        this.selectChange(event, value, "ManagedBy")
-                                                    }
-                                                    getOptionLabel={(option) => option.label}
-                                                    renderInput={(params) => (
-                                                        <TextField {...params} label="Managed By" />
-                                                    )}
-                                                />
-
-                                            ) : null}
-
-                                            {/* </div> */}
-
-                                        </div>
-                                    </GridItem>
-
-                                    <GridItem xs={12} sm={12} md={2}>
-                                        <GridContainer>
-                                            <div className="shipment-submit user-report-btn mt-20">
-                                                <Button
-                                                    className="fa-icon-userReport"
-                                                    color="rose"
-                                                    onClick={() => this.getUserTMSReport()}
-                                                >
-                                                    <i class="fa fa-search"></i>
-                                                </Button>
-                                                <Button
-                                                    justIcon
-                                                    color="danger"
-                                                    onClick={handelExportToExcel}
-                                                    >
-                                                    <i class="fas fa-download"></i>
-                                                    </Button>
+                  <GridItem xs={12} sm={12} md={2}>
+                    <GridContainer>
+                      <div className="shipment-submit user-report-btn mt-20">
+                        <Button
+                          className="fa-icon-userReport"
+                          color="rose"
+                          onClick={() => this.getUserTMSReport()}
+                        >
+                          <i class="fa fa-search"></i>
+                        </Button>
+                        <Button
+                          justIcon
+                          color="danger"
+                          onClick={handelExportToExcel}
+                        >
+                          <i class="fas fa-download"></i>
+                        </Button>
+                        {/* {this.state.TmsTimeOffcount > 0 ? ( */}
+                          <div className={this.state.timeoffStyle}>
+                            <Button
+                            justIcon
+                            color="primary"
+                            className="btn-badge-outer"
+                            onClick={() => this.handelTimeOffData()}
+                          >
+                            <i class="fas fa-user-times"></i>
+                            <span className="btn-badge">{this.state.totalLeave}</span>
+                          </Button>
+                          </div>
+                          {/* ) :null} */}
+                        
+                        
 
 
-                                                {/* <Button
+                        {/* <Button
                           justIcon
                           color="danger"
                           onClick={handelExportToExcel}
                         >
                           <i class="fas fa-download"></i>
                         </Button> */}
+                      </div>
+                    </GridContainer>
+                  </GridItem>
+                </GridContainer>
+              </div>
+            </GridItem>
 
-                                            </div>
-                                        </GridContainer>
-                                    </GridItem>
+            <CardBody>
+              <div className="tbl-spacing">
+                <ReactTable
+                  data={ProposalData}
+                  minRows={0}
+                  filterable
+                  textAlign={"left"}
+                  defaultFilterMethod={CommonConfig.filterCaseInsensitive}
+                  resizable={false}
+                  columns={
+                    this.state.LoginTypeValue.label == "Leave"
+                      ? shipColumsDataHBL
+                      : KeywordListData
+                  }
+                  defaultPageSize={10}
+                  showPaginationBottom={true}
+                  className="-striped -highlight chatMgtList1"
+                />
+              </div>
 
+              {/* <div className="t-count">Total Count : {totalRowCount}</div> */}
+            </CardBody>
+          </Card>
+        </GridItem>
 
-                                </GridContainer>
-                            </div>
-                        </GridItem>
-
-                        <CardBody>
-                            <div className="tbl-spacing">
-
-                                <ReactTable
-                                    data={ProposalData}
-                                    minRows={0}
-                                    filterable
-                                    textAlign={"left"}
-                                    defaultFilterMethod={CommonConfig.filterCaseInsensitive}
-                                    resizable={false}
-                                    columns={KeywordListData}
-                                    defaultPageSize={10}
-                                    showPaginationBottom={true}
-                                    className="-striped -highlight chatMgtList1"
-                                />
-
-
-                            </div>
-
-                            {/* <div className="t-count">Total Count : {totalRowCount}</div> */}
-                        </CardBody>
-                    </Card>
-                </GridItem>
-
-                <div>
-                <Dialog
-              open={this.state.open}
+        <div>
+          <Dialog
+            open={this.state.open}
             //   onClose={this.state.close}
-              aria-labelledby="alert-dialog-title"
-              aria-describedby="alert-dialog-description"
-            >
-              <DialogTitle id="alert-dialog-title">
-                {"Confirm Delete"}
-              </DialogTitle>
-              <DialogContent>
-                <DialogContentText id="alert-dialog-description">
-                  Are you sure want to delete?
-                </DialogContentText>
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={this.handleClickCancel} color="primary">
-                  Cancel
-                </Button>
-                <Button onClick={this.handleDelete} color="primary" autoFocus>
-                  Delete
-                </Button>
-              </DialogActions>
-            </Dialog>
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <DialogTitle id="alert-dialog-title">
+              {"Confirm Delete"}
+            </DialogTitle>
+            <DialogContent>
+              <DialogContentText id="alert-dialog-description">
+                Are you sure want to delete?
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={this.handleClickCancel} color="primary">
+                Cancel
+              </Button>
+              <Button onClick={this.handleDelete} color="primary" autoFocus>
+                Delete
+              </Button>
+            </DialogActions>
+          </Dialog>
 
-            <Dialog
+          <Dialog
             className="test-zIndex"
             open={this.state.updateopen}
             aria-labelledby="alert-dialog-title"
@@ -917,8 +1108,7 @@ class TMSReport extends Component {
               <DialogContentText id="alert-dialog-description">
                 Are you sure want to update login and logout time?
                 <GridContainer>
-                  
-                <GridItem xs={12} sm={12} md={12}>
+                  <GridItem xs={12} sm={12} md={12}>
                     <CustomInput
                       labelText="Start Time"
                       id="proposaltype"
@@ -935,7 +1125,6 @@ class TMSReport extends Component {
                     />
                   </GridItem>
 
-                  
                   <GridItem xs={12} sm={12} md={12}>
                     <CustomInput
                       labelText="End Time"
@@ -952,7 +1141,6 @@ class TMSReport extends Component {
                       }}
                     />
                   </GridItem>
-
                 </GridContainer>
               </DialogContentText>
             </DialogContent>
@@ -966,7 +1154,54 @@ class TMSReport extends Component {
             </DialogActions>
           </Dialog>
 
-{/*             
+
+          <Dialog
+            open={this.state.SetShiprecord}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+            // width="lg"
+            className="large-Modal"
+          >
+            <DialogTitle id="alert-dialog-titleHBL">
+              User TimeOFF Details
+            </DialogTitle>
+            <DialogContent>
+              <DialogContentText id="alert-dialog-descriptionHBL">
+                <div className="package-select">
+                  <GridItem xs={12} sm={12} md={12}>
+                    <div className="select-reacttable">
+                      <ReactTable
+                        data={this.state.TimeoffProposalData}
+                        defaultFilterMethod={CommonConfig.filterCaseInsensitive}
+                        sortable={true}
+                        filterable={true}
+                        resizable={false}
+                        minRows={2}
+                        columns={shipColumsDataHBL}
+                        defaultPageSize={10}
+                        align="center"
+                        className="-striped -highlight"
+                      />
+                    </div>
+                  </GridItem>
+                </div>
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => this.closeDiv()} color="secondary">
+                Cancel
+              </Button>
+              {/* <Button
+                onClick={() => this.UpdateHBLShipID()}
+                color="primary"
+                autoFocus
+              >
+                Confirm
+              </Button> */}
+            </DialogActions>
+          </Dialog>
+
+          {/*             
             <Dialog
             open={this.state.showURLDialog}
             aria-labelledby="alert-dialog-title"
@@ -1024,15 +1259,10 @@ class TMSReport extends Component {
               </Button>
             </DialogActions>
           </Dialog> */}
-
-
-            </div>
-
-
-            </GridContainer>
-            
-        );
-    }
+        </div>
+      </GridContainer>
+    );
+  }
 }
 
 export default TMSReport;

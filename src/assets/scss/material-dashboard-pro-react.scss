@@ -6638,3 +6638,43 @@ button.file-doc {
 .filter-top-right-user-markup.left button.cm-search-btn {
   width: 100%;
 }
+
+.btn-badge-outer {
+  position: relative;
+}
+
+.btn-badge {
+  position: absolute;
+  top: -10px;
+  right: -14px;
+  font-size: 12px;
+  color: #fff;
+  background: #f44336;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 100%;
+}
+
+.Leave-Modal .MuiPaper-root.MuiDialog-paper.MuiDialog-paperFullWidth {
+  overflow: unset;
+}
+
+.Leave-Modal .MuiPaper-root.MuiDialog-paper.MuiDialog-paperFullWidth .MuiDialogContent-root {
+  overflow: unset;
+}
+
+.ipt-addon {
+  width: 100%;
+  position: relative;
+  padding-right: 40px;
+}
+
+.addon-icn {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  color: #e91e63;
+}
