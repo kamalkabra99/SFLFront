@@ -1323,6 +1323,8 @@ class Step1 extends React.Component {
       }
     } else if (type === "City") {
       this.setState({ City: event.target.value });
+    } else if (type === "UsertypeCity") {
+      this.setState({ UsertypeCity: event.target.value });
     } else if (type === "State") {
       this.setState({ State: event.target.value });
     } else if (type === "UsertypeState") {
@@ -1396,6 +1398,7 @@ class Step1 extends React.Component {
         });
       }
     }
+    UsertypeCity
   };
 
   handleBlurUser = (event, type) => {
@@ -3024,7 +3027,7 @@ handleTimeChange = (time, type) => {debugger
                   });
                 } else {
                   this.setState({
-                    CityAutoComplete: false,
+                    UsertypeCityAutoComplete: false,
                     StateAutoComplete: this.state.StateList.length ? true : false,
                     GoogleAPICityList: [],
                     State: "",
@@ -3327,14 +3330,20 @@ handleTimeChange = (time, type) => {debugger
     const CityOptions = this.state.GoogleAPICityList.map((city) => {
       return { value: city.City_code, label: city.Name };
     });
+    const usertypeCityOptions = this.state.GoogleAPICityList.map((UsertypeCity) => {
+      return { value: UsertypeCity.City_code, label: UsertypeCity.Name };
+    });
     const StateOptions = this.state.StateList.map((state) => {
       return { value: state.StateName, label: state.StateName };
     });
-    const UsertypeStateOptions = this.state.UsertypeStateList.map((state) => {
-      return { value: state.StateName, label: state.StateName };
+    const UsertypeStateOptions = this.state.UsertypeStateList.map((UsertypeState) => {
+      return { value: UsertypeState.StateName, label: UsertypeState.StateName };
     });
     const CountryOptions = this.state.CountryList.map((fromCountry) => {
       return { value: fromCountry.CountryID, label: fromCountry.CountryName };
+    });
+    const UsertypeCountryOptions = this.state.CountryList.map((UsertypeCountry) => {
+      return { value: UsertypeCountry.CountryID, label: UsertypeCountry.CountryName };
     });
     const columns1 = [
       {
@@ -4518,7 +4527,7 @@ handleTimeChange = (time, type) => {debugger
                     <GridContainer>
                       <GridItem xs={12} sm={12} md={3}>
                         <Autocomplete
-                          options={CountryOptions}
+                          options={UsertypeCountryOptions}
                           id="UsertypeCountry"
                           getOptionLabel={(option) => option.label}
                           value={UsertypeCountry} 
@@ -4574,7 +4583,7 @@ handleTimeChange = (time, type) => {debugger
                         />
                       </GridItem>
                       <GridItem xs={12} sm={12} md={3}>
-                        {this.state.CityAutoComplete === false ? (
+                        {this.state.UsertypeCityAutoComplete === false ? (
                           <CustomInput
                             labelText="City"
                             id="Usertypecity"
@@ -4595,7 +4604,7 @@ handleTimeChange = (time, type) => {debugger
                           />
                         ) : (
                           <Autocomplete
-                            options={CityOptions}
+                            options={usertypeCityOptions}
                             id="Usertypefromcity"
                             autoSelect
                             getOptionLabel={(option) => option.label}
