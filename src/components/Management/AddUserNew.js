@@ -206,6 +206,7 @@ class Step1 extends React.Component {
       UsertypeEmail2: "",
       Email: "",
       EmailID: "",
+      EmployeementID:"",
       department:"",
       employeeId:"",
       Password: "",
@@ -711,6 +712,20 @@ class Step1 extends React.Component {
             });
             console.log(this.state.ShipmentCount);
             if (userData.UserData) {
+
+              if(userData.UserData[0].UserType=="Employee"){
+                if(userData.EmployeeData.length > 0){
+                  this.setState({
+                    EmployeementID: !CommonConfig.isEmpty(this.props.location.state)
+                    ? userData.EmployeeData[0].EmployeeDetailID
+                    : null,
+                  })
+                }
+
+                
+              
+              }
+
               this.setState({
                 Status: !CommonConfig.isEmpty(this.props.location.state)
                   ? {
@@ -746,6 +761,7 @@ class Step1 extends React.Component {
                 EmailID: !CommonConfig.isEmpty(this.props.location.state)
                   ? userData.UserData[0].EmailID
                   : null,
+                
                 MobileID: !CommonConfig.isEmpty(this.props.location.state)
                   ? userData.UserData[0].PhoneID
                   : null,
@@ -820,8 +836,9 @@ class Step1 extends React.Component {
               let emp= {"label":"Employee","value":"Employee"}
               
               this.setState({userType: emp});
-            if (!CommonConfig.isEmpty(userData.EmployeeData)) {
-              let timezon={"label":userData.EmployeeData[0].TimeZone,"value":userData.EmployeeData[0].TimeZone};
+            if (userData.EmployeeData.length > 0) {
+              // if(userData.EmployeeData.length > 0){
+                let timezon={"label":userData.EmployeeData[0].TimeZone,"value":userData.EmployeeData[0].TimeZone};
               let Country = this.state.CountryList.filter(
                 (x) => x.CountryID === userData.EmployeeData[0].CountryID
               );
@@ -2006,7 +2023,7 @@ handleTimeChange = (time, type) => {debugger
             SelectedPaperSize: this.state.PaperSize.value,
             Status: this.state.Status.value,
             DocumentList: finalAttachment,
-            EmployeeDetailID:1,
+            EmployeeDetailID:this.state.EmployeementID,
             usertypeTimeZone:this.state.usertypeTimeZone.value,
             UserType:this.state.userType.value,
             usertypeStartTime:this.state.StartTime==""?"NULL":this.state.StartTime,
@@ -2052,7 +2069,7 @@ handleTimeChange = (time, type) => {debugger
             Status: this.state.Status.value,
             SelectedPaperSize: this.state.PaperSize.value,
             DocumentList: finalAttachment,
-            EmployeeDetailID:1,
+            EmployeeDetailID:this.state.EmployeementID,
             usertypeTimeZone:this.state.usertypeTimeZone.value,
             UserType:this.state.userType.value,
             usertypeStartTime:this.state.StartTime==""?"NULL":this.state.StartTime,
