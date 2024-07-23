@@ -31,6 +31,7 @@ import CardHeader from "components/Card/CardHeader.js";
 import CardIcon from "components/Card/CardIcon.js";
 import Cardbody from "components/Card/CardBody.js";
 import Adduser from "@material-ui/icons/AccountCircle";
+import User from "@material-ui/icons/AccountCircle";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import FormHelperText from "@material-ui/core/FormHelperText";
@@ -41,6 +42,7 @@ import { Attachment } from "@material-ui/icons";
 import Tooltip from "@material-ui/core/Tooltip";
 import HelpIcon from "@material-ui/icons/Help";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import Datetime from "react-datetime";
 const useStyles = makeStyles(styles);
 
 const classes = () => {
@@ -84,9 +86,97 @@ class Step1 extends React.Component {
           value: "Inactive",
         },
       ],
-      userTimeZone:"",
+      usertypeTimeZone:"",
+      usertypeTimeZoneErr:"",
+      usertypeTimeZoneHelperText:"",
 
-      UserTimeZoneList: [
+      UserTypeTimeZoneList: [
+        {
+          label: "IST",
+          value: "IST",
+        },
+        {
+          label: "CST",
+          value: "CST",
+        },
+        {
+          label: "EST",
+          value: "EST",
+        },
+        {
+          label: "GMT",
+          value: "GMT",
+        },
+        {
+          label: "PST",
+          value: "PST",
+        },
+      ],
+      usertypeCurrencyList: [
+        {
+          label: "USD",
+          value: "USD",
+        },
+        {
+          label: "INR",
+          value: "INR",
+        },
+        {
+          label: "EUR",
+          value: "EUR",
+        },
+       
+      ],
+      UsertypeCurrency:"",
+      userTypeDepartment:"",
+      usertypeDepartmentList: [
+        {
+          label: "IT",
+          value: "IT",
+        },
+        {
+          label: "SALES",
+          value: "SALES",
+        },
+        {
+          label: "DESIGNING",
+          value: "DESIGNING",
+        }, 
+        {
+          label: "ACCOUNTS",
+          value: "ACCOUNTS",
+        },
+        {
+          label: "MANAGEMENT",
+          value: "MANAGEMENT",
+        },
+        {
+          label: "HR",
+          value: "HR",
+        },
+        
+       
+      ],
+      userType:"",
+      userTypeHelperText:"",
+      userTypeErr:"",
+      UserTypeList: [
+        {
+          label: "Customer",
+          value: "Customer",
+        },
+        {
+          label: "Employee",
+          value: "Employee",
+        },
+        {
+          label: "Contractor",
+          value: "Contractor",
+        },
+      ],
+      userTypeTimeZone:"",
+
+      UserTypeTimeZoneList: [
         {
           label: "IST",
           value: "IST",
@@ -112,31 +202,45 @@ class Step1 extends React.Component {
       fullName: "",
       userName: "",
       Email: "",
+      UsertypeEmail1: "",
+      UsertypeEmail2: "",
+      Email: "",
       EmailID: "",
+      department:"",
+      employeeId:"",
       Password: "",
       Mobile: "",
+      UsertypeMobile: "",
       MobileID: "",
       userModules: [],
       serviceList: [],
-
+      Salary:"",
       fullnameErr: false,
       usernameErr: false,
       emailErr: false,
+      UsertypeemailErr1: false,
+      UsertypeemailErr2: false,
       passwordErr: false,
       mobileErr: false,
+      UsertypemobileErr: false,
       Loading: false,
       ShipmentCount: 0,
       fullnameHelperText: "",
       usernameHelperText: "",
       emailHelperText: "",
+      UsertypeemailHelperText1: "",
+      UsertypeemailHelperText2: "",
       passwordHelperText: "",
       mobileHelperText: "",
-
+      UsertypemobileHelperText: "",
       checkFullname: false,
       checkUserName: false,
       checkEmail: false,
+      UsertypecheckEmail1: false,
+      UsertypecheckEmail2: false,
       checkPassword: false,
       checkMobile: false,
+      UsertypecheckMobile: false,
       checkLetter: false,
       checkUpperCase: false,
       checkLowerCase: false,
@@ -194,24 +298,103 @@ class Step1 extends React.Component {
       CountryList: [],
       countryErr: false,
       countryHelperText: "",
+      
+      checkcurrency: false,
+      currencyErr: false,
+      currencyHelperText: "",
+      Currency:"",
+      checkCurrency:false,
+      
+      UsertypeAddressLine1: "",
+      UsertypeaddressLine1Err: false,
+      UsertypeaddressLine1HelperText: "",
+      UsertypecheckAddressLine1: false,
+
+      UsertypeAddressLine2: "",
+      UsertypecheckAddressLine2: false,
+      UsertypeaddressLine2Err: false,
+      UsertypeaddressLine2HelperText: "",
+
+      UsertypeZipCode: "",
+      UsertypezipCodeErr: false,
+      UsertypezipCodeHelperText: "",
+      UsertypecheckZipCode: false,
+
+      UsertypeCity: "",
+      UsertypecityErr: false,
+      UsertypecityHelperText: "",
+      UsertypecheckCity: false,
+
+      UsertypeState: "",
+      UsertypestateErr: false,
+      UsertypestateHelperText: "",
+      UsertypecheckState: false,
+
+      UsertypeCountry: "",
+      UserTypeCountryList: [],
+      UsertypecountryErr: false,
+      UserTypecountryHelperText: "",
+
+      Usertypeemployeeid: "",
+      userTypeEmployeeIdErr: false,
+      userTypeEmployeeIdHelperText: "",
+      checkuserTypeEmployeeId: false,
 
       CityAutoComplete: false,
       StateAutoComplete: false,
       GoogleAPICityList: [],
       StateList: [],
 
+      UsertypeCityAutoComplete: false,
+      UsertypeStateAutoComplete: false,
+      UsertypeGoogleAPICityList: [],
+      UsertypeStateList: [],
+
+      UsertypeSalary: "",
+      UsertypesalaryErr: false,
+      UsertypesalaryHelperText: "",
+      Usertypechecksalary: false,
+
+
       Mobile1: "",
       Mobile1ID: null,
       mobile1Err: false,
       mobile1HelperText: "",
       checkMobile1: false,
+      UsertypeMobile1: "",
+      UsertypeMobile1ID: null,
+      Usertypemobile1Err: false,
+      Usertypemobile1HelperText: "",
+      UsertypecheckMobile1: false,
+      EntityID:"",
+      
       UserDetailID: null,
-
+      pagePreviewLink:"",
       PaperSizeList: [],
       PaperSize: "",
       PaperReviewLink: "",
       LoginpersonId: "",
-
+      StartTime: "",
+      starttimeErr: false,
+      starttimeHelperText: "",
+      EndTime: "",
+      endtimeErr: false,
+      endtimeHelperText: "",
+      StartDate: "",
+      startdateErr: false,
+      startdateHelperText: "",
+      JoinDate: "",
+      joindateErr: false,
+      joindateHelperText: "",
+      RelivingDate: "",
+      relivingdateErr: false,
+      relivingdateHelperText: "",
+      BirthDate: "",
+      birthdateErr: false,
+      birthdateHelperText: "",
+      EndDate: "",
+      enddateErr: false,
+      enddateHelperText: "",
       Attachments: [],
       AttachmentList: [],
       objAttachment: {
@@ -232,7 +415,7 @@ class Step1 extends React.Component {
     };
   }
 
-  componentDidMount() {
+  componentDidMount() {debugger
     this.setState({ Access: CommonConfig.getUserAccess("User Management") });
     this.showHide();
     this.getCountry();
@@ -256,7 +439,13 @@ class Step1 extends React.Component {
       );
     });
   };
-
+  getPreviewLink(PapreSize) {debugger
+    var previewLink = this.state.PaperSizeList.filter(
+      (x) => x.PaperDisplayName === PapreSize.label
+    );
+     this.setState({pagePreviewLink:previewLink[0].PaperPreviewLink});
+    
+  };
   getPaperSizeList = () => {
     try {
       api.post("userManagement/getPaperSizeList", {}).then((res) => {
@@ -274,6 +463,7 @@ class Step1 extends React.Component {
             };
 
             this.setState({ PaperSize: paperData });
+            this.getPreviewLink(this.state.PaperSize)
           });
         }
       });
@@ -316,8 +506,9 @@ class Step1 extends React.Component {
     }
   }
 
-  getStates(countryData) {
+  getStates(countryData,type) {
     try {
+      if(type ==="All"){
       let data = {
         countryId: countryData.value,
       };
@@ -339,12 +530,40 @@ class Step1 extends React.Component {
         .catch((err) => {
           this.hideLoader();
           console.log("err...", err);
-          cogoToast.error("Something Went Wrong");
+          cogoToast.error("Something Went Wrong 1");
         });
+      }
+      else if(type === "Usertype"){
+        let data = {
+          countryId: countryData.value,
+        };
+  
+        api
+          .post("location/getStateList", data)
+          .then((res) => {
+            if (res.success) {
+              this.showLoader();
+  
+              this.setState({
+                UsertypeStateList: res.data,
+                UsertypeStateAutoComplete: res.data.length ? true : false,
+              });
+  
+              this.hideLoader();
+            }
+          })
+          .catch((err) => {
+            this.hideLoader();
+            console.log("err...", err);
+            cogoToast.error("Something Went Wrong 2");
+          });
+      }
+
     } catch (error) {
       this.hideLoader();
     }
   }
+ 
   fileUpload = (event, record) => {
     const files = event.target.files[0];
     debugger;
@@ -464,10 +683,11 @@ class Step1 extends React.Component {
     }
   };
 
-  getUserDetail() {
+  getUserDetail() {debugger
     try {
       this.showLoader();
       this.setState({ Attachments: [], AttachmentList: [] });
+      this.state.EntityID = this.props.location.state;
       let data = {
         userId: this.props.location.state,
       };
@@ -592,10 +812,87 @@ class Step1 extends React.Component {
                   UserDetailID: userData.userDetails[0].UserDetailID,
                   Country: selectedCountry,
                 });
-                this.getStates(selectedCountry.value);
+                this.getStates(selectedCountry.value,"All");
               }
             }
-
+            debugger
+            if(userData.UserData[0].UserType=="Employee"){
+              let emp= {"label":"Employee","value":"Employee"}
+              
+              this.setState({userType: emp});
+            if (!CommonConfig.isEmpty(userData.EmployeeData)) {
+              let timezon={"label":userData.EmployeeData[0].TimeZone,"value":userData.EmployeeData[0].TimeZone};
+              let Country = this.state.CountryList.filter(
+                (x) => x.CountryID === userData.EmployeeData[0].CountryID
+              );
+              let selectedCountry = Country[0]
+                ? {
+                    value: Country[0].CountryID,
+                    label: Country[0].CountryName,
+                  }
+                : "";
+                let Currency = this.state.usertypeCurrencyList.filter(
+                  (x) => x.value === userData.EmployeeData[0].Currency
+                );
+                let selectedCurrency = Currency[0]
+                  ?  Currency[0]
+                      
+                  : "";
+                  let Department = this.state.usertypeDepartmentList.filter(
+                    (x) => x.value === userData.EmployeeData[0].Department
+                  );
+                  let selectedDepartment = Department[0]
+                    ? Department[0]
+                      
+                    : "";
+              this.setState({
+                usertypeTimeZone: timezon,
+                StartTime:userData.EmployeeData[0].StartTime,
+                EndTime:userData.EmployeeData[0].EndTime,
+                BirthDate:userData.EmployeeData[0].Birthdate == null?"":userData.EmployeeData[0].Birthdate,
+                JoinDate:userData.EmployeeData[0].Joiningdate== null?"":userData.EmployeeData[0].Joiningdate,
+                RelivingDate:userData.EmployeeData[0].Relivingdate== null?"":userData.EmployeeData[0].Relivingdate,
+                UsertypeAddressLine1:userData.EmployeeData[0].Addr1,
+                UsertypeAddressLine2:userData.EmployeeData[0].Addr2,
+                UsertypeCountry:selectedCountry,
+                UsertypeZipCode:userData.EmployeeData[0].Zipcode,
+                UsertypeCity:userData.EmployeeData[0].City,
+                UsertypeState:userData.EmployeeData[0].State,
+                UsertypeMobile:userData.EmployeeData[0].Phone1,
+                UsertypeMobile1:userData.EmployeeData[0].Phone2,
+                UsertypeEmail1:userData.EmployeeData[0].Email1,
+                UsertypeEmail2:userData.EmployeeData[0].Email2,
+                UsertypeSalary:userData.EmployeeData[0].Salary,
+                UsertypeCurrency:selectedCurrency,
+                userTypeDepartment:selectedDepartment,
+                Usertypeemployeeid:userData.EmployeeData[0].EmployeeID,
+              });
+              console.log(this.state.usertypeTimeZone.value);
+              /*EmployeeDetailID:1,
+            usertypeTimeZone:this.state.usertypeTimeZone.value,
+            UserType:this.state.userType.value,
+            usertypeStartTime:this.state.StartTime==""?"NULL":this.state.StartTime,
+            usertypeEndTime:this.state.EndTime==""?"NULL":this.state.EndTime,
+            usertypeBirthDate:this.state.BirthDate ==""?"NULL":moment(this.state.BirthDate).format(CommonConfig.dateFormat.dbDateOnly).toString(),
+            usertypeJoiningDate:this.state.JoinDate ==""?"NULL":moment(this.state.JoinDate).format(CommonConfig.dateFormat.dbDateOnly).toString(),
+            usertypeRelivingDate:this.state.RelivingDate ==""?"NULL":moment(this.state.RelivingDate).format(CommonConfig.dateFormat.dbDateOnly).toString(),
+            usertypeAddr1:this.state.UsertypeAddressLine1,
+            usertypeAddr2:this.state.UsertypeAddressLine2,
+            usertypeCountry:this.state.UsertypeCountry=="" ?"":this.state.UsertypeCountry.value,
+            usertypeZip:this.state.UsertypeZipCode,
+            usertypeCity:this.state.UsertypeCity,
+            usertypeState:this.state.UsertypeState==""?"":this.state.UsertypeState.value,
+            usertypeMobile1:this.state.UsertypeMobile,
+            usertypeMobile2:this.state.UsertypeMobile1,
+            usertypeEmail1:this.state.UsertypeEmail1,
+            usertypeEmail2:this.state.UsertypeEmail2,
+            usertypeSalary:this.state.UsertypeSalary,
+            usertypeCurrency:this.state.UsertypeCurrency=="" ?"":this.state.UsertypeCurrency.value,
+            usertypeDepartment:this.state.userTypeDepartment=="" ?"":this.state.userTypeDepartment.value, 
+            usertypeEmployeeId:this.state.Usertypeemployeeid,   
+            EntityID:this.state.EntityID,*/
+            }
+          }
             this.hideLoader();
           }
         })
@@ -605,7 +902,7 @@ class Step1 extends React.Component {
           if(this.props.location.state != undefined){
             this.hideLoader();
             console.log("err....", err);
-            cogoToast.error("Something Went Wrong");
+            cogoToast.error("Something Went Wrong 3");
           }else{
             this.hideLoader();
             console.log("err....", err);
@@ -616,7 +913,7 @@ class Step1 extends React.Component {
       if(this.props.location.state != undefined){
         this.hideLoader();
         console.log("err....", error);
-        cogoToast.error("Something Went Wrong");
+        cogoToast.error("Something Went Wrong 4");
       }else{
         this.hideLoader();
         console.log("err....", error);
@@ -624,7 +921,7 @@ class Step1 extends React.Component {
       
     }
   }
-  getServiceListFiltered(CountryParam) {
+  getServiceListFiltered(CountryParam) {debugger
     try {
       this.setState({ Loading: true });
      const data={
@@ -645,11 +942,11 @@ class Step1 extends React.Component {
             });
             this.setState({ serviceList: res.data, Loading: false });
           } else {
-            cogoToast.error("Something Went Wrong");
+            cogoToast.error("Something Went Wrong 5");
           }
         })
         .catch((err) => {
-          cogoToast.error("Something Went Wrong");
+          cogoToast.error("Something Went Wrong 6");
         });
     } catch (error) {}
   }
@@ -661,7 +958,7 @@ class Step1 extends React.Component {
     this.setState({ Loading: false });
   };
 
-  handleChange = (event, type) => {
+  handleChange = (event, type) => {debugger
     if (type === "fullname") {
       let val = event.target.value;
       this.setState({ checkFullname: true });
@@ -729,6 +1026,53 @@ class Step1 extends React.Component {
           emailHelperText: "",
         });
       }
+    } else if (type === "Usertypeemail1") {
+      this.setState({ UsertypecheckEmail1: true });
+      let emailVal = event.target.value;
+      let regExp = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Z0-9-]+\.[A-Z]{2,6}$/gi;
+      if (emailVal === "" || emailVal === null) {
+        this.setState({
+          UsertypeEmail1: emailVal,
+          UsertypeemailErr1: true,
+          UsertypeemailHelperText1: "Please enter Email",
+        });
+      } else if (emailVal.trim() !== emailVal || !emailVal.match(regExp)) {
+        this.setState({
+          UsertypeEmail1: emailVal,
+          UsertypeemailErr1: true,
+          UsertypeemailHelperText1: "Please enter valid Email",
+        });
+      } else {
+        this.setState({
+          UsertypeEmail1: emailVal,
+          UsertypeemailErr1: false,
+          UsertypeemailHelperText1: "",
+        });
+      }
+    } else if (type === "Usertypeemail2") {
+      this.setState({ UsertypecheckEmail2: true });
+      let emailVal = event.target.value;
+      let regExp = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Z0-9-]+\.[A-Z]{2,6}$/gi;
+      // if (emailVal === "" || emailVal === null) {
+      //   this.setState({
+      //     UsertypeEmail2: emailVal,
+      //     UsertypeemailErr2: true,
+      //     UsertypeemailHelperText2: "Please enter Email",
+      //   });
+      // } else
+       if (emailVal.trim() !="" &&(emailVal.trim() !== emailVal || !emailVal.match(regExp))) {
+        this.setState({
+          UsertypeEmail2: emailVal,
+          UsertypeemailErr2: true,
+          UsertypeemailHelperText2: "Please enter valid Email",
+        });
+      } else {
+        this.setState({
+          UsertypeEmail2: emailVal,
+          UsertypeemailErr2: false,
+          UsertypeemailHelperText2: "",
+        });
+      }
     } else if (type === "mobile") {
       this.setState({ checkMobile: true });
       let mobileVal = event.target.value;
@@ -751,6 +1095,55 @@ class Step1 extends React.Component {
           Mobile: mobileVal,
           mobileErr: false,
           mobileHelperText: "",
+        });
+      }
+    } else if (type === "Usertypemobile") {
+      this.setState({ UsertypecheckMobile: true });
+      let mobileVal = event.target.value;
+      let regExp = /^[0-9]{10,15}$/;
+
+      if (mobileVal === "" || mobileVal === null) {
+        this.setState({
+          UsertypeMobile: mobileVal,
+          UsertypemobileErr: true,
+          UsertypemobileHelperText: "Please enter Mobile Number",
+        });
+      } else if (mobileVal.trim() !== mobileVal || !mobileVal.match(regExp)) {
+        this.setState({
+          UsertypeMobile: mobileVal,
+          UsertypemobileErr: true,
+          UsertypemobileHelperText: "Please enter valid Mobile Number",
+        });
+      } else {
+        this.setState({
+          UsertypeMobile: mobileVal,
+          UsertypemobileErr: false,
+          UsertypemobileHelperText: "",
+        });
+      }
+    } else if (type === "Usertypemobile1") {
+      this.setState({ UsertypecheckMobile1: true });
+      let mobileVal = event.target.value;
+      let regExp = /^[0-9]{10,15}$/;
+
+      // if (mobileVal === "" || mobileVal === null) {
+      //   this.setState({
+      //     UsertypeMobile1: mobileVal,
+      //     UsertypemobileErr1: true,
+      //     UsertypemobileHelperText1: "Please enter Mobile Number",
+      //   });
+      // } else 
+      if (mobileVal.trim() !="" && (mobileVal.trim() !== mobileVal || !mobileVal.match(regExp))) {
+        this.setState({
+          UsertypeMobile1: mobileVal,
+          UsertypemobileErr1: true,
+          UsertypemobileHelperText1: "Please enter valid Mobile Number",
+        });
+      } else {
+        this.setState({
+          UsertypeMobile1: mobileVal,
+          UsertypemobileErr1: false,
+          UsertypemobileHelperText1: "",
         });
       }
     } else if (type === "password") {
@@ -848,6 +1241,38 @@ class Step1 extends React.Component {
           addressLine2HelperText: "",
         });
       }
+    } else if (type === "Usertypeaddressline1") {
+      this.setState({ UsertypecheckAddressLine1: true });
+      let addressVal = event.target.value;
+      if (addressVal === "" || addressVal === null) {
+        this.setState({
+          UsertypeAddressLine1: addressVal,
+          UsertypeaddressLine1Err: true,
+          UsertypeaddressLine1HelperText: "Please enter Address Line 1",
+        });
+      } else {
+        this.setState({
+          UsertypeAddressLine1: addressVal,
+          UsertypeaddressLine1Err: false,
+          UsertypeaddressLine1HelperText: "",
+        });
+      }
+    } else if (type === "Usertypeaddressline2") {
+      this.setState({ UsertypecheckAddressLine2: true });
+      let addressVal = event.target.value;
+      if (addressVal === "" || addressVal === null) {
+        this.setState({
+          UsertypeAddressLine2: addressVal,
+          UsertypeaddressLine2Err: true,
+          UsertypeaddressLine2HelperText: "Please enter Address Line 2",
+        });
+      } else {
+        this.setState({
+          UsertypeAddressLine2: addressVal,
+          UsertypeaddressLine2Err: false,
+          UsertypeaddressLine2HelperText: "",
+        });
+      }
     } else if (type === "addressline3") {
       this.setState({ checkAddressLine3: true });
       let addressVal = event.target.value;
@@ -880,10 +1305,28 @@ class Step1 extends React.Component {
           zipCodeHelperText: "",
         });
       }
+    } else if (type === "Usertypezip") {
+      this.setState({ UsertypecheckZipCode: true });
+      let addressVal = event.target.value.replace(/\D/g, "");
+      if (addressVal === "" || addressVal === null) {
+        this.setState({
+          UsertypeZipCode: addressVal,
+          UsertypezipCodeErr: true,
+          UsertypezipCodeHelperText: "Please enter Zip Code",
+        });
+      } else {
+        this.setState({
+          UsertypeZipCode: addressVal,
+          UsertypezipCodeErr: false,
+          UsertypezipCodeHelperText: "",
+        });
+      }
     } else if (type === "City") {
       this.setState({ City: event.target.value });
     } else if (type === "State") {
       this.setState({ State: event.target.value });
+    } else if (type === "UsertypeState") {
+      this.setState({ UsertypeState: event.target.value });
     } else if (type === "mobile1") {
       this.setState({ checkMobile1: true });
       let mobileVal = event.target.value;
@@ -906,6 +1349,50 @@ class Step1 extends React.Component {
           Mobile1: mobileVal,
           mobile1Err: false,
           mobile1HelperText: "",
+        });
+      }
+    } else if (type === "Usertypesalary") {
+      this.setState({ Usertypechecksalary: true });
+      let salaryVal = event.target.value;
+      let regExp = /^[0-9]{1,10}$/;
+
+      // if (salaryVal === "" || salaryVal === null) {
+      //   this.setState({
+      //     UsertypeSalary: salaryVal,
+      //     UsertypesalaryErr: true,
+      //     UsertypesalaryHelperText: "Please enter Salary",
+      //   });
+      // } else 
+      if (salaryVal.trim() !="" && (salaryVal.trim() !== salaryVal || !salaryVal.match(regExp))) {
+        this.setState({
+          UsertypeSalary: "",
+          UsertypesalaryErr: true,
+          UsertypesalaryHelperText: "Please enter valid Salary",
+        });
+      } else {
+        this.setState({
+          UsertypeSalary: salaryVal,
+          UsertypesalaryErr: false,
+          UsertypesalaryHelperText: "",
+        });
+      }
+    } else if (type === "Usertypeemployeeid") {
+      this.setState({ checkuserTypeEmployeeId: true });
+      let employeeIdVal = event.target.value;
+      let regExp = /^[\w.]{1,10}$/;
+
+    
+      if (employeeIdVal.trim() !="" && (employeeIdVal.trim() !== employeeIdVal || !employeeIdVal.match(regExp))) {
+        this.setState({
+          Usertypeemployeeid: employeeIdVal,
+          userTypeEmployeeIdErr: true,
+          userTypeEmployeeIdHelperText: "Please enter valid Employee Id",
+        });
+      } else {
+        this.setState({
+          Usertypeemployeeid: employeeIdVal,
+          userTypeEmployeeIdErr: false,
+          userTypeEmployeeIdHelperText: "",
         });
       }
     }
@@ -1206,7 +1693,7 @@ class Step1 extends React.Component {
 
 
 
-  validate() {
+  validate() {debugger
     let IsFormValid = true;
     if (this.state.usernameErr) {
       IsFormValid = false;
@@ -1218,13 +1705,201 @@ class Step1 extends React.Component {
     ) {
       IsFormValid = false;
     }
+    if(this.state.userType===null || this.state.userType==="")
+      {IsFormValid = false;
+        this.setState({userTypeErr : true, userTypeHelperText:"Mandatory Field" });
+      }
+      else
+      if(this.state.userType!=null && this.state.userType.value==="Employee")
+        { this.setState({userTypeErr : false, userTypeHelperText:"" });
+          if(this.state.usertypeTimeZone===null || this.state.usertypeTimeZone==="")
+            {IsFormValid = false; 
+              this.setState({usertypeTimeZoneErr: true, usertypeTimeZoneHelperText:"Mandatory Field" });
+            }
+            else
+            this.setState({usertypeTimeZoneErr: false, usertypeTimeZoneHelperText:"" });
+          console.log("moment(this.state.BirthDate)", moment(this.state.BirthDate)._d);
+        if(moment(this.state.BirthDate)._d =="Invalid Date")
+          {
+            IsFormValid = false;
+            this.setState({birthdateErr: true, birthdateHelperText:"Mandatory Field" });
+          }
+        else
+        this.setState({birthdateErr: false, birthdateHelperText:"" });
+          if(moment(this.state.JoinDate)._d == "Invalid Date")
+            {
+              IsFormValid = false;
+              this.setState({joindateErr: true, joindateHelperText:"Mandatory Field" });
+            }
+          else
+          this.setState({joindateErr: false, joindateHelperText:"" });
+      }
+      else
+      {this.setState({userTypeErr : false, userTypeHelperText:"" });}
     return IsFormValid;
   }
-
+  setUserDepartment = (e) =>{debugger
+   
+    this.setState({ userTypeDepartment: e });
+    this.state.userTypeDepartment=e;
+    console.log("userTypeDepartment",this.state.userTypeDepartment);
+ }
   setUserTimeZone = (e) =>{
-     this.setState({ userTimeZone: e });
+     this.setState({ usertypeTimeZone : e });
+     this.setState({usertypeTimeZoneErr: false, usertypeTimeZoneHelperText:"" });
   }
-
+  setUserCurrency = (e) =>{
+    this.setState({ UsertypeCurrency: e });
+ }
+  
+  setUserType = (e) =>{
+    this.setState({ userType: e });
+ } 
+ handleDateChange = (date, type) => {debugger
+  // if (type === "start") {
+  //   this.setState({
+  //     StartDate: date,
+  //     startdateErr: false,
+  //     startdateHelperText: "",
+  //   });
+  // } else if (type === "end") {
+  //   this.setState({
+  //     EndDate: date,
+  //     enddateErr: false,
+  //     enddateHelperText: "",
+  //   });
+  // }else 
+  if (type === "join") {
+    this.setState({
+      JoinDate: date,
+      joindateErr: false,
+      joindateHelperText: "",
+    });
+    if(this.state.BirthDate !== "")
+      if(date > this.state.BirthDate){
+        this.setState({
+          JoinDate: date,
+          joindateErr: false,
+          joindateHelperText: "",
+        });
+      } 
+      else
+      {
+        this.setState({
+          JoinDate: "",
+          joindateErr: true,
+          joindateHelperText: "Joining Date must be after Date of Birth",
+        });
+      }
+        if(this.state.RelivingDate !== "")
+          if(date > this.state.RelivingDate){
+            this.setState({
+              JoinDate: date,
+              joindateErr: false,
+              joindateHelperText: "",
+            });
+          } 
+          else
+            {
+              this.setState({
+                JoinDate: "",
+                joindateErr: true,
+                joindateHelperText: "Joining Date must be before Date of Reliving",
+              });
+            }
+  }else if (type === "Reliving") {
+    this.setState({
+      RelivingDate: date,
+      relivingdateErr: false,
+      relivingdateHelperText: "",
+    });
+    if(this.state.BirthDate !== "")
+      if(date > this.state.BirthDate){
+        this.setState({
+          RelivingDate: date,
+          relivingdateErr: false,
+          relivingdateHelperText: "",
+        });
+      } 
+      else
+      {
+        this.setState({
+          RelivingDate: "",
+          relivingdateErr: true,
+          relivingdateHelperText: "Reliving Date must be after Date of Birth",
+        });
+      }
+      if(this.state.JoinDate !== "")
+        if(date > this.state.JoinDate){
+          this.setState({
+            RelivingDate: date,
+            relivingdateErr: false,
+            relivingdateHelperText: "",
+          });
+        } 
+        else
+        {
+          this.setState({
+            RelivingDate: "",
+            relivingdateErr: true,
+            relivingdateHelperText: "Reliving Date must be after Date of Join",
+          });
+        }
+  }else if (type === "DOB") {
+    this.setState({
+      BirthDate: date,
+      birthdateErr: false,
+      birthdateHelperText: "",
+    });
+    if(this.state.JoinDate !== "")
+      if(date < this.state.JoinDate){
+        this.setState({
+          BirthDate: date,
+          birthdateErr: false,
+          birthdateHelperText: "",
+        });
+      } 
+      else
+      {
+        this.setState({
+          BirthDate: "",
+          birthdateErr: true,
+          birthdateHelperText: "Date of Birth must be before Date of Join",
+        });
+      }
+      if(this.state.RelivingDate !== "")
+      if(date < this.state.RelivingDate){
+        this.setState({
+          BirthDate: date,
+          birthdateErr: false,
+          birthdateHelperText: "",
+        });
+      } 
+      else
+      {
+        this.setState({
+          BirthDate: "",
+          birthdateErr: true,
+          birthdateHelperText: "Date of Birth must be before Date of Reliving",
+        });
+      }
+  }
+};
+handleTimeChange = (time, type) => {debugger 
+  if (type === "start_time") {
+    this.setState({
+      StartTime: time.currentTarget.value,
+      starttimeErr: false,
+      starttimeHelperText: "",
+    });
+  } else if (type === "end_time") { 
+    this.setState({
+      EndTime: time.currentTarget.value,
+      endtimeErr: false,
+      endtimeHelperText: "",
+    });
+  }
+};
   activeInactiveUser = (e) => {
     this.setState({ Status: e });
     // let data = {
@@ -1240,11 +1915,11 @@ class Step1 extends React.Component {
     //       if (res.success) {
     //         this.getUserDetail();
     //       } else {
-    //         cogoToast.error("Something Went Wrong");
+    //         cogoToast.error("Something Went Wrong 7");
     //       }
     //     })
     //     .catch((err) => {
-    //       cogoToast.error("Something Went Wrong");
+    //       cogoToast.error("Something Went Wrong 8");
     //     });
     // } catch (error) {}
   };
@@ -1274,7 +1949,7 @@ class Step1 extends React.Component {
     });
   };
   saveUser = (redirect) => {debugger
-    if (this.validate()) {
+    if (this. validate()) {
       try {
         this.showLoader();
         
@@ -1327,10 +2002,33 @@ class Step1 extends React.Component {
             Phone2ID: this.state.Mobile1ID,
             SelectedPaperSize: this.state.PaperSize.value,
             Status: this.state.Status.value,
-            userTimeZone:this.state.userTimeZone.value,
             DocumentList: finalAttachment,
+            EmployeeDetailID:1,
+            usertypeTimeZone:this.state.usertypeTimeZone.value,
+            UserType:this.state.userType.value,
+            usertypeStartTime:this.state.StartTime==""?"NULL":this.state.StartTime,
+            usertypeEndTime:this.state.EndTime==""?"NULL":this.state.EndTime,
+            usertypeBirthDate:this.state.BirthDate ==""?"NULL":moment(this.state.BirthDate).format(CommonConfig.dateFormat.dbDateOnly).toString(),
+            usertypeJoiningDate:this.state.JoinDate ==""?"NULL":moment(this.state.JoinDate).format(CommonConfig.dateFormat.dbDateOnly).toString(),
+            usertypeRelivingDate:this.state.RelivingDate ==""?"NULL":moment(this.state.RelivingDate).format(CommonConfig.dateFormat.dbDateOnly).toString(),
+            usertypeAddr1:this.state.UsertypeAddressLine1,
+            usertypeAddr2:this.state.UsertypeAddressLine2,
+            usertypeCountry:this.state.UsertypeCountry=="" ?"":this.state.UsertypeCountry.value,
+            usertypeZip:this.state.UsertypeZipCode,
+            usertypeCity:this.state.UsertypeCity,
+            usertypeState:this.state.UsertypeState==""?"":this.state.UsertypeState.value,
+            usertypeMobile1:this.state.UsertypeMobile,
+            usertypeMobile2:this.state.UsertypeMobile1,
+            usertypeEmail1:this.state.UsertypeEmail1,
+            usertypeEmail2:this.state.UsertypeEmail2,
+            usertypeSalary:this.state.UsertypeSalary,
+            usertypeCurrency:this.state.UsertypeCurrency=="" ?"":this.state.UsertypeCurrency.value,
+            usertypeDepartment:this.state.userTypeDepartment=="" ?"":this.state.userTypeDepartment.value, 
+            usertypeEmployeeId:this.state.Usertypeemployeeid,   
+            EntityID:this.state.EntityID,
           };
         } else {
+          console.log("Loklesh1",this.state.userTypeDepartment);
           data = {
             Name: this.state.fullName,
             UserName: this.state.userName,
@@ -1349,10 +2047,33 @@ class Step1 extends React.Component {
             EmailID: this.state.EmailID,
             PhoneID: this.state.MobileID,
             Status: this.state.Status.value,
-            userTimeZone:this.state.userTimeZone.value,
             SelectedPaperSize: this.state.PaperSize.value,
             DocumentList: finalAttachment,
+            EmployeeDetailID:1,
+            usertypeTimeZone:this.state.usertypeTimeZone.value,
+            UserType:this.state.userType.value,
+            usertypeStartTime:this.state.StartTime==""?"NULL":this.state.StartTime,
+            usertypeEndTime:this.state.EndTime==""?"NULL":this.state.EndTime,
+            usertypeBirthDate:this.state.BirthDate ==""?"NULL":moment(this.state.BirthDate).format(CommonConfig.dateFormat.dbDateOnly).toString(),
+            usertypeJoiningDate:this.state.JoinDate ==""?"NULL":moment(this.state.JoinDate).format(CommonConfig.dateFormat.dbDateOnly).toString(),
+            usertypeRelivingDate:this.state.RelivingDate ==""?"NULL":moment(this.state.RelivingDate).format(CommonConfig.dateFormat.dbDateOnly).toString(),
+           usertypeAddr1:this.state.UsertypeAddressLine1,
+            usertypeAddr2:this.state.UsertypeAddressLine2,
+            usertypeCountry:this.state.UsertypeCountry=="" ?"":this.state.UsertypeCountry.value,
+            usertypeZip:this.state.UsertypeZipCode,
+            usertypeCity:this.state.UsertypeCity,
+            usertypeState:this.state.UsertypeState==""?"":this.state.UsertypeState.value,
+            usertypeMobile1:this.state.UsertypeMobile,
+            usertypeMobile2:this.state.UsertypeMobile1,
+            usertypeEmail1:this.state.UsertypeEmail1,
+            usertypeEmail2:this.state.UsertypeEmail2,
+            usertypeSalary:this.state.UsertypeSalary,
+            usertypeCurrency:this.state.UsertypeCurrency=="" ?"":this.state.UsertypeCurrency.value,
+            usertypeDepartment:this.state.userTypeDepartment=="" ?"":this.state.userTypeDepartment.value, 
+            usertypeEmployeeId:this.state.Usertypeemployeeid,  
+            EntityID:this.state.EntityID,
           };
+          console.log("Loklesh2");
         }
 
         var formData = new FormData();
@@ -1433,7 +2154,7 @@ class Step1 extends React.Component {
           });
       } catch (error) {
         this.hideLoader();
-        cogoToast.error("Something Went Wrong");
+        cogoToast.error("Something Went Wrong 9");
       }
     } else {
       cogoToast.error("Please correct error and resubmit the form");
@@ -1757,8 +2478,9 @@ class Step1 extends React.Component {
     document.getElementById("documentation").style.display = "none";
   }
 
-  zipChange = (zip) => {debugger
-    if (zip.length) {
+  zipChange = (zip,type) => {debugger
+    if(type === "All")
+    {  if (zip.length) {
       let citydata={
         "PostalCode" : zip,
         "CountryID": this.state.Country.value
@@ -2102,7 +2824,7 @@ class Step1 extends React.Component {
                    
                     console.log("New Zipcode Enter Successfully");
                   } else {
-                    console.log("Something Went Wrong");
+                    console.log("Something Went Wrong 10");
                   }
                 }
               })
@@ -2126,12 +2848,389 @@ class Step1 extends React.Component {
       }
     }
   });
+     }
     }
+    else if(type === "Usertype")
+    {
+      if (zip.length) {
+        let citydata={
+          "PostalCode" : zip,
+          "CountryID": this.state.UsertypeCountry.value
+        }
+        api
+        .post(
+          "https://hubapi.sflworldwide.com/contactus/SflPostalCode",
+          citydata
+        )
+        .then((res) => {
+          if (res.success) {
+            console.log("CheckRessData", res);
+            if (res.success === true) {
+              var IsValidCountry = false;
+             let data = res.Data.data;
+             // this.hideLoador();
+            //  this.CloseDialog();
+            //  this.getReferredSite();
+            let RecCount = data.length;
+            if(RecCount !=0)
+              {
+                var FinalCity = [];
+                var city = "";
+              
+                      var countryShortName = data[0].Country
+                      for(let i=0;i<RecCount;i++)
+                        FinalCity.push({
+                        City_code: data[i].City,
+                        CityName: data[i].City,
+                      });
+                      var SelectedCity = {
+                        value: FinalCity[0].City_code,
+                        label: FinalCity[0].CityName,
+                      };
+                      var state = data[0].State;
+                      console.log("this.state.toStateList",this.state.toStateList);
+                      var SelectedState = { value: state, label: state };
+                      if (countryShortName === this.state.UsertypeCountry.label) {
+                        this.setState({
+                          UsertypeCityAutoComplete: FinalCity.length ? true : false,
+                          UsertypeStateAutoComplete: this.state.UsertypeStateList.length ? true : false,
+                          UsertypeGoogleAPICityList: FinalCity,
+                          UsertypeState: this.state.UsertypeStateList.length ? SelectedState : state,
+                          UsertypeCity: SelectedCity.label,
+                        });
+                      } else {
+                        this.setState({
+                          UsertypeCityAutoComplete: false,
+                          UsertypeStateAutoComplete: this.state.UsertypeStateList.length ? true : false,
+                          UsertypeGoogleAPICityList: [],
+                          UsertypeState: "",
+                          UsertypeCity: "",
+                        });
+                      }
+                      this.hideLoader();
+                    }
+        else
+       { fetch(CommonConfig.zipCodeAPIKey(zip, this.state.UsertypeCountry.label))
+          .then((result) => result.json())
+          .then((data) => {
+            this.showLoader();
+            if (data["status"] === "OK") {
+              if (
+                data["results"][0] &&
+                data["results"][0].hasOwnProperty("postcode_localities")
+              ) {
+                var FinalCity = [];
+                var countryShortName = "";
+  
+                countryShortName = _.filter(
+                  data["results"][0]["address_components"],
+                  function(data) {
+                    return data.types[0] === "country";
+                  }
+                )[0].long_name;
+                var CityData = _.filter(
+                  data["results"][0]["address_components"],
+                  function(data) {
+                    if (data.types[0] == "locality") {
+                      return data.types[0] === "locality";
+                    }
+                  }
+                );
+  
+                var CityData2 = _.filter(
+                  data["results"][0]["address_components"],
+                  function(data) {
+                    if (data.types[0] == "neighborhood") {
+                      return data.types[0] === "neighborhood";
+                    }
+                  }
+                );
+  
+                var CityData3 = _.filter(
+                  data["results"][0]["address_components"],
+                  function(data) {
+                    if (data.types[0] == "administrative_area_level_2") {
+                      return data.types[0] === "administrative_area_level_2";
+                    }
+                  }
+                );
+  
+                var CityData4 = _.filter(
+                  data["results"][0]["address_components"],
+                  function(data) {
+                    if (data.types[0] == "administrative_area_level_1") {
+                      return data.types[0] === "administrative_area_level_1";
+                    }
+                  }
+                );
+  
+                if (CityData.length > 0) {
+                  CityData = CityData[0].long_name;
+                  FinalCity.push({
+                    City_code: CityData,
+                    Name: CityData,
+                  });
+                  var SelectedCity = {
+                    value: FinalCity[0].City_code,
+                    label: FinalCity[0].Name,
+                  };
+                } else if (CityData2.length > 0) {
+                  CityData2 = CityData2[0].long_name;
+                  FinalCity.push({
+                    City_code: CityData2,
+                    Name: CityData2,
+                  });
+                  var SelectedCity = {
+                    value: FinalCity[0].City_code,
+                    label: FinalCity[0].Name,
+                  };
+                } else if (CityData3.length > 0) {
+                  CityData3 = CityData3[0].long_name;
+                  FinalCity.push({
+                    City_code: CityData3,
+                    Name: CityData3,
+                  });
+                  var SelectedCity = {
+                    value: FinalCity[0].City_code,
+                    label: FinalCity[0].Name,
+                  };
+                } else if (CityData4.length > 0) {
+                  CityData4 = CityData4[0].long_name;
+                  FinalCity.push({
+                    City_code: CityData4,
+                    Name: CityData4,
+                  });
+                  var SelectedCity = {
+                    value: FinalCity[0].City_code,
+                    label: FinalCity[0].Name,
+                  };
+                }
+  
+                var state = _.filter(
+                  data["results"][0]["address_components"],
+                  function(data) {
+                    return data.types[0] === "administrative_area_level_1";
+                  }
+                )[0].long_name;
+                var SelectedState = { value: state, label: state };
+  
+                if (countryShortName === this.state.Country.label) {
+                  this.setState({
+                    UsertypeCityAutoComplete: FinalCity.length ? true : false,
+                    StateAutoComplete: this.state.StateList.length ? true : false,
+                    GoogleAPICityList: FinalCity,
+                    State: this.state.StateList.length ? SelectedState : state,
+                    City: SelectedCity,
+                  });
+                } else {
+                  this.setState({
+                    CityAutoComplete: false,
+                    StateAutoComplete: this.state.StateList.length ? true : false,
+                    GoogleAPICityList: [],
+                    State: "",
+                    City: "",
+                  });
+                }
+                this.hideLoader();
+              } else if (data["results"][0]) {
+                var FinalCity = [];
+                var city = "";
+                var countryShortName = "";
+  
+                countryShortName = _.filter(
+                  data["results"][0]["address_components"],
+                  function(data) {
+                    return data.types[0] === "country";
+                  }
+                )[0].long_name;
+  
+                if (
+                  city == "" &&
+                  _.filter(data["results"][0]["address_components"], function(
+                    data
+                  ) {
+                    return data.types[0] === "locality";
+                  }).length > 0
+                ) {
+                  city = _.filter(
+                    data["results"][0]["address_components"],
+                    function(data) {
+                      return data.types[0] === "locality";
+                    }
+                  )[0].short_name;
+                } else if (
+                  city == "" &&
+                  _.filter(data["results"][0]["address_components"], function(
+                    data
+                  ) {
+                    return data.types[0] === "administrative_area_level_3";
+                  }).length > 0
+                ) {
+                  city = _.filter(
+                    data["results"][0]["address_components"],
+                    function(data) {
+                      return data.types[0] === "administrative_area_level_3";
+                    }
+                  )[0].short_name;
+                } else if (
+                  city == "" &&
+                  _.filter(data["results"][0]["address_components"], function(
+                    data
+                  ) {
+                    return data.types[0] === "political";
+                  }).length > 0
+                ) {
+                  city = _.filter(
+                    data["results"][0]["address_components"],
+                    function(data) {
+                      return data.types[0] === "political";
+                    }
+                  )[0].short_name;
+                } else if (
+                  city == "" &&
+                  _.filter(data["results"][0]["address_components"], function(
+                    data
+                  ) {
+                    return data.types[0] === "neighborhood";
+                  }).length > 0
+                ) {
+                  city = _.filter(
+                    data["results"][0]["address_components"],
+                    function(data) {
+                      return data.types[0] === "neighborhood";
+                    }
+                  )[0].short_name;
+                } else if (
+                  city == "" &&
+                  _.filter(data["results"][0]["address_components"], function(
+                    data
+                  ) {
+                    return data.types[0] === "administrative_area_level_2";
+                  }).length > 0
+                ) {
+                  city = _.filter(
+                    data["results"][0]["address_components"],
+                    function(data) {
+                      return data.types[0] === "administrative_area_level_2";
+                    }
+                  )[0].long_name;
+                } else if (
+                  city == "" &&
+                  _.filter(data["results"][0]["address_components"], function(
+                    data
+                  ) {
+                    return data.types[0] === "administrative_area_level_1";
+                  }).length > 0
+                ) {
+                  city = _.filter(
+                    data["results"][0]["address_components"],
+                    function(data) {
+                      return data.types[0] === "administrative_area_level_1";
+                    }
+                  )[0].long_name;
+                } else if (city == "") {
+                  city = "";
+                }
+  
+                var state = _.filter(
+                  data["results"][0]["address_components"],
+                  function(data) {
+                    return data.types[0] === "administrative_area_level_1";
+                  }
+                )[0].long_name;
+  
+                FinalCity.push({
+                  City_code: city,
+                  Name: city,
+                });
+  
+                var SelectedCity = {
+                  value: FinalCity[0].City_code,
+                  label: FinalCity[0].Name,
+                };
+  
+                var SelectedState = { value: state, label: state };
+  
+                if (countryShortName === this.state.Country.label) {
+                  this.setState({
+                    CityAutoComplete: FinalCity.length ? true : false,
+                    StateAutoComplete: this.state.StateList.length ? true : false,
+                    GoogleAPICityList: FinalCity,
+                    State: this.state.StateList.length ? SelectedState : state,
+                    City: SelectedCity,
+                  });
+                } else {
+                  this.setState({
+                    CityAutoComplete: false,
+                    StateAutoComplete: this.state.StateList.length ? true : false,
+                    GoogleAPICityList: [],
+                    State: "",
+                    City: "",
+                  });
+                }
+                this.hideLoader();
+              
+               
+              }
+              if(this.state.Country.label == "United States" ||this.state.Country.label == "India" ||this.state.Country.label == "Canada"  )
+                {
+                  
+                  var newZipcodedata = {
+                  "Pincode" : zip,
+                  "PickupCityList": SelectedCity.label,
+                  "CountryID": this.state.Country.value,
+                  "CountryName": this.state.Country.label,
+                  "StateName" : state,
+                  
+                };
+                console.log("newZipcodedata",newZipcodedata);
+                api
+                .post(
+                  "https://hubapi.sflworldwide.com/contactus/SflInsertPostalCode",
+                  newZipcodedata
+                )
+                .then((res) => {
+                  if (res.success) {
+                    console.log("CheckRessData", res);
+                    if (res.success === true) {
+                     
+                      console.log("New Zipcode Enter Successfully");
+                    } else {
+                      console.log("Something Went Wrong 11");
+                    }
+                  }
+                })
+                .catch((err) => {
+                    console.log("err...", err);
+                   
+                  });
+              }
+            } else {
+              this.setState({
+                CityAutoComplete: false,
+                StateAutoComplete: this.state.StateList.length ? true : false,
+                GoogleAPICityList: [],
+                State: "",
+                City: "",
+              });
+              this.hideLoader();
+            }
+          });
+        }
+        }
+      }
+    });
+      }
+    }
+    
   };
 
   handleZipBlur = (e, type) => {
     if (type === "zip") {
-      this.zipChange(e.target.value);
+      this.zipChange(e.target.value,"All");
+    }
+    else if (type === "Usertypezip") {
+      this.zipChange(e.target.value,"Usertype");
     }
   };
 
@@ -2139,17 +3238,26 @@ class Step1 extends React.Component {
     if (value !== null) {
       if (type === "Country") {
         this.setState({ Country: value });
-        this.getStates(value);
+        this.getStates(value,"All");
       } else if (type === "City") {
         this.setState({ City: value });
       } else if (type === "State") {
         this.setState({ State: value });
+      } else if (type === "UsertypeCountry") {
+        this.setState({ UsertypeCountry: value });
+        this.getStates(value,"Usertype");
+      } else if (type === "UsertypeCity") {
+        this.setState({ UsertypeCity: value });
+      } else if (type === "UsertypeState") {
+        this.setState({ UsertypeState: value });
       } else if (type === "ManagedBy") {
         this.setState({ ManagedBy: value });
       } else if (type === "PaperSize") {
         this.setState({ PaperSize: value });
+        this.getPreviewLink(this.state.PaperSize)
       }
     }
+   
   };
 
   render() {
@@ -2157,18 +3265,37 @@ class Step1 extends React.Component {
       fullName,
       userName,
       Email,
+      UsertypeEmail1,
+      UsertypeEmail2,
+      Currency,
       Mobile,
+      Salary,
+      department,
+      employeeId,
       AccountNumber,
       ManagedBy,
       CompanyName,
       AddressLine1,
       AddressLine2,
+      UsertypeAddressLine1,
+      UsertypeAddressLine2,
       AddressLine3,
       ZipCode,
       City,
       State,
       Country,
+      UsertypeCountry,
+      UsertypeZipCode,
+      UsertypeCity,
+      UsertypeState,
       Mobile1,
+      UsertypeMobile,
+      UsertypeMobile1,
+      UsertypeSalary,
+      UsertypeCurrency,
+      Usertypeemployeeid,
+      usertypeTimeZone,
+      pagePreviewLink,
     } = this.state;
 
     const managedBy = this.state.managedByList.map((type) => {
@@ -2183,15 +3310,27 @@ class Step1 extends React.Component {
       return { value: type.value, label: type.label };
     });
 
-    const userTimeZone = this.state.UserTimeZoneList.map((type) => {
+    const userTypeDepartmentDrop = this.state.usertypeDepartmentList.map((type) => {
       return { value: type.value, label: type.label };
     });
+    const userTypeTimeZone = this.state.UserTypeTimeZoneList.map((type) => {
+      return { value: type.value, label: type.label };
+    });
+    const userTypeCurrencyDrop = this.state.usertypeCurrencyList.map((type) => {
+      return { value: type.value, label: type.label };
+    }); 
 
+    const userType = this.state.UserTypeList.map((type) => {
+      return { value: type.value, label: type.label };
+    }); 
 
     const CityOptions = this.state.GoogleAPICityList.map((city) => {
       return { value: city.City_code, label: city.Name };
     });
     const StateOptions = this.state.StateList.map((state) => {
+      return { value: state.StateName, label: state.StateName };
+    });
+    const UsertypeStateOptions = this.state.UsertypeStateList.map((state) => {
       return { value: state.StateName, label: state.StateName };
     });
     const CountryOptions = this.state.CountryList.map((fromCountry) => {
@@ -2481,9 +3620,9 @@ class Step1 extends React.Component {
                 <div className="shipment-content">
                   <div className="shipment-pane mt-20" id="userdetails">
                     <GridContainer>
-                      <GridItem xs={12} sm={12} md={3}>
+                    <GridItem xs={12} sm={12} md={3}>
                         <CustomInput
-                          labelText={<span>User Name</span>}
+                          labelText={<span>User Name*</span>}
                           id="username"
                           error={this.state.usernameErr}
                           helperText={this.state.usernameHelperText}
@@ -2524,6 +3663,7 @@ class Step1 extends React.Component {
                           }}
                         />
                       </GridItem>
+                      
                       <GridItem xs={12} sm={12} md={3}>
                         {this.props.match.params.id ? null : (
                           <FormControl
@@ -3067,18 +4207,22 @@ class Step1 extends React.Component {
                     </GridContainer>
                     <GridContainer>
                       <GridItem xs={12} sm={12} md={3}>
-                        <Autocomplete
-                          id="combo-box-demo"
-                          options={paperSize}
-                          value={this.state.PaperSize}
-                          onChange={(event, value) =>
-                            this.ChangeCountry(value, "PaperSize")
-                          }
-                          getOptionLabel={(option) => option.label}
-                          renderInput={(params) => (
-                            <TextField {...params} label="Paper Size" />
-                          )}
-                        />
+                        <div className="ipt-addon">
+                          <Autocomplete
+                            id="combo-box-demo"
+                            options={paperSize}
+                            value={this.state.PaperSize}
+                            onChange={(event, value) =>
+                              this.ChangeCountry(value, "PaperSize")
+                            }
+                            getOptionLabel={(option) => option.label}
+                            renderInput={(params) => (
+                              <TextField {...params} label="Paper Size" />
+                            )}
+                            
+                          />
+                          <Tooltip title="Paper Size Preview" arrow><a id="paperpreview" className="addon-icn" href={this.state.pagePreviewLink} target="_blank"><Icon>book</Icon></a></Tooltip>
+                        </div>
                       </GridItem>
                       <GridItem xs={12} sm={12} md={3}>
                         <Autocomplete
@@ -3094,8 +4238,24 @@ class Step1 extends React.Component {
                           )}
                         />
                       </GridItem>
-
                       <GridItem xs={12} sm={12} md={3}>
+                        <Autocomplete
+                          id="combo-box-demo"
+                          options={userType}
+                          value={this.state.userType}
+                          onChange={(event, value) =>
+                            this.setUserType(value)
+                          }
+                          getOptionLabel={(option) => option.label}
+                          renderInput={(params) => (
+                            <TextField {...params} label="User Type*"
+                            error={this.state.userTypeErr}
+                            helperText={this.state.userTypeHelperText}
+                            fullWidth />
+                          )}
+                        />
+                    </GridItem>
+                      {/* <GridItem xs={12} sm={12} md={3}>
                         <Autocomplete
                           id="combo-box-demo"
                           options={userTimeZone}
@@ -3108,10 +4268,10 @@ class Step1 extends React.Component {
                             <TextField {...params} label="Time Zone" />
                           )}
                         />
-                      </GridItem>
+                      </GridItem> */}
                     </GridContainer>
-
-                    <GridContainer>
+                   
+                   {/* <GridContainer>
                       <GridItem xs={12} sm={12} md={12}>
                         <h3 className="margin-right-auto text-color-black">
                           Page Size Preview
@@ -3119,6 +4279,753 @@ class Step1 extends React.Component {
                       </GridItem>
                       {this.generatePreviewLink()}
                     </GridContainer>
+                  */}
+                    {(this.state.userType !== null && this.state.userType.value === "Employee" ) ? (
+                     <Card >
+                      <CardHeader className="btn-right-outer" color="primary" icon>
+                        <CardIcon color="primary">
+                          <User />
+                        </CardIcon>
+                        <h4 className="margin-right-auto text-color-black">
+                          Employee Details                        </h4>
+                      </CardHeader>
+                     <Cardbody>
+                     <div className="shipment-pane mt-20" id="userdetails">
+                    <GridContainer>
+                    <GridItem xs={12} sm={12} md={3}>
+                        <Autocomplete
+                          id="combo-box-demo"
+                          options={userTypeTimeZone}
+                          value={this.state.usertypeTimeZone}
+                          onChange={(event, value) =>
+                            this.setUserTimeZone(value)
+                          }
+                          getOptionLabel={(option) => option.label}
+                          renderInput={(params) => (
+                            <TextField {...params} label="Time Zone*" 
+                            error={this.state.usertypeTimeZoneErr}
+                            helperText={this.state.usertypeTimeZoneHelperText}
+                            fullWidth
+                            />
+                          )}
+                        />
+                      </GridItem>
+                    <GridItem xs={12} sm={12} md={3}>
+                      <div className="dt-vs date-spl">
+                          <FormControl fullWidth>
+                          <TextField
+                            id="Starttime"
+                            label="Start Time"
+                            type="time"
+                            defaultValue=""
+                            value={this.state.StartTime}
+                            className={classes.textField}
+                            InputLabelProps={{
+                              shrink: true,
+                            }}
+                            onChange={(time) =>
+                              this.handleTimeChange(time,"start_time")
+                            }
+                            inputProps={{
+                              step: 300, // 5 min
+                            }}
+                          />
+                            
+                          </FormControl>
+                    </div>
+                      </GridItem>
+                      <GridItem xs={12} sm={12} md={3}>
+                        <div className="dt-vs date-spl">
+                          <FormControl fullWidth>
+                          <TextField
+                            id="Endtime"
+                            label="End Time"
+                            type="time"
+                            defaultValue=""
+                            value={this.state.EndTime}
+                            className={classes.textField}
+                            InputLabelProps={{
+                              shrink: true,
+                            }}
+                            onChange={(time) =>
+                              this.handleTimeChange(time,"end_time")
+                            }
+                            inputProps={{
+                              step: 300, // 5 min
+                            }}
+                          />
+                            
+                          </FormControl>
+                        </div>
+                      </GridItem>
+                      
+                      <GridItem xs={12} sm={12} md={3}>
+                  <div className="dt-vs date-spl">
+                    <FormControl fullWidth>
+                      <Datetime
+                        dateFormat={"MM/DD/YYYY"}
+                        timeFormat={false}
+                        selected={moment(this.state.BirthDate)}
+                        value={moment(this.state.BirthDate)} 
+                        inputProps={{ placeholder: "Date of Birth" }}
+                        onChange={(date) =>
+                          this.handleDateChange(date, "DOB")
+                        }
+                        closeOnSelect={true}
+                        renderInput={(params) => (
+                          <TextField
+                            style={{ marginTop: "-15px" }}
+                            error={this.state.birthdateErr}
+                            helperText={this.state.birthdateHelperText}
+                            {...params}
+                            label="Date of Birth*"
+                            margin="normal"
+                            fullWidth
+                          />
+                        )}
+                      />
+                      <Icon className="date-icon tp-slam">date_range</Icon>
+                    </FormControl>
+                  </div>
+                    </GridItem>
+                    </GridContainer>
+                    <GridContainer>
+                    <GridItem xs={12} sm={12} md={3}>
+                  <div className="dt-vs date-spl">
+                    <FormControl fullWidth>
+                      <Datetime
+                        dateFormat={"MM/DD/YYYY"}
+                        timeFormat={false}
+                        selected={moment(this.state.JoinDate)}
+                        value={moment(this.state.JoinDate)} 
+                        inputProps={{ placeholder: "Joining Date" }}
+                        onChange={(date) =>
+                          this.handleDateChange(date, "join")
+                        }
+                        closeOnSelect={true}
+                        renderInput={(params) => (
+                          <TextField
+                            style={{ marginTop: "-15px" }}
+                            error={this.state.joindateErr}
+                            helperText={this.state.joindateHelperText}
+                            {...params}
+                            label="Joining Date*"
+                            margin="normal"
+                            fullWidth
+                          />
+                        )}
+                      />
+                      <Icon className="date-icon tp-slam">date_range</Icon>
+                    </FormControl>
+                  </div>
+                      </GridItem>
+                    <GridItem xs={12} sm={12} md={3}>
+                      <div className="dt-vs date-spl">
+                        <FormControl fullWidth>
+                          <Datetime
+                            dateFormat={"MM/DD/YYYY"}
+                            timeFormat={false}
+                            selected={moment(this.state.RelivingDate)}
+                            value={moment(this.state.RelivingDate)} 
+                            inputProps={{ placeholder: "Reliving Date" }}
+                            onChange={(date) => this.handleDateChange(date, "Reliving")}
+                            closeOnSelect={true}
+                            renderInput={(params) => (
+                              <TextField
+                                style={{ marginTop: "-15px" }}
+                                error={this.state.relivingdateErr}
+                                helperText={this.state.relivingdateHelperText}
+                                {...params}
+                                label="Reliving Date"
+                                margin="normal"
+                                fullWidth
+                              />
+                            )}
+                          />
+                          <Icon className="date-icon tp-slam">date_range</Icon>
+                        </FormControl>
+                      </div>
+                    </GridItem>
+                    <GridItem xs={12} sm={12} md={3}>
+                      <CustomInput
+                        labelText={<span>Address Line 1</span>}
+                        id="Usertypeaddressline1"
+                        name="Usertypeaddressline1"
+                        variant="outlined"
+                        formControlProps={{ fullWidth: true }}
+                        inputProps={{
+                          onFocus: () =>
+                            this.setState({
+                              UsertypecheckAddressLine1: false,
+                              UsertypeaddressLine1Err: false,
+                              UsertypeaddressLine1HelperText: "",
+                            }),
+                          onBlur: (event) =>
+                            this.handleChange(event, "Usertypeaddressline1"),
+                          onChange: (event) =>
+                            this.handleChange(event, "Usertypeaddressline1"),
+                          value: UsertypeAddressLine1, 
+                          endAdornment:
+                            this.state.UsertypecheckAddressLine1 !== true ? (
+                              <Icon>place</Icon>
+                            ) : (
+                              <InputAdornment position="end">
+                                {" "}
+                                <DoneIcon
+                                  style={{ color: green[500] }}
+                                  className={useStyles.success}
+                                />
+                              </InputAdornment>
+                            ),
+                        }}
+                      />
+                    </GridItem>
+                    <GridItem xs={12} sm={12} md={3}>
+                      <CustomInput
+                        labelText={<span>Address Line 2</span>}
+                        id="Usertypeaddressline2"
+                        name="Usertypeaddressline2"
+                        variant="outlined"
+                        formControlProps={{ fullWidth: true }}
+                        inputProps={{
+                          onFocus: () =>
+                            this.setState({
+                              UsertypecheckAddressLine2: false,
+                              UsertypeaddressLine2Err: false,
+                              UsertypeaddressLine2HelperText: "",
+                            }),
+                          onBlur: (event) =>
+                            this.handleChange(event, "Usertypeaddressline2"),
+                          onChange: (event) =>
+                            this.handleChange(event, "Usertypeaddressline2"),
+                          value: UsertypeAddressLine2, 
+                          endAdornment:
+                            this.state.UsertypecheckAddressLine2 !== true ? (
+                              <Icon>place</Icon>
+                            ) : (
+                              <InputAdornment position="end">
+                                {" "}
+                                <DoneIcon
+                                  style={{ color: green[500] }}
+                                  className={useStyles.success}
+                                />
+                              </InputAdornment>
+                            ),
+                        }}
+                      />
+                    </GridItem>
+                    </GridContainer>
+                    <GridContainer>
+                      <GridItem xs={12} sm={12} md={3}>
+                        <Autocomplete
+                          options={CountryOptions}
+                          id="UsertypeCountry"
+                          getOptionLabel={(option) => option.label}
+                          value={UsertypeCountry} 
+                          autoSelect
+                          onChange={(event, value) =>
+                            this.ChangeCountry(value, "UsertypeCountry")
+                          }
+                          renderInput={(params) => (
+                            <TextField {...params} label="Country" />
+                          )}
+                        />
+                      </GridItem>
+                      <GridItem xs={12} sm={12} md={3}>
+                        <CustomInput
+                          labelText={<span>Zip</span>}
+                          id="Usertypezip"
+                          name="Usertypezip"
+                          variant="outlined"
+                          error={this.state.UsertypezipCodeErr}
+                          helperText={this.state.UsertypezipCodeHelperText}
+                          formControlProps={{ fullWidth: true }}
+                          inputProps={{
+                            onFocus: () =>
+                              this.setState({
+                                UsertypecheckZipCode: false,
+                                UsertypezipCodeErr: false,
+                                UsertypezipCodeHelperText: "",
+                              }),
+                            onBlur: (event) => this.handleZipBlur(event, "Usertypezip"),
+                            onChange: (event) =>
+                              this.handleChange(event, "Usertypezip"),
+                            value: UsertypeZipCode, 
+                            endAdornment:
+                              this.state.UsertypecheckZipCode !== true ? (
+                                <Icon>person</Icon>
+                              ) : this.state.UsertypezipCodeErr ? (
+                                <InputAdornment position="end">
+                                  <CloseIcon
+                                    style={{ color: red[500] }}
+                                    className={useStyles.danger}
+                                  />
+                                </InputAdornment>
+                              ) : (
+                                <InputAdornment position="end">
+                                  {" "}
+                                  <DoneIcon
+                                    style={{ color: green[500] }}
+                                    className={useStyles.success}
+                                  />
+                                </InputAdornment>
+                              ),
+                          }}
+                        />
+                      </GridItem>
+                      <GridItem xs={12} sm={12} md={3}>
+                        {this.state.CityAutoComplete === false ? (
+                          <CustomInput
+                            labelText="City"
+                            id="Usertypecity"
+                            formControlProps={{ fullWidth: true }}
+                            inputProps={{
+                              value: UsertypeCity, 
+                              onChange: (event) =>
+                                this.handleChange(event, "UsertypeCity"),
+                              endAdornment: (
+                                <InputAdornment
+                                  position="end"
+                                  className={classes.inputAdornment}
+                                >
+                                  <Icon>location_city</Icon>
+                                </InputAdornment>
+                              ),
+                            }}
+                          />
+                        ) : (
+                          <Autocomplete
+                            options={CityOptions}
+                            id="Usertypefromcity"
+                            autoSelect
+                            getOptionLabel={(option) => option.label}
+                            value={UsertypeCity} 
+                            onChange={(event, value) =>
+                              this.ChangeCountry(event, value, "UsertypeCity")
+                            }
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                margin="normal"
+                                label="City"
+                                fullWidth
+                              />
+                            )}
+                          />
+                        )}
+                      </GridItem>
+                      <GridItem xs={12} sm={12} md={3}>
+                        {this.state.UsertypeStateAutoComplete === false ? (
+                          <CustomInput
+                            labelText="State"
+                            id="Usertypestate"
+                            formControlProps={{ fullWidth: true }}
+                            inputProps={{
+                              value: UsertypeState, 
+                              onChange: (event) =>
+                                this.handleChange(event, "UsertypeState"),
+                              endAdornment: (
+                                <InputAdornment
+                                  position="end"
+                                  className={classes.inputAdornment}
+                                >
+                                  <Icon>location_city</Icon>
+                                </InputAdornment>
+                              ),
+                            }}
+                          />
+                        ) : (
+                          <Autocomplete
+                            options={UsertypeStateOptions}
+                            id="UsertypeState"
+                            autoSelect
+                            getOptionLabel={(option) => option.label}
+                            value={UsertypeState} 
+                            onChange={(event, value) =>
+                              this.ChangeCountry(value, "UsertypeState")
+                            }
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                margin="normal"
+                                label="State"
+                                fullWidth
+                              />
+                            )}
+                          />
+                        )}
+                      </GridItem>
+                    </GridContainer>
+                    <GridContainer>
+                      <GridItem xs={12} sm={12} md={3}>
+                        <CustomInput
+                          labelText={<span>Phone 1</span>}
+                          id="Usertypemobile"
+                          error={this.state.UsertypemobileErr}
+                          helperText={this.state.UsertypemobileHelperText}
+                          formControlProps={{ fullWidth: true }}
+                          type="number"
+                          inputProps={{
+                            onBlur: (event) =>
+                              this.handleChange(event, "Usertypemobile"),
+                            onChange: (event) =>
+                              this.handleChange(event, "Usertypemobile"),
+                            onFocus: () =>
+                              this.setState({
+                                UsertypecheckMobile: false,
+                                UsertypemobileErr: false,
+                                UsertypemobileHelperText: "",
+                              }),
+                            value: UsertypeMobile, 
+                            endAdornment:
+                              this.state.UsertypecheckMobile !== true ? (
+                                <Icon>phone</Icon>
+                              ) : this.state.UsertypemobileErr ? (
+                                <InputAdornment position="end">
+                                  <CloseIcon
+                                    style={{ color: red[500] }}
+                                    className={useStyles.danger}
+                                  />
+                                </InputAdornment>
+                              ) : (
+                                <InputAdornment position="end">
+                                  {" "}
+                                  <DoneIcon
+                                    style={{ color: green[500] }}
+                                    className={useStyles.success}
+                                  />
+                                </InputAdornment>
+                              ),
+                          }}
+                        />
+                      </GridItem>
+                      <GridItem xs={12} sm={12} md={3}>
+                        <CustomInput
+                          labelText={<span>Phone 2</span>}
+                          id="Usertypemobile1"
+                          error={this.state.UsertypemobileErr1}
+                          helperText={this.state.UsertypemobileHelperText1}
+                          formControlProps={{ fullWidth: true }}
+                          inputProps={{
+                            onBlur: (event) =>
+                              this.handleChange(event, "Usertypemobile1"),
+                            onChange: (event) =>
+                              this.handleChange(event, "Usertypemobile1"),
+                            onFocus: () =>
+                              this.setState({
+                                UsertypecheckMobile1: false,
+                                UsertypemobileErr1: false,
+                                UsertypemobileHelperText1: "",
+                              }),
+                            value: UsertypeMobile1, 
+                            endAdornment:
+                              this.state.UsertypecheckMobile1 !== true ? (
+                                <Icon>phone</Icon>
+                              ) :  this.state.UsertypemobileErr1 ? (
+                                <InputAdornment position="end">
+                                  <CloseIcon
+                                    style={{ color: red[500] }}
+                                    className={useStyles.danger}
+                                  />
+                                </InputAdornment>
+                              ) : this.state.UsertypeMobile1 === "" ? (
+                                <Icon>phone</Icon>
+                              ) : (
+                                <InputAdornment position="end">
+                                  {" "}
+                                  <DoneIcon
+                                    style={{ color: green[500] }}
+                                    className={useStyles.success}
+                                  />
+                                </InputAdornment>
+                              ),
+                          }}
+                        />
+                      </GridItem>
+                      <GridItem xs={12} sm={12} md={3}>
+                        <CustomInput
+                          labelText="Email"
+                          id="UsertypeEmail1"
+                          error={this.state.UsertypeemailErr1}
+                          formControlProps={{ fullWidth: true }}
+                          helperText={this.state.UsertypeemailHelperText1}
+                          inputProps={{
+                            onBlur: (event) =>
+                              this.handleChange(event, "Usertypeemail1"),
+                            onFocus: () =>
+                              this.setState({
+                                UsertypeemailErr1: false,
+                                UsertypeemailHelperText1: "",
+                                UsertypecheckEmail1: false,
+                              }),
+                            onChange: (event) =>
+                              this.handleChange(event, "Usertypeemail1"),
+                            value: UsertypeEmail1, 
+                            endAdornment:
+                              this.state.UsertypecheckEmail1 !== true ? (
+                                <Icon>email</Icon>
+                              ) : this.state.UsertypeemailErr1 ? (
+                                <InputAdornment position="end">
+                                  <CloseIcon
+                                    style={{ color: red[500] }}
+                                    className={useStyles.danger}
+                                  />
+                                </InputAdornment>
+                              ) : (
+                                <InputAdornment position="end">
+                                  {" "}
+                                  <DoneIcon
+                                    style={{ color: green[500] }}
+                                    className={useStyles.success}
+                                  />
+                                </InputAdornment>
+                              ),
+                          }}
+                        />
+                      </GridItem>
+                      <GridItem xs={12} sm={12} md={3}>
+                        <CustomInput
+                          labelText="Email2"
+                          id="UsertypeEmail2"
+                          error={this.state.UsertypeemailErr2}
+                          formControlProps={{ fullWidth: true }}
+                          helperText={this.state.UsertypeemailHelperText2}
+                          inputProps={{
+                            onBlur: (event) =>
+                              this.handleChange(event, "Usertypeemail2"),
+                            onFocus: () =>
+                              this.setState({
+                                UsertypeemailErr2: false,
+                                UsertypeemailHelperText2: "",
+                                UsertypecheckEmail2: false,
+                              }),
+                            onChange: (event) =>
+                              this.handleChange(event, "Usertypeemail2"),
+                            value: UsertypeEmail2,
+                            endAdornment:
+                              this.state.UsertypecheckEmail2 !== true ? (
+                                <Icon>email</Icon>
+                              ) : this.state.UsertypeemailErr2 ? (
+                                <InputAdornment position="end">
+                                  <CloseIcon
+                                    style={{ color: red[500] }}
+                                    className={useStyles.danger}
+                                  />
+                                </InputAdornment>
+                              ) : this.state.UsertypeEmail2 === ""? (
+                                <Icon>email</Icon>
+                              ) : (
+                                <InputAdornment position="end">
+                                  {" "}
+                                  <DoneIcon
+                                    style={{ color: green[500] }}
+                                    className={useStyles.success}
+                                  />
+                                </InputAdornment>
+                              ),
+                          }}
+                        />
+                      </GridItem>
+                    </GridContainer>
+                    <GridContainer>
+                    <GridItem xs={12} sm={12} md={3}>
+                        <CustomInput
+                          labelText={<span>Salary</span>}
+                          id="Usertypesalary"
+                          error={this.state.UsertypesalaryErr}
+                          helperText={this.state.UsertypesalaryHelperText}
+                          formControlProps={{ fullWidth: true }}
+                          type="number"
+                          inputProps={{
+                            onBlur: (event) =>
+                              this.handleChange(event, "Usertypesalary"),
+                            onChange: (event) =>
+                              this.handleChange(event, "Usertypesalary"),
+                            onFocus: () =>
+                              this.setState({
+                                Usertypechecksalary: false,
+                                salaryErr: false,
+                                salaryHelperText: "",
+                              }),
+                            value: UsertypeSalary, 
+                            endAdornment:
+                              this.state.Usertypechecksalary !== true ? (
+                                <Icon>money</Icon>
+                              ) : this.state.UsertypesalaryErr ? (
+                                <InputAdornment position="end">
+                                  <CloseIcon
+                                    style={{ color: red[500] }}
+                                    className={useStyles.danger}
+                                  />
+                                </InputAdornment>
+                              ) :  this.state.UsertypeSalary ==="" ? (
+                                <Icon>money</Icon>
+                              ) : (
+                                <InputAdornment position="end">
+                                  {" "}
+                                  <DoneIcon
+                                    style={{ color: green[500] }}
+                                    className={useStyles.success}
+                                  />
+                                </InputAdornment>
+                              ),
+                          }}
+                        />
+                         
+                      </GridItem>
+                      <GridItem xs={12} sm={12} md={3}>
+                        <Autocomplete
+                          id="combo-box-demo"
+                          options={userTypeCurrencyDrop}
+                          value={this.state.UsertypeCurrency}
+                          onChange={(event, value) =>
+                            this.setUserCurrency(value)
+                          }
+                          getOptionLabel={(option) => option.label}
+                          renderInput={(params) => (
+                            <TextField {...params} label="Currency" />
+                          )}
+                        />
+                      </GridItem>
+                      {/*<GridItem xs={12} sm={12} md={3}>
+                         <CustomInput
+                          labelText={<span>Curency</span>}
+                          id="Usertypecurrency"
+                          error={this.state.currencyErr}
+                          helperText={this.state.currencyHelperText}
+                          formControlProps={{ fullWidth: true }}
+                          inputProps={{
+                            onBlur: (event) =>
+                              this.handleChange(event, "Usertypecurrency"),
+                            onChange: (event) =>
+                              this.handleChange(event, "Usertypecurrency"),
+                            onFocus: () =>
+                              this.setState({
+                                checkcurrency: false,
+                                currencyErr: false,
+                                currencyHelperText: "",
+                              }),
+                            value: Currency,
+                            endAdornment:
+                              this.state.checkCurrency !== true ? (
+                                <Icon>currency</Icon>
+                              ) : this.state.currencyErr ? (
+                                <InputAdornment position="end">
+                                  <CloseIcon
+                                    style={{ color: red[500] }}
+                                    className={useStyles.danger}
+                                  />
+                                </InputAdornment>
+                              ) : (
+                                <InputAdornment position="end">
+                                  {" "}
+                                  <DoneIcon
+                                    style={{ color: green[500] }}
+                                    className={useStyles.success}
+                                  />
+                                </InputAdornment>
+                              ),
+                          }}
+                        /> 
+                      </GridItem>*/}
+                      {/* <GridItem xs={12} sm={12} md={3}>
+                        <CustomInput
+                          labelText={<span>Department</span>}
+                          id="Usertypedepartment"
+                          formControlProps={{ fullWidth: true }}
+                          inputProps={{
+                            onBlur: (event) =>
+                              this.handleChange(event, "Usertypedepartment"),
+                            onChange: (event) =>
+                              this.handleChange(event, "Usertypedepartment"),
+                            onFocus: () =>
+                              this.setState({
+                                checkMobile1: false,
+                                mobile1Err: false,
+                                mobile1HelperText: "",
+                              }),
+                            value: department,
+                            endAdornment:
+                              this.state.checkMobile1 !== true ? (
+                                <Icon>phone</Icon>
+                              ) : (
+                                <InputAdornment position="end">
+                                  {" "}
+                                  <DoneIcon
+                                    style={{ color: green[500] }}
+                                    className={useStyles.success}
+                                  />
+                                </InputAdornment>
+                              ),
+                          }}
+                        />
+                      </GridItem> */}
+                       <GridItem xs={12} sm={12} md={3}>
+                        <Autocomplete
+                          id="combo-box-demo"
+                          options={userTypeDepartmentDrop}
+                          value={this.state.userTypeDepartment} 
+                          onChange={(event, value) =>
+                            this.setUserDepartment(value)
+                          }
+                          getOptionLabel={(option) => option.label}
+                          renderInput={(params) => (
+                            <TextField {...params} label="Department" />
+                          )}
+                        />
+                      </GridItem>
+                      <GridItem xs={12} sm={12} md={3}>
+                        <CustomInput
+                          labelText="Employee ID"
+                          id="employeeid"
+                          
+                          error={this.state.userTypeEmployeeIdErr}
+                          formControlProps={{ fullWidth: true }}
+                          helperText={this.state.userTypeEmployeeIdHelperText}
+                          inputProps={{
+                            onBlur: (event) =>
+                              this.handleChange(event, "Usertypeemployeeid"),
+                            onFocus: () =>
+                              this.setState({
+                                userTypeEmployeeIdErr: false,
+                                userTypeEmployeeIdHelperText: "",
+                                checkuserTypeEmployeeId: false,
+                              }),
+                            onChange: (event) =>
+                              this.handleChange(event, "Usertypeemployeeid"),
+                            value: Usertypeemployeeid,
+                            endAdornment:
+                              this.state.checkuserTypeEmployeeId !== true ? (
+                                <Icon>info</Icon>
+                              ) : this.state.userTypeEmployeeIdErr ? (
+                                <InputAdornment position="end">
+                                  <CloseIcon
+                                    style={{ color: red[500] }}
+                                    className={useStyles.danger}
+                                  />
+                                </InputAdornment>
+                              ) : this.state.Usertypeemployeeid === "" ? (
+                                <Icon>info</Icon>
+                              ) :(
+                                <InputAdornment position="end">
+                                  {" "}
+                                  <DoneIcon
+                                    style={{ color: green[500] }}
+                                    className={useStyles.success}
+                                  />
+                                </InputAdornment>
+                              ),
+                          }}
+                        />
+                      </GridItem>
+                     
+                    </GridContainer>
+                   
+                      </div>
+                    </Cardbody>
+                     </Card>
+                      ):""}
+                    
                   </div>
                   <div className="shipment-pane mt-20" id="accessdetails">
                     <div className="package-table lead-access-table">
