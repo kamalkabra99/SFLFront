@@ -86,6 +86,9 @@ class Step1 extends React.Component {
           value: "Inactive",
         },
       ],
+      userTimeZone:"",
+      userTimeZoneErr:"",
+      userTimeZoneHelperText:"",
       usertypeTimeZone:"",
       usertypeTimeZoneErr:"",
       usertypeTimeZoneHelperText:"",
@@ -368,7 +371,7 @@ class Step1 extends React.Component {
       Usertypemobile1HelperText: "",
       UsertypecheckMobile1: false,
       EntityID:"",
-      
+      bankList: [],
       UserDetailID: null,
       pagePreviewLink:"",
       PaperSizeList: [],
@@ -398,9 +401,18 @@ class Step1 extends React.Component {
       enddateHelperText: "",
       Attachments: [],
       AttachmentList: [],
+      Accounts: [],
+      AccountList: [],
       objAttachment: {
         Index: 0,
         FileName: "",
+        Status: "Active",
+        CreatedOn: moment().format(CommonConfig.dateFormat.dateOnly),
+        Description: CommonConfig.loggedInUserData().Name,
+      },
+      objAccount: {
+        Index: 0,
+        AccountNumber: "",
         Status: "Active",
         CreatedOn: moment().format(CommonConfig.dateFormat.dateOnly),
         Description: CommonConfig.loggedInUserData().Name,
@@ -426,6 +438,7 @@ class Step1 extends React.Component {
     this.getServiceListFiltered(89);
     this.getPaperSizeList();
     this.setState({ LoginpersonId: CommonConfig.loggedInUserData().PersonID });
+  
   }
   
   generatePreviewLink = () => {
@@ -616,7 +629,7 @@ class Step1 extends React.Component {
     }
     return filename;
   };
-  handleDocumentChange = (e, record) => {
+  handleDocumentChange = (e, record) => {debugger
     var Index = this.state.Attachments.indexOf(record.original);
     this.state.Attachments[Index]["FileName"] = e.target.value;
     this.setState({ Attachments: [...this.state.Attachments] });
@@ -626,7 +639,7 @@ class Step1 extends React.Component {
     return (
       <div className="table-input-slam">
         <CustomInput
-          id="filename"
+          id="FileName"
           inputProps={{
             value: cellInfo.original.FileName,
             onChange: (event) => this.handleDocumentChange(event, cellInfo),
@@ -635,27 +648,10 @@ class Step1 extends React.Component {
       </div>
     );
   };
-
-  handleDocumentDelete = (e, record) => {
-    console.log("Records = ", record);
-    var data = {
-      Attachments: record,
-    };
-    api
-      .post("/userManagement/deleteUserDocument", data)
-      .then((res) => {
-        if (res.success) {
-          this.hideLoader();
-        }
-      })
-      .catch((err) => {
-        console.log("error", err);
-      });
-
-    var AttachmentList = this.state.Attachments;
-    var Index = AttachmentList.indexOf(record);
-    AttachmentList[Index]["Status"] = "Inactive";
-    this.setState({ Attachments: AttachmentList });
+  handleAccountDetailChange = (e, record) => {
+    var Index = this.state.Attachments.indexOf(record.original);
+    this.state.Accounts[Index]["FileName"] = e.target.value;
+    this.setState({ Accounts: [...this.state.Accounts] });
   };
 
   AddNewRowData = () => {
@@ -892,30 +888,27 @@ class Step1 extends React.Component {
                 userTypeDepartment:selectedDepartment,
                 Usertypeemployeeid:userData.EmployeeData[0].EmployeeID,
               });
-              console.log(this.state.usertypeTimeZone.value);
-              /*EmployeeDetailID:1,
-            usertypeTimeZone:this.state.usertypeTimeZone.value,
-            UserType:this.state.userType.value,
-            usertypeStartTime:this.state.StartTime==""?"NULL":this.state.StartTime,
-            usertypeEndTime:this.state.EndTime==""?"NULL":this.state.EndTime,
-            usertypeBirthDate:this.state.BirthDate ==""?"NULL":moment(this.state.BirthDate).format(CommonConfig.dateFormat.dbDateOnly).toString(),
-            usertypeJoiningDate:this.state.JoinDate ==""?"NULL":moment(this.state.JoinDate).format(CommonConfig.dateFormat.dbDateOnly).toString(),
-            usertypeRelivingDate:this.state.RelivingDate ==""?"NULL":moment(this.state.RelivingDate).format(CommonConfig.dateFormat.dbDateOnly).toString(),
-            usertypeAddr1:this.state.UsertypeAddressLine1,
-            usertypeAddr2:this.state.UsertypeAddressLine2,
-            usertypeCountry:this.state.UsertypeCountry=="" ?"":this.state.UsertypeCountry.value,
-            usertypeZip:this.state.UsertypeZipCode,
-            usertypeCity:this.state.UsertypeCity,
-            usertypeState:this.state.UsertypeState==""?"":this.state.UsertypeState.value,
-            usertypeMobile1:this.state.UsertypeMobile,
-            usertypeMobile2:this.state.UsertypeMobile1,
-            usertypeEmail1:this.state.UsertypeEmail1,
-            usertypeEmail2:this.state.UsertypeEmail2,
-            usertypeSalary:this.state.UsertypeSalary,
-            usertypeCurrency:this.state.UsertypeCurrency=="" ?"":this.state.UsertypeCurrency.value,
-            usertypeDepartment:this.state.userTypeDepartment=="" ?"":this.state.userTypeDepartment.value, 
-            usertypeEmployeeId:this.state.Usertypeemployeeid,   
-            EntityID:this.state.EntityID,*/
+              if (userData.AccountDetailsList.length > 0) {
+                let row=[];
+                this.state.bankList="";
+                let AccountDetailsList = userData.AccountDetailsList;
+                for(i=0;i<userData.AccountDetailsList.length;i++)
+                {
+                  row={
+                    CreatedByName: CommonConfig.loggedInUserData().Name,
+                    Status: "Active",
+                    AccountType:AccountDetailsList[i].AccountType,
+                    AccountNumber: AccountDetailsList[i].AccountNumber,
+                    BankName:  AccountDetailsList[i].AccountName,
+                    NameonAccount:  AccountDetailsList[i].NameOnAccount,
+                    RoutingNumber:  AccountDetailsList[i].RoutingCode,
+                    Index: i + 1,
+                    EntityID: AccountDetailsList[i].EntityID,
+                    AccountDetailID: AccountDetailsList[i].AccountDetailID,
+                  };
+                  this.setState({ bankList: [...this.state.bankList, row] });
+                }
+                }
             }
           }
             this.hideLoader();
@@ -1782,6 +1775,10 @@ class Step1 extends React.Component {
   
   setUserType = (e) =>{
     this.setState({ userType: e });
+    if(this.state.userTimeZone != "" && this.state.usertypeTimeZone=="")
+      this.setState({usertypeTimeZone:this.state.userTimeZone})
+   
+
  } 
  handleDateChange = (date, type) => {debugger
   // if (type === "start") {
@@ -1951,7 +1948,7 @@ handleTimeChange = (time, type) => {debugger
     //     });
     // } catch (error) {}
   };
-
+  
   deleteUser = () => {
     this.showLoader();
     var userid = Number(this.props.location.state);
@@ -2008,6 +2005,15 @@ handleTimeChange = (time, type) => {debugger
             finalAttachment.push(this.state.Attachments[i]);
           }
         }
+        let BankList = this.state.bankList;
+       for(var i =0; i<BankList.length;i++)
+       {
+          if(BankList[i].AccountType == "" &&  BankList[i].AccountType=="" &&    BankList[i].AccountNumber ==  "" && 
+            BankList[i].BankName== "" &&   BankList[i].NameonAccount== ""  && BankList[i].RoutingNumber == "")
+            BankList.pop();
+          }
+
+        this.setState({ bankList: BankList });
         debugger;
         if (CommonConfig.isEmpty(this.state.Password) !== true) {
           data = {
@@ -2028,11 +2034,11 @@ handleTimeChange = (time, type) => {debugger
             EmailID: this.state.EmailID,
             PhoneID: this.state.MobileID,
             Phone2ID: this.state.Mobile1ID,
-            SelectedPaperSize: this.state.PaperSize.value,
+            SelectedPaperSize:  this.state.PaperSize==""?"":this.state.PaperSize.value,
             Status: this.state.Status.value,
             DocumentList: finalAttachment,
             EmployeeDetailID:this.state.EmployeementID,
-            usertypeTimeZone:this.state.usertypeTimeZone.value,
+            usertypeTimeZone:this.state.usertypeTimeZone==""?"":this.state.usertypeTimeZone.value,
             UserType:this.state.userType.value,
             usertypeStartTime:this.state.StartTime==""?"NULL":this.state.StartTime,
             usertypeEndTime:this.state.EndTime==""?"NULL":this.state.EndTime,
@@ -2041,19 +2047,20 @@ handleTimeChange = (time, type) => {debugger
             usertypeRelivingDate:this.state.RelivingDate ==""?"NULL":moment(this.state.RelivingDate).format(CommonConfig.dateFormat.dbDateOnly).toString(),
             usertypeAddr1:this.state.UsertypeAddressLine1,
             usertypeAddr2:this.state.UsertypeAddressLine2,
-            usertypeCountry:this.state.UsertypeCountry=="" ?"":this.state.UsertypeCountry.value,
+            usertypeCountry:this.state.UsertypeCountry==""?"":typeof(this.state.UsertypeCountry)=="object"?this.state.UsertypeCountry.value:this.state.UsertypeCountry,
             usertypeZip:this.state.UsertypeZipCode,
-            usertypeCity:this.state.UsertypeCity==""?"":this.state.UsertypeCity.value,
-            usertypeState:this.state.UsertypeState==""?"":this.state.UsertypeState,
+            usertypeCity:this.state.UsertypeCity==""?"":typeof(this.state.UsertypeCity)=="object"?this.state.UsertypeCity.value:this.state.UsertypeCity,
+            usertypeState:this.state.UsertypeState==""?"":typeof(this.state.UsertypeState)=="object"?this.state.UsertypeState.value:this.state.UsertypeState,
             usertypeMobile1:this.state.UsertypeMobile,
             usertypeMobile2:this.state.UsertypeMobile1,
             usertypeEmail1:this.state.UsertypeEmail1,
             usertypeEmail2:this.state.UsertypeEmail2,
             usertypeSalary:this.state.UsertypeSalary,
-            usertypeCurrency:this.state.UsertypeCurrency=="" ?"":this.state.UsertypeCurrency.value,
-            usertypeDepartment:this.state.userTypeDepartment=="" ?"":this.state.userTypeDepartment.value, 
+            usertypeCurrency:this.state.UsertypeCurrency==""?"":typeof(this.state.UsertypeCurrency)=="object"?this.state.UsertypeCurrency.value:this.state.UsertypeCurrency,
+            usertypeDepartment:this.state.userTypeDepartment==""?"":typeof(this.state.userTypeDepartment)=="object"?this.state.userTypeDepartment.value:this.state.userTypeDepartment,
             usertypeEmployeeId:this.state.Usertypeemployeeid,   
             EntityID:this.state.EntityID,
+            AccountList:this.state.bankList,
           };
         } else {
           console.log("Loklesh1",this.state.userTypeDepartment);
@@ -2085,23 +2092,24 @@ handleTimeChange = (time, type) => {debugger
             usertypeBirthDate:this.state.BirthDate ==""?"NULL":moment(this.state.BirthDate).format(CommonConfig.dateFormat.dbDateOnly).toString(),
             usertypeJoiningDate:this.state.JoinDate ==""?"NULL":moment(this.state.JoinDate).format(CommonConfig.dateFormat.dbDateOnly).toString(),
             usertypeRelivingDate:this.state.RelivingDate ==""?"NULL":moment(this.state.RelivingDate).format(CommonConfig.dateFormat.dbDateOnly).toString(),
-           usertypeAddr1:this.state.UsertypeAddressLine1,
+            usertypeAddr1:this.state.UsertypeAddressLine1,
             usertypeAddr2:this.state.UsertypeAddressLine2,
-            usertypeCountry:this.state.UsertypeCountry=="" ?"":this.state.UsertypeCountry.value,
+            usertypeCountry:this.state.UsertypeCountry==""?"":typeof(this.state.UsertypeCountry)=="object"?this.state.UsertypeCountry.value:this.state.UsertypeCountry,
             usertypeZip:this.state.UsertypeZipCode,
-            usertypeCity:this.state.UsertypeCity==""?"":this.state.UsertypeCity.value,
-            usertypeState:this.state.UsertypeState==""?"":this.state.UsertypeState,
+            usertypeCity:this.state.UsertypeCity==""?"":typeof(this.state.UsertypeCity)=="object"?this.state.UsertypeCity.value:this.state.UsertypeCity,
+            usertypeState:this.state.UsertypeState==""?"":typeof(this.state.UsertypeState)=="object"?this.state.UsertypeState.value:this.state.UsertypeState,
             usertypeMobile1:this.state.UsertypeMobile,
             usertypeMobile2:this.state.UsertypeMobile1,
             usertypeEmail1:this.state.UsertypeEmail1,
             usertypeEmail2:this.state.UsertypeEmail2,
             usertypeSalary:this.state.UsertypeSalary,
-            usertypeCurrency:this.state.UsertypeCurrency=="" ?"":this.state.UsertypeCurrency.value,
-            usertypeDepartment:this.state.userTypeDepartment=="" ?"":this.state.userTypeDepartment.value, 
+            usertypeCurrency:this.state.UsertypeCurrency==""?"":typeof(this.state.UsertypeCurrency)=="object"?this.state.UsertypeCurrency.value:this.state.UsertypeCurrency,
+            usertypeDepartment:this.state.userTypeDepartment==""?"":typeof(this.state.userTypeDepartment)=="object"?this.state.userTypeDepartment.value:this.state.userTypeDepartment,
             usertypeEmployeeId:this.state.Usertypeemployeeid,  
             EntityID:this.state.EntityID,
+            AccountList:this.state.bankList,
           };
-          console.log("Loklesh2");
+          console.log("Loklesh2",data);
         }
 
         var formData = new FormData();
@@ -2182,6 +2190,7 @@ handleTimeChange = (time, type) => {debugger
           });
       } catch (error) {
         this.hideLoader();
+        console.log("SaveUser Error",error);
         cogoToast.error("Something Went Wrong 9");
       }
     } else {
@@ -3287,6 +3296,169 @@ handleTimeChange = (time, type) => {debugger
     }
    
   };
+  addRowBank = (e,index) => {debugger
+    console.log("this.state.bankList",this.state.bankList);
+    const row = {
+      CreatedByName: CommonConfig.loggedInUserData().Name,
+      Status: "Active",
+      AccountType:"",
+      AccountNumber: "",
+      BankName: "",
+      NameonAccount: "",
+      RoutingNumber: "",
+      Index: this.state.bankList.length + 1,
+      EntityID:this.state.EntityID,
+      AccountDetailID:"",
+    };
+    if(e==0)
+      this.setState({ bankList: [...this.state.bankList, row] });
+    else
+      if(this.state.bankList[index-1].AccountType!=""  )
+        this.setState({ bankList: [...this.state.bankList, row] });
+      else
+      cogoToast.error("Please Fill Account Details before add new row.");   
+   
+      
+  };
+  removeBank = (index) => {
+    if(this.state.bankList.length ==1 && index ==0)
+      cogoToast.error("This row cannot be deleted."); 
+    else
+    {
+    var BankList = this.state.bankList;
+    let Index = this.state.bankList.findIndex((x) => x.Index === index);
+    if (Index !== -1) {
+      if(BankList[Index].AccountType == "" &&  BankList[Index].AccountType=="" &&    BankList[Index].AccountNumber ==  "" && 
+        BankList[Index].BankName== "" &&   BankList[Index].NameonAccount== ""  && BankList[Index].RoutingNumber == "")
+        BankList.pop();
+       else
+     { 
+    BankList[Index]["Status"] = "Inactive";
+      
+    }
+    this.setState({ bankList: BankList });
+      if (BankList.filter((x) => x.Status === "Active").length === 0) {
+        this.setState({
+          isPaymentMethodBank: false,
+        });
+      }
+    }
+  }
+  };
+  handleChangeBank = (event, type, index) => {debugger
+    const { value } = event.target;
+    const bankList = this.state.bankList;
+    let idx = bankList.findIndex((x) => x.Index === index);
+    if (type === "RoutingNumber" || type === "AccountNumber") {
+      bankList[idx][type] = value;/*value.replace(/\D/g, "");*/
+    } else if (type === "InvoiceAmount") {
+      if (value.match(/^[-+]?\d{0,}(\.\d{0,2})?$/) || value === "") {
+        bankList[idx][type] = value;
+      }
+    } else {
+      bankList[idx][type] = value;
+    }
+    this.setState({ bankList: bankList });
+  };
+  viewBankList = () => {
+    return this.state.bankList
+    .filter((x) => x.Status === "Active")
+    .map((method, idx) => {
+    
+  
+        return (
+          <tr>
+            <td className="wd-date wd-100">
+              <div className="package-select">
+              <CustomInput
+                inputProps={{
+                  onChange: (event) =>
+                    this.handleChangeBank(event, "AccountType", method.Index),
+                  value: method.AccountType,
+                }}
+              />
+              </div>
+            </td>
+            <td className="input-full">
+              <CustomInput
+                className="mr-5"
+                inputProps={{
+                  onChange: (event) =>
+                    this.handleChangeBank(event, "BankName", method.Index),
+                  value: method.BankName,
+                }}
+              />
+            </td>
+            <td style={{ width: "186px" }}>
+              <div className="pck-nowrap-input">
+                <CustomInput
+                  className="mr-5"
+                  inputProps={{
+                    onChange: (event) =>
+                      this.handleChangeBank(
+                        event,
+                        "AccountNumber",
+                        method.Index
+                      ),
+                    value: method.AccountNumber,
+                  }}
+                />
+              </div>
+            </td>
+            <td style={{ width: "197px" }} className="wd-full input-full">
+              <CustomInput
+                inputProps={{
+                  onChange: (event) =>
+                    this.handleChangeBank(event, "NameonAccount", method.Index),
+                  value: method.NameonAccount,
+
+                }}
+              />
+            </td>
+           
+            <td style={{ width: "156px" }} className="input-full">
+              <CustomInput
+                inputProps={{
+                  onChange: (event) =>
+                    this.handleChangeBank(event, "RoutingNumber", method.Index),
+                  value: method.RoutingNumber,
+   
+                }}
+              />
+            </td>
+         
+            <td className="pck-action-column">
+              
+                <Button
+                  justIcon
+                  color="danger"
+                  className="Plus-btn"
+                  onClick={() => this.removeBank(method.Index)}
+                >
+                  <i className={"fas fa-minus"} />
+                </Button>
+              
+              {this.state.bankList.filter((x) => x.Status === "Active")
+                .length ===
+                idx + 1  ? (
+                <Button
+                  justIcon
+                  color="facebook"
+                  onClick={() => this.addRowBank(1,method.Index)}
+                  className="Plus-btn "
+                >
+                  <i className={"fas fa-plus"} />
+                </Button>
+              ) : null}
+
+              
+
+            </td>
+          </tr>
+        );
+  });
+  };
+
 
   render() {
     const {
@@ -3603,7 +3775,7 @@ handleTimeChange = (time, type) => {debugger
         },
       },
     ];
-
+   
     return (
       <div>
         <GridContainer className="MuiGrid-justify-xs-center">
@@ -5054,10 +5226,51 @@ handleTimeChange = (time, type) => {debugger
                       </GridItem>
                      
                     </GridContainer>
+                    <Card>
+                  <CardHeader className="btn-right-outer" color="primary" icon>
+                    <h4 className="margin-right-auto text-color-black">
+                      Account Information 
+                  {    (this.state.bankList.filter((x) => x.Status === "Active")
+              .length ===0)?
+                  <Button
+                  
+                  color="facebook"
+                  onClick={() => this.addRowBank(0)}
+                  
+                >
+                  Add Acoount
+                </Button>
+                :""}
+                    </h4>
+                  </CardHeader>
+                  <Cardbody className="shipment-cardbody">
+                    
+                      <GridContainer className="MuiGrid-justify-xs-center">
+                        <GridItem xs={12} sm={12} md={12}>
+                          <div className="package-table accounts-table no-scroll">
+                            <table>
+                              <thead>
+                                <tr>
+                                  <th>Account Type</th>
+                                  <th className="acc-wd200">Bank / Instittution Name </th>
+                                  <th>Account No</th>
+                                  <th className="acc-wd200">Name on Bank / Institution</th>
+                                  <th>Routing No / IFSCCODE</th>
+                                  <th>Action</th>
+                                </tr>
+                              </thead>
+                              <tbody>{this.viewBankList()}</tbody>
+                            </table>
+                          </div>
+                        </GridItem>
+                      </GridContainer>
                    
+                  </Cardbody>
+                </Card>
                       </div>
                     </Cardbody>
                      </Card>
+                     
                       ):""}
                     
                   </div>
