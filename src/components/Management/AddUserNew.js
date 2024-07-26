@@ -86,12 +86,12 @@ class Step1 extends React.Component {
           value: "Inactive",
         },
       ],
-      userTimeZone:"",
-      userTimeZoneErr:"",
-      userTimeZoneHelperText:"",
-      usertypeTimeZone:"",
-      usertypeTimeZoneErr:"",
-      usertypeTimeZoneHelperText:"",
+      userTimeZone: "",
+      userTimeZoneErr: "",
+      userTimeZoneHelperText: "",
+      usertypeTimeZone: "",
+      usertypeTimeZoneErr: "",
+      usertypeTimeZoneHelperText: "",
 
       UserTypeTimeZoneList: [
         {
@@ -128,41 +128,14 @@ class Step1 extends React.Component {
           label: "EUR",
           value: "EUR",
         },
-       
+
       ],
-      UsertypeCurrency:"",
-      userTypeDepartment:"",
-      usertypeDepartmentList: [
-        {
-          label: "IT",
-          value: "IT",
-        },
-        {
-          label: "SALES",
-          value: "SALES",
-        },
-        {
-          label: "DESIGNING",
-          value: "DESIGNING",
-        }, 
-        {
-          label: "ACCOUNTS",
-          value: "ACCOUNTS",
-        },
-        {
-          label: "MANAGEMENT",
-          value: "MANAGEMENT",
-        },
-        {
-          label: "HR",
-          value: "HR",
-        },
-        
-       
-      ],
-      userType:"",
-      userTypeHelperText:"",
-      userTypeErr:"",
+      UsertypeCurrency: "",
+      userTypeDepartment: "",
+      usertypeDepartmentList: [],
+      userType: "",
+      userTypeHelperText: "",
+      userTypeErr: "",
       UserTypeList: [
         {
           label: "Customer",
@@ -177,7 +150,7 @@ class Step1 extends React.Component {
           value: "Contractor",
         },
       ],
-      userTypeTimeZone:"",
+      userTypeTimeZone: "",
 
       UserTypeTimeZoneList: [
         {
@@ -209,16 +182,16 @@ class Step1 extends React.Component {
       UsertypeEmail2: "",
       Email: "",
       EmailID: "",
-      EmployeementID:"",
-      department:"",
-      employeeId:"",
+      EmployeementID: "",
+      department: "",
+      employeeId: "",
       Password: "",
       Mobile: "",
       UsertypeMobile: "",
       MobileID: "",
       userModules: [],
       serviceList: [],
-      Salary:"",
+      Salary: "",
       fullnameErr: false,
       usernameErr: false,
       emailErr: false,
@@ -257,7 +230,7 @@ class Step1 extends React.Component {
       checkAccountNumber: false,
       accountNumberErr: false,
       accountNumberHelperText: "",
-      isAccountAlready:false,
+      isAccountAlready: false,
       ManagedBy: "",
       managedByErr: false,
       managedByHelperText: "",
@@ -302,13 +275,13 @@ class Step1 extends React.Component {
       CountryList: [],
       countryErr: false,
       countryHelperText: "",
-      
+
       checkcurrency: false,
       currencyErr: false,
       currencyHelperText: "",
-      Currency:"",
-      checkCurrency:false,
-      
+      Currency: "",
+      checkCurrency: false,
+
       UsertypeAddressLine1: "",
       UsertypeaddressLine1Err: false,
       UsertypeaddressLine1HelperText: "",
@@ -370,10 +343,10 @@ class Step1 extends React.Component {
       Usertypemobile1Err: false,
       Usertypemobile1HelperText: "",
       UsertypecheckMobile1: false,
-      EntityID:"",
+      EntityID: "",
       bankList: [],
       UserDetailID: null,
-      pagePreviewLink:"",
+      pagePreviewLink: "",
       PaperSizeList: [],
       PaperSize: "",
       PaperReviewLink: "",
@@ -403,6 +376,8 @@ class Step1 extends React.Component {
       AttachmentList: [],
       Accounts: [],
       AccountList: [],
+      AccountTypeList: [],
+      AccountType: "",
       objAttachment: {
         Index: 0,
         FileName: "",
@@ -418,29 +393,78 @@ class Step1 extends React.Component {
         Description: CommonConfig.loggedInUserData().Name,
       },
       Access: [],
-      countryWise:[
-        {value: "All", label: "All" , Index:0,IsSelected:false},
-        { value: "37", label: "Canada" , Index:1,IsSelected:false},
-        { value: "89", label: "India", Index:2,IsSelected:true },
-        { value: "202", label: "United State", Index:3,IsSelected:false },
-        { value: "0", label: "Others", Index:4,IsSelected:false },
+      countryWise: [
+        { value: "All", label: "All", Index: 0, IsSelected: false },
+        { value: "37", label: "Canada", Index: 1, IsSelected: false },
+        { value: "89", label: "India", Index: 2, IsSelected: true },
+        { value: "202", label: "United State", Index: 3, IsSelected: false },
+        { value: "0", label: "Others", Index: 4, IsSelected: false },
       ],
     };
   }
 
-  componentDidMount() {debugger
+  componentDidMount() {
+    debugger
+    this.getDepartment();
     this.setState({ Access: CommonConfig.getUserAccess("User Management") });
+
     this.getCountry();
     this.showHide();
-    
+
     this.getManagedBy();
     this.getUserDetail();
     this.getServiceListFiltered(89);
     this.getPaperSizeList();
     this.setState({ LoginpersonId: CommonConfig.loggedInUserData().PersonID });
-  
+
   }
-  
+  getDepartment() {
+    try {
+      let data = {
+        stringMapType: "DEPARTMENT",
+      };
+
+      api
+        .post("stringMap/getstringMap", data)
+        .then((result) => {
+
+          this.setState({ usertypeDepartmentList: result.data });
+
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (err) {
+      console.log("error", err);
+    }
+  }
+
+  getDepartment() {
+    debugger
+    try {
+      let data = {
+        stringMapType: "ACCOUNTTYPE",
+      };
+
+      api
+        .post("stringMap/getstringMap", data)
+        .then((result) => {
+
+          this.setState({ AccountTypeList: result.data });
+
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (err) {
+      console.log("error", err);
+    }
+  }
+
+
+
+
+
   generatePreviewLink = () => {
     return this.state.PaperSizeList.map((value) => {
       return (
@@ -454,13 +478,23 @@ class Step1 extends React.Component {
       );
     });
   };
-  getPreviewLink(PapreSize) {debugger
+  getPreviewLink(PapreSize) {
+    debugger
     var previewLink = this.state.PaperSizeList.filter(
       (x) => x.PaperDisplayName === PapreSize.label
     );
-     this.setState({pagePreviewLink:previewLink[0].PaperPreviewLink});
-    
+    this.setState({ pagePreviewLink: previewLink[0].PaperPreviewLink });
+
   };
+  paperPreview(PapreSize) {debugger
+    debugger
+    var previewLink = this.state.PaperSizeList.filter(
+      (x) => x.PaperDisplayName === PapreSize.label
+    );
+    this.setState({ pagePreviewLink: previewLink[0].PaperPreviewLink });
+    window.open(this.state.pagePreviewLink, "_blank", "noreferrer");
+  };
+
   getPaperSizeList = () => {
     try {
       api.post("userManagement/getPaperSizeList", {}).then((res) => {
@@ -482,7 +516,7 @@ class Step1 extends React.Component {
           });
         }
       });
-    } catch (err) {}
+    } catch (err) { }
   };
 
   getCountry() {
@@ -498,7 +532,7 @@ class Step1 extends React.Component {
         .catch((err) => {
           console.log("err..", err);
         });
-    } catch (error) {}
+    } catch (error) { }
   }
 
   getManagedBy() {
@@ -521,49 +555,49 @@ class Step1 extends React.Component {
     }
   }
 
-  getStates(countryData,type) {
+  getStates(countryData, type) {
     try {
-      if(type ==="All"){
-      let data = {
-        countryId: countryData.value,
-      };
-
-      api
-        .post("location/getStateList", data)
-        .then((res) => {
-          if (res.success) {
-            this.showLoader();
-
-            this.setState({
-              StateList: res.data,
-              StateAutoComplete: res.data.length ? true : false,
-            });
-
-            this.hideLoader();
-          }
-        })
-        .catch((err) => {
-          this.hideLoader();
-          console.log("err...", err);
-          cogoToast.error("Something Went Wrong 1");
-        });
-      }
-      else if(type === "Usertype"){
+      if (type === "All") {
         let data = {
           countryId: countryData.value,
         };
-  
+
         api
           .post("location/getStateList", data)
           .then((res) => {
             if (res.success) {
               this.showLoader();
-  
+
+              this.setState({
+                StateList: res.data,
+                StateAutoComplete: res.data.length ? true : false,
+              });
+
+              this.hideLoader();
+            }
+          })
+          .catch((err) => {
+            this.hideLoader();
+            console.log("err...", err);
+            cogoToast.error("Something Went Wrong 1");
+          });
+      }
+      else if (type === "Usertype") {
+        let data = {
+          countryId: countryData.value,
+        };
+
+        api
+          .post("location/getStateList", data)
+          .then((res) => {
+            if (res.success) {
+              this.showLoader();
+
               this.setState({
                 UsertypeStateList: res.data,
                 UsertypeStateAutoComplete: res.data.length ? true : false,
               });
-  
+
               this.hideLoader();
             }
           })
@@ -578,7 +612,7 @@ class Step1 extends React.Component {
       this.hideLoader();
     }
   }
- 
+
   fileUpload = (event, record) => {
     const files = event.target.files[0];
     debugger;
@@ -629,7 +663,8 @@ class Step1 extends React.Component {
     }
     return filename;
   };
-  handleDocumentChange = (e, record) => {debugger
+  handleDocumentChange = (e, record) => {
+    debugger
     var Index = this.state.Attachments.indexOf(record.original);
     this.state.Attachments[Index]["FileName"] = e.target.value;
     this.setState({ Attachments: [...this.state.Attachments] });
@@ -648,11 +683,7 @@ class Step1 extends React.Component {
       </div>
     );
   };
-  handleAccountDetailChange = (e, record) => {
-    var Index = this.state.Attachments.indexOf(record.original);
-    this.state.Accounts[Index]["FileName"] = e.target.value;
-    this.setState({ Accounts: [...this.state.Accounts] });
-  };
+
 
   AddNewRowData = () => {
     let attachments = this.state.Attachments;
@@ -681,7 +712,8 @@ class Step1 extends React.Component {
     }
   };
 
-  getUserDetail() {debugger
+  getUserDetail() {
+    debugger
     try {
       this.showLoader();
       this.setState({ Attachments: [], AttachmentList: [] });
@@ -698,45 +730,45 @@ class Step1 extends React.Component {
         .then((res) => {
           if (res.success) {
             let userData = res.data;
-            
+
             this.setState({
               userModules: userData.userModule,
               serviceList: userData.userMarkup,
             });
-            
+
             this.setState({
               ShipmentCount: userData.UserShipmentData[0].AlreadyShippment
             });
             console.log(this.state.ShipmentCount);
             if (userData.UserData) {
 
-              if(userData.UserData[0].UserType=="Employee"){
-                if(userData.EmployeeData.length > 0){
+              if (userData.UserData[0].UserType == "Employee") {
+                if (userData.EmployeeData.length > 0) {
                   this.setState({
                     EmployeementID: !CommonConfig.isEmpty(this.props.location.state)
-                    ? userData.EmployeeData[0].EmployeeDetailID
-                    : null,
+                      ? userData.EmployeeData[0].EmployeeDetailID
+                      : null,
                   })
                 }
 
-                
-              
+
+
               }
 
               this.setState({
                 Status: !CommonConfig.isEmpty(this.props.location.state)
                   ? {
-                      value: userData.UserData[0].Status,
-                      label: userData.UserData[0].Status,
-                    }
+                    value: userData.UserData[0].Status,
+                    label: userData.UserData[0].Status,
+                  }
                   : "",
-                  userTimeZone: !CommonConfig.isEmpty(this.props.location.state)
-                  ? 
-                    {
-                      value: userData.UserData[0].userTimeZone,
-                      label: userData.UserData[0].userTimeZone,
-                    }
-                  
+                userTimeZone: !CommonConfig.isEmpty(this.props.location.state)
+                  ?
+                  {
+                    value: userData.UserData[0].userTimeZone,
+                    label: userData.UserData[0].userTimeZone,
+                  }
+
                   : "",
                 fullName: !CommonConfig.isEmpty(this.props.location.state)
                   ? userData.UserData[0].Name
@@ -758,7 +790,7 @@ class Step1 extends React.Component {
                 EmailID: !CommonConfig.isEmpty(this.props.location.state)
                   ? userData.UserData[0].EmailID
                   : null,
-                
+
                 MobileID: !CommonConfig.isEmpty(this.props.location.state)
                   ? userData.UserData[0].PhoneID
                   : null,
@@ -793,25 +825,25 @@ class Step1 extends React.Component {
                 );
                 var selectedCountry = Country[0]
                   ? {
-                      value: Country[0].CountryID,
-                      label: Country[0].CountryName,
-                    }
+                    value: Country[0].CountryID,
+                    label: Country[0].CountryName,
+                  }
                   : "";
-                
+
                 var managedBy = userData.userDetails[0]
                   ? {
-                      value: userData.userDetails[0].ManagedBy,
-                      label:
-                        userData.userDetails[0].ManagedByName === null
-                          ? ""
-                          : userData.userDetails[0].ManagedByName,
-                    }
+                    value: userData.userDetails[0].ManagedBy,
+                    label:
+                      userData.userDetails[0].ManagedByName === null
+                        ? ""
+                        : userData.userDetails[0].ManagedByName,
+                  }
                   : "";
-                  if(userData.userDetails[0].AccountNumber=="")
-                    this.setState({isAccountAlready:false});
-                  else
-                    this.setState({isAccountAlready:true});
-                  
+                if (userData.userDetails[0].AccountNumber == "")
+                  this.setState({ isAccountAlready: false });
+                else
+                  this.setState({ isAccountAlready: true });
+
                 this.setState({
                   AccountNumber: userData.userDetails[0].AccountNumber,
                   ManagedBy: managedBy,
@@ -825,129 +857,132 @@ class Step1 extends React.Component {
                   UserDetailID: userData.userDetails[0].UserDetailID,
                   Country: selectedCountry,
                 });
-                this.getStates(selectedCountry.value,"All");
+                this.getStates(selectedCountry.value, "All");
               }
             }
             debugger
-            if(userData.UserData[0].UserType=="Employee"){
-              let emp= {"label":"Employee","value":"Employee"}
-              
-              this.setState({userType: emp});
-            if (userData.EmployeeData.length > 0) {
-              // if(userData.EmployeeData.length > 0){
-                let timezon={"label":userData.EmployeeData[0].TimeZone,"value":userData.EmployeeData[0].TimeZone};
-              let Country = this.state.CountryList.filter(
-                (x) => x.CountryID === userData.EmployeeData[0].CountryID
-              );
-              let selectedCountry = Country[0]
-                ? {
+            if (userData.UserData[0].UserType == "Employee") {
+              let emp = { "label": "Employee", "value": "Employee" }
+
+              this.setState({ userType: emp });
+              if (userData.EmployeeData.length > 0) {
+                // if(userData.EmployeeData.length > 0){
+                let timezon = { "label": userData.EmployeeData[0].TimeZone, "value": userData.EmployeeData[0].TimeZone };
+                let Country = this.state.CountryList.filter(
+                  (x) => x.CountryID === userData.EmployeeData[0].CountryID
+                );
+                let selectedCountry = Country[0]
+                  ? {
                     value: Country[0].CountryID,
                     label: Country[0].CountryName,
                   }
-                : "";
+                  : "";
                 let Currency = this.state.usertypeCurrencyList.filter(
                   (x) => x.value === userData.EmployeeData[0].Currency
                 );
                 let selectedCurrency = Currency[0]
-                  ?  Currency[0]
-                      
-                  : "";
-                  let Department = this.state.usertypeDepartmentList.filter(
-                    (x) => x.value === userData.EmployeeData[0].Department
-                  );
-                  let selectedDepartment = Department[0]
-                    ? Department[0]
-                      
-                    : "";
-                    let selectedCity ="";
-                    if(userData.EmployeeData[0].City!="")
-                    selectedCity = {"label":userData.EmployeeData[0].City,"value":userData.EmployeeData[0].City};
-                    let selectedState ="";
-                    if(userData.EmployeeData[0].State!="")
-                    selectedState = {"label":userData.EmployeeData[0].State,"value":userData.EmployeeData[0].State};
+                  ? Currency[0]
 
-              this.setState({
-                usertypeTimeZone: timezon,
-                StartTime:userData.EmployeeData[0].StartTime,
-                EndTime:userData.EmployeeData[0].EndTime,
-                BirthDate:userData.EmployeeData[0].Birthdate == null?"":userData.EmployeeData[0].Birthdate,
-                JoinDate:userData.EmployeeData[0].Joiningdate== null?"":userData.EmployeeData[0].Joiningdate,
-                RelivingDate:userData.EmployeeData[0].Relivingdate== null?"":userData.EmployeeData[0].Relivingdate,
-                UsertypeAddressLine1:userData.EmployeeData[0].Addr1,
-                UsertypeAddressLine2:userData.EmployeeData[0].Addr2,
-                UsertypeCountry:selectedCountry,
-                UsertypeZipCode:userData.EmployeeData[0].Zipcode,
-                UsertypeCity:selectedCity.label,
-                UsertypeState:selectedState.label,
-                UsertypeMobile:userData.EmployeeData[0].Phone1,
-                UsertypeMobile1:userData.EmployeeData[0].Phone2,
-                UsertypeEmail1:userData.EmployeeData[0].Email1,
-                UsertypeEmail2:userData.EmployeeData[0].Email2,
-                UsertypeSalary:userData.EmployeeData[0].Salary,
-                UsertypeCurrency:selectedCurrency,
-                userTypeDepartment:selectedDepartment,
-                Usertypeemployeeid:userData.EmployeeData[0].EmployeeID,
-              });
-              if (userData.AccountDetailsList.length > 0) {
-                let row=[];
-                this.state.bankList="";
-                let AccountDetailsList = userData.AccountDetailsList;
-                for(i=0;i<userData.AccountDetailsList.length;i++)
-                {
-                  row={
-                    CreatedByName: CommonConfig.loggedInUserData().Name,
-                    Status: "Active",
-                    AccountType:AccountDetailsList[i].AccountType,
-                    AccountNumber: AccountDetailsList[i].AccountNumber,
-                    BankName:  AccountDetailsList[i].AccountName,
-                    NameonAccount:  AccountDetailsList[i].NameOnAccount,
-                    RoutingNumber:  AccountDetailsList[i].RoutingCode,
-                    Index: i + 1,
-                    EntityID: AccountDetailsList[i].EntityID,
-                    AccountDetailID: AccountDetailsList[i].AccountDetailID,
-                  };
-                  this.setState({ bankList: [...this.state.bankList, row] });
+                  : "";
+                debugger
+                console.log("this.state.usertypeDepartmentList", this.state.usertypeDepartmentList);
+                let Department = this.state.usertypeDepartmentList.filter(
+                  (x) => x.Description === userData.EmployeeData[0].Department
+                );
+
+                let selectedDepartment = Department[0]
+                  ? { "label": Department[0].Description, "value": Department[0].Description }
+
+                  : "";
+                let selectedCity = "";
+                if (userData.EmployeeData[0].City != "")
+                  selectedCity = { "label": userData.EmployeeData[0].City, "value": userData.EmployeeData[0].City };
+                let selectedState = "";
+                if (userData.EmployeeData[0].State != "")
+                  selectedState = { "label": userData.EmployeeData[0].State, "value": userData.EmployeeData[0].State };
+
+                this.setState({
+                  usertypeTimeZone: timezon,
+                  StartTime: userData.EmployeeData[0].StartTime,
+                  EndTime: userData.EmployeeData[0].EndTime,
+                  BirthDate: userData.EmployeeData[0].Birthdate == null ? "" : moment(userData.EmployeeData[0].Birthdate),
+                  JoinDate: userData.EmployeeData[0].Joiningdate == null ? "" : moment(userData.EmployeeData[0].Joiningdate),
+                  RelivingDate: userData.EmployeeData[0].Relivingdate == null ? "" : oment(userData.EmployeeData[0].Relivingdate),
+                  UsertypeAddressLine1: userData.EmployeeData[0].Addr1,
+                  UsertypeAddressLine2: userData.EmployeeData[0].Addr2,
+                  UsertypeCountry: selectedCountry,
+                  UsertypeZipCode: userData.EmployeeData[0].Zipcode,
+                  UsertypeCity: selectedCity.label,
+                  UsertypeState: selectedState.label,
+                  UsertypeMobile: userData.EmployeeData[0].Phone1,
+                  UsertypeMobile1: userData.EmployeeData[0].Phone2,
+                  UsertypeEmail1: userData.EmployeeData[0].Email1,
+                  UsertypeEmail2: userData.EmployeeData[0].Email2,
+                  UsertypeSalary: userData.EmployeeData[0].Salary,
+                  UsertypeCurrency: selectedCurrency,
+                  userTypeDepartment: selectedDepartment,
+                  Usertypeemployeeid: userData.EmployeeData[0].EmployeeID,
+                });
+                if (userData.AccountDetailsList.length > 0) {
+                  let row = [];
+                  this.state.bankList = "";
+                  let AccountDetailsList = userData.AccountDetailsList;
+                  for (i = 0; i < userData.AccountDetailsList.length; i++) {
+                    row = {
+                      CreatedByName: CommonConfig.loggedInUserData().Name,
+                      Status: "Active",
+                      AccountType: AccountDetailsList[i].AccountType,
+                      AccountNumber: AccountDetailsList[i].AccountNumber,
+                      BankName: AccountDetailsList[i].AccountName,
+                      NameonAccount: AccountDetailsList[i].NameOnAccount,
+                      RoutingNumber: AccountDetailsList[i].RoutingCode,
+                      Index: i + 1,
+                      EntityID: AccountDetailsList[i].EntityID,
+                      AccountDetailID: AccountDetailsList[i].AccountDetailID,
+                    };
+                    this.setState({ bankList: [...this.state.bankList, row] });
+                  }
                 }
-                }
+              }
             }
-          }
             this.hideLoader();
           }
         })
         .catch((err) => {
           debugger
-          console.log("this.props.location.state = ",this.props.location.state)
-          if(this.props.location.state != undefined){
+          console.log("this.props.location.state = ", this.props.location.state)
+          if (this.props.location.state != undefined) {
             this.hideLoader();
             console.log("err....", err);
             cogoToast.error("Something Went Wrong 3");
-          }else{
+          } else {
             this.hideLoader();
             console.log("err....", err);
           }
         });
     } catch (error) {
       debugger
-      if(this.props.location.state != undefined){
+      if (this.props.location.state != undefined) {
         this.hideLoader();
         console.log("err....", error);
         cogoToast.error("Something Went Wrong 4");
-      }else{
+      } else {
         this.hideLoader();
         console.log("err....", error);
       }
-      
+
     }
   }
-  getServiceListFiltered(CountryParam) {debugger
+  getServiceListFiltered(CountryParam) {
+    debugger
     try {
       this.setState({ Loading: true });
-     const data={
-        CountryIds :CountryParam,
+      const data = {
+        CountryIds: CountryParam,
         userID: this.props.location.state
       }
       api
-        .post("https://hubapi.sflworldwide.com/userManagement/getServiceListUserMarkupFilter",data)
+        .post("https://hubapi.sflworldwide.com/userManagement/getServiceListUserMarkupFilter", data)
         .then((res) => {
           if (res.success) {
             this.setState({ serviceList: [] });
@@ -966,7 +1001,7 @@ class Step1 extends React.Component {
         .catch((err) => {
           cogoToast.error("Something Went Wrong 6");
         });
-    } catch (error) {}
+    } catch (error) { }
   }
   showLoader = () => {
     this.setState({ Loading: true });
@@ -976,7 +1011,8 @@ class Step1 extends React.Component {
     this.setState({ Loading: false });
   };
 
-  handleChange = (event, type) => {debugger
+  handleChange = (event, type) => {
+    debugger
     if (type === "fullname") {
       let val = event.target.value;
       this.setState({ checkFullname: true });
@@ -1047,50 +1083,23 @@ class Step1 extends React.Component {
     } else if (type === "Usertypeemail1") {
       this.setState({ UsertypecheckEmail1: true });
       let emailVal = event.target.value;
-      let regExp = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Z0-9-]+\.[A-Z]{2,6}$/gi;
-      if (emailVal === "" || emailVal === null) {
-        this.setState({
-          UsertypeEmail1: emailVal,
-          UsertypeemailErr1: true,
-          UsertypeemailHelperText1: "Please enter Email",
-        });
-      } else if (emailVal.trim() !== emailVal || !emailVal.match(regExp)) {
-        this.setState({
-          UsertypeEmail1: emailVal,
-          UsertypeemailErr1: true,
-          UsertypeemailHelperText1: "Please enter valid Email",
-        });
-      } else {
-        this.setState({
-          UsertypeEmail1: emailVal,
-          UsertypeemailErr1: false,
-          UsertypeemailHelperText1: "",
-        });
-      }
+      this.setState({
+        UsertypeEmail1: emailVal,
+        UsertypeemailErr1: false,
+        UsertypeemailHelperText1: "",
+      });
+
     } else if (type === "Usertypeemail2") {
       this.setState({ UsertypecheckEmail2: true });
       let emailVal = event.target.value;
-      let regExp = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Z0-9-]+\.[A-Z]{2,6}$/gi;
-      // if (emailVal === "" || emailVal === null) {
-      //   this.setState({
-      //     UsertypeEmail2: emailVal,
-      //     UsertypeemailErr2: true,
-      //     UsertypeemailHelperText2: "Please enter Email",
-      //   });
-      // } else
-       if (emailVal.trim() !="" &&(emailVal.trim() !== emailVal || !emailVal.match(regExp))) {
-        this.setState({
-          UsertypeEmail2: emailVal,
-          UsertypeemailErr2: true,
-          UsertypeemailHelperText2: "Please enter valid Email",
-        });
-      } else {
-        this.setState({
-          UsertypeEmail2: emailVal,
-          UsertypeemailErr2: false,
-          UsertypeemailHelperText2: "",
-        });
-      }
+
+      this.setState({
+        UsertypeEmail2: emailVal,
+        UsertypeemailErr2: false,
+        UsertypeemailHelperText2: "",
+      });
+
+
     } else if (type === "mobile") {
       this.setState({ checkMobile: true });
       let mobileVal = event.target.value;
@@ -1118,52 +1127,23 @@ class Step1 extends React.Component {
     } else if (type === "Usertypemobile") {
       this.setState({ UsertypecheckMobile: true });
       let mobileVal = event.target.value;
-      let regExp = /^[0-9]{10,15}$/;
 
-      if (mobileVal === "" || mobileVal === null) {
-        this.setState({
-          UsertypeMobile: mobileVal,
-          UsertypemobileErr: true,
-          UsertypemobileHelperText: "Please enter Mobile Number",
-        });
-      } else if (mobileVal.trim() !== mobileVal || !mobileVal.match(regExp)) {
-        this.setState({
-          UsertypeMobile: mobileVal,
-          UsertypemobileErr: true,
-          UsertypemobileHelperText: "Please enter valid Mobile Number",
-        });
-      } else {
-        this.setState({
-          UsertypeMobile: mobileVal,
-          UsertypemobileErr: false,
-          UsertypemobileHelperText: "",
-        });
-      }
+      this.setState({
+        UsertypeMobile: mobileVal,
+        UsertypemobileErr: false,
+        UsertypemobileHelperText: "",
+      });
+
     } else if (type === "Usertypemobile1") {
       this.setState({ UsertypecheckMobile1: true });
       let mobileVal = event.target.value;
-      let regExp = /^[0-9]{10,15}$/;
 
-      // if (mobileVal === "" || mobileVal === null) {
-      //   this.setState({
-      //     UsertypeMobile1: mobileVal,
-      //     UsertypemobileErr1: true,
-      //     UsertypemobileHelperText1: "Please enter Mobile Number",
-      //   });
-      // } else 
-      if (mobileVal.trim() !="" && (mobileVal.trim() !== mobileVal || !mobileVal.match(regExp))) {
-        this.setState({
-          UsertypeMobile1: mobileVal,
-          UsertypemobileErr1: true,
-          UsertypemobileHelperText1: "Please enter valid Mobile Number",
-        });
-      } else {
-        this.setState({
-          UsertypeMobile1: mobileVal,
-          UsertypemobileErr1: false,
-          UsertypemobileHelperText1: "",
-        });
-      }
+      this.setState({
+        UsertypeMobile1: mobileVal,
+        UsertypemobileErr1: false,
+        UsertypemobileHelperText1: "",
+      });
+
     } else if (type === "password") {
       event.target.setAttribute("type", "password");
       this.setState({ checkPassword: true });
@@ -1262,35 +1242,22 @@ class Step1 extends React.Component {
     } else if (type === "Usertypeaddressline1") {
       this.setState({ UsertypecheckAddressLine1: true });
       let addressVal = event.target.value;
-      if (addressVal === "" || addressVal === null) {
-        this.setState({
-          UsertypeAddressLine1: addressVal,
-          UsertypeaddressLine1Err: true,
-          UsertypeaddressLine1HelperText: "Please enter Address Line 1",
-        });
-      } else {
-        this.setState({
-          UsertypeAddressLine1: addressVal,
-          UsertypeaddressLine1Err: false,
-          UsertypeaddressLine1HelperText: "",
-        });
-      }
+
+      this.setState({
+        UsertypeAddressLine1: addressVal,
+        UsertypeaddressLine1Err: false,
+        UsertypeaddressLine1HelperText: "",
+      });
     } else if (type === "Usertypeaddressline2") {
       this.setState({ UsertypecheckAddressLine2: true });
       let addressVal = event.target.value;
-      if (addressVal === "" || addressVal === null) {
-        this.setState({
-          UsertypeAddressLine2: addressVal,
-          UsertypeaddressLine2Err: true,
-          UsertypeaddressLine2HelperText: "Please enter Address Line 2",
-        });
-      } else {
-        this.setState({
-          UsertypeAddressLine2: addressVal,
-          UsertypeaddressLine2Err: false,
-          UsertypeaddressLine2HelperText: "",
-        });
-      }
+
+      this.setState({
+        UsertypeAddressLine2: addressVal,
+        UsertypeaddressLine2Err: false,
+        UsertypeaddressLine2HelperText: "",
+      });
+
     } else if (type === "addressline3") {
       this.setState({ checkAddressLine3: true });
       let addressVal = event.target.value;
@@ -1325,20 +1292,13 @@ class Step1 extends React.Component {
       }
     } else if (type === "Usertypezip") {
       this.setState({ UsertypecheckZipCode: true });
-      let addressVal = event.target.value.replace(/\D/g, "");
-      if (addressVal === "" || addressVal === null) {
-        this.setState({
-          UsertypeZipCode: addressVal,
-          UsertypezipCodeErr: true,
-          UsertypezipCodeHelperText: "Please enter Zip Code",
-        });
-      } else {
-        this.setState({
-          UsertypeZipCode: addressVal,
-          UsertypezipCodeErr: false,
-          UsertypezipCodeHelperText: "",
-        });
-      }
+
+      this.setState({
+        UsertypeZipCode: addressVal,
+        UsertypezipCodeErr: false,
+        UsertypezipCodeHelperText: "",
+      });
+
     } else if (type === "City") {
       this.setState({ City: event.target.value });
     } else if (type === "UsertypeCity") {
@@ -1374,6 +1334,186 @@ class Step1 extends React.Component {
     } else if (type === "Usertypesalary") {
       this.setState({ Usertypechecksalary: true });
       let salaryVal = event.target.value;
+
+      this.setState({
+        UsertypeSalary: salaryVal,
+        UsertypesalaryErr: false,
+        UsertypesalaryHelperText: "",
+      });
+
+    } else if (type === "Usertypeemployeeid") {
+      this.setState({ checkuserTypeEmployeeId: true });
+      let employeeIdVal = event.target.value;
+
+      this.setState({
+        Usertypeemployeeid: employeeIdVal,
+        userTypeEmployeeIdErr: false,
+        userTypeEmployeeIdHelperText: "",
+      });
+
+    }
+
+  };
+  handleBlurEmployee = (event, type) => {
+    debugger
+
+    if (type === "Usertypeemail1") {
+      this.setState({ UsertypecheckEmail1: true });
+      let emailVal = event.target.value;
+      let regExp = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Z0-9-]+\.[A-Z]{2,6}$/gi;
+      // if (emailVal === "" || emailVal === null) {
+      //   this.setState({
+      //     UsertypeEmail1: emailVal,
+      //     UsertypeemailErr1: true,
+      //     UsertypeemailHelperText1: "Please enter Email",
+      //   });
+      // } else
+      if (emailVal != "" && (emailVal.trim() !== emailVal || !emailVal.match(regExp))) {
+        this.setState({
+          UsertypeEmail1: emailVal,
+          UsertypeemailErr1: true,
+          UsertypeemailHelperText1: "Please enter valid Email",
+        });
+      } else {
+        this.setState({
+          UsertypeEmail1: emailVal,
+          UsertypeemailErr1: false,
+          UsertypeemailHelperText1: "",
+        });
+      }
+    } else if (type === "Usertypeemail2") {
+      this.setState({ UsertypecheckEmail2: true });
+      let emailVal = event.target.value;
+      let regExp = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Z0-9-]+\.[A-Z]{2,6}$/gi;
+      // if (emailVal === "" || emailVal === null) {
+      //   this.setState({
+      //     UsertypeEmail2: emailVal,
+      //     UsertypeemailErr2: true,
+      //     UsertypeemailHelperText2: "Please enter Email",
+      //   });
+      // } else
+      if (emailVal.trim() != "" && (emailVal.trim() !== emailVal || !emailVal.match(regExp))) {
+        this.setState({
+          UsertypeEmail2: emailVal,
+          UsertypeemailErr2: true,
+          UsertypeemailHelperText2: "Please enter valid Email",
+        });
+      } else {
+        this.setState({
+          UsertypeEmail2: emailVal,
+          UsertypeemailErr2: false,
+          UsertypeemailHelperText2: "",
+        });
+      }
+    } else if (type === "Usertypemobile") {
+      this.setState({ UsertypecheckMobile: true });
+      let mobileVal = event.target.value;
+      let regExp = /^[0-9]{10,15}$/;
+
+      // if (mobileVal === "" || mobileVal === null) {
+      //   this.setState({
+      //     UsertypeMobile: mobileVal,
+      //     UsertypemobileErr: true,
+      //     UsertypemobileHelperText: "Please enter Mobile Number",
+      //   });
+      // } else 
+      if (mobileVal.trim() !== mobileVal || !mobileVal.match(regExp)) {
+        this.setState({
+          UsertypeMobile: mobileVal,
+          UsertypemobileErr: true,
+          UsertypemobileHelperText: "Please enter valid Mobile Number",
+        });
+      } else {
+        this.setState({
+          UsertypeMobile: mobileVal,
+          UsertypemobileErr: false,
+          UsertypemobileHelperText: "",
+        });
+      }
+    } else if (type === "Usertypemobile1") {
+      this.setState({ UsertypecheckMobile1: true });
+      let mobileVal = event.target.value;
+      let regExp = /^[0-9]{10,15}$/;
+
+      // if (mobileVal === "" || mobileVal === null) {
+      //   this.setState({
+      //     UsertypeMobile1: mobileVal,
+      //     UsertypemobileErr1: true,
+      //     UsertypemobileHelperText1: "Please enter Mobile Number",
+      //   });
+      // } else 
+      if (mobileVal.trim() != "" && (mobileVal.trim() !== mobileVal || !mobileVal.match(regExp))) {
+        this.setState({
+          UsertypeMobile1: mobileVal,
+          UsertypemobileErr1: true,
+          UsertypemobileHelperText1: "Please enter valid Mobile Number",
+        });
+      } else {
+        this.setState({
+          UsertypeMobile1: mobileVal,
+          UsertypemobileErr1: false,
+          UsertypemobileHelperText1: "",
+        });
+      }
+    } else if (type === "Usertypeaddressline1") {
+      this.setState({ UsertypecheckAddressLine1: true });
+      let addressVal = event.target.value;
+      // if (addressVal === "" || addressVal === null) {
+      //   this.setState({
+      //     UsertypeAddressLine1: addressVal,
+      //     UsertypeaddressLine1Err: true,
+      //     UsertypeaddressLine1HelperText: "Please enter Address Line 1",
+      //   });
+      // } else {
+
+      this.setState({
+        UsertypeAddressLine1: addressVal,
+        UsertypeaddressLine1Err: false,
+        UsertypeaddressLine1HelperText: "",
+      });
+      // }
+    } else if (type === "Usertypeaddressline2") {
+      this.setState({ UsertypecheckAddressLine2: true });
+      let addressVal = event.target.value;
+      // if (addressVal === "" || addressVal === null) {
+      //   this.setState({
+      //     UsertypeAddressLine2: addressVal,
+      //     UsertypeaddressLine2Err: true,
+      //     UsertypeaddressLine2HelperText: "Please enter Address Line 2",
+      //   });
+      // } else {
+      this.setState({
+        UsertypeAddressLine2: addressVal,
+        UsertypeaddressLine2Err: false,
+        UsertypeaddressLine2HelperText: "",
+      });
+      // }
+    } else if (type === "Usertypezip") {
+      this.setState({ UsertypecheckZipCode: true });
+      let addressVal = event.target.value.replace(/\D/g, "");
+      // if (addressVal === "" || addressVal === null) {
+      //   this.setState({
+      //     UsertypeZipCode: addressVal,
+      //     UsertypezipCodeErr: true,
+      //     UsertypezipCodeHelperText: "Please enter Zip Code",
+      //   });
+      // } else {
+
+      this.setState({
+        UsertypeZipCode: addressVal,
+        UsertypezipCodeErr: false,
+        UsertypezipCodeHelperText: "",
+      });
+      // }
+
+    } else if (type === "UsertypeCity") {
+      this.setState({ UsertypeCity: event.target.value });
+    } else if (type === "UsertypeState") {
+      this.setState({ UsertypeState: event.target.value });
+
+    } else if (type === "Usertypesalary") {
+      this.setState({ Usertypechecksalary: true });
+      let salaryVal = event.target.value;
       let regExp = /^[0-9]{1,10}$/;
 
       // if (salaryVal === "" || salaryVal === null) {
@@ -1383,7 +1523,7 @@ class Step1 extends React.Component {
       //     UsertypesalaryHelperText: "Please enter Salary",
       //   });
       // } else 
-      if (salaryVal.trim() !="" && (salaryVal.trim() !== salaryVal || !salaryVal.match(regExp))) {
+      if (salaryVal.trim() != "" && (salaryVal.trim() !== salaryVal || !salaryVal.match(regExp))) {
         this.setState({
           UsertypeSalary: "",
           UsertypesalaryErr: true,
@@ -1401,8 +1541,8 @@ class Step1 extends React.Component {
       let employeeIdVal = event.target.value;
       let regExp = /^[\w.]{1,10}$/;
 
-    
-      if (employeeIdVal.trim() !="" && (employeeIdVal.trim() !== employeeIdVal || !employeeIdVal.match(regExp))) {
+
+      if (employeeIdVal.trim() != "" && (employeeIdVal.trim() !== employeeIdVal || !employeeIdVal.match(regExp))) {
         this.setState({
           Usertypeemployeeid: employeeIdVal,
           userTypeEmployeeIdErr: true,
@@ -1416,9 +1556,8 @@ class Step1 extends React.Component {
         });
       }
     }
-    UsertypeCity
-  };
 
+  };
   handleBlurUser = (event, type) => {
     if (type === "username") {
       let usernameVal = event.target.value;
@@ -1493,7 +1632,7 @@ class Step1 extends React.Component {
         }
       }
     }
-    this.setState({ serviceList: MarkupData });    
+    this.setState({ serviceList: MarkupData });
   };
 
   handleBlur = (e, id, MarkupType, Type) => {
@@ -1617,7 +1756,7 @@ class Step1 extends React.Component {
     }
   };
   handleStepValue = (e, record, type) => {
-    this.setState({eValue :e,recordValue:record,typeValue :type});
+    this.setState({ eValue: e, recordValue: record, typeValue: type });
     let checkedArr = this.state.countryWise;
     if (type !== "All") {
       checkedArr
@@ -1634,15 +1773,15 @@ class Step1 extends React.Component {
       let previousList = checkedArr.filter((x) => x.IsSelected === true);
       this.setState({ serviceValue: previousList });
       let arrType = "previousSelected" + this.state.chatlist;
-      let SelectedCountryCode="1";
-   
+      let SelectedCountryCode = "1";
+
       checkedArr.filter((x) => x.IsSelected === true)
         .map((OBJ) => {
 
-          SelectedCountryCode = SelectedCountryCode+","+OBJ.value;
+          SelectedCountryCode = SelectedCountryCode + "," + OBJ.value;
           return OBJ;
         });
-     
+
     } else {
       // else {
       this.setState({ shipmentquery: "" });
@@ -1666,46 +1805,46 @@ class Step1 extends React.Component {
         [arrType]: previousList,
         StatusQuery: this.state.shipmentquery,
       });
-  
-     // this.filterMethod("Hello", previousList);
+
+      // this.filterMethod("Hello", previousList);
       // }
     }
-    
+
   };
   handleServiceCheckboxChange = (e, record, type) => {
-    
+
     let checkedArr = this.state.countryWise;
     if (type !== "All") {
-     
-   
-      let SelectedCountryCode="1";
+
+
+      let SelectedCountryCode = "1";
       //this.filterMethod("Hello", previousList);
       checkedArr.filter((x) => x.IsSelected === true)
         .map((OBJ) => {
 
-          SelectedCountryCode = SelectedCountryCode+","+OBJ.value;
+          SelectedCountryCode = SelectedCountryCode + "," + OBJ.value;
           return OBJ;
         });
-        if(SelectedCountryCode === undefined || SelectedCountryCode === "1")
-          SelectedCountryCode = "1,37,89,202,0";
+      if (SelectedCountryCode === undefined || SelectedCountryCode === "1")
+        SelectedCountryCode = "1,37,89,202,0";
       this.getServiceListFiltered(SelectedCountryCode)
     } else {
       // else {
-    
-      
-     
-      let SelectedCountryCode="1";
+
+
+
+      let SelectedCountryCode = "1";
       checkedArr.filter((x) => x.IsSelected === true)
-      .map((OBJ) => {
-        if(OBJ.value !== "All")
-        SelectedCountryCode = SelectedCountryCode+","+OBJ.value;
-        return OBJ;
-      });
-      if(SelectedCountryCode === undefined || SelectedCountryCode === "1")
+        .map((OBJ) => {
+          if (OBJ.value !== "All")
+            SelectedCountryCode = SelectedCountryCode + "," + OBJ.value;
+          return OBJ;
+        });
+      if (SelectedCountryCode === undefined || SelectedCountryCode === "1")
         SelectedCountryCode = "1,37,89,202,0";
       this.getServiceListFiltered(SelectedCountryCode);
 
-    //  this.filterMethod("Hello", previousList);
+      //  this.filterMethod("Hello", previousList);
       // }
     }
     // console.log("checkedArr = ",checkdata);
@@ -1714,7 +1853,8 @@ class Step1 extends React.Component {
 
 
 
-  validate() {debugger
+  validate() {
+    debugger
     let IsFormValid = true;
     if (this.state.usernameErr) {
       IsFormValid = false;
@@ -1726,205 +1866,333 @@ class Step1 extends React.Component {
     ) {
       IsFormValid = false;
     }
-    if(this.state.userType===null || this.state.userType==="")
-      {IsFormValid = false;
-        this.setState({userTypeErr : true, userTypeHelperText:"Mandatory Field" });
-      }
-      else
-      if(this.state.userType!=null && this.state.userType.value==="Employee")
-        { this.setState({userTypeErr : false, userTypeHelperText:"" });
-          if(this.state.usertypeTimeZone===null || this.state.usertypeTimeZone==="")
-            {IsFormValid = false; 
-              this.setState({usertypeTimeZoneErr: true, usertypeTimeZoneHelperText:"Mandatory Field" });
-            }
-            else
-            this.setState({usertypeTimeZoneErr: false, usertypeTimeZoneHelperText:"" });
-          console.log("moment(this.state.BirthDate)", moment(this.state.BirthDate)._d);
-        if(moment(this.state.BirthDate)._d =="Invalid Date")
-          {
-            IsFormValid = false;
-            this.setState({birthdateErr: true, birthdateHelperText:"Mandatory Field" });
-          }
+    if (this.state.userType === null || this.state.userType === "") {
+      IsFormValid = false;
+      this.setState({ userTypeErr: true, userTypeHelperText: "Mandatory Field" });
+    }
+    else
+      if (this.state.userType != null && this.state.userType.value === "Employee") {
+        this.setState({ userTypeErr: false, userTypeHelperText: "" });
+        if (this.state.usertypeTimeZone === null || this.state.usertypeTimeZone === "") {
+          IsFormValid = false;
+          this.setState({ usertypeTimeZoneErr: true, usertypeTimeZoneHelperText: "Mandatory Field" });
+        }
         else
-        this.setState({birthdateErr: false, birthdateHelperText:"" });
-          if(moment(this.state.JoinDate)._d == "Invalid Date")
-            {
-              IsFormValid = false;
-              this.setState({joindateErr: true, joindateHelperText:"Mandatory Field" });
-            }
-          else
-          this.setState({joindateErr: false, joindateHelperText:"" });
+          this.setState({ usertypeTimeZoneErr: false, usertypeTimeZoneHelperText: "" });
+        console.log("moment(this.state.BirthDate)", moment(this.state.BirthDate)._d);
+        if (moment(this.state.BirthDate)._d == "Invalid Date") {
+          IsFormValid = false;
+          this.setState({ birthdateErr: true, birthdateHelperText: "Mandatory Field" });
+        }
+        else
+          this.setState({ birthdateErr: false, birthdateHelperText: "" });
+        if (moment(this.state.JoinDate)._d == "Invalid Date") {
+          IsFormValid = false;
+          this.setState({ joindateErr: true, joindateHelperText: "Mandatory Field" });
+        }
+        else
+          this.setState({ joindateErr: false, joindateHelperText: "" });
       }
-      else
-      {this.setState({userTypeErr : false, userTypeHelperText:"" });}
+      else { this.setState({ userTypeErr: false, userTypeHelperText: "" }); }
     return IsFormValid;
   }
-  setUserDepartment = (e) =>{debugger
-   
-    this.setState({ userTypeDepartment: e });
-    this.state.userTypeDepartment=e;
-    console.log("userTypeDepartment",this.state.userTypeDepartment);
- }
-  setUserTimeZone = (e) =>{
-     this.setState({ usertypeTimeZone : e });
-     this.setState({usertypeTimeZoneErr: false, usertypeTimeZoneHelperText:"" });
-  }
-  setUserCurrency = (e) =>{
-    this.setState({ UsertypeCurrency: e });
- }
-  
-  setUserType = (e) =>{
-    this.setState({ userType: e });
-    if(this.state.userTimeZone != "" && this.state.usertypeTimeZone=="")
-      this.setState({usertypeTimeZone:this.state.userTimeZone})
-   
+  setUserDepartment = (e) => {
+    debugger
 
- } 
- handleDateChange = (date, type) => {debugger
-  // if (type === "start") {
-  //   this.setState({
-  //     StartDate: date,
-  //     startdateErr: false,
-  //     startdateHelperText: "",
-  //   });
-  // } else if (type === "end") {
-  //   this.setState({
-  //     EndDate: date,
-  //     enddateErr: false,
-  //     enddateHelperText: "",
-  //   });
-  // }else 
-  if (type === "join") {
-    this.setState({
-      JoinDate: date,
-      joindateErr: false,
-      joindateHelperText: "",
-    });
-    if(this.state.BirthDate !== "")
-      if(date > this.state.BirthDate){
-        this.setState({
-          JoinDate: date,
-          joindateErr: false,
-          joindateHelperText: "",
-        });
-      } 
-      else
-      {
-        this.setState({
-          JoinDate: "",
-          joindateErr: true,
-          joindateHelperText: "Joining Date must be after Date of Birth",
-        });
-      }
-        if(this.state.RelivingDate !== "")
-          if(date > this.state.RelivingDate){
-            this.setState({
-              JoinDate: date,
-              joindateErr: false,
-              joindateHelperText: "",
-            });
-          } 
-          else
-            {
-              this.setState({
-                JoinDate: "",
-                joindateErr: true,
-                joindateHelperText: "Joining Date must be before Date of Reliving",
-              });
-            }
-  }else if (type === "Reliving") {
-    this.setState({
-      RelivingDate: date,
-      relivingdateErr: false,
-      relivingdateHelperText: "",
-    });
-    if(this.state.BirthDate !== "")
-      if(date > this.state.BirthDate){
-        this.setState({
-          RelivingDate: date,
-          relivingdateErr: false,
-          relivingdateHelperText: "",
-        });
-      } 
-      else
-      {
-        this.setState({
-          RelivingDate: "",
-          relivingdateErr: true,
-          relivingdateHelperText: "Reliving Date must be after Date of Birth",
-        });
-      }
-      if(this.state.JoinDate !== "")
-        if(date > this.state.JoinDate){
+    this.setState({ userTypeDepartment: e });
+    this.state.userTypeDepartment = e;
+    console.log("userTypeDepartment", this.state.userTypeDepartment);
+  }
+  setUserTimeZone = (e) => {
+    this.setState({ usertypeTimeZone: e });
+    this.setState({ usertypeTimeZoneErr: false, usertypeTimeZoneHelperText: "" });
+  }
+  setUserCurrency = (e) => {
+    this.setState({ UsertypeCurrency: e });
+  }
+
+  setUserType = (e) => {
+    this.setState({ userType: e });
+    if (this.state.userTimeZone != "" && this.state.usertypeTimeZone == "")
+      this.setState({ usertypeTimeZone: this.state.userTimeZone })
+
+
+  }
+  handleDateChange = (date, type) => {
+    debugger
+    // if (type === "start") {
+    //   this.setState({
+    //     StartDate: date,
+    //     startdateErr: false,
+    //     startdateHelperText: "",
+    //   });
+    // } else if (type === "end") {
+    //   this.setState({
+    //     EndDate: date,
+    //     enddateErr: false,
+    //     enddateHelperText: "",
+    //   });
+    // }else 
+    if (type === "join") {
+      this.setState({
+        JoinDate: date,
+        joindateErr: false,
+        joindateHelperText: "",
+      });
+      // if(this.state.BirthDate !== "")
+      //   if(date > this.state.BirthDate){
+      //     this.setState({
+      //       JoinDate: date,
+      //       joindateErr: false,
+      //       joindateHelperText: "",
+      //     });
+      //   } 
+      //   else
+      //   {
+      //     this.setState({
+      //       JoinDate: "",
+      //       joindateErr: true,
+      //       joindateHelperText: "Joining Date must be after Date of Birth",
+      //     });
+      //   }
+      // if(this.state.RelivingDate !== "")
+      //   if(date > this.state.RelivingDate){
+      //     this.setState({
+      //       JoinDate: date,
+      //       joindateErr: false,
+      //       joindateHelperText: "",
+      //     });
+      //   } 
+      //   else
+      //     {
+      //       this.setState({
+      //         JoinDate: "",
+      //         joindateErr: true,
+      //         joindateHelperText: "Joining Date must be before Date of Reliving",
+      //       });
+      //     }
+    } else if (type === "Reliving") {
+      this.setState({
+        RelivingDate: date,
+        relivingdateErr: false,
+        relivingdateHelperText: "",
+      });
+      // if(this.state.BirthDate !== "")
+      //   if(date > this.state.BirthDate){
+      //     this.setState({
+      //       RelivingDate: date,
+      //       relivingdateErr: false,
+      //       relivingdateHelperText: "",
+      //     });
+      //   } 
+      //   else
+      //   {
+      //     this.setState({
+      //       RelivingDate: "",
+      //       relivingdateErr: true,
+      //       relivingdateHelperText: "Reliving Date must be after Date of Birth",
+      //     });
+      //   }
+      //   if(this.state.JoinDate !== "")
+      //     if(date > this.state.JoinDate){
+      //       this.setState({
+      //         RelivingDate: date,
+      //         relivingdateErr: false,
+      //         relivingdateHelperText: "",
+      //       });
+      //     } 
+      //     else
+      //     {
+      //       this.setState({
+      //         RelivingDate: "",
+      //         relivingdateErr: true,
+      //         relivingdateHelperText: "Reliving Date must be after Date of Join",
+      //       });
+      //     }
+    } else if (type === "DOB") {
+      this.setState({
+        BirthDate: date,
+        birthdateErr: false,
+        birthdateHelperText: "",
+      });
+      // if(this.state.JoinDate !== "")
+      //   if(date < this.state.JoinDate){
+      //     this.setState({
+      //       BirthDate: date,
+      //       birthdateErr: false,
+      //       birthdateHelperText: "",
+      //     });
+      //   } 
+      //   else
+      //   {
+      //     this.setState({
+      //       BirthDate: "",
+      //       birthdateErr: true,
+      //       birthdateHelperText: "Date of Birth must be before Date of Join",
+      //     });
+      //   }
+      //   if(this.state.RelivingDate !== "")
+      //   if(date < this.state.RelivingDate){
+      //     this.setState({
+      //       BirthDate: date,
+      //       birthdateErr: false,
+      //       birthdateHelperText: "",
+      //     });
+      //   } 
+      //   else
+      //   {
+      //     this.setState({
+      //       BirthDate: "",
+      //       birthdateErr: true,
+      //       birthdateHelperText: "Date of Birth must be before Date of Reliving",
+      //     });
+      //   }
+    }
+  };
+  handleDateValidation = (date, type) => {
+    debugger
+    // if (type === "start") {
+    //   this.setState({
+    //     StartDate: date,
+    //     startdateErr: false,
+    //     startdateHelperText: "",
+    //   });
+    // } else if (type === "end") {
+    //   this.setState({
+    //     EndDate: date,
+    //     enddateErr: false,
+    //     enddateHelperText: "",
+    //   });
+    // }else 
+    if (type === "join") {
+      this.setState({
+        JoinDate: date,
+        joindateErr: false,
+        joindateHelperText: "",
+      });
+      if (this.state.BirthDate !== "")
+        if (date > this.state.BirthDate) {
+          this.setState({
+            JoinDate: date,
+            joindateErr: false,
+            joindateHelperText: "",
+          });
+        }
+        else {
+          this.setState({
+            JoinDate: "",
+            joindateErr: true,
+            joindateHelperText: "Joining Date must be after Date of Birth",
+          });
+        }
+      if (this.state.RelivingDate !== "")
+        if (date > this.state.RelivingDate) {
+          this.setState({
+            JoinDate: date,
+            joindateErr: false,
+            joindateHelperText: "",
+          });
+        }
+        else {
+          this.setState({
+            JoinDate: "",
+            joindateErr: true,
+            joindateHelperText: "Joining Date must be before Date of Reliving",
+          });
+        }
+    } else if (type === "Reliving") {
+
+      this.setState({
+        RelivingDate: date,
+        relivingdateErr: false,
+        relivingdateHelperText: "",
+      });
+      if (this.state.BirthDate !== "")
+        if (date > this.state.BirthDate) {
           this.setState({
             RelivingDate: date,
             relivingdateErr: false,
             relivingdateHelperText: "",
           });
-        } 
+        }
         else
-        {
+          if (date != "") {
+            this.setState({
+              RelivingDate: "",
+              relivingdateErr: true,
+              relivingdateHelperText: "Reliving Date must be after Date of Birth",
+            });
+          }
+      if (this.state.JoinDate !== "")
+        if (date > this.state.JoinDate) {
           this.setState({
-            RelivingDate: "",
-            relivingdateErr: true,
-            relivingdateHelperText: "Reliving Date must be after Date of Join",
+            RelivingDate: date,
+            relivingdateErr: false,
+            relivingdateHelperText: "",
           });
         }
-  }else if (type === "DOB") {
-    this.setState({
-      BirthDate: date,
-      birthdateErr: false,
-      birthdateHelperText: "",
-    });
-    if(this.state.JoinDate !== "")
-      if(date < this.state.JoinDate){
-        this.setState({
-          BirthDate: date,
-          birthdateErr: false,
-          birthdateHelperText: "",
-        });
-      } 
-      else
-      {
-        this.setState({
-          BirthDate: "",
-          birthdateErr: true,
-          birthdateHelperText: "Date of Birth must be before Date of Join",
-        });
-      }
-      if(this.state.RelivingDate !== "")
-      if(date < this.state.RelivingDate){
-        this.setState({
-          BirthDate: date,
-          birthdateErr: false,
-          birthdateHelperText: "",
-        });
-      } 
-      else
-      {
-        this.setState({
-          BirthDate: "",
-          birthdateErr: true,
-          birthdateHelperText: "Date of Birth must be before Date of Reliving",
-        });
-      }
-  }
-};
-handleTimeChange = (time, type) => {debugger 
-  if (type === "start_time") {
-    this.setState({
-      StartTime: time.currentTarget.value,
-      starttimeErr: false,
-      starttimeHelperText: "",
-    });
-  } else if (type === "end_time") { 
-    this.setState({
-      EndTime: time.currentTarget.value,
-      endtimeErr: false,
-      endtimeHelperText: "",
-    });
-  }
-};
+        else
+          if (date != "") {
+            this.setState({
+              RelivingDate: "",
+              relivingdateErr: true,
+              relivingdateHelperText: "Reliving Date must be after Date of Join",
+            });
+          }
+    } else if (type === "DOB") {
+      this.setState({
+        BirthDate: date,
+        birthdateErr: false,
+        birthdateHelperText: "",
+      });
+      if (this.state.JoinDate !== "")
+        if (date < this.state.JoinDate) {
+          this.setState({
+            BirthDate: date,
+            birthdateErr: false,
+            birthdateHelperText: "",
+          });
+        }
+        else {
+          this.setState({
+            BirthDate: "",
+            birthdateErr: true,
+            birthdateHelperText: "Date of Birth must be before Date of Join",
+          });
+        }
+      if (this.state.RelivingDate !== "")
+        if (date < this.state.RelivingDate) {
+          this.setState({
+            BirthDate: date,
+            birthdateErr: false,
+            birthdateHelperText: "",
+          });
+        }
+        else {
+          this.setState({
+            BirthDate: "",
+            birthdateErr: true,
+            birthdateHelperText: "Date of Birth must be before Date of Reliving",
+          });
+        }
+    }
+  };
+  handleTimeChange = (time, type) => {
+    debugger
+    if (type === "start_time") {
+      this.setState({
+        StartTime: time.currentTarget.value,
+        starttimeErr: false,
+        starttimeHelperText: "",
+      });
+    } else if (type === "end_time") {
+      this.setState({
+        EndTime: time.currentTarget.value,
+        endtimeErr: false,
+        endtimeHelperText: "",
+      });
+    }
+  };
   activeInactiveUser = (e) => {
     this.setState({ Status: e });
     // let data = {
@@ -1948,7 +2216,7 @@ handleTimeChange = (time, type) => {debugger
     //     });
     // } catch (error) {}
   };
-  
+
   deleteUser = () => {
     this.showLoader();
     var userid = Number(this.props.location.state);
@@ -1973,14 +2241,15 @@ handleTimeChange = (time, type) => {debugger
       }
     });
   };
-  saveUser = (redirect) => {debugger
-    if (this. validate()) {
+  saveUser = (redirect) => {
+    debugger
+    if (this.validate()) {
       try {
         this.showLoader();
-        
+
         let UserDetails = {
           AccountNumber: this.state.AccountNumber,
-          isAccountAlready:this.state.isAccountAlready,
+          isAccountAlready: this.state.isAccountAlready,
           ManagedBy: this.state.ManagedBy.value,
           CompanyName: this.state.CompanyName,
           AddressLine1: this.state.AddressLine1,
@@ -1995,7 +2264,7 @@ handleTimeChange = (time, type) => {debugger
           CountryID: this.state.Country.value,
           UserDetailID: this.state.UserDetailID,
           Status: this.state.Status.value,
-          userTimeZone:this.state.userTimeZone.value,
+          userTimeZone: this.state.userTimeZone.value,
         };
 
         var data = {};
@@ -2006,12 +2275,11 @@ handleTimeChange = (time, type) => {debugger
           }
         }
         let BankList = this.state.bankList;
-       for(var i =0; i<BankList.length;i++)
-       {
-          if(BankList[i].AccountType == "" &&  BankList[i].AccountType=="" &&    BankList[i].AccountNumber ==  "" && 
-            BankList[i].BankName== "" &&   BankList[i].NameonAccount== ""  && BankList[i].RoutingNumber == "")
+        for (var i = 0; i < BankList.length; i++) {
+          if (BankList[i].AccountType == "" && BankList[i].AccountType == "" && BankList[i].AccountNumber == "" &&
+            BankList[i].BankName == "" && BankList[i].NameonAccount == "" && BankList[i].RoutingNumber == "")
             BankList.pop();
-          }
+        }
 
         this.setState({ bankList: BankList });
         debugger;
@@ -2034,36 +2302,36 @@ handleTimeChange = (time, type) => {debugger
             EmailID: this.state.EmailID,
             PhoneID: this.state.MobileID,
             Phone2ID: this.state.Mobile1ID,
-            SelectedPaperSize:  this.state.PaperSize==""?"":this.state.PaperSize.value,
+            SelectedPaperSize: this.state.PaperSize == "" ? "" : this.state.PaperSize.value,
             Status: this.state.Status.value,
             DocumentList: finalAttachment,
-            EmployeeDetailID:this.state.EmployeementID,
-            usertypeTimeZone:this.state.usertypeTimeZone==""?"":this.state.usertypeTimeZone.value,
-            UserType:this.state.userType.value,
-            usertypeStartTime:this.state.StartTime==""?"NULL":this.state.StartTime,
-            usertypeEndTime:this.state.EndTime==""?"NULL":this.state.EndTime,
-            usertypeBirthDate:this.state.BirthDate ==""?"NULL":moment(this.state.BirthDate).format(CommonConfig.dateFormat.dbDateOnly).toString(),
-            usertypeJoiningDate:this.state.JoinDate ==""?"NULL":moment(this.state.JoinDate).format(CommonConfig.dateFormat.dbDateOnly).toString(),
-            usertypeRelivingDate:this.state.RelivingDate ==""?"NULL":moment(this.state.RelivingDate).format(CommonConfig.dateFormat.dbDateOnly).toString(),
-            usertypeAddr1:this.state.UsertypeAddressLine1,
-            usertypeAddr2:this.state.UsertypeAddressLine2,
-            usertypeCountry:this.state.UsertypeCountry==""?"":typeof(this.state.UsertypeCountry)=="object"?this.state.UsertypeCountry.value:this.state.UsertypeCountry,
-            usertypeZip:this.state.UsertypeZipCode,
-            usertypeCity:this.state.UsertypeCity==""?"":typeof(this.state.UsertypeCity)=="object"?this.state.UsertypeCity.value:this.state.UsertypeCity,
-            usertypeState:this.state.UsertypeState==""?"":typeof(this.state.UsertypeState)=="object"?this.state.UsertypeState.value:this.state.UsertypeState,
-            usertypeMobile1:this.state.UsertypeMobile,
-            usertypeMobile2:this.state.UsertypeMobile1,
-            usertypeEmail1:this.state.UsertypeEmail1,
-            usertypeEmail2:this.state.UsertypeEmail2,
-            usertypeSalary:this.state.UsertypeSalary,
-            usertypeCurrency:this.state.UsertypeCurrency==""?"":typeof(this.state.UsertypeCurrency)=="object"?this.state.UsertypeCurrency.value:this.state.UsertypeCurrency,
-            usertypeDepartment:this.state.userTypeDepartment==""?"":typeof(this.state.userTypeDepartment)=="object"?this.state.userTypeDepartment.value:this.state.userTypeDepartment,
-            usertypeEmployeeId:this.state.Usertypeemployeeid,   
-            EntityID:this.state.EntityID,
-            AccountList:this.state.bankList,
+            EmployeeDetailID: this.state.EmployeementID,
+            usertypeTimeZone: this.state.usertypeTimeZone == "" ? "" : this.state.usertypeTimeZone.value,
+            UserType: this.state.userType.value,
+            usertypeStartTime: this.state.StartTime == "" ? "NULL" : this.state.StartTime,
+            usertypeEndTime: this.state.EndTime == "" ? "NULL" : this.state.EndTime,
+            usertypeBirthDate: this.state.BirthDate == "" ? "NULL" : moment(this.state.BirthDate).format(CommonConfig.dateFormat.dbDateOnly).toString(),
+            usertypeJoiningDate: this.state.JoinDate == "" ? "NULL" : moment(this.state.JoinDate).format(CommonConfig.dateFormat.dbDateOnly).toString(),
+            usertypeRelivingDate: this.state.RelivingDate == "" ? "NULL" : moment(this.state.RelivingDate).format(CommonConfig.dateFormat.dbDateOnly).toString(),
+            usertypeAddr1: this.state.UsertypeAddressLine1,
+            usertypeAddr2: this.state.UsertypeAddressLine2,
+            usertypeCountry: this.state.UsertypeCountry == "" ? "" : typeof (this.state.UsertypeCountry) == "object" ? this.state.UsertypeCountry.value : this.state.UsertypeCountry,
+            usertypeZip: this.state.UsertypeZipCode,
+            usertypeCity: this.state.UsertypeCity == "" ? "" : typeof (this.state.UsertypeCity) == "object" ? this.state.UsertypeCity.value : this.state.UsertypeCity,
+            usertypeState: this.state.UsertypeState == "" ? "" : typeof (this.state.UsertypeState) == "object" ? this.state.UsertypeState.value : this.state.UsertypeState,
+            usertypeMobile1: this.state.UsertypeMobile,
+            usertypeMobile2: this.state.UsertypeMobile1,
+            usertypeEmail1: this.state.UsertypeEmail1,
+            usertypeEmail2: this.state.UsertypeEmail2,
+            usertypeSalary: this.state.UsertypeSalary,
+            usertypeCurrency: this.state.UsertypeCurrency == "" ? "" : typeof (this.state.UsertypeCurrency) == "object" ? this.state.UsertypeCurrency.value : this.state.UsertypeCurrency,
+            usertypeDepartment: this.state.userTypeDepartment == "" ? "" : typeof (this.state.userTypeDepartment) == "object" ? this.state.userTypeDepartment.value : this.state.userTypeDepartment,
+            usertypeEmployeeId: this.state.Usertypeemployeeid,
+            EntityID: this.state.EntityID,
+            AccountList: this.state.bankList,
           };
         } else {
-          console.log("Loklesh1",this.state.userTypeDepartment);
+          console.log("Loklesh1", this.state.userTypeDepartment);
           data = {
             Name: this.state.fullName,
             UserName: this.state.userName,
@@ -2084,32 +2352,32 @@ handleTimeChange = (time, type) => {debugger
             Status: this.state.Status.value,
             SelectedPaperSize: this.state.PaperSize.value,
             DocumentList: finalAttachment,
-            EmployeeDetailID:this.state.EmployeementID,
-            usertypeTimeZone:this.state.usertypeTimeZone.value,
-            UserType:this.state.userType.value,
-            usertypeStartTime:this.state.StartTime==""?"NULL":this.state.StartTime,
-            usertypeEndTime:this.state.EndTime==""?"NULL":this.state.EndTime,
-            usertypeBirthDate:this.state.BirthDate ==""?"NULL":moment(this.state.BirthDate).format(CommonConfig.dateFormat.dbDateOnly).toString(),
-            usertypeJoiningDate:this.state.JoinDate ==""?"NULL":moment(this.state.JoinDate).format(CommonConfig.dateFormat.dbDateOnly).toString(),
-            usertypeRelivingDate:this.state.RelivingDate ==""?"NULL":moment(this.state.RelivingDate).format(CommonConfig.dateFormat.dbDateOnly).toString(),
-            usertypeAddr1:this.state.UsertypeAddressLine1,
-            usertypeAddr2:this.state.UsertypeAddressLine2,
-            usertypeCountry:this.state.UsertypeCountry==""?"":typeof(this.state.UsertypeCountry)=="object"?this.state.UsertypeCountry.value:this.state.UsertypeCountry,
-            usertypeZip:this.state.UsertypeZipCode,
-            usertypeCity:this.state.UsertypeCity==""?"":typeof(this.state.UsertypeCity)=="object"?this.state.UsertypeCity.value:this.state.UsertypeCity,
-            usertypeState:this.state.UsertypeState==""?"":typeof(this.state.UsertypeState)=="object"?this.state.UsertypeState.value:this.state.UsertypeState,
-            usertypeMobile1:this.state.UsertypeMobile,
-            usertypeMobile2:this.state.UsertypeMobile1,
-            usertypeEmail1:this.state.UsertypeEmail1,
-            usertypeEmail2:this.state.UsertypeEmail2,
-            usertypeSalary:this.state.UsertypeSalary,
-            usertypeCurrency:this.state.UsertypeCurrency==""?"":typeof(this.state.UsertypeCurrency)=="object"?this.state.UsertypeCurrency.value:this.state.UsertypeCurrency,
-            usertypeDepartment:this.state.userTypeDepartment==""?"":typeof(this.state.userTypeDepartment)=="object"?this.state.userTypeDepartment.value:this.state.userTypeDepartment,
-            usertypeEmployeeId:this.state.Usertypeemployeeid,  
-            EntityID:this.state.EntityID,
-            AccountList:this.state.bankList,
+            EmployeeDetailID: this.state.EmployeementID,
+            usertypeTimeZone: this.state.usertypeTimeZone.value,
+            UserType: this.state.userType.value,
+            usertypeStartTime: this.state.StartTime == "" ? "NULL" : this.state.StartTime,
+            usertypeEndTime: this.state.EndTime == "" ? "NULL" : this.state.EndTime,
+            usertypeBirthDate: this.state.BirthDate == "" ? "NULL" : moment(this.state.BirthDate).format(CommonConfig.dateFormat.dbDateOnly).toString(),
+            usertypeJoiningDate: this.state.JoinDate == "" ? "NULL" : moment(this.state.JoinDate).format(CommonConfig.dateFormat.dbDateOnly).toString(),
+            usertypeRelivingDate: this.state.RelivingDate == "" ? "NULL" : moment(this.state.RelivingDate).format(CommonConfig.dateFormat.dbDateOnly).toString(),
+            usertypeAddr1: this.state.UsertypeAddressLine1,
+            usertypeAddr2: this.state.UsertypeAddressLine2,
+            usertypeCountry: this.state.UsertypeCountry == "" ? "" : typeof (this.state.UsertypeCountry) == "object" ? this.state.UsertypeCountry.value : this.state.UsertypeCountry,
+            usertypeZip: this.state.UsertypeZipCode,
+            usertypeCity: this.state.UsertypeCity == "" ? "" : typeof (this.state.UsertypeCity) == "object" ? this.state.UsertypeCity.value : this.state.UsertypeCity,
+            usertypeState: this.state.UsertypeState == "" ? "" : typeof (this.state.UsertypeState) == "object" ? this.state.UsertypeState.value : this.state.UsertypeState,
+            usertypeMobile1: this.state.UsertypeMobile,
+            usertypeMobile2: this.state.UsertypeMobile1,
+            usertypeEmail1: this.state.UsertypeEmail1,
+            usertypeEmail2: this.state.UsertypeEmail2,
+            usertypeSalary: this.state.UsertypeSalary,
+            usertypeCurrency: this.state.UsertypeCurrency == "" ? "" : typeof (this.state.UsertypeCurrency) == "object" ? this.state.UsertypeCurrency.value : this.state.UsertypeCurrency,
+            usertypeDepartment: this.state.userTypeDepartment == "" ? "" : typeof (this.state.userTypeDepartment) == "object" ? this.state.userTypeDepartment.value : this.state.userTypeDepartment,
+            usertypeEmployeeId: this.state.Usertypeemployeeid,
+            EntityID: this.state.EntityID,
+            AccountList: this.state.bankList,
           };
-          console.log("Loklesh2",data);
+          console.log("Loklesh2", data);
         }
 
         var formData = new FormData();
@@ -2190,14 +2458,14 @@ handleTimeChange = (time, type) => {debugger
           });
       } catch (error) {
         this.hideLoader();
-        console.log("SaveUser Error",error);
+        console.log("SaveUser Error", error);
         cogoToast.error("Something Went Wrong 9");
       }
     } else {
       cogoToast.error("Please correct error and resubmit the form");
     }
   };
- 
+
   cancelUser = () => {
     this.props.history.push({
       pathname: "/admin/UserList",
@@ -2209,12 +2477,12 @@ handleTimeChange = (time, type) => {debugger
   };
 
   renderMarkup = () => {
-    console.log("this.state.serviceList = " , this.state.serviceList)
+    console.log("this.state.serviceList = ", this.state.serviceList)
     return this.state.serviceList.map((service) => {
       const {
         CountryName,
         ServiceID,
-        ServiceType, 
+        ServiceType,
         MainServiceName,
         ServiceName,
         DisplayName,
@@ -2515,54 +2783,360 @@ handleTimeChange = (time, type) => {debugger
     document.getElementById("documentation").style.display = "none";
   }
 
-  zipChange = (zip,type) => {debugger
-    if(type === "All")
-    {  if (zip.length) {
-      let citydata={
-        "PostalCode" : zip,
-        "CountryID": this.state.Country.value
-      }
-      api
-      .post(
-        "https://hubapi.sflworldwide.com/contactus/SflPostalCode",
-        citydata
-      )
-      .then((res) => {
-        if (res.success) {
-          console.log("CheckRessData", res);
-          if (res.success === true) {
-            var IsValidCountry = false;
-           let data = res.Data.data;
-           // this.hideLoador();
-          //  this.CloseDialog();
-          //  this.getReferredSite();
-          let RecCount = data.length;
-          if(RecCount !=0)
-            {
-              var FinalCity = [];
-              var city = "";
-            
-                    var countryShortName = data[0].Country
-                    for(let i=0;i<RecCount;i++)
-                      FinalCity.push({
+  zipChange = (zip, type) => {
+    debugger
+    if (type === "All") {
+      if (zip.length) {
+        let citydata = {
+          "PostalCode": zip,
+          "CountryID": this.state.Country.value
+        }
+        api
+          .post(
+            "https://hubapi.sflworldwide.com/contactus/SflPostalCode",
+            citydata
+          )
+          .then((res) => {
+            if (res.success) {
+              console.log("CheckRessData", res);
+              if (res.success === true) {
+                var IsValidCountry = false;
+                let data = res.Data.data;
+                // this.hideLoador();
+                //  this.CloseDialog();
+                //  this.getReferredSite();
+                let RecCount = data.length;
+                if (RecCount != 0) {
+                  var FinalCity = [];
+                  var city = "";
+
+                  var countryShortName = data[0].Country
+                  for (let i = 0; i < RecCount; i++)
+                    FinalCity.push({
                       City_code: data[i].City,
                       CityName: data[i].City,
                     });
-                    var SelectedCity = {
-                      value: FinalCity[0].City_code,
-                      label: FinalCity[0].CityName,
-                    };
-                    var state = data[0].State;
-                    console.log("this.state.toStateList",this.state.toStateList);
-                    var SelectedState = { value: state, label: state };
-                    if (countryShortName === this.state.Country.label) {
-                      this.setState({
-                        CityAutoComplete: FinalCity.length ? true : false,
-                        StateAutoComplete: this.state.StateList.length ? true : false,
-                        GoogleAPICityList: FinalCity,
-                        State: this.state.StateList.length ? SelectedState : state,
-                        City: SelectedCity,
-                      });
+                  var SelectedCity = {
+                    value: FinalCity[0].City_code,
+                    label: FinalCity[0].CityName,
+                  };
+                  var state = data[0].State;
+                  console.log("this.state.toStateList", this.state.toStateList);
+                  var SelectedState = { value: state, label: state };
+                  if (countryShortName === this.state.Country.label) {
+                    this.setState({
+                      CityAutoComplete: FinalCity.length ? true : false,
+                      StateAutoComplete: this.state.StateList.length ? true : false,
+                      GoogleAPICityList: FinalCity,
+                      State: this.state.StateList.length ? SelectedState : state,
+                      City: SelectedCity,
+                    });
+                  } else {
+                    this.setState({
+                      CityAutoComplete: false,
+                      StateAutoComplete: this.state.StateList.length ? true : false,
+                      GoogleAPICityList: [],
+                      State: "",
+                      City: "",
+                    });
+                  }
+                  this.hideLoader();
+                }
+                else {
+                  fetch(CommonConfig.zipCodeAPIKey(zip, this.state.Country.label))
+                  .then((result) => result.json())
+                  .then((data) => {
+                    this.showLoader();
+                    if (data["status"] === "OK") {
+                      if (
+                        data["results"][0] &&
+                        data["results"][0].hasOwnProperty("postcode_localities")
+                      ) {
+                        var FinalCity = [];
+                        var countryShortName = "";
+
+                        countryShortName = _.filter(
+                          data["results"][0]["address_components"],
+                          function (data) {
+                            return data.types[0] === "country";
+                          }
+                        )[0].long_name;
+                        var CityData = _.filter(
+                          data["results"][0]["address_components"],
+                          function (data) {
+                            if (data.types[0] == "locality") {
+                              return data.types[0] === "locality";
+                            }
+                          }
+                        );
+
+                        var CityData2 = _.filter(
+                          data["results"][0]["address_components"],
+                          function (data) {
+                            if (data.types[0] == "neighborhood") {
+                              return data.types[0] === "neighborhood";
+                            }
+                          }
+                        );
+
+                        var CityData3 = _.filter(
+                          data["results"][0]["address_components"],
+                          function (data) {
+                            if (data.types[0] == "administrative_area_level_2") {
+                              return data.types[0] === "administrative_area_level_2";
+                            }
+                          }
+                        );
+
+                        var CityData4 = _.filter(
+                          data["results"][0]["address_components"],
+                          function (data) {
+                            if (data.types[0] == "administrative_area_level_1") {
+                              return data.types[0] === "administrative_area_level_1";
+                            }
+                          }
+                        );
+
+                        if (CityData.length > 0) {
+                          CityData = CityData[0].long_name;
+                          FinalCity.push({
+                            City_code: CityData,
+                            Name: CityData,
+                          });
+                          var SelectedCity = {
+                            value: FinalCity[0].City_code,
+                            label: FinalCity[0].Name,
+                          };
+                        } else if (CityData2.length > 0) {
+                          CityData2 = CityData2[0].long_name;
+                          FinalCity.push({
+                            City_code: CityData2,
+                            Name: CityData2,
+                          });
+                          var SelectedCity = {
+                            value: FinalCity[0].City_code,
+                            label: FinalCity[0].Name,
+                          };
+                        } else if (CityData3.length > 0) {
+                          CityData3 = CityData3[0].long_name;
+                          FinalCity.push({
+                            City_code: CityData3,
+                            Name: CityData3,
+                          });
+                          var SelectedCity = {
+                            value: FinalCity[0].City_code,
+                            label: FinalCity[0].Name,
+                          };
+                        } else if (CityData4.length > 0) {
+                          CityData4 = CityData4[0].long_name;
+                          FinalCity.push({
+                            City_code: CityData4,
+                            Name: CityData4,
+                          });
+                          var SelectedCity = {
+                            value: FinalCity[0].City_code,
+                            label: FinalCity[0].Name,
+                          };
+                        }
+
+                        var state = _.filter(
+                          data["results"][0]["address_components"],
+                          function (data) {
+                            return data.types[0] === "administrative_area_level_1";
+                          }
+                        )[0].long_name;
+                        var SelectedState = { value: state, label: state };
+
+                        if (countryShortName === this.state.Country.label) {
+                          this.setState({
+                            CityAutoComplete: FinalCity.length ? true : false,
+                            StateAutoComplete: this.state.StateList.length ? true : false,
+                            GoogleAPICityList: FinalCity,
+                            State: this.state.StateList.length ? SelectedState : state,
+                            City: SelectedCity,
+                          });
+                        } else {
+                          this.setState({
+                            CityAutoComplete: false,
+                            StateAutoComplete: this.state.StateList.length ? true : false,
+                            GoogleAPICityList: [],
+                            State: "",
+                            City: "",
+                          });
+                        }
+                        this.hideLoader();
+                      } else if (data["results"][0]) {
+                        var FinalCity = [];
+                        var city = "";
+                        var countryShortName = "";
+
+                        countryShortName = _.filter(
+                          data["results"][0]["address_components"],
+                          function (data) {
+                            return data.types[0] === "country";
+                          }
+                        )[0].long_name;
+
+                        if (
+                          city == "" &&
+                          _.filter(data["results"][0]["address_components"], function (
+                            data
+                          ) {
+                            return data.types[0] === "locality";
+                          }).length > 0
+                        ) {
+                          city = _.filter(
+                            data["results"][0]["address_components"],
+                            function (data) {
+                              return data.types[0] === "locality";
+                            }
+                          )[0].short_name;
+                        } else if (
+                          city == "" &&
+                          _.filter(data["results"][0]["address_components"], function (
+                            data
+                          ) {
+                            return data.types[0] === "administrative_area_level_3";
+                          }).length > 0
+                        ) {
+                          city = _.filter(
+                            data["results"][0]["address_components"],
+                            function (data) {
+                              return data.types[0] === "administrative_area_level_3";
+                            }
+                          )[0].short_name;
+                        } else if (
+                          city == "" &&
+                          _.filter(data["results"][0]["address_components"], function (
+                            data
+                          ) {
+                            return data.types[0] === "political";
+                          }).length > 0
+                        ) {
+                          city = _.filter(
+                            data["results"][0]["address_components"],
+                            function (data) {
+                              return data.types[0] === "political";
+                            }
+                          )[0].short_name;
+                        } else if (
+                          city == "" &&
+                          _.filter(data["results"][0]["address_components"], function (
+                            data
+                          ) {
+                            return data.types[0] === "neighborhood";
+                          }).length > 0
+                        ) {
+                          city = _.filter(
+                            data["results"][0]["address_components"],
+                            function (data) {
+                              return data.types[0] === "neighborhood";
+                            }
+                          )[0].short_name;
+                        } else if (
+                          city == "" &&
+                          _.filter(data["results"][0]["address_components"], function (
+                            data
+                          ) {
+                            return data.types[0] === "administrative_area_level_2";
+                          }).length > 0
+                        ) {
+                          city = _.filter(
+                            data["results"][0]["address_components"],
+                            function (data) {
+                              return data.types[0] === "administrative_area_level_2";
+                            }
+                          )[0].long_name;
+                        } else if (
+                          city == "" &&
+                          _.filter(data["results"][0]["address_components"], function (
+                            data
+                          ) {
+                            return data.types[0] === "administrative_area_level_1";
+                          }).length > 0
+                        ) {
+                          city = _.filter(
+                            data["results"][0]["address_components"],
+                            function (data) {
+                              return data.types[0] === "administrative_area_level_1";
+                            }
+                          )[0].long_name;
+                        } else if (city == "") {
+                          city = "";
+                        }
+
+                        var state = _.filter(
+                          data["results"][0]["address_components"],
+                          function (data) {
+                            return data.types[0] === "administrative_area_level_1";
+                          }
+                        )[0].long_name;
+
+                        FinalCity.push({
+                          City_code: city,
+                          Name: city,
+                        });
+
+                        var SelectedCity = {
+                          value: FinalCity[0].City_code,
+                          label: FinalCity[0].Name,
+                        };
+
+                        var SelectedState = { value: state, label: state };
+
+                        if (countryShortName === this.state.Country.label) {
+                          this.setState({
+                            CityAutoComplete: FinalCity.length ? true : false,
+                            StateAutoComplete: this.state.StateList.length ? true : false,
+                            GoogleAPICityList: FinalCity,
+                            State: this.state.StateList.length ? SelectedState : state,
+                            City: SelectedCity,
+                          });
+                        } else {
+                          this.setState({
+                            CityAutoComplete: false,
+                            StateAutoComplete: this.state.StateList.length ? true : false,
+                            GoogleAPICityList: [],
+                            State: "",
+                            City: "",
+                          });
+                        }
+                        this.hideLoader();
+
+
+                      }
+                      if (this.state.Country.label == "United States" || this.state.Country.label == "India" || this.state.Country.label == "Canada") {
+
+                        var newZipcodedata = {
+                          "Pincode": zip,
+                          "PickupCityList": SelectedCity.label,
+                          "CountryID": this.state.Country.value,
+                          "CountryName": this.state.Country.label,
+                          "StateName": state,
+
+                        };
+                        console.log("newZipcodedata", newZipcodedata);
+                        api
+                          .post(
+                            "https://hubapi.sflworldwide.com/contactus/SflInsertPostalCode",
+                            newZipcodedata
+                          )
+                          .then((res) => {
+                            if (res.success) {
+                              console.log("CheckRessData", res);
+                              if (res.success === true) {
+
+                                console.log("New Zipcode Enter Successfully");
+                              } else {
+                                console.log("Something Went Wrong 10");
+                              }
+                            }
+                          })
+                          .catch((err) => {
+                            console.log("err...", err);
+
+                          });
+                      }
                     } else {
                       this.setState({
                         CityAutoComplete: false,
@@ -2571,718 +3145,408 @@ handleTimeChange = (time, type) => {debugger
                         State: "",
                         City: "",
                       });
+                      this.hideLoader();
                     }
-                    this.hideLoader();
-                  }
-      else
-     { fetch(CommonConfig.zipCodeAPIKey(zip, this.state.Country.label))
-        .then((result) => result.json())
-        .then((data) => {
-          this.showLoader();
-          if (data["status"] === "OK") {
-            if (
-              data["results"][0] &&
-              data["results"][0].hasOwnProperty("postcode_localities")
-            ) {
-              var FinalCity = [];
-              var countryShortName = "";
-
-              countryShortName = _.filter(
-                data["results"][0]["address_components"],
-                function(data) {
-                  return data.types[0] === "country";
+                  });
                 }
-              )[0].long_name;
-              var CityData = _.filter(
-                data["results"][0]["address_components"],
-                function(data) {
-                  if (data.types[0] == "locality") {
-                    return data.types[0] === "locality";
-                  }
-                }
-              );
-
-              var CityData2 = _.filter(
-                data["results"][0]["address_components"],
-                function(data) {
-                  if (data.types[0] == "neighborhood") {
-                    return data.types[0] === "neighborhood";
-                  }
-                }
-              );
-
-              var CityData3 = _.filter(
-                data["results"][0]["address_components"],
-                function(data) {
-                  if (data.types[0] == "administrative_area_level_2") {
-                    return data.types[0] === "administrative_area_level_2";
-                  }
-                }
-              );
-
-              var CityData4 = _.filter(
-                data["results"][0]["address_components"],
-                function(data) {
-                  if (data.types[0] == "administrative_area_level_1") {
-                    return data.types[0] === "administrative_area_level_1";
-                  }
-                }
-              );
-
-              if (CityData.length > 0) {
-                CityData = CityData[0].long_name;
-                FinalCity.push({
-                  City_code: CityData,
-                  Name: CityData,
-                });
-                var SelectedCity = {
-                  value: FinalCity[0].City_code,
-                  label: FinalCity[0].Name,
-                };
-              } else if (CityData2.length > 0) {
-                CityData2 = CityData2[0].long_name;
-                FinalCity.push({
-                  City_code: CityData2,
-                  Name: CityData2,
-                });
-                var SelectedCity = {
-                  value: FinalCity[0].City_code,
-                  label: FinalCity[0].Name,
-                };
-              } else if (CityData3.length > 0) {
-                CityData3 = CityData3[0].long_name;
-                FinalCity.push({
-                  City_code: CityData3,
-                  Name: CityData3,
-                });
-                var SelectedCity = {
-                  value: FinalCity[0].City_code,
-                  label: FinalCity[0].Name,
-                };
-              } else if (CityData4.length > 0) {
-                CityData4 = CityData4[0].long_name;
-                FinalCity.push({
-                  City_code: CityData4,
-                  Name: CityData4,
-                });
-                var SelectedCity = {
-                  value: FinalCity[0].City_code,
-                  label: FinalCity[0].Name,
-                };
               }
-
-              var state = _.filter(
-                data["results"][0]["address_components"],
-                function(data) {
-                  return data.types[0] === "administrative_area_level_1";
-                }
-              )[0].long_name;
-              var SelectedState = { value: state, label: state };
-
-              if (countryShortName === this.state.Country.label) {
-                this.setState({
-                  CityAutoComplete: FinalCity.length ? true : false,
-                  StateAutoComplete: this.state.StateList.length ? true : false,
-                  GoogleAPICityList: FinalCity,
-                  State: this.state.StateList.length ? SelectedState : state,
-                  City: SelectedCity,
-                });
-              } else {
-                this.setState({
-                  CityAutoComplete: false,
-                  StateAutoComplete: this.state.StateList.length ? true : false,
-                  GoogleAPICityList: [],
-                  State: "",
-                  City: "",
-                });
-              }
-              this.hideLoader();
-            } else if (data["results"][0]) {
-              var FinalCity = [];
-              var city = "";
-              var countryShortName = "";
-
-              countryShortName = _.filter(
-                data["results"][0]["address_components"],
-                function(data) {
-                  return data.types[0] === "country";
-                }
-              )[0].long_name;
-
-              if (
-                city == "" &&
-                _.filter(data["results"][0]["address_components"], function(
-                  data
-                ) {
-                  return data.types[0] === "locality";
-                }).length > 0
-              ) {
-                city = _.filter(
-                  data["results"][0]["address_components"],
-                  function(data) {
-                    return data.types[0] === "locality";
-                  }
-                )[0].short_name;
-              } else if (
-                city == "" &&
-                _.filter(data["results"][0]["address_components"], function(
-                  data
-                ) {
-                  return data.types[0] === "administrative_area_level_3";
-                }).length > 0
-              ) {
-                city = _.filter(
-                  data["results"][0]["address_components"],
-                  function(data) {
-                    return data.types[0] === "administrative_area_level_3";
-                  }
-                )[0].short_name;
-              } else if (
-                city == "" &&
-                _.filter(data["results"][0]["address_components"], function(
-                  data
-                ) {
-                  return data.types[0] === "political";
-                }).length > 0
-              ) {
-                city = _.filter(
-                  data["results"][0]["address_components"],
-                  function(data) {
-                    return data.types[0] === "political";
-                  }
-                )[0].short_name;
-              } else if (
-                city == "" &&
-                _.filter(data["results"][0]["address_components"], function(
-                  data
-                ) {
-                  return data.types[0] === "neighborhood";
-                }).length > 0
-              ) {
-                city = _.filter(
-                  data["results"][0]["address_components"],
-                  function(data) {
-                    return data.types[0] === "neighborhood";
-                  }
-                )[0].short_name;
-              } else if (
-                city == "" &&
-                _.filter(data["results"][0]["address_components"], function(
-                  data
-                ) {
-                  return data.types[0] === "administrative_area_level_2";
-                }).length > 0
-              ) {
-                city = _.filter(
-                  data["results"][0]["address_components"],
-                  function(data) {
-                    return data.types[0] === "administrative_area_level_2";
-                  }
-                )[0].long_name;
-              } else if (
-                city == "" &&
-                _.filter(data["results"][0]["address_components"], function(
-                  data
-                ) {
-                  return data.types[0] === "administrative_area_level_1";
-                }).length > 0
-              ) {
-                city = _.filter(
-                  data["results"][0]["address_components"],
-                  function(data) {
-                    return data.types[0] === "administrative_area_level_1";
-                  }
-                )[0].long_name;
-              } else if (city == "") {
-                city = "";
-              }
-
-              var state = _.filter(
-                data["results"][0]["address_components"],
-                function(data) {
-                  return data.types[0] === "administrative_area_level_1";
-                }
-              )[0].long_name;
-
-              FinalCity.push({
-                City_code: city,
-                Name: city,
-              });
-
-              var SelectedCity = {
-                value: FinalCity[0].City_code,
-                label: FinalCity[0].Name,
-              };
-
-              var SelectedState = { value: state, label: state };
-
-              if (countryShortName === this.state.Country.label) {
-                this.setState({
-                  CityAutoComplete: FinalCity.length ? true : false,
-                  StateAutoComplete: this.state.StateList.length ? true : false,
-                  GoogleAPICityList: FinalCity,
-                  State: this.state.StateList.length ? SelectedState : state,
-                  City: SelectedCity,
-                });
-              } else {
-                this.setState({
-                  CityAutoComplete: false,
-                  StateAutoComplete: this.state.StateList.length ? true : false,
-                  GoogleAPICityList: [],
-                  State: "",
-                  City: "",
-                });
-              }
-              this.hideLoader();
-            
-             
             }
-            if(this.state.Country.label == "United States" ||this.state.Country.label == "India" ||this.state.Country.label == "Canada"  )
-              {
-                
-                var newZipcodedata = {
-                "Pincode" : zip,
-                "PickupCityList": SelectedCity.label,
-                "CountryID": this.state.Country.value,
-                "CountryName": this.state.Country.label,
-                "StateName" : state,
-                
-              };
-              console.log("newZipcodedata",newZipcodedata);
-              api
-              .post(
-                "https://hubapi.sflworldwide.com/contactus/SflInsertPostalCode",
-                newZipcodedata
-              )
-              .then((res) => {
-                if (res.success) {
-                  console.log("CheckRessData", res);
-                  if (res.success === true) {
-                   
-                    console.log("New Zipcode Enter Successfully");
-                  } else {
-                    console.log("Something Went Wrong 10");
-                  }
-                }
-              })
-              .catch((err) => {
-                  console.log("err...", err);
-                 
-                });
-            }
-          } else {
-            this.setState({
-              CityAutoComplete: false,
-              StateAutoComplete: this.state.StateList.length ? true : false,
-              GoogleAPICityList: [],
-              State: "",
-              City: "",
-            });
-            this.hideLoader();
-          }
-        });
-      }
+          });
       }
     }
-  });
-     }
-    }
-    else if(type === "Usertype")
-    {
+    else if (type === "Usertype") {
       if (zip.length) {
-        let citydata={
-          "PostalCode" : zip,
+        let citydata = {
+          "PostalCode": zip,
           "CountryID": this.state.UsertypeCountry.value
         }
         api
-        .post(
-          "https://hubapi.sflworldwide.com/contactus/SflPostalCode",
-          citydata
-        )
-        .then((res) => {
-          if (res.success) {
-            console.log("CheckRessData", res);
-            if (res.success === true) {
-              var IsValidCountry = false;
-             let data = res.Data.data;
-             // this.hideLoador();
-            //  this.CloseDialog();
-            //  this.getReferredSite();
-            let RecCount = data.length;
-            if(RecCount !=0)
-              {
-                var FinalCity = [];
-                var city = "";
-              
-                      var countryShortName = data[0].Country
-                      for(let i=0;i<RecCount;i++)
+          .post(
+            "https://hubapi.sflworldwide.com/contactus/SflPostalCode",
+            citydata
+          )
+          .then((res) => {
+            if (res.success) {
+              console.log("CheckRessData", res);
+              if (res.success === true) {
+                var IsValidCountry = false;
+                let data = res.Data.data;
+                // this.hideLoador();
+                //  this.CloseDialog();
+                //  this.getReferredSite();
+                let RecCount = data.length;
+                if (RecCount != 0) {
+                  var FinalCity = [];
+                  var city = "";
+
+                  var countryShortName = data[0].Country
+                  for (let i = 0; i < RecCount; i++)
+                    FinalCity.push({
+                      City_code: data[i].City,
+                      CityName: data[i].City,
+                    });
+                  var SelectedCity = {
+                    value: FinalCity[0].City_code,
+                    label: FinalCity[0].CityName,
+                  };
+                  var state = data[0].State;
+                  console.log("this.state.toStateList", this.state.toStateList);
+                  var SelectedState = { value: state, label: state };
+                  if (countryShortName === this.state.UsertypeCountry.label) {
+                    this.setState({
+                      UsertypeCityAutoComplete: FinalCity.length ? true : false,
+                      UsertypeStateAutoComplete: this.state.UsertypeStateList.length ? true : false,
+                      UsertypeGoogleAPICityList: FinalCity,
+                      UsertypeState: this.state.UsertypeStateList.length ? SelectedState : state,
+                      UsertypeCity: SelectedCity,
+                    });
+                  } else {
+                    this.setState({
+                      UsertypeCityAutoComplete: false,
+                      UsertypeStateAutoComplete: this.state.UsertypeStateList.length ? true : false,
+                      UsertypeGoogleAPICityList: [],
+                      UsertypeState: "",
+                      UsertypeCity: "",
+                    });
+                  }
+                  this.hideLoader();
+                }
+                else {
+                  fetch(CommonConfig.zipCodeAPIKey(zip, this.state.UsertypeCountry.label))
+                  .then((result) => result.json())
+                  .then((data) => {
+                    this.showLoader();
+                    if (data["status"] === "OK") {
+                      if (
+                        data["results"][0] &&
+                        data["results"][0].hasOwnProperty("postcode_localities")
+                      ) {
+                        var FinalCity = [];
+                        var countryShortName = "";
+
+                        countryShortName = _.filter(
+                          data["results"][0]["address_components"],
+                          function (data) {
+                            return data.types[0] === "country";
+                          }
+                        )[0].long_name;
+                        var CityData = _.filter(
+                          data["results"][0]["address_components"],
+                          function (data) {
+                            if (data.types[0] == "locality") {
+                              return data.types[0] === "locality";
+                            }
+                          }
+                        );
+
+                        var CityData2 = _.filter(
+                          data["results"][0]["address_components"],
+                          function (data) {
+                            if (data.types[0] == "neighborhood") {
+                              return data.types[0] === "neighborhood";
+                            }
+                          }
+                        );
+
+                        var CityData3 = _.filter(
+                          data["results"][0]["address_components"],
+                          function (data) {
+                            if (data.types[0] == "administrative_area_level_2") {
+                              return data.types[0] === "administrative_area_level_2";
+                            }
+                          }
+                        );
+
+                        var CityData4 = _.filter(
+                          data["results"][0]["address_components"],
+                          function (data) {
+                            if (data.types[0] == "administrative_area_level_1") {
+                              return data.types[0] === "administrative_area_level_1";
+                            }
+                          }
+                        );
+
+                        if (CityData.length > 0) {
+                          CityData = CityData[0].long_name;
+                          FinalCity.push({
+                            City_code: CityData,
+                            Name: CityData,
+                          });
+                          var SelectedCity = {
+                            value: FinalCity[0].City_code,
+                            label: FinalCity[0].Name,
+                          };
+                        } else if (CityData2.length > 0) {
+                          CityData2 = CityData2[0].long_name;
+                          FinalCity.push({
+                            City_code: CityData2,
+                            Name: CityData2,
+                          });
+                          var SelectedCity = {
+                            value: FinalCity[0].City_code,
+                            label: FinalCity[0].Name,
+                          };
+                        } else if (CityData3.length > 0) {
+                          CityData3 = CityData3[0].long_name;
+                          FinalCity.push({
+                            City_code: CityData3,
+                            Name: CityData3,
+                          });
+                          var SelectedCity = {
+                            value: FinalCity[0].City_code,
+                            label: FinalCity[0].Name,
+                          };
+                        } else if (CityData4.length > 0) {
+                          CityData4 = CityData4[0].long_name;
+                          FinalCity.push({
+                            City_code: CityData4,
+                            Name: CityData4,
+                          });
+                          var SelectedCity = {
+                            value: FinalCity[0].City_code,
+                            label: FinalCity[0].Name,
+                          };
+                        }
+
+                        var state = _.filter(
+                          data["results"][0]["address_components"],
+                          function (data) {
+                            return data.types[0] === "administrative_area_level_1";
+                          }
+                        )[0].long_name;
+                        var SelectedState = { value: state, label: state };
+
+                        if (countryShortName === this.state.Country.label) {
+                          this.setState({
+                            UsertypeCityAutoComplete: FinalCity.length ? true : false,
+                            StateAutoComplete: this.state.StateList.length ? true : false,
+                            GoogleAPICityList: FinalCity,
+                            State: this.state.StateList.length ? SelectedState : state,
+                            City: SelectedCity,
+                          });
+                        } else {
+                          this.setState({
+                            UsertypeCityAutoComplete: false,
+                            StateAutoComplete: this.state.StateList.length ? true : false,
+                            GoogleAPICityList: [],
+                            State: "",
+                            City: "",
+                          });
+                        }
+                        this.hideLoader();
+                      } else if (data["results"][0]) {
+                        var FinalCity = [];
+                        var city = "";
+                        var countryShortName = "";
+
+                        countryShortName = _.filter(
+                          data["results"][0]["address_components"],
+                          function (data) {
+                            return data.types[0] === "country";
+                          }
+                        )[0].long_name;
+
+                        if (
+                          city == "" &&
+                          _.filter(data["results"][0]["address_components"], function (
+                            data
+                          ) {
+                            return data.types[0] === "locality";
+                          }).length > 0
+                        ) {
+                          city = _.filter(
+                            data["results"][0]["address_components"],
+                            function (data) {
+                              return data.types[0] === "locality";
+                            }
+                          )[0].short_name;
+                        } else if (
+                          city == "" &&
+                          _.filter(data["results"][0]["address_components"], function (
+                            data
+                          ) {
+                            return data.types[0] === "administrative_area_level_3";
+                          }).length > 0
+                        ) {
+                          city = _.filter(
+                            data["results"][0]["address_components"],
+                            function (data) {
+                              return data.types[0] === "administrative_area_level_3";
+                            }
+                          )[0].short_name;
+                        } else if (
+                          city == "" &&
+                          _.filter(data["results"][0]["address_components"], function (
+                            data
+                          ) {
+                            return data.types[0] === "political";
+                          }).length > 0
+                        ) {
+                          city = _.filter(
+                            data["results"][0]["address_components"],
+                            function (data) {
+                              return data.types[0] === "political";
+                            }
+                          )[0].short_name;
+                        } else if (
+                          city == "" &&
+                          _.filter(data["results"][0]["address_components"], function (
+                            data
+                          ) {
+                            return data.types[0] === "neighborhood";
+                          }).length > 0
+                        ) {
+                          city = _.filter(
+                            data["results"][0]["address_components"],
+                            function (data) {
+                              return data.types[0] === "neighborhood";
+                            }
+                          )[0].short_name;
+                        } else if (
+                          city == "" &&
+                          _.filter(data["results"][0]["address_components"], function (
+                            data
+                          ) {
+                            return data.types[0] === "administrative_area_level_2";
+                          }).length > 0
+                        ) {
+                          city = _.filter(
+                            data["results"][0]["address_components"],
+                            function (data) {
+                              return data.types[0] === "administrative_area_level_2";
+                            }
+                          )[0].long_name;
+                        } else if (
+                          city == "" &&
+                          _.filter(data["results"][0]["address_components"], function (
+                            data
+                          ) {
+                            return data.types[0] === "administrative_area_level_1";
+                          }).length > 0
+                        ) {
+                          city = _.filter(
+                            data["results"][0]["address_components"],
+                            function (data) {
+                              return data.types[0] === "administrative_area_level_1";
+                            }
+                          )[0].long_name;
+                        } else if (city == "") {
+                          city = "";
+                        }
+
+                        var state = _.filter(
+                          data["results"][0]["address_components"],
+                          function (data) {
+                            return data.types[0] === "administrative_area_level_1";
+                          }
+                        )[0].long_name;
+
                         FinalCity.push({
-                        City_code: data[i].City,
-                        CityName: data[i].City,
-                      });
-                      var SelectedCity = {
-                        value: FinalCity[0].City_code,
-                        label: FinalCity[0].CityName,
-                      };
-                      var state = data[0].State;
-                      console.log("this.state.toStateList",this.state.toStateList);
-                      var SelectedState = { value: state, label: state };
-                      if (countryShortName === this.state.UsertypeCountry.label) {
-                        this.setState({
-                          UsertypeCityAutoComplete: FinalCity.length ? true : false,
-                          UsertypeStateAutoComplete: this.state.UsertypeStateList.length ? true : false,
-                          UsertypeGoogleAPICityList: FinalCity,
-                          UsertypeState: this.state.UsertypeStateList.length ? SelectedState : state,
-                          UsertypeCity: SelectedCity,
+                          City_code: city,
+                          Name: city,
                         });
-                      } else {
-                        this.setState({
-                          UsertypeCityAutoComplete: false,
-                          UsertypeStateAutoComplete: this.state.UsertypeStateList.length ? true : false,
-                          UsertypeGoogleAPICityList: [],
-                          UsertypeState: "",
-                          UsertypeCity: "",
-                        });
+
+                        var SelectedCity = {
+                          value: FinalCity[0].City_code,
+                          label: FinalCity[0].Name,
+                        };
+
+                        var SelectedState = { value: state, label: state };
+
+                        if (countryShortName === this.state.Country.label) {
+                          this.setState({
+                            CityAutoComplete: FinalCity.length ? true : false,
+                            StateAutoComplete: this.state.StateList.length ? true : false,
+                            GoogleAPICityList: FinalCity,
+                            State: this.state.StateList.length ? SelectedState : state,
+                            City: SelectedCity,
+                          });
+                        } else {
+                          this.setState({
+                            CityAutoComplete: false,
+                            StateAutoComplete: this.state.StateList.length ? true : false,
+                            GoogleAPICityList: [],
+                            State: "",
+                            City: "",
+                          });
+                        }
+                        this.hideLoader();
+
+
                       }
+                      if (this.state.Country.label == "United States" || this.state.Country.label == "India" || this.state.Country.label == "Canada") {
+
+                        var newZipcodedata = {
+                          "Pincode": zip,
+                          "PickupCityList": SelectedCity.label,
+                          "CountryID": this.state.Country.value,
+                          "CountryName": this.state.Country.label,
+                          "StateName": state,
+
+                        };
+                        console.log("newZipcodedata", newZipcodedata);
+                        api
+                          .post(
+                            "https://hubapi.sflworldwide.com/contactus/SflInsertPostalCode",
+                            newZipcodedata
+                          )
+                          .then((res) => {
+                            if (res.success) {
+                              console.log("CheckRessData", res);
+                              if (res.success === true) {
+
+                                console.log("New Zipcode Enter Successfully");
+                              } else {
+                                console.log("Something Went Wrong 11");
+                              }
+                            }
+                          })
+                          .catch((err) => {
+                            console.log("err...", err);
+
+                          });
+                      }
+                    } else {
+                      this.setState({
+                        CityAutoComplete: false,
+                        StateAutoComplete: this.state.StateList.length ? true : false,
+                        GoogleAPICityList: [],
+                        State: "",
+                        City: "",
+                      });
                       this.hideLoader();
                     }
-        else
-       { fetch(CommonConfig.zipCodeAPIKey(zip, this.state.UsertypeCountry.label))
-          .then((result) => result.json())
-          .then((data) => {
-            this.showLoader();
-            if (data["status"] === "OK") {
-              if (
-                data["results"][0] &&
-                data["results"][0].hasOwnProperty("postcode_localities")
-              ) {
-                var FinalCity = [];
-                var countryShortName = "";
-  
-                countryShortName = _.filter(
-                  data["results"][0]["address_components"],
-                  function(data) {
-                    return data.types[0] === "country";
-                  }
-                )[0].long_name;
-                var CityData = _.filter(
-                  data["results"][0]["address_components"],
-                  function(data) {
-                    if (data.types[0] == "locality") {
-                      return data.types[0] === "locality";
-                    }
-                  }
-                );
-  
-                var CityData2 = _.filter(
-                  data["results"][0]["address_components"],
-                  function(data) {
-                    if (data.types[0] == "neighborhood") {
-                      return data.types[0] === "neighborhood";
-                    }
-                  }
-                );
-  
-                var CityData3 = _.filter(
-                  data["results"][0]["address_components"],
-                  function(data) {
-                    if (data.types[0] == "administrative_area_level_2") {
-                      return data.types[0] === "administrative_area_level_2";
-                    }
-                  }
-                );
-  
-                var CityData4 = _.filter(
-                  data["results"][0]["address_components"],
-                  function(data) {
-                    if (data.types[0] == "administrative_area_level_1") {
-                      return data.types[0] === "administrative_area_level_1";
-                    }
-                  }
-                );
-  
-                if (CityData.length > 0) {
-                  CityData = CityData[0].long_name;
-                  FinalCity.push({
-                    City_code: CityData,
-                    Name: CityData,
-                  });
-                  var SelectedCity = {
-                    value: FinalCity[0].City_code,
-                    label: FinalCity[0].Name,
-                  };
-                } else if (CityData2.length > 0) {
-                  CityData2 = CityData2[0].long_name;
-                  FinalCity.push({
-                    City_code: CityData2,
-                    Name: CityData2,
-                  });
-                  var SelectedCity = {
-                    value: FinalCity[0].City_code,
-                    label: FinalCity[0].Name,
-                  };
-                } else if (CityData3.length > 0) {
-                  CityData3 = CityData3[0].long_name;
-                  FinalCity.push({
-                    City_code: CityData3,
-                    Name: CityData3,
-                  });
-                  var SelectedCity = {
-                    value: FinalCity[0].City_code,
-                    label: FinalCity[0].Name,
-                  };
-                } else if (CityData4.length > 0) {
-                  CityData4 = CityData4[0].long_name;
-                  FinalCity.push({
-                    City_code: CityData4,
-                    Name: CityData4,
-                  });
-                  var SelectedCity = {
-                    value: FinalCity[0].City_code,
-                    label: FinalCity[0].Name,
-                  };
-                }
-  
-                var state = _.filter(
-                  data["results"][0]["address_components"],
-                  function(data) {
-                    return data.types[0] === "administrative_area_level_1";
-                  }
-                )[0].long_name;
-                var SelectedState = { value: state, label: state };
-  
-                if (countryShortName === this.state.Country.label) {
-                  this.setState({
-                    UsertypeCityAutoComplete: FinalCity.length ? true : false,
-                    StateAutoComplete: this.state.StateList.length ? true : false,
-                    GoogleAPICityList: FinalCity,
-                    State: this.state.StateList.length ? SelectedState : state,
-                    City: SelectedCity,
-                  });
-                } else {
-                  this.setState({
-                    UsertypeCityAutoComplete: false,
-                    StateAutoComplete: this.state.StateList.length ? true : false,
-                    GoogleAPICityList: [],
-                    State: "",
-                    City: "",
                   });
                 }
-                this.hideLoader();
-              } else if (data["results"][0]) {
-                var FinalCity = [];
-                var city = "";
-                var countryShortName = "";
-  
-                countryShortName = _.filter(
-                  data["results"][0]["address_components"],
-                  function(data) {
-                    return data.types[0] === "country";
-                  }
-                )[0].long_name;
-  
-                if (
-                  city == "" &&
-                  _.filter(data["results"][0]["address_components"], function(
-                    data
-                  ) {
-                    return data.types[0] === "locality";
-                  }).length > 0
-                ) {
-                  city = _.filter(
-                    data["results"][0]["address_components"],
-                    function(data) {
-                      return data.types[0] === "locality";
-                    }
-                  )[0].short_name;
-                } else if (
-                  city == "" &&
-                  _.filter(data["results"][0]["address_components"], function(
-                    data
-                  ) {
-                    return data.types[0] === "administrative_area_level_3";
-                  }).length > 0
-                ) {
-                  city = _.filter(
-                    data["results"][0]["address_components"],
-                    function(data) {
-                      return data.types[0] === "administrative_area_level_3";
-                    }
-                  )[0].short_name;
-                } else if (
-                  city == "" &&
-                  _.filter(data["results"][0]["address_components"], function(
-                    data
-                  ) {
-                    return data.types[0] === "political";
-                  }).length > 0
-                ) {
-                  city = _.filter(
-                    data["results"][0]["address_components"],
-                    function(data) {
-                      return data.types[0] === "political";
-                    }
-                  )[0].short_name;
-                } else if (
-                  city == "" &&
-                  _.filter(data["results"][0]["address_components"], function(
-                    data
-                  ) {
-                    return data.types[0] === "neighborhood";
-                  }).length > 0
-                ) {
-                  city = _.filter(
-                    data["results"][0]["address_components"],
-                    function(data) {
-                      return data.types[0] === "neighborhood";
-                    }
-                  )[0].short_name;
-                } else if (
-                  city == "" &&
-                  _.filter(data["results"][0]["address_components"], function(
-                    data
-                  ) {
-                    return data.types[0] === "administrative_area_level_2";
-                  }).length > 0
-                ) {
-                  city = _.filter(
-                    data["results"][0]["address_components"],
-                    function(data) {
-                      return data.types[0] === "administrative_area_level_2";
-                    }
-                  )[0].long_name;
-                } else if (
-                  city == "" &&
-                  _.filter(data["results"][0]["address_components"], function(
-                    data
-                  ) {
-                    return data.types[0] === "administrative_area_level_1";
-                  }).length > 0
-                ) {
-                  city = _.filter(
-                    data["results"][0]["address_components"],
-                    function(data) {
-                      return data.types[0] === "administrative_area_level_1";
-                    }
-                  )[0].long_name;
-                } else if (city == "") {
-                  city = "";
-                }
-  
-                var state = _.filter(
-                  data["results"][0]["address_components"],
-                  function(data) {
-                    return data.types[0] === "administrative_area_level_1";
-                  }
-                )[0].long_name;
-  
-                FinalCity.push({
-                  City_code: city,
-                  Name: city,
-                });
-  
-                var SelectedCity = {
-                  value: FinalCity[0].City_code,
-                  label: FinalCity[0].Name,
-                };
-  
-                var SelectedState = { value: state, label: state };
-  
-                if (countryShortName === this.state.Country.label) {
-                  this.setState({
-                    CityAutoComplete: FinalCity.length ? true : false,
-                    StateAutoComplete: this.state.StateList.length ? true : false,
-                    GoogleAPICityList: FinalCity,
-                    State: this.state.StateList.length ? SelectedState : state,
-                    City: SelectedCity,
-                  });
-                } else {
-                  this.setState({
-                    CityAutoComplete: false,
-                    StateAutoComplete: this.state.StateList.length ? true : false,
-                    GoogleAPICityList: [],
-                    State: "",
-                    City: "",
-                  });
-                }
-                this.hideLoader();
-              
-               
               }
-              if(this.state.Country.label == "United States" ||this.state.Country.label == "India" ||this.state.Country.label == "Canada"  )
-                {
-                  
-                  var newZipcodedata = {
-                  "Pincode" : zip,
-                  "PickupCityList": SelectedCity.label,
-                  "CountryID": this.state.Country.value,
-                  "CountryName": this.state.Country.label,
-                  "StateName" : state,
-                  
-                };
-                console.log("newZipcodedata",newZipcodedata);
-                api
-                .post(
-                  "https://hubapi.sflworldwide.com/contactus/SflInsertPostalCode",
-                  newZipcodedata
-                )
-                .then((res) => {
-                  if (res.success) {
-                    console.log("CheckRessData", res);
-                    if (res.success === true) {
-                     
-                      console.log("New Zipcode Enter Successfully");
-                    } else {
-                      console.log("Something Went Wrong 11");
-                    }
-                  }
-                })
-                .catch((err) => {
-                    console.log("err...", err);
-                   
-                  });
-              }
-            } else {
-              this.setState({
-                CityAutoComplete: false,
-                StateAutoComplete: this.state.StateList.length ? true : false,
-                GoogleAPICityList: [],
-                State: "",
-                City: "",
-              });
-              this.hideLoader();
             }
           });
-        }
-        }
-      }
-    });
       }
     }
-    
+
   };
 
   handleZipBlur = (e, type) => {
     if (type === "zip") {
-      this.zipChange(e.target.value,"All");
+      this.zipChange(e.target.value, "All");
     }
     else if (type === "Usertypezip") {
-      this.zipChange(e.target.value,"Usertype");
+      this.zipChange(e.target.value, "Usertype");
     }
   };
 
-  ChangeCountry = (value, type) => {
+  ChangeCountry = (value, type) => {debugger
     if (value !== null) {
       if (type === "Country") {
         this.setState({ Country: value });
-        this.getStates(value,"All");
+        this.getStates(value, "All");
       } else if (type === "City") {
         this.setState({ City: value });
       } else if (type === "State") {
         this.setState({ State: value });
       } else if (type === "UsertypeCountry") {
         this.setState({ UsertypeCountry: value });
-        this.getStates(value,"Usertype");
+        this.getStates(value, "Usertype");
       } else if (type === "UsertypeCity") {
         this.setState({ UsertypeCity: value });
       } else if (type === "UsertypeState") {
@@ -3291,64 +3555,68 @@ handleTimeChange = (time, type) => {debugger
         this.setState({ ManagedBy: value });
       } else if (type === "PaperSize") {
         this.setState({ PaperSize: value });
-        this.getPreviewLink(this.state.PaperSize)
+        //this.getPreviewLink(this.state.PaperSize)
       }
     }
-   
+
   };
-  addRowBank = (e,index) => {debugger
-    console.log("this.state.bankList",this.state.bankList);
+  addRowBank = (e, index) => {
+    debugger
+    console.log("this.state.bankList", this.state.bankList);
     const row = {
       CreatedByName: CommonConfig.loggedInUserData().Name,
       Status: "Active",
-      AccountType:"",
+      AccountType: "",
       AccountNumber: "",
       BankName: "",
       NameonAccount: "",
       RoutingNumber: "",
       Index: this.state.bankList.length + 1,
-      EntityID:this.state.EntityID,
-      AccountDetailID:"",
+      EntityID: this.state.EntityID,
+      AccountDetailID: "",
     };
-    if(e==0)
+    if (e == 0)
       this.setState({ bankList: [...this.state.bankList, row] });
     else
-      if(this.state.bankList[index-1].AccountType!=""  )
+      if (this.state.bankList[index - 1].AccountType != "")
         this.setState({ bankList: [...this.state.bankList, row] });
       else
-      cogoToast.error("Please Fill Account Details before add new row.");   
-   
-      
+        cogoToast.error("Please Fill Account Details before add new row.");
+
+
   };
   removeBank = (index) => {
-    if(this.state.bankList.length ==1 && index ==0)
-      cogoToast.error("This row cannot be deleted."); 
-    else
-    {
-    var BankList = this.state.bankList;
-    let Index = this.state.bankList.findIndex((x) => x.Index === index);
-    if (Index !== -1) {
-      if(BankList[Index].AccountType == "" &&  BankList[Index].AccountType=="" &&    BankList[Index].AccountNumber ==  "" && 
-        BankList[Index].BankName== "" &&   BankList[Index].NameonAccount== ""  && BankList[Index].RoutingNumber == "")
-        BankList.pop();
-       else
-     { 
-    BankList[Index]["Status"] = "Inactive";
-      
-    }
-    this.setState({ bankList: BankList });
-      if (BankList.filter((x) => x.Status === "Active").length === 0) {
-        this.setState({
-          isPaymentMethodBank: false,
-        });
+    if (this.state.bankList.length == 1 && index == 0)
+      cogoToast.error("This row cannot be deleted.");
+    else {
+      var BankList = this.state.bankList;
+      let Index = this.state.bankList.findIndex((x) => x.Index === index);
+      if (Index !== -1) {
+        if (BankList[Index].AccountType == "" && BankList[Index].AccountType == "" && BankList[Index].AccountNumber == "" &&
+          BankList[Index].BankName == "" && BankList[Index].NameonAccount == "" && BankList[Index].RoutingNumber == "")
+          BankList.pop();
+        else {
+          BankList[Index]["Status"] = "Inactive";
+
+        }
+        this.setState({ bankList: BankList });
+        if (BankList.filter((x) => x.Status === "Active").length === 0) {
+          this.setState({
+            isPaymentMethodBank: false,
+          });
+        }
       }
     }
-  }
   };
-  handleChangeBank = (event, type, index) => {debugger
+  handleChangeBank = (event, type, index) => {
+    debugger
     const { value } = event.target;
     const bankList = this.state.bankList;
     let idx = bankList.findIndex((x) => x.Index === index);
+    if (type === "AccountType") {
+      bankList[idx][type] = event.target.outerText;
+    }
+    else
     if (type === "RoutingNumber" || type === "AccountNumber") {
       bankList[idx][type] = value;/*value.replace(/\D/g, "");*/
     } else if (type === "InvoiceAmount") {
@@ -3361,15 +3629,21 @@ handleTimeChange = (time, type) => {debugger
     this.setState({ bankList: bankList });
   };
   viewBankList = () => {
+    const AccountTypeDrop = this.state.AccountTypeList.map((type) => {
+      return { value: type.Description, label: type.Description };
+    });
     return this.state.bankList
-    .filter((x) => x.Status === "Active")
-    .map((method, idx) => {
-    
-  
+      .filter((x) => x.Status === "Active")
+      .map((method, idx) => {
+        const AccountType = {
+          value: method.AccountType,
+          label: method.AccountType,
+        }
+
         return (
           <tr>
             <td className="wd-date wd-100">
-              <div className="package-select">
+              {/* <div className="package-select">
               <CustomInput
                 inputProps={{
                   onChange: (event) =>
@@ -3377,6 +3651,20 @@ handleTimeChange = (time, type) => {debugger
                   value: method.AccountType,
                 }}
               />
+              </div> */}
+              <div className="package-select">
+                <Autocomplete
+                  id="AccountType"
+                  options={AccountTypeDrop}
+                  value={AccountType}
+                  disabled={this.state.Access.WriteAccess === 1 ? false : true}
+                  getOptionLabel={(option) => option.label}
+
+                  onChange={(event) =>
+                    this.handleChangeBank(event, "AccountType", method.Index)
+                  }
+                  renderInput={(params) => <TextField {...params} />}
+                />
               </div>
             </td>
             <td className="input-full">
@@ -3415,48 +3703,48 @@ handleTimeChange = (time, type) => {debugger
                 }}
               />
             </td>
-           
+
             <td style={{ width: "156px" }} className="input-full">
               <CustomInput
                 inputProps={{
                   onChange: (event) =>
                     this.handleChangeBank(event, "RoutingNumber", method.Index),
                   value: method.RoutingNumber,
-   
+
                 }}
               />
             </td>
-         
+
             <td className="pck-action-column">
-              
-                <Button
-                  justIcon
-                  color="danger"
-                  className="Plus-btn"
-                  onClick={() => this.removeBank(method.Index)}
-                >
-                  <i className={"fas fa-minus"} />
-                </Button>
-              
+
+              <Button
+                justIcon
+                color="danger"
+                className="Plus-btn"
+                onClick={() => this.removeBank(method.Index)}
+              >
+                <i className={"fas fa-minus"} />
+              </Button>
+
               {this.state.bankList.filter((x) => x.Status === "Active")
                 .length ===
-                idx + 1  ? (
+                idx + 1 ? (
                 <Button
                   justIcon
                   color="facebook"
-                  onClick={() => this.addRowBank(1,method.Index)}
+                  onClick={() => this.addRowBank(1, method.Index)}
                   className="Plus-btn "
                 >
                   <i className={"fas fa-plus"} />
                 </Button>
               ) : null}
 
-              
+
 
             </td>
           </tr>
         );
-  });
+      });
   };
 
 
@@ -3496,6 +3784,9 @@ handleTimeChange = (time, type) => {debugger
       Usertypeemployeeid,
       usertypeTimeZone,
       pagePreviewLink,
+      JoinDate,
+      BirthDate,
+      RelivingDate,
     } = this.state;
 
     const managedBy = this.state.managedByList.map((type) => {
@@ -3511,18 +3802,21 @@ handleTimeChange = (time, type) => {debugger
     });
 
     const userTypeDepartmentDrop = this.state.usertypeDepartmentList.map((type) => {
-      return { value: type.value, label: type.label };
+
+      return { value: type.Description, label: type.Description };
     });
+
+
     const userTypeTimeZone = this.state.UserTypeTimeZoneList.map((type) => {
       return { value: type.value, label: type.label };
     });
     const userTypeCurrencyDrop = this.state.usertypeCurrencyList.map((type) => {
       return { value: type.value, label: type.label };
-    }); 
+    });
 
     const userType = this.state.UserTypeList.map((type) => {
       return { value: type.value, label: type.label };
-    }); 
+    });
 
     const CityOptions = this.state.GoogleAPICityList.map((city) => {
       return { value: city.City_code, label: city.Name };
@@ -3582,19 +3876,19 @@ handleTimeChange = (time, type) => {debugger
           return (
             <div className="table-common-btn">
               <input
-              size={10}
-              type="text"
-              name={"Markup"+ record.original.ServiceID}
-              id={"Markup"+ record.original.ServiceID}
-              className="form-control"
-              value={record.original.Markup}
-              onChange={(event) =>
-                this.handledInput(event, record.original.ServiceID, record.original.MarkupType, "Markup")
-              }
-              onBlur={(e) =>
-                this.handleBlur(e, record.original.ServiceID, record.original.MarkupType, "Markup")
-              }
-            />
+                size={10}
+                type="text"
+                name={"Markup" + record.original.ServiceID}
+                id={"Markup" + record.original.ServiceID}
+                className="form-control"
+                value={record.original.Markup}
+                onChange={(event) =>
+                  this.handledInput(event, record.original.ServiceID, record.original.MarkupType, "Markup")
+                }
+                onBlur={(e) =>
+                  this.handleBlur(e, record.original.ServiceID, record.original.MarkupType, "Markup")
+                }
+              />
             </div>
           );
         },
@@ -3608,28 +3902,28 @@ handleTimeChange = (time, type) => {debugger
         },
         maxWidth: 120,
         Cell: (record) => {
-          console.log("record = " , record)
-          console.log("record = " , record.index)
-          var ids = "EnvelopMarkup"+ record.original.ServiceID;
+          console.log("record = ", record)
+          console.log("record = ", record.index)
+          var ids = "EnvelopMarkup" + record.original.ServiceID;
           return (
             <div className="table-common-btn">
-             
+
               <input
-              size={10}
-              type="text"
-              name={"EnvelopMarkup"+ record.original.ServiceID}
-              id={"EnvelopMarkup"+ record.original.ServiceID}
-              className="form-control"
-              value={record.original.EnvelopMarkup}
-              
-              onChange={(event) =>
-                this.handledInput(event, record.original.ServiceID, record.original.MarkupType, "EnvelopMarkup")
-              }
-              onBlur={(e) =>
-                this.handleBlur(e, record.original.ServiceID, record.original.MarkupType, "EnvelopMarkup")
-              }
-            />
-            
+                size={10}
+                type="text"
+                name={"EnvelopMarkup" + record.original.ServiceID}
+                id={"EnvelopMarkup" + record.original.ServiceID}
+                className="form-control"
+                value={record.original.EnvelopMarkup}
+
+                onChange={(event) =>
+                  this.handledInput(event, record.original.ServiceID, record.original.MarkupType, "EnvelopMarkup")
+                }
+                onBlur={(e) =>
+                  this.handleBlur(e, record.original.ServiceID, record.original.MarkupType, "EnvelopMarkup")
+                }
+              />
+
             </div>
           );
         },
@@ -3640,45 +3934,45 @@ handleTimeChange = (time, type) => {debugger
         width: 100,
         maxWidth: 100,
         Cell: (record) => {
-          return (<FormControl  className={classes.selectFormControl}>
-        <Select
-        size={50}
-          MenuProps={{ className: classes.selectMenu }}
-          classes={{ select: classes.select }}
-          value={record.original.MarkupType}
-          inputProps={{
-            name: "simpleSelect",
-            id: "simple-select",
-          }}
-          onChange={(event) => this.handledropdown(event, record.original.ServiceID)}
-        >
-          <MenuItem
-            classes={{
-              root: classes.selectMenuItem,
-              selected: classes.selectMenuItemSelected,
-            }}
-            value="Percentage"
-          >
-            Percentage
-          </MenuItem>
-          <MenuItem
-            classes={{
-              root: classes.selectMenuItem,
-              selected: classes.selectMenuItemSelected,
-            }}
-            value="USD"
-          >
-            USD
-          </MenuItem>
-        </Select>
-      </FormControl>
-      
-    );
-  },
-      
-        
-        
-     
+          return (<FormControl className={classes.selectFormControl}>
+            <Select
+              size={50}
+              MenuProps={{ className: classes.selectMenu }}
+              classes={{ select: classes.select }}
+              value={record.original.MarkupType}
+              inputProps={{
+                name: "simpleSelect",
+                id: "simple-select",
+              }}
+              onChange={(event) => this.handledropdown(event, record.original.ServiceID)}
+            >
+              <MenuItem
+                classes={{
+                  root: classes.selectMenuItem,
+                  selected: classes.selectMenuItemSelected,
+                }}
+                value="Percentage"
+              >
+                Percentage
+              </MenuItem>
+              <MenuItem
+                classes={{
+                  root: classes.selectMenuItem,
+                  selected: classes.selectMenuItemSelected,
+                }}
+                value="USD"
+              >
+                USD
+              </MenuItem>
+            </Select>
+          </FormControl>
+
+          );
+        },
+
+
+
+
       },
       {
         Header: "Status",
@@ -3764,7 +4058,7 @@ handleTimeChange = (time, type) => {debugger
               ) : null}
             </div>
           ) : this.state.Attachments.filter((x) => x.Status === "Active")
-              .length ===
+            .length ===
             record.index + 1 ? (
             <div className="align-right">
               <Icon color="secondary" onClick={() => this.AddNewRowData()}>
@@ -3775,26 +4069,28 @@ handleTimeChange = (time, type) => {debugger
         },
       },
     ];
-   
+
     return (
       <div>
         <GridContainer className="MuiGrid-justify-xs-center">
           <GridItem xs={12} sm={12} md={12}>
-            <Card>
-              <CardHeader className="btn-right-outer" color="primary" icon>
-                <CardIcon color="primary">
-                  <Adduser />
-                </CardIcon>
-                <h4 className="margin-right-auto text-color-black">
-                  User Management
-                </h4>
-              </CardHeader>
-              <Cardbody>
-                <div className="shipment-nav">
-                  <ul>
-                    {this.state.Steps.map((step, key) => {
-                      return ( 
-                        this.state.isAccountAlready==false && step.stepName != "Markup Details"?(
+            <div className="shipment-nav">
+              <ul>
+                {this.state.Steps.map((step, key) => {
+                  return (
+                    this.state.isAccountAlready == false && step.stepName != "Markup Details" ? (
+                      <li>
+                        <a
+                          className={step.classname}
+                          href="#"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            this.navigateChange(key);
+                          }}
+                        >
+                          <span>{/*console.log("lok",this.state.AccountNumber,"esh ",step.stepName)*/}{step.stepName}</span>
+                        </a>
+                      </li>) : this.state.isAccountAlready == true ? (
                         <li>
                           <a
                             className={step.classname}
@@ -3804,690 +4100,701 @@ handleTimeChange = (time, type) => {debugger
                               this.navigateChange(key);
                             }}
                           >
-                            <span>{/*console.log("lok",this.state.AccountNumber,"esh ",step.stepName)*/}{step.stepName}</span>
+                            <span>{console.log("lok", this.state.AccountNumber, "esh ", step.stepName)}{step.stepName}</span>
                           </a>
-                        </li>): this.state.isAccountAlready==true?(
-                        <li>
-                          <a
-                            className={step.classname}
-                            href="#"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              this.navigateChange(key);
-                            }}
-                          >
-                            <span>{console.log("lok",this.state.AccountNumber,"esh ",step.stepName)}{step.stepName}</span>
-                          </a>
-                        </li>):("")
-                      );
-                    })}
-                  </ul>
-                </div>
-                <div className="shipment-content">
+                        </li>) : ("")
+                  );
+                })}
+              </ul>
+            </div>
+            <div className="shipment-content mt-30">
+            
+
+                
                   <div className="shipment-pane mt-20" id="userdetails">
-                    <GridContainer>
-                    <GridItem xs={12} sm={12} md={3}>
-                        <CustomInput
-                          labelText={<span>User Name*</span>}
-                          id="username"
-                          error={this.state.usernameErr}
-                          helperText={this.state.usernameHelperText}
-                          formControlProps={{ fullWidth: true }}
-                          inputType="text"
-                          inputProps={{
-                            autoComplete: "off",
-                            onFocus: () =>
-                              this.setState({
-                                checkUserName: false,
-                                usernameErr: false,
-                                usernameHelperText: "",
-                              }),
-                            onBlur: (event) =>
-                              this.handleBlurUser(event, "username"),
-                            onChange: (event) =>
-                              this.handleChange(event, "username"),
-                            value: userName,
-                            endAdornment:
-                              this.state.checkUserName !== true ? (
-                                <Icon>account_circle</Icon>
-                              ) : this.state.usernameErr ? (
-                                <InputAdornment position="end">
-                                  <CloseIcon
-                                    style={{ color: red[500] }}
-                                    className={useStyles.danger}
-                                  />
-                                </InputAdornment>
-                              ) : (
-                                <InputAdornment position="end">
-                                  {" "}
-                                  <DoneIcon
-                                    style={{ color: green[500] }}
-                                    className={useStyles.success}
-                                  />
-                                </InputAdornment>
-                              ),
-                          }}
-                        />
-                      </GridItem>
-                      
-                      <GridItem xs={12} sm={12} md={3}>
-                        {this.props.match.params.id ? null : (
-                          <FormControl
-                            fullWidth
-                            className="pass-input"
-                            error={this.state.passwordErr}
-                          >
-                            <InputLabel htmlFor="standard-adornment-password">
-                              Password
-                            </InputLabel>
-                            <Input
-                              label="Password"
-                              id="password"
-                              // type="new-password"
-                              //autoComplete="off"
-                              value={this.state.Password}
-                              formControlProps={{ fullWidth: true }}
-                              aria-describedby="simple-popover"
-                              helperText={this.state.passwordHelperText}
-                              inputProps={{
-                                onChange: (event) =>
-                                  this.handleChange(event, "password"),
-                                onBlur: (event) =>
-                                  this.handleChange(event, "password"),
-                                onFocus: () =>
-                                  this.setState({
-                                    passwordErr: false,
-                                    passwordHelperText: "",
-                                    checkPassword: true,
-                                  }),
-                              }}
-                              endAdornment={
-                                <InputAdornment position="end">
-                                  <Icon>lock</Icon>
-                                </InputAdornment>
-                              }
-                            />
-                            <FormHelperText>
-                              {this.state.passwordHelperText}
-                            </FormHelperText>
-                          </FormControl>
-                        )}
-                      </GridItem>
-                      <GridItem xs={12} sm={12} md={3}>
-                        <CustomInput
-                          labelText={<span>Account Number</span>}
-                          id="accountNumber"
-                          name="accountNumber"
-                          variant="outlined"
-                          error={this.state.accountNumberErr}
-                          helperText={this.state.accountNumberHelperText}
-                          formControlProps={{ fullWidth: true }}
-                          
-                          inputProps={{
-                            onFocus: () =>
-                              this.setState({
-                                checkAccountNumber: false,
-                                accountNumberErr: false,
-                                accountNumberHelperText: "",
-                              }),
-                            onBlur: (event) =>
-                              this.handleChange(event, "accountnumber"),
-                            onChange: (event) =>
-                              this.handleChange(event, "accountnumber"),
-                            value: AccountNumber,
-                            disabled:this.state.ShipmentCount && this.state.isAccountAlready? true:false,
-                            endAdornment:
-                              this.state.checkAccountNumber !== true ? (
-                                <Icon>person</Icon>
-                              ) : this.state.accountNumberErr ? (
-                                <InputAdornment position="end">
-                                  <CloseIcon
-                                    style={{ color: red[500] }}
-                                    className={useStyles.danger}
-                                  />
-                                </InputAdornment>
-                              ) : (
-                                <InputAdornment position="end">
-                                  {" "}
-                                  <DoneIcon
-                                    style={{ color: green[500] }}
-                                    className={useStyles.success}
-                                  />
-                                </InputAdornment>
-                              ),
-                          }}
-                        />
-                      </GridItem>
-                      <GridItem xs={12} sm={12} md={3}>
-                        <Autocomplete
-                          id="combo-box-demo"
-                          options={managedBy}
-                          value={ManagedBy}
-                          onChange={(event, value) =>
-                            this.ChangeCountry(value, "ManagedBy")
-                          }
-                          getOptionLabel={(option) => option.label}
-                          renderInput={(params) => (
-                            <TextField {...params} label="Managed By" />
-                          )}
-                        />
-                      </GridItem>
-                    </GridContainer>
-                    <GridContainer>
-                      <GridItem xs={12} sm={12} md={3}>
-                        <CustomInput
-                          labelText={<span>Company Name</span>}
-                          id="CompanyName"
-                          name="CompanyName"
-                          variant="outlined"
-                          formControlProps={{ fullWidth: true }}
-                          inputProps={{
-                            onFocus: () =>
-                              this.setState({
-                                checkcompanyName: false,
-                                companyNameErr: false,
-                                companyNameHelperText: "",
-                              }),
-                            onBlur: (event) =>
-                              this.handleChange(event, "companyname"),
-                            onChange: (event) =>
-                              this.handleChange(event, "companyname"),
-                            value: CompanyName,
-                            endAdornment:
-                              this.state.checkcompanyName !== true ? (
-                                <Icon>person</Icon>
-                              ) : (
-                                <InputAdornment position="end">
-                                  {" "}
-                                  <DoneIcon
-                                    style={{ color: green[500] }}
-                                    className={useStyles.success}
-                                  />
-                                </InputAdornment>
-                              ),
-                          }}
-                        />
-                      </GridItem>
-                      <GridItem xs={12} sm={12} md={3}>
-                        <CustomInput
-                          labelText={<span>Address Line 1</span>}
-                          id="addressline1"
-                          name="addressline1"
-                          variant="outlined"
-                          formControlProps={{ fullWidth: true }}
-                          inputProps={{
-                            onFocus: () =>
-                              this.setState({
-                                checkAddressLine1: false,
-                                addressLine1Err: false,
-                                addressLine1HelperText: "",
-                              }),
-                            onBlur: (event) =>
-                              this.handleChange(event, "addressline1"),
-                            onChange: (event) =>
-                              this.handleChange(event, "addressline1"),
-                            value: AddressLine1,
-                            endAdornment:
-                              this.state.checkAddressLine1 !== true ? (
-                                <Icon>person</Icon>
-                              ) : (
-                                <InputAdornment position="end">
-                                  {" "}
-                                  <DoneIcon
-                                    style={{ color: green[500] }}
-                                    className={useStyles.success}
-                                  />
-                                </InputAdornment>
-                              ),
-                          }}
-                        />
-                      </GridItem>
-                      <GridItem xs={12} sm={12} md={3}>
-                        <CustomInput
-                          labelText={<span>Address Line 2</span>}
-                          id="addressline2"
-                          name="addressline2"
-                          variant="outlined"
-                          formControlProps={{ fullWidth: true }}
-                          inputProps={{
-                            onFocus: () =>
-                              this.setState({
-                                checkAddressLine2: false,
-                                addressLine2Err: false,
-                                addressLine2HelperText: "",
-                              }),
-                            onBlur: (event) =>
-                              this.handleChange(event, "addressline2"),
-                            onChange: (event) =>
-                              this.handleChange(event, "addressline2"),
-                            value: AddressLine2,
-                            endAdornment:
-                              this.state.checkAddressLine2 !== true ? (
-                                <Icon>person</Icon>
-                              ) : (
-                                <InputAdornment position="end">
-                                  {" "}
-                                  <DoneIcon
-                                    style={{ color: green[500] }}
-                                    className={useStyles.success}
-                                  />
-                                </InputAdornment>
-                              ),
-                          }}
-                        />
-                      </GridItem>
-                      <GridItem xs={12} sm={12} md={3}>
-                        <CustomInput
-                          labelText={<span>Address Line 3</span>}
-                          id="addressline3"
-                          name="addressline3"
-                          variant="outlined"
-                          formControlProps={{ fullWidth: true }}
-                          inputProps={{
-                            onFocus: () =>
-                              this.setState({
-                                checkAddressLine3: false,
-                                addressLine3Err: false,
-                                addressLine3HelperText: "",
-                              }),
-                            onBlur: (event) =>
-                              this.handleChange(event, "addressline3"),
-                            onChange: (event) =>
-                              this.handleChange(event, "addressline3"),
-                            value: AddressLine3,
-                            endAdornment:
-                              this.state.checkAddressLine3 !== true ? (
-                                <Icon>person</Icon>
-                              ) : (
-                                <InputAdornment position="end">
-                                  {" "}
-                                  <DoneIcon
-                                    style={{ color: green[500] }}
-                                    className={useStyles.success}
-                                  />
-                                </InputAdornment>
-                              ),
-                          }}
-                        />
-                      </GridItem>
-                    </GridContainer>
-                    <GridContainer>
-                      <GridItem xs={12} sm={12} md={3}>
-                        <Autocomplete
-                          options={CountryOptions}
-                          id="Country"
-                          getOptionLabel={(option) => option.label}
-                          value={Country}
-                          autoSelect
-                          onChange={(event, value) =>
-                            this.ChangeCountry(value, "Country")
-                          }
-                          renderInput={(params) => (
-                            <TextField {...params} label="Country" />
-                          )}
-                        />
-                      </GridItem>
-                      <GridItem xs={12} sm={12} md={3}>
-                        <CustomInput
-                          labelText={<span>Zip</span>}
-                          id="zip"
-                          name="zip"
-                          variant="outlined"
-                          error={this.state.zipCodeErr}
-                          helperText={this.state.zipCodeHelperText}
-                          formControlProps={{ fullWidth: true }}
-                          inputProps={{
-                            onFocus: () =>
-                              this.setState({
-                                checkZipCode: false,
-                                zipCodeErr: false,
-                                zipCodeHelperText: "",
-                              }),
-                            onBlur: (event) => this.handleZipBlur(event, "zip"),
-                            onChange: (event) =>
-                              this.handleChange(event, "zip"),
-                            value: ZipCode,
-                            endAdornment:
-                              this.state.checkZipCode !== true ? (
-                                <Icon>person</Icon>
-                              ) : this.state.zipCodeErr ? (
-                                <InputAdornment position="end">
-                                  <CloseIcon
-                                    style={{ color: red[500] }}
-                                    className={useStyles.danger}
-                                  />
-                                </InputAdornment>
-                              ) : (
-                                <InputAdornment position="end">
-                                  {" "}
-                                  <DoneIcon
-                                    style={{ color: green[500] }}
-                                    className={useStyles.success}
-                                  />
-                                </InputAdornment>
-                              ),
-                          }}
-                        />
-                      </GridItem>
-                      <GridItem xs={12} sm={12} md={3}>
-                        {this.state.CityAutoComplete === false ? (
+                  <Card>
+                    <CardHeader className="btn-right-outer" color="primary" icon>
+                      <CardIcon color="primary">
+                        <Adduser />
+                      </CardIcon>
+                      <h4 className="margin-right-auto text-color-black">
+                        User Management
+                      </h4>
+                    </CardHeader>
+                    <Cardbody>
+                      <GridContainer>
+                        <GridItem xs={12} sm={12} md={3}>
                           <CustomInput
-                            labelText="City"
-                            id="city"
+                            labelText={<span>User Name*</span>}
+                            id="username"
+                            error={this.state.usernameErr}
+                            helperText={this.state.usernameHelperText}
                             formControlProps={{ fullWidth: true }}
+                            inputType="text"
                             inputProps={{
-                              value: City,
+                              autoComplete: "off",
+                              onFocus: () =>
+                                this.setState({
+                                  checkUserName: false,
+                                  usernameErr: false,
+                                  usernameHelperText: "",
+                                }),
+                              onBlur: (event) =>
+                                this.handleBlurUser(event, "username"),
                               onChange: (event) =>
-                                this.handleChange(event, "City"),
-                              endAdornment: (
-                                <InputAdornment
-                                  position="end"
-                                  className={classes.inputAdornment}
-                                >
-                                  <Icon>location_city</Icon>
-                                </InputAdornment>
-                              ),
+                                this.handleChange(event, "username"),
+                              value: userName,
+                              endAdornment:
+                                this.state.checkUserName !== true ? (
+                                  <Icon>account_circle</Icon>
+                                ) : this.state.usernameErr ? (
+                                  <InputAdornment position="end">
+                                    <CloseIcon
+                                      style={{ color: red[500] }}
+                                      className={useStyles.danger}
+                                    />
+                                  </InputAdornment>
+                                ) : (
+                                  <InputAdornment position="end">
+                                    {" "}
+                                    <DoneIcon
+                                      style={{ color: green[500] }}
+                                      className={useStyles.success}
+                                    />
+                                  </InputAdornment>
+                                ),
                             }}
                           />
-                        ) : (
-                          <Autocomplete
-                            options={CityOptions}
-                            id="fromcity"
-                            autoSelect
-                            getOptionLabel={(option) => option.label}
-                            value={City}
-                            onChange={(event, value) =>
-                              this.ChangeCountry(event, value, "City")
-                            }
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                margin="normal"
-                                label="City"
-                                fullWidth
+                        </GridItem>
+
+                        <GridItem xs={12} sm={12} md={3}>
+                          {this.props.match.params.id ? null : (
+                            <FormControl
+                              fullWidth
+                              className="pass-input"
+                              error={this.state.passwordErr}
+                            >
+                              <InputLabel htmlFor="standard-adornment-password">
+                                Password
+                              </InputLabel>
+                              <Input
+                                label="Password"
+                                id="password"
+                                // type="new-password"
+                                //autoComplete="off"
+                                value={this.state.Password}
+                                formControlProps={{ fullWidth: true }}
+                                aria-describedby="simple-popover"
+                                helperText={this.state.passwordHelperText}
+                                inputProps={{
+                                  onChange: (event) =>
+                                    this.handleChange(event, "password"),
+                                  onBlur: (event) =>
+                                    this.handleChange(event, "password"),
+                                  onFocus: () =>
+                                    this.setState({
+                                      passwordErr: false,
+                                      passwordHelperText: "",
+                                      checkPassword: true,
+                                    }),
+                                }}
+                                endAdornment={
+                                  <InputAdornment position="end">
+                                    <Icon>lock</Icon>
+                                  </InputAdornment>
+                                }
                               />
-                            )}
-                          />
-                        )}
-                      </GridItem>
-                      <GridItem xs={12} sm={12} md={3}>
-                        {this.state.StateAutoComplete === false ? (
+                              <FormHelperText>
+                                {this.state.passwordHelperText}
+                              </FormHelperText>
+                            </FormControl>
+                          )}
+                        </GridItem>
+                        <GridItem xs={12} sm={12} md={3}>
                           <CustomInput
-                            labelText="State"
-                            id="state"
+                            labelText={<span>Account Number</span>}
+                            id="accountNumber"
+                            name="accountNumber"
+                            variant="outlined"
+                            error={this.state.accountNumberErr}
+                            helperText={this.state.accountNumberHelperText}
                             formControlProps={{ fullWidth: true }}
+
                             inputProps={{
-                              value: State,
+                              onFocus: () =>
+                                this.setState({
+                                  checkAccountNumber: false,
+                                  accountNumberErr: false,
+                                  accountNumberHelperText: "",
+                                }),
+                              onBlur: (event) =>
+                                this.handleChange(event, "accountnumber"),
                               onChange: (event) =>
-                                this.handleChange(event, "State"),
-                              endAdornment: (
-                                <InputAdornment
-                                  position="end"
-                                  className={classes.inputAdornment}
-                                >
-                                  <Icon>location_city</Icon>
-                                </InputAdornment>
-                              ),
+                                this.handleChange(event, "accountnumber"),
+                              value: AccountNumber,
+                              disabled: this.state.ShipmentCount && this.state.isAccountAlready ? true : false,
+                              endAdornment:
+                                this.state.checkAccountNumber !== true ? (
+                                  <Icon>person</Icon>
+                                ) : this.state.accountNumberErr ? (
+                                  <InputAdornment position="end">
+                                    <CloseIcon
+                                      style={{ color: red[500] }}
+                                      className={useStyles.danger}
+                                    />
+                                  </InputAdornment>
+                                ) : (
+                                  <InputAdornment position="end">
+                                    {" "}
+                                    <DoneIcon
+                                      style={{ color: green[500] }}
+                                      className={useStyles.success}
+                                    />
+                                  </InputAdornment>
+                                ),
                             }}
                           />
-                        ) : (
-                          <Autocomplete
-                            options={StateOptions}
-                            id="State"
-                            autoSelect
-                            getOptionLabel={(option) => option.label}
-                            value={State}
-                            onChange={(event, value) =>
-                              this.ChangeCountry(value, "State")
-                            }
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                margin="normal"
-                                label="State"
-                                fullWidth
-                              />
-                            )}
-                          />
-                        )}
-                      </GridItem>
-                    </GridContainer>
-                    <GridContainer>
-                      <GridItem xs={12} sm={12} md={3}>
-                        <CustomInput
-                          labelText={<span>Contact Name</span>}
-                          id="fullname"
-                          name="fullname"
-                          variant="outlined"
-                          error={this.state.fullnameErr}
-                          helperText={this.state.fullnameHelperText}
-                          formControlProps={{ fullWidth: true }}
-                          inputProps={{
-                            onFocus: () =>
-                              this.setState({
-                                checkFullname: false,
-                                fullnameErr: false,
-                                fullnameHelperText: "",
-                              }),
-                            onBlur: (event) =>
-                              this.handleChange(event, "fullname"),
-                            onChange: (event) =>
-                              this.handleChange(event, "fullname"),
-                            value: fullName,
-                            endAdornment:
-                              this.state.checkFullname !== true ? (
-                                <Icon>person</Icon>
-                              ) : this.state.fullnameErr ? (
-                                <InputAdornment position="end">
-                                  <CloseIcon
-                                    style={{ color: red[500] }}
-                                    className={useStyles.danger}
-                                  />
-                                </InputAdornment>
-                              ) : (
-                                <InputAdornment position="end">
-                                  {" "}
-                                  <DoneIcon
-                                    style={{ color: green[500] }}
-                                    className={useStyles.success}
-                                  />
-                                </InputAdornment>
-                              ),
-                          }}
-                        />
-                      </GridItem>
-                      <GridItem xs={12} sm={12} md={3}>
-                        <CustomInput
-                          labelText={<span>Phone 1</span>}
-                          id="mobile"
-                          error={this.state.mobileErr}
-                          helperText={this.state.mobileHelperText}
-                          formControlProps={{ fullWidth: true }}
-                          inputProps={{
-                            onBlur: (event) =>
-                              this.handleChange(event, "mobile"),
-                            onChange: (event) =>
-                              this.handleChange(event, "mobile"),
-                            onFocus: () =>
-                              this.setState({
-                                checkMobile: false,
-                                mobileErr: false,
-                                mobileHelperText: "",
-                              }),
-                            value: Mobile,
-                            endAdornment:
-                              this.state.checkMobile !== true ? (
-                                <Icon>phone</Icon>
-                              ) : this.state.mobileErr ? (
-                                <InputAdornment position="end">
-                                  <CloseIcon
-                                    style={{ color: red[500] }}
-                                    className={useStyles.danger}
-                                  />
-                                </InputAdornment>
-                              ) : (
-                                <InputAdornment position="end">
-                                  {" "}
-                                  <DoneIcon
-                                    style={{ color: green[500] }}
-                                    className={useStyles.success}
-                                  />
-                                </InputAdornment>
-                              ),
-                          }}
-                        />
-                      </GridItem>
-                      <GridItem xs={12} sm={12} md={3}>
-                        <CustomInput
-                          labelText={<span>Phone 2</span>}
-                          id="mobile"
-                          formControlProps={{ fullWidth: true }}
-                          inputProps={{
-                            onBlur: (event) =>
-                              this.handleChange(event, "mobile1"),
-                            onChange: (event) =>
-                              this.handleChange(event, "mobile1"),
-                            onFocus: () =>
-                              this.setState({
-                                checkMobile1: false,
-                                mobile1Err: false,
-                                mobile1HelperText: "",
-                              }),
-                            value: Mobile1,
-                            endAdornment:
-                              this.state.checkMobile1 !== true ? (
-                                <Icon>phone</Icon>
-                              ) : (
-                                <InputAdornment position="end">
-                                  {" "}
-                                  <DoneIcon
-                                    style={{ color: green[500] }}
-                                    className={useStyles.success}
-                                  />
-                                </InputAdornment>
-                              ),
-                          }}
-                        />
-                      </GridItem>
-                      <GridItem xs={12} sm={12} md={3}>
-                        <CustomInput
-                          labelText="Email"
-                          id="Email"
-                          error={this.state.emailErr}
-                          formControlProps={{ fullWidth: true }}
-                          helperText={this.state.emailHelperText}
-                          inputProps={{
-                            onBlur: (event) =>
-                              this.handleChange(event, "email"),
-                            onFocus: () =>
-                              this.setState({
-                                emailErr: false,
-                                emailHelperText: "",
-                                checkEmail: false,
-                              }),
-                            onChange: (event) =>
-                              this.handleChange(event, "email"),
-                            value: Email,
-                            endAdornment:
-                              this.state.checkEmail !== true ? (
-                                <Icon>email</Icon>
-                              ) : this.state.emailErr ? (
-                                <InputAdornment position="end">
-                                  <CloseIcon
-                                    style={{ color: red[500] }}
-                                    className={useStyles.danger}
-                                  />
-                                </InputAdornment>
-                              ) : (
-                                <InputAdornment position="end">
-                                  {" "}
-                                  <DoneIcon
-                                    style={{ color: green[500] }}
-                                    className={useStyles.success}
-                                  />
-                                </InputAdornment>
-                              ),
-                          }}
-                        />
-                      </GridItem>
-                    </GridContainer>
-                    <GridContainer>
-                      <GridItem xs={12} sm={12} md={3}>
-                        <div className="ipt-addon">
+                        </GridItem>
+                        <GridItem xs={12} sm={12} md={3}>
                           <Autocomplete
                             id="combo-box-demo"
-                            options={paperSize}
-                            value={this.state.PaperSize}
+                            options={managedBy}
+                            value={ManagedBy}
                             onChange={(event, value) =>
-                              this.ChangeCountry(value, "PaperSize")
+                              this.ChangeCountry(value, "ManagedBy")
                             }
                             getOptionLabel={(option) => option.label}
                             renderInput={(params) => (
-                              <TextField {...params} label="Paper Size" />
+                              <TextField {...params} label="Managed By" />
                             )}
-                            
                           />
-                          <Tooltip title="Paper Size Preview" arrow><a id="paperpreview" className="addon-icn" href={this.state.pagePreviewLink} target="_blank"><Icon>book</Icon></a></Tooltip>
-                        </div>
-                      </GridItem>
+                        </GridItem>
+                      </GridContainer>
+                      <GridContainer>
+                        <GridItem xs={12} sm={12} md={3}>
+                          <CustomInput
+                            labelText={<span>Company Name</span>}
+                            id="CompanyName"
+                            name="CompanyName"
+                            variant="outlined"
+                            formControlProps={{ fullWidth: true }}
+                            inputProps={{
+                              onFocus: () =>
+                                this.setState({
+                                  checkcompanyName: false,
+                                  companyNameErr: false,
+                                  companyNameHelperText: "",
+                                }),
+                              onBlur: (event) =>
+                                this.handleChange(event, "companyname"),
+                              onChange: (event) =>
+                                this.handleChange(event, "companyname"),
+                              value: CompanyName,
+                              endAdornment:
+                                this.state.checkcompanyName !== true ? (
+                                  <Icon>person</Icon>
+                                ) : (
+                                  <InputAdornment position="end">
+                                    {" "}
+                                    <DoneIcon
+                                      style={{ color: green[500] }}
+                                      className={useStyles.success}
+                                    />
+                                  </InputAdornment>
+                                ),
+                            }}
+                          />
+                        </GridItem>
+                        <GridItem xs={12} sm={12} md={3}>
+                          <CustomInput
+                            labelText={<span>Address Line 1</span>}
+                            id="addressline1"
+                            name="addressline1"
+                            variant="outlined"
+                            formControlProps={{ fullWidth: true }}
+                            inputProps={{
+                              onFocus: () =>
+                                this.setState({
+                                  checkAddressLine1: false,
+                                  addressLine1Err: false,
+                                  addressLine1HelperText: "",
+                                }),
+                              onBlur: (event) =>
+                                this.handleChange(event, "addressline1"),
+                              onChange: (event) =>
+                                this.handleChange(event, "addressline1"),
+                              value: AddressLine1,
+                              endAdornment:
+                                this.state.checkAddressLine1 !== true ? (
+                                  <Icon>person</Icon>
+                                ) : (
+                                  <InputAdornment position="end">
+                                    {" "}
+                                    <DoneIcon
+                                      style={{ color: green[500] }}
+                                      className={useStyles.success}
+                                    />
+                                  </InputAdornment>
+                                ),
+                            }}
+                          />
+                        </GridItem>
+                        <GridItem xs={12} sm={12} md={3}>
+                          <CustomInput
+                            labelText={<span>Address Line 2</span>}
+                            id="addressline2"
+                            name="addressline2"
+                            variant="outlined"
+                            formControlProps={{ fullWidth: true }}
+                            inputProps={{
+                              onFocus: () =>
+                                this.setState({
+                                  checkAddressLine2: false,
+                                  addressLine2Err: false,
+                                  addressLine2HelperText: "",
+                                }),
+                              onBlur: (event) =>
+                                this.handleChange(event, "addressline2"),
+                              onChange: (event) =>
+                                this.handleChange(event, "addressline2"),
+                              value: AddressLine2,
+                              endAdornment:
+                                this.state.checkAddressLine2 !== true ? (
+                                  <Icon>person</Icon>
+                                ) : (
+                                  <InputAdornment position="end">
+                                    {" "}
+                                    <DoneIcon
+                                      style={{ color: green[500] }}
+                                      className={useStyles.success}
+                                    />
+                                  </InputAdornment>
+                                ),
+                            }}
+                          />
+                        </GridItem>
+                        <GridItem xs={12} sm={12} md={3}>
+                          <CustomInput
+                            labelText={<span>Address Line 3</span>}
+                            id="addressline3"
+                            name="addressline3"
+                            variant="outlined"
+                            formControlProps={{ fullWidth: true }}
+                            inputProps={{
+                              onFocus: () =>
+                                this.setState({
+                                  checkAddressLine3: false,
+                                  addressLine3Err: false,
+                                  addressLine3HelperText: "",
+                                }),
+                              onBlur: (event) =>
+                                this.handleChange(event, "addressline3"),
+                              onChange: (event) =>
+                                this.handleChange(event, "addressline3"),
+                              value: AddressLine3,
+                              endAdornment:
+                                this.state.checkAddressLine3 !== true ? (
+                                  <Icon>person</Icon>
+                                ) : (
+                                  <InputAdornment position="end">
+                                    {" "}
+                                    <DoneIcon
+                                      style={{ color: green[500] }}
+                                      className={useStyles.success}
+                                    />
+                                  </InputAdornment>
+                                ),
+                            }}
+                          />
+                        </GridItem>
+                      </GridContainer>
+                      <GridContainer>
+                        <GridItem xs={12} sm={12} md={3}>
+                          <Autocomplete
+                            options={CountryOptions}
+                            id="Country"
+                            getOptionLabel={(option) => option.label}
+                            value={Country}
+                            autoSelect
+                            onChange={(event, value) =>
+                              this.ChangeCountry(value, "Country")
+                            }
+                            renderInput={(params) => (
+                              <TextField {...params} label="Country" />
+                            )}
+                          />
+                        </GridItem>
+                        <GridItem xs={12} sm={12} md={3}>
+                          <CustomInput
+                            labelText={<span>Zip</span>}
+                            id="zip"
+                            name="zip"
+                            variant="outlined"
+                            error={this.state.zipCodeErr}
+                            helperText={this.state.zipCodeHelperText}
+                            formControlProps={{ fullWidth: true }}
+                            inputProps={{
+                              onFocus: () =>
+                                this.setState({
+                                  checkZipCode: false,
+                                  zipCodeErr: false,
+                                  zipCodeHelperText: "",
+                                }),
+                              onBlur: (event) => this.handleZipBlur(event, "zip"),
+                              onChange: (event) =>
+                                this.handleChange(event, "zip"),
+                              value: ZipCode,
+                              endAdornment:
+                                this.state.checkZipCode !== true ? (
+                                  <Icon>person</Icon>
+                                ) : this.state.zipCodeErr ? (
+                                  <InputAdornment position="end">
+                                    <CloseIcon
+                                      style={{ color: red[500] }}
+                                      className={useStyles.danger}
+                                    />
+                                  </InputAdornment>
+                                ) : (
+                                  <InputAdornment position="end">
+                                    {" "}
+                                    <DoneIcon
+                                      style={{ color: green[500] }}
+                                      className={useStyles.success}
+                                    />
+                                  </InputAdornment>
+                                ),
+                            }}
+                          />
+                        </GridItem>
+                        <GridItem xs={12} sm={12} md={3}>
+                          {this.state.CityAutoComplete === false ? (
+                            <CustomInput
+                              labelText="City"
+                              id="city"
+                              formControlProps={{ fullWidth: true }}
+                              inputProps={{
+                                value: City,
+                                onChange: (event) =>
+                                  this.handleChange(event, "City"),
+                                endAdornment: (
+                                  <InputAdornment
+                                    position="end"
+                                    className={classes.inputAdornment}
+                                  >
+                                    <Icon>location_city</Icon>
+                                  </InputAdornment>
+                                ),
+                              }}
+                            />
+                          ) : (
+                            <Autocomplete
+                              options={CityOptions}
+                              id="fromcity"
+                              autoSelect
+                              getOptionLabel={(option) => option.label}
+                              value={City}
+                              onChange={(event, value) =>
+                                this.ChangeCountry(event, value, "City")
+                              }
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  margin="normal"
+                                  label="City"
+                                  fullWidth
+                                />
+                              )}
+                            />
+                          )}
+                        </GridItem>
+                        <GridItem xs={12} sm={12} md={3}>
+                          {this.state.StateAutoComplete === false ? (
+                            <CustomInput
+                              labelText="State"
+                              id="state"
+                              formControlProps={{ fullWidth: true }}
+                              inputProps={{
+                                value: State,
+                                onChange: (event) =>
+                                  this.handleChange(event, "State"),
+                                endAdornment: (
+                                  <InputAdornment
+                                    position="end"
+                                    className={classes.inputAdornment}
+                                  >
+                                    <Icon>location_city</Icon>
+                                  </InputAdornment>
+                                ),
+                              }}
+                            />
+                          ) : (
+                            <Autocomplete
+                              options={StateOptions}
+                              id="State"
+                              autoSelect
+                              getOptionLabel={(option) => option.label}
+                              value={State}
+                              onChange={(event, value) =>
+                                this.ChangeCountry(value, "State")
+                              }
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  margin="normal"
+                                  label="State"
+                                  fullWidth
+                                />
+                              )}
+                            />
+                          )}
+                        </GridItem>
+                      </GridContainer>
+                      <GridContainer>
+                        <GridItem xs={12} sm={12} md={3}>
+                          <CustomInput
+                            labelText={<span>Contact Name</span>}
+                            id="fullname"
+                            name="fullname"
+                            variant="outlined"
+                            error={this.state.fullnameErr}
+                            helperText={this.state.fullnameHelperText}
+                            formControlProps={{ fullWidth: true }}
+                            inputProps={{
+                              onFocus: () =>
+                                this.setState({
+                                  checkFullname: false,
+                                  fullnameErr: false,
+                                  fullnameHelperText: "",
+                                }),
+                              onBlur: (event) =>
+                                this.handleChange(event, "fullname"),
+                              onChange: (event) =>
+                                this.handleChange(event, "fullname"),
+                              value: fullName,
+                              endAdornment:
+                                this.state.checkFullname !== true ? (
+                                  <Icon>person</Icon>
+                                ) : this.state.fullnameErr ? (
+                                  <InputAdornment position="end">
+                                    <CloseIcon
+                                      style={{ color: red[500] }}
+                                      className={useStyles.danger}
+                                    />
+                                  </InputAdornment>
+                                ) : (
+                                  <InputAdornment position="end">
+                                    {" "}
+                                    <DoneIcon
+                                      style={{ color: green[500] }}
+                                      className={useStyles.success}
+                                    />
+                                  </InputAdornment>
+                                ),
+                            }}
+                          />
+                        </GridItem>
+                        <GridItem xs={12} sm={12} md={3}>
+                          <CustomInput
+                            labelText={<span>Phone 1</span>}
+                            id="mobile"
+                            error={this.state.mobileErr}
+                            helperText={this.state.mobileHelperText}
+                            formControlProps={{ fullWidth: true }}
+                            inputProps={{
+                              onBlur: (event) =>
+                                this.handleChange(event, "mobile"),
+                              onChange: (event) =>
+                                this.handleChange(event, "mobile"),
+                              onFocus: () =>
+                                this.setState({
+                                  checkMobile: false,
+                                  mobileErr: false,
+                                  mobileHelperText: "",
+                                }),
+                              value: Mobile,
+                              endAdornment:
+                                this.state.checkMobile !== true ? (
+                                  <Icon>phone</Icon>
+                                ) : this.state.mobileErr ? (
+                                  <InputAdornment position="end">
+                                    <CloseIcon
+                                      style={{ color: red[500] }}
+                                      className={useStyles.danger}
+                                    />
+                                  </InputAdornment>
+                                ) : (
+                                  <InputAdornment position="end">
+                                    {" "}
+                                    <DoneIcon
+                                      style={{ color: green[500] }}
+                                      className={useStyles.success}
+                                    />
+                                  </InputAdornment>
+                                ),
+                            }}
+                          />
+                        </GridItem>
+                        <GridItem xs={12} sm={12} md={3}>
+                          <CustomInput
+                            labelText={<span>Phone 2</span>}
+                            id="mobile"
+                            formControlProps={{ fullWidth: true }}
+                            inputProps={{
+                              onBlur: (event) =>
+                                this.handleChange(event, "mobile1"),
+                              onChange: (event) =>
+                                this.handleChange(event, "mobile1"),
+                              onFocus: () =>
+                                this.setState({
+                                  checkMobile1: false,
+                                  mobile1Err: false,
+                                  mobile1HelperText: "",
+                                }),
+                              value: Mobile1,
+                              endAdornment:
+                                this.state.checkMobile1 !== true ? (
+                                  <Icon>phone</Icon>
+                                ) : (
+                                  <InputAdornment position="end">
+                                    {" "}
+                                    <DoneIcon
+                                      style={{ color: green[500] }}
+                                      className={useStyles.success}
+                                    />
+                                  </InputAdornment>
+                                ),
+                            }}
+                          />
+                        </GridItem>
+                        <GridItem xs={12} sm={12} md={3}>
+                          <CustomInput
+                            labelText="Email"
+                            id="Email"
+                            error={this.state.emailErr}
+                            formControlProps={{ fullWidth: true }}
+                            helperText={this.state.emailHelperText}
+                            inputProps={{
+                              onBlur: (event) =>
+                                this.handleChange(event, "email"),
+                              onFocus: () =>
+                                this.setState({
+                                  emailErr: false,
+                                  emailHelperText: "",
+                                  checkEmail: false,
+                                }),
+                              onChange: (event) =>
+                                this.handleChange(event, "email"),
+                              value: Email,
+                              endAdornment:
+                                this.state.checkEmail !== true ? (
+                                  <Icon>email</Icon>
+                                ) : this.state.emailErr ? (
+                                  <InputAdornment position="end">
+                                    <CloseIcon
+                                      style={{ color: red[500] }}
+                                      className={useStyles.danger}
+                                    />
+                                  </InputAdornment>
+                                ) : (
+                                  <InputAdornment position="end">
+                                    {" "}
+                                    <DoneIcon
+                                      style={{ color: green[500] }}
+                                      className={useStyles.success}
+                                    />
+                                  </InputAdornment>
+                                ),
+                            }}
+                          />
+                        </GridItem>
+                      </GridContainer>
+                      <GridContainer>
                       <GridItem xs={12} sm={12} md={3}>
-                        <Autocomplete
-                          id="combo-box-demo"
-                          options={userstatus}
-                          value={this.state.Status}
-                          onChange={(event, value) =>
-                            this.activeInactiveUser(value)
-                          }
-                          getOptionLabel={(option) => option.label}
-                          renderInput={(params) => (
-                            <TextField {...params} label="User Status" />
-                          )}
-                        />
-                      </GridItem>
-                      <GridItem xs={12} sm={12} md={3}>
-                        <Autocomplete
-                          id="combo-box-demo"
-                          options={userType}
-                          value={this.state.userType}
-                          onChange={(event, value) =>
-                            this.setUserType(value)
-                          }
-                          getOptionLabel={(option) => option.label}
-                          renderInput={(params) => (
-                            <TextField {...params} label="User Type*"
-                            error={this.state.userTypeErr}
-                            helperText={this.state.userTypeHelperText}
-                            fullWidth />
-                          )}
-                        />
-                    </GridItem>
-                      {/* <GridItem xs={12} sm={12} md={3}>
-                        <Autocomplete
-                          id="combo-box-demo"
-                          options={userTimeZone}
-                          value={this.state.userTimeZone}
-                          onChange={(event, value) =>
-                            this.setUserTimeZone(value)
-                          }
-                          getOptionLabel={(option) => option.label}
-                          renderInput={(params) => (
-                            <TextField {...params} label="Time Zone" />
-                          )}
-                        />
-                      </GridItem> */}
-                    </GridContainer>
+                          <div className="ipt-addon">
+                            <Autocomplete
+                              id="combo-box-demo"
+                              options={paperSize}
+                              value={this.state.PaperSize}
+                              onChange={(event, value) =>
+                                this.ChangeCountry(value, "PaperSize")
+                              }
+                              getOptionLabel={(option) => option.label}
+                              renderInput={(params) => (
+                                <TextField {...params} label="Paper Size" />
+                              )}
+
+                            />
+                            {/* <Tooltip title="Paper Size Preview" arrow><a id="paperpreview" className="addon-icn" href={this.state.pagePreviewLink} target="_blank"><Icon>book</Icon></a></Tooltip> */}
+                          </div>
+                        </GridItem>
+                        <GridItem xs={12} sm={12} md={3}>
+                          <div className="ipt-addon">
+                            <Autocomplete
+                              id="combo-box-demo1"
+                              options={paperSize}
+                              value={this.state.PaperSize}
+                              onChange={(event, value) =>
+                                this.paperPreview(value)
+                              }
+                              getOptionLabel={(option) => option.label}
+                              renderInput={(params) => (
+                                <TextField {...params} label="Paper Size Preview" />
+                              )}
+
+                            />
+                           </div>
+                        </GridItem>
+                        <GridItem xs={12} sm={12} md={3}>
+                          <Autocomplete
+                            id="combo-box-demo"
+                            options={userstatus}
+                            value={this.state.Status}
+                            onChange={(event, value) =>
+                              this.activeInactiveUser(value)
+                            }
+                            getOptionLabel={(option) => option.label}
+                            renderInput={(params) => (
+                              <TextField {...params} label="User Status" />
+                            )}
+                          />
+                        </GridItem>
+                        <GridItem xs={12} sm={12} md={3}>
+                          <Autocomplete
+                            id="combo-box-demo"
+                            options={userType}
+                            value={this.state.userType}
+                            onChange={(event, value) =>
+                              this.setUserType(value)
+                            }
+                            getOptionLabel={(option) => option.label}
+                            renderInput={(params) => (
+                              <TextField {...params} label="User Type*"
+                                error={this.state.userTypeErr}
+                                helperText={this.state.userTypeHelperText}
+                                fullWidth />
+                            )}
+                          />
+                        </GridItem>
+                        {/* <GridItem xs={12} sm={12} md={3}>
+                          <Autocomplete
+                            id="combo-box-demo"
+                            options={userTimeZone}
+                            value={this.state.userTimeZone}
+                            onChange={(event, value) =>
+                              this.setUserTimeZone(value)
+                            }
+                            getOptionLabel={(option) => option.label}
+                            renderInput={(params) => (
+                              <TextField {...params} label="Time Zone" />
+                            )}
+                          />
+                        </GridItem> */}
+                      </GridContainer>
+                    </Cardbody>
+                  </Card>
                    
-                   {/* <GridContainer>
-                      <GridItem xs={12} sm={12} md={12}>
-                        <h3 className="margin-right-auto text-color-black">
-                          Page Size Preview
-                        </h3>
-                      </GridItem>
-                      {this.generatePreviewLink()}
-                    </GridContainer>
-                  */}
-                    {(this.state.userType !== null && this.state.userType.value === "Employee" ) ? (
-                     <Card >
+                  {(this.state.userType !== null && this.state.userType.value === "Employee") ? (
+                    <Card >
                       <CardHeader className="btn-right-outer" color="primary" icon>
                         <CardIcon color="primary">
                           <User />
@@ -4495,185 +4802,673 @@ handleTimeChange = (time, type) => {debugger
                         <h4 className="margin-right-auto text-color-black">
                           Employee Details                        </h4>
                       </CardHeader>
-                     <Cardbody>
-                     <div className="shipment-pane mt-20" id="userdetails">
-                    <GridContainer>
-                    <GridItem xs={12} sm={12} md={3}>
-                        <Autocomplete
-                          id="combo-box-demo"
-                          options={userTypeTimeZone}
-                          value={this.state.usertypeTimeZone}
-                          onChange={(event, value) =>
-                            this.setUserTimeZone(value)
-                          }
-                          getOptionLabel={(option) => option.label}
-                          renderInput={(params) => (
-                            <TextField {...params} label="Time Zone*" 
-                            error={this.state.usertypeTimeZoneErr}
-                            helperText={this.state.usertypeTimeZoneHelperText}
-                            fullWidth
-                            />
-                          )}
-                        />
-                      </GridItem>
-                    <GridItem xs={12} sm={12} md={3}>
-                      <div className="dt-vs date-spl">
-                          <FormControl fullWidth>
-                          <TextField
-                            id="Starttime"
-                            label="Start Time"
-                            type="time"
-                            defaultValue=""
-                            value={this.state.StartTime}
-                            className={classes.textField}
-                            InputLabelProps={{
-                              shrink: true,
-                            }}
-                            onChange={(time) =>
-                              this.handleTimeChange(time,"start_time")
-                            }
-                            inputProps={{
-                              step: 300, // 5 min
-                            }}
-                          />
-                            
-                          </FormControl>
-                    </div>
-                      </GridItem>
-                      <GridItem xs={12} sm={12} md={3}>
-                        <div className="dt-vs date-spl">
-                          <FormControl fullWidth>
-                          <TextField
-                            id="Endtime"
-                            label="End Time"
-                            type="time"
-                            defaultValue=""
-                            value={this.state.EndTime}
-                            className={classes.textField}
-                            InputLabelProps={{
-                              shrink: true,
-                            }}
-                            onChange={(time) =>
-                              this.handleTimeChange(time,"end_time")
-                            }
-                            inputProps={{
-                              step: 300, // 5 min
-                            }}
-                          />
-                            
-                          </FormControl>
-                        </div>
-                      </GridItem>
-                      
-                      <GridItem xs={12} sm={12} md={3}>
-                  <div className="dt-vs date-spl">
-                    <FormControl fullWidth>
-                      <Datetime
-                        dateFormat={"MM/DD/YYYY"}
-                        timeFormat={false}
-                        selected={moment(this.state.BirthDate)}
-                        value={moment(this.state.BirthDate)} 
-                        inputProps={{ placeholder: "Date of Birth" }}
-                        onChange={(date) =>
-                          this.handleDateChange(date, "DOB")
-                        }
-                        closeOnSelect={true}
-                        renderInput={(params) => (
-                          <TextField
-                            style={{ marginTop: "-15px" }}
-                            error={this.state.birthdateErr}
-                            helperText={this.state.birthdateHelperText}
-                            {...params}
-                            label="Date of Birth*"
-                            margin="normal"
-                            fullWidth
-                          />
-                        )}
-                      />
-                      <Icon className="date-icon tp-slam">date_range</Icon>
-                    </FormControl>
-                  </div>
-                    </GridItem>
-                    </GridContainer>
-                    <GridContainer>
-                    <GridItem xs={12} sm={12} md={3}>
-                  <div className="dt-vs date-spl">
-                    <FormControl fullWidth>
-                      <Datetime
-                        dateFormat={"MM/DD/YYYY"}
-                        timeFormat={false}
-                        selected={moment(this.state.JoinDate)}
-                        value={moment(this.state.JoinDate)} 
-                        inputProps={{ placeholder: "Joining Date" }}
-                        onChange={(date) =>
-                          this.handleDateChange(date, "join")
-                        }
-                        closeOnSelect={true}
-                        renderInput={(params) => (
-                          <TextField
-                            style={{ marginTop: "-15px" }}
-                            error={this.state.joindateErr}
-                            helperText={this.state.joindateHelperText}
-                            {...params}
-                            label="Joining Date*"
-                            margin="normal"
-                            fullWidth
-                          />
-                        )}
-                      />
-                      <Icon className="date-icon tp-slam">date_range</Icon>
-                    </FormControl>
-                  </div>
-                      </GridItem>
-                    <GridItem xs={12} sm={12} md={3}>
-                      <div className="dt-vs date-spl">
-                        <FormControl fullWidth>
-                          <Datetime
-                            dateFormat={"MM/DD/YYYY"}
-                            timeFormat={false}
-                            selected={moment(this.state.RelivingDate)}
-                            value={moment(this.state.RelivingDate)} 
-                            inputProps={{ placeholder: "Reliving Date" }}
-                            onChange={(date) => this.handleDateChange(date, "Reliving")}
-                            closeOnSelect={true}
-                            renderInput={(params) => (
-                              <TextField
-                                style={{ marginTop: "-15px" }}
-                                error={this.state.relivingdateErr}
-                                helperText={this.state.relivingdateHelperText}
-                                {...params}
-                                label="Reliving Date"
-                                margin="normal"
-                                fullWidth
+                      <Cardbody>
+                        <div className="shipment-pane mt-20" id="userdetails">
+                          <GridContainer>
+                            <GridItem xs={12} sm={12} md={3}>
+                              <Autocomplete
+                                id="combo-box-demo"
+                                options={userTypeTimeZone}
+                                value={this.state.usertypeTimeZone}
+                                onChange={(event, value) =>
+                                  this.setUserTimeZone(value)
+                                }
+                                getOptionLabel={(option) => option.label}
+                                renderInput={(params) => (
+                                  <TextField {...params} label="Time Zone*"
+                                    error={this.state.usertypeTimeZoneErr}
+                                    helperText={this.state.usertypeTimeZoneHelperText}
+                                    fullWidth
+                                  />
+                                )}
                               />
-                            )}
-                          />
-                          <Icon className="date-icon tp-slam">date_range</Icon>
-                        </FormControl>
-                      </div>
-                    </GridItem>
-                    <GridItem xs={12} sm={12} md={3}>
-                      <CustomInput
-                        labelText={<span>Address Line 1</span>}
-                        id="Usertypeaddressline1"
-                        name="Usertypeaddressline1"
-                        variant="outlined"
+                            </GridItem>
+                            <GridItem xs={12} sm={12} md={3}>
+                              <div className="dt-vs date-spl">
+                                <FormControl fullWidth>
+                                  <TextField
+                                    id="Starttime"
+                                    label="Start Time"
+                                    type="time"
+                                    defaultValue=""
+                                    value={this.state.StartTime}
+                                    className={classes.textField}
+                                    InputLabelProps={{
+                                      shrink: true,
+                                    }}
+                                    onChange={(time) =>
+                                      this.handleTimeChange(time, "start_time")
+                                    }
+                                    inputProps={{
+                                      step: 300, // 5 min
+                                    }}
+                                  />
+
+                                </FormControl>
+                              </div>
+                            </GridItem>
+                            <GridItem xs={12} sm={12} md={3}>
+                              <div className="dt-vs date-spl">
+                                <FormControl fullWidth>
+                                  <TextField
+                                    id="Endtime"
+                                    label="End Time"
+                                    type="time"
+                                    defaultValue=""
+                                    value={this.state.EndTime}
+                                    className={classes.textField}
+                                    InputLabelProps={{
+                                      shrink: true,
+                                    }}
+                                    onChange={(time) =>
+                                      this.handleTimeChange(time, "end_time")
+                                    }
+                                    inputProps={{
+                                      step: 300, // 5 min
+                                    }}
+                                  />
+
+                                </FormControl>
+                              </div>
+                            </GridItem>
+                            <GridItem xs={12} sm={12} md={3}>
+                              <div className="dt-vs date-spl">
+                                <FormControl fullWidth>
+                                  <Datetime
+                                    dateFormat={"MM/DD/YYYY"}
+                                    timeFormat={false}
+                                    selected={this.state.BirthDate}
+                                    value={this.state.BirthDate}
+                                    inputProps={{ placeholder: "Date of Birth" }}
+                                    onChange={(date) =>
+                                      this.handleDateChange(date, "DOB")
+                                    }
+                                    onBlur={(date) =>
+                                      this.handleDateValidation(date, "DOB")
+                                    }
+                                    closeOnSelect={true}
+                                    renderInput={(params) => (
+                                      <TextField
+                                        style={{ marginTop: "-15px" }}
+                                        error={this.state.birthdateErr}
+                                        helperText={this.state.birthdateHelperText}
+                                        {...params}
+                                        label="Date of Birth*"
+                                        margin="normal"
+                                        fullWidth
+                                      />
+                                    )}
+                                  />
+                                  <Icon className="date-icon tp-slam">date_range</Icon>
+                                </FormControl>
+                              </div>
+                            </GridItem>
+                          </GridContainer>
+                          <GridContainer>
+                            <GridItem xs={12} sm={12} md={3}>
+                              <div className="dt-vs date-spl">
+                                <FormControl fullWidth>
+                                  <Datetime
+                                    dateFormat={"MM/DD/YYYY"}
+                                    timeFormat={false}
+                                    selected={JoinDate}
+                                    value={JoinDate}
+                                    inputProps={{ placeholder: "Joining Date" }}
+                                    onChange={(date) =>
+                                      this.handleDateChange(date, "join")
+                                    }
+                                    onBlur={(date) =>
+                                      this.handleDateValidation(date, "join")
+                                    }
+                                    closeOnSelect={true}
+                                    renderInput={(params) => (
+                                      <TextField
+                                        style={{ marginTop: "-15px" }}
+                                        error={this.state.joindateErr}
+                                        helperText={this.state.joindateHelperText}
+                                        {...params}
+                                        label="Joining Date*"
+                                        margin="normal"
+                                        fullWidth
+                                      />
+                                    )}
+                                  />
+                                  <Icon className="date-icon tp-slam">date_range</Icon>
+                                </FormControl>
+                              </div>
+                            </GridItem>
+                            <GridItem xs={12} sm={12} md={3}>
+                              <div className="dt-vs date-spl">
+                                <FormControl fullWidth>
+                                  <Datetime
+                                    dateFormat={"MM/DD/YYYY"}
+                                    timeFormat={false}
+                                    selected={moment(this.state.RelivingDate)}
+                                    value={this.state.RelivingDate}
+                                    inputProps={{ placeholder: "Reliving Date" }}
+                                    onChange={(date) => this.handleDateChange(date, "Reliving")}
+                                    onBlur={(date) =>
+                                      this.handleDateValidation(date, "Reliving")
+                                    }
+                                    closeOnSelect={true}
+                                    renderInput={(params) => (
+                                      <TextField
+                                        style={{ marginTop: "-15px" }}
+                                        error={this.state.relivingdateErr}
+                                        helperText={this.state.relivingdateHelperText}
+                                        {...params}
+                                        label="Reliving Date"
+                                        margin="normal"
+                                        fullWidth
+                                      />
+                                    )}
+                                  />
+                                  <Icon className="date-icon tp-slam">date_range</Icon>
+                                </FormControl>
+                              </div>
+                            </GridItem>
+                            <GridItem xs={12} sm={12} md={3}>
+                              <CustomInput
+                                labelText={<span>Address Line 1</span>}
+                                id="Usertypeaddressline1"
+                                name="Usertypeaddressline1"
+                                variant="outlined"
+                                formControlProps={{ fullWidth: true }}
+                                inputProps={{
+                                  onFocus: () =>
+                                    this.setState({
+                                      UsertypecheckAddressLine1: false,
+                                      UsertypeaddressLine1Err: false,
+                                      UsertypeaddressLine1HelperText: "",
+                                    }),
+                                  onBlur: (event) =>
+                                    this.handleBlurEmployee(event, "Usertypeaddressline1"),
+                                  onChange: (event) =>
+                                    this.handleChange(event, "Usertypeaddressline1"),
+                                  value: UsertypeAddressLine1,
+                                  endAdornment:
+                                    this.state.UsertypecheckAddressLine1 !== true ? (
+                                      <Icon>place</Icon>
+                                    ) : (
+                                      <InputAdornment position="end">
+                                        {" "}
+                                        <DoneIcon
+                                          style={{ color: green[500] }}
+                                          className={useStyles.success}
+                                        />
+                                      </InputAdornment>
+                                    ),
+                                }}
+                              />
+                            </GridItem>
+                            <GridItem xs={12} sm={12} md={3}>
+                              <CustomInput
+                                labelText={<span>Address Line 2</span>}
+                                id="Usertypeaddressline2"
+                                name="Usertypeaddressline2"
+                                variant="outlined"
+                                formControlProps={{ fullWidth: true }}
+                                inputProps={{
+                                  onFocus: () =>
+                                    this.setState({
+                                      UsertypecheckAddressLine2: false,
+                                      UsertypeaddressLine2Err: false,
+                                      UsertypeaddressLine2HelperText: "",
+                                    }),
+                                  onBlur: (event) =>
+                                    this.handleBlurEmployee(event, "Usertypeaddressline2"),
+                                  onChange: (event) =>
+                                    this.handleChange(event, "Usertypeaddressline2"),
+                                  value: UsertypeAddressLine2,
+                                  endAdornment:
+                                    this.state.UsertypecheckAddressLine2 !== true ? (
+                                      <Icon>place</Icon>
+                                    ) : (
+                                      <InputAdornment position="end">
+                                        {" "}
+                                        <DoneIcon
+                                          style={{ color: green[500] }}
+                                          className={useStyles.success}
+                                        />
+                                      </InputAdornment>
+                                    ),
+                                }}
+                              />
+                            </GridItem>
+                          </GridContainer>
+                          <GridContainer>
+                            <GridItem xs={12} sm={12} md={3}>
+                              <Autocomplete
+                                options={UsertypeCountryOptions}
+                                id="UsertypeCountry"
+                                getOptionLabel={(option) => option.label}
+                                value={UsertypeCountry}
+                                autoSelect
+                                onChange={(event, value) =>
+                                  this.ChangeCountry(value, "UsertypeCountry")
+                                }
+                                renderInput={(params) => (
+                                  <TextField {...params} label="Country" />
+                                )}
+                              />
+                            </GridItem>
+                            <GridItem xs={12} sm={12} md={3}>
+                              <CustomInput
+                                labelText={<span>Zip</span>}
+                                id="Usertypezip"
+                                name="Usertypezip"
+                                variant="outlined"
+                                error={this.state.UsertypezipCodeErr}
+                                helperText={this.state.UsertypezipCodeHelperText}
+                                formControlProps={{ fullWidth: true }}
+                                inputProps={{
+                                  onFocus: () =>
+                                    this.setState({
+                                      UsertypecheckZipCode: false,
+                                      UsertypezipCodeErr: false,
+                                      UsertypezipCodeHelperText: "",
+                                    }),
+                                  onBlur: (event) => this.handleZipBlur(event, "Usertypezip"),
+                                  onChange: (event) =>
+                                    this.handleChange(event, "Usertypezip"),
+                                  value: UsertypeZipCode,
+                                  endAdornment:
+                                    this.state.UsertypecheckZipCode !== true ? (
+                                      <Icon>person</Icon>
+                                    ) : this.state.UsertypezipCodeErr ? (
+                                      <InputAdornment position="end">
+                                        <CloseIcon
+                                          style={{ color: red[500] }}
+                                          className={useStyles.danger}
+                                        />
+                                      </InputAdornment>
+                                    ) : (
+                                      <InputAdornment position="end">
+                                        {" "}
+                                        <DoneIcon
+                                          style={{ color: green[500] }}
+                                          className={useStyles.success}
+                                        />
+                                      </InputAdornment>
+                                    ),
+                                }}
+                              />
+                            </GridItem>
+                            <GridItem xs={12} sm={12} md={3}>
+                              {this.state.UsertypeCityAutoComplete === false ? (
+                                <CustomInput
+                                  labelText="City"
+                                  id="Usertypecity"
+                                  formControlProps={{ fullWidth: true }}
+                                  inputProps={{
+                                    value: UsertypeCity,
+                                    onChange: (event) =>
+                                      this.handleChange(event, "UsertypeCity"),
+                                    endAdornment: (
+                                      <InputAdornment
+                                        position="end"
+                                        className={classes.inputAdornment}
+                                      >
+                                        <Icon>location_city</Icon>
+                                      </InputAdornment>
+                                    ),
+                                  }}
+                                />
+                              ) : (
+                                <Autocomplete
+                                  options={usertypeCityOptions}
+                                  id="Usertypefromcity"
+                                  autoSelect
+                                  getOptionLabel={(option) => option.label}
+                                  value={UsertypeCity}
+                                  onChange={(event, value) =>
+                                    this.ChangeCountry(event, value, "UsertypeCity")
+                                  }
+                                  renderInput={(params) => (
+                                    <TextField
+                                      {...params}
+                                      margin="normal"
+                                      label="City"
+                                      fullWidth
+                                    />
+                                  )}
+                                />
+                              )}
+                            </GridItem>
+                            <GridItem xs={12} sm={12} md={3}>
+                              {this.state.UsertypeStateAutoComplete === false ? (
+                                <CustomInput
+                                  labelText="State"
+                                  id="Usertypestate"
+                                  formControlProps={{ fullWidth: true }}
+                                  inputProps={{
+                                    value: UsertypeState,
+                                    onChange: (event) =>
+                                      this.handleChange(event, "UsertypeState"),
+                                    endAdornment: (
+                                      <InputAdornment
+                                        position="end"
+                                        className={classes.inputAdornment}
+                                      >
+                                        <Icon>location_city</Icon>
+                                      </InputAdornment>
+                                    ),
+                                  }}
+                                />
+                              ) : (
+                                <Autocomplete
+                                  options={UsertypeStateOptions}
+                                  id="UsertypeState"
+                                  autoSelect
+                                  getOptionLabel={(option) => option.label}
+                                  value={UsertypeState}
+                                  onChange={(event, value) =>
+                                    this.ChangeCountry(value, "UsertypeState")
+                                  }
+                                  renderInput={(params) => (
+                                    <TextField
+                                      {...params}
+                                      margin="normal"
+                                      label="State"
+                                      fullWidth
+                                    />
+                                  )}
+                                />
+                              )}
+                            </GridItem>
+                          </GridContainer>
+                          <GridContainer>
+                            <GridItem xs={12} sm={12} md={3}>
+                              <CustomInput
+                                labelText={<span>Phone 1</span>}
+                                id="Usertypemobile"
+                                error={this.state.UsertypemobileErr}
+                                helperText={this.state.UsertypemobileHelperText}
+                                formControlProps={{ fullWidth: true }}
+                                type="number"
+                                inputProps={{
+                                  onBlur: (event) =>
+                                    this.handleChange(event, "Usertypemobile"),
+                                  onChange: (event) =>
+                                    this.handleChange(event, "Usertypemobile"),
+                                  onFocus: () =>
+                                    this.setState({
+                                      UsertypecheckMobile: false,
+                                      UsertypemobileErr: false,
+                                      UsertypemobileHelperText: "",
+                                    }),
+                                  value: UsertypeMobile,
+                                  endAdornment:
+                                    this.state.UsertypecheckMobile !== true ? (
+                                      <Icon>phone</Icon>
+                                    ) : this.state.UsertypemobileErr ? (
+                                      <InputAdornment position="end">
+                                        <CloseIcon
+                                          style={{ color: red[500] }}
+                                          className={useStyles.danger}
+                                        />
+                                      </InputAdornment>
+                                    ) : (
+                                      <InputAdornment position="end">
+                                        {" "}
+                                        <DoneIcon
+                                          style={{ color: green[500] }}
+                                          className={useStyles.success}
+                                        />
+                                      </InputAdornment>
+                                    ),
+                                }}
+                              />
+                            </GridItem>
+                            <GridItem xs={12} sm={12} md={3}>
+                              <CustomInput
+                                labelText={<span>Phone 2</span>}
+                                id="Usertypemobile1"
+                                error={this.state.UsertypemobileErr1}
+                                helperText={this.state.UsertypemobileHelperText1}
+                                formControlProps={{ fullWidth: true }}
+                                inputProps={{
+                                  onBlur: (event) =>
+                                    this.handleBlurEmployee(event, "Usertypemobile1"),
+                                  onChange: (event) =>
+                                    this.handleChange(event, "Usertypemobile1"),
+                                  onFocus: () =>
+                                    this.setState({
+                                      UsertypecheckMobile1: false,
+                                      UsertypemobileErr1: false,
+                                      UsertypemobileHelperText1: "",
+                                    }),
+                                  value: UsertypeMobile1,
+                                  endAdornment:
+                                    this.state.UsertypecheckMobile1 !== true ? (
+                                      <Icon>phone</Icon>
+                                    ) : this.state.UsertypemobileErr1 ? (
+                                      <InputAdornment position="end">
+                                        <CloseIcon
+                                          style={{ color: red[500] }}
+                                          className={useStyles.danger}
+                                        />
+                                      </InputAdornment>
+                                    ) : this.state.UsertypeMobile1 === "" ? (
+                                      <Icon>phone</Icon>
+                                    ) : (
+                                      <InputAdornment position="end">
+                                        {" "}
+                                        <DoneIcon
+                                          style={{ color: green[500] }}
+                                          className={useStyles.success}
+                                        />
+                                      </InputAdornment>
+                                    ),
+                                }}
+                              />
+                            </GridItem>
+                            <GridItem xs={12} sm={12} md={3}>
+                              <CustomInput
+                                labelText="Email"
+                                id="UsertypeEmail1"
+                                error={this.state.UsertypeemailErr1}
+                                formControlProps={{ fullWidth: true }}
+                                helperText={this.state.UsertypeemailHelperText1}
+                                inputProps={{
+                                  onBlur: (event) =>
+                                    this.handleBlurEmployee(event, "Usertypeemail1"),
+                                  onFocus: () =>
+                                    this.setState({
+                                      UsertypeemailErr1: false,
+                                      UsertypeemailHelperText1: "",
+                                      UsertypecheckEmail1: false,
+                                    }),
+                                  onChange: (event) =>
+                                    this.handleChange(event, "Usertypeemail1"),
+                                  value: UsertypeEmail1,
+                                  endAdornment:
+                                    this.state.UsertypecheckEmail1 !== true ? (
+                                      <Icon>email</Icon>
+                                    ) : this.state.UsertypeemailErr1 ? (
+                                      <InputAdornment position="end">
+                                        <CloseIcon
+                                          style={{ color: red[500] }}
+                                          className={useStyles.danger}
+                                        />
+                                      </InputAdornment>
+                                    ) : (
+                                      <InputAdornment position="end">
+                                        {" "}
+                                        <DoneIcon
+                                          style={{ color: green[500] }}
+                                          className={useStyles.success}
+                                        />
+                                      </InputAdornment>
+                                    ),
+                                }}
+                              />
+                            </GridItem>
+                            <GridItem xs={12} sm={12} md={3}>
+                              <CustomInput
+                                labelText="Email2"
+                                id="UsertypeEmail2"
+                                error={this.state.UsertypeemailErr2}
+                                formControlProps={{ fullWidth: true }}
+                                helperText={this.state.UsertypeemailHelperText2}
+                                inputProps={{
+                                  onBlur: (event) =>
+                                    this.handleBlurEmployee(event, "Usertypeemail2"),
+                                  onFocus: () =>
+                                    this.setState({
+                                      UsertypeemailErr2: false,
+                                      UsertypeemailHelperText2: "",
+                                      UsertypecheckEmail2: false,
+                                    }),
+                                  onChange: (event) =>
+                                    this.handleChange(event, "Usertypeemail2"),
+                                  value: UsertypeEmail2,
+                                  endAdornment:
+                                    this.state.UsertypecheckEmail2 !== true ? (
+                                      <Icon>email</Icon>
+                                    ) : this.state.UsertypeemailErr2 ? (
+                                      <InputAdornment position="end">
+                                        <CloseIcon
+                                          style={{ color: red[500] }}
+                                          className={useStyles.danger}
+                                        />
+                                      </InputAdornment>
+                                    ) : this.state.UsertypeEmail2 === "" ? (
+                                      <Icon>email</Icon>
+                                    ) : (
+                                      <InputAdornment position="end">
+                                        {" "}
+                                        <DoneIcon
+                                          style={{ color: green[500] }}
+                                          className={useStyles.success}
+                                        />
+                                      </InputAdornment>
+                                    ),
+                                }}
+                              />
+                            </GridItem>
+                          </GridContainer>
+                          <GridContainer>
+                            <GridItem xs={12} sm={12} md={3}>
+                              <CustomInput
+                                labelText={<span>Salary</span>}
+                                id="Usertypesalary"
+                                error={this.state.UsertypesalaryErr}
+                                helperText={this.state.UsertypesalaryHelperText}
+                                formControlProps={{ fullWidth: true }}
+                                type="number"
+                                inputProps={{
+                                  onBlur: (event) =>
+                                    this.handleBlurEmployee(event, "Usertypesalary"),
+                                  onChange: (event) =>
+                                    this.handleChange(event, "Usertypesalary"),
+                                  onFocus: () =>
+                                    this.setState({
+                                      Usertypechecksalary: false,
+                                      salaryErr: false,
+                                      salaryHelperText: "",
+                                    }),
+                                  value: UsertypeSalary,
+                                  endAdornment:
+                                    this.state.Usertypechecksalary !== true ? (
+                                      <Icon>money</Icon>
+                                    ) : this.state.UsertypesalaryErr ? (
+                                      <InputAdornment position="end">
+                                        <CloseIcon
+                                          style={{ color: red[500] }}
+                                          className={useStyles.danger}
+                                        />
+                                      </InputAdornment>
+                                    ) : this.state.UsertypeSalary === "" ? (
+                                      <Icon>money</Icon>
+                                    ) : (
+                                      <InputAdornment position="end">
+                                        {" "}
+                                        <DoneIcon
+                                          style={{ color: green[500] }}
+                                          className={useStyles.success}
+                                        />
+                                      </InputAdornment>
+                                    ),
+                                }}
+                              />
+
+                            </GridItem>
+                            <GridItem xs={12} sm={12} md={3}>
+                              <Autocomplete
+                                id="combo-box-demo"
+                                options={userTypeCurrencyDrop}
+                                value={this.state.UsertypeCurrency}
+                                onChange={(event, value) =>
+                                  this.setUserCurrency(value)
+                                }
+                                getOptionLabel={(option) => option.label}
+                                renderInput={(params) => (
+                                  <TextField {...params} label="Currency" />
+                                )}
+                              />
+                            </GridItem>
+                            {/*<GridItem xs={12} sm={12} md={3}>
+                        <CustomInput
+                        labelText={<span>Curency</span>}
+                        id="Usertypecurrency"
+                        error={this.state.currencyErr}
+                        helperText={this.state.currencyHelperText}
                         formControlProps={{ fullWidth: true }}
                         inputProps={{
+                          onBlur: (event) =>
+                            this.handleChange(event, "Usertypecurrency"),
+                          onChange: (event) =>
+                            this.handleChange(event, "Usertypecurrency"),
                           onFocus: () =>
                             this.setState({
-                              UsertypecheckAddressLine1: false,
-                              UsertypeaddressLine1Err: false,
-                              UsertypeaddressLine1HelperText: "",
+                              checkcurrency: false,
+                              currencyErr: false,
+                              currencyHelperText: "",
                             }),
-                          onBlur: (event) =>
-                            this.handleChange(event, "Usertypeaddressline1"),
-                          onChange: (event) =>
-                            this.handleChange(event, "Usertypeaddressline1"),
-                          value: UsertypeAddressLine1, 
+                          value: Currency,
                           endAdornment:
-                            this.state.UsertypecheckAddressLine1 !== true ? (
-                              <Icon>place</Icon>
+                            this.state.checkCurrency !== true ? (
+                              <Icon>currency</Icon>
+                            ) : this.state.currencyErr ? (
+                              <InputAdornment position="end">
+                                <CloseIcon
+                                  style={{ color: red[500] }}
+                                  className={useStyles.danger}
+                                />
+                              </InputAdornment>
+                            ) : (
+                              <InputAdornment position="end">
+                                {" "}
+                                <DoneIcon
+                                  style={{ color: green[500] }}
+                                  className={useStyles.success}
+                                />
+                              </InputAdornment>
+                            ),
+                        }}
+                      /> 
+                    </GridItem>*/}
+                            {/* <GridItem xs={12} sm={12} md={3}>
+                      <CustomInput
+                        labelText={<span>Department</span>}
+                        id="Usertypedepartment"
+                        formControlProps={{ fullWidth: true }}
+                        inputProps={{
+                          onBlur: (event) =>
+                            this.handleChange(event, "Usertypedepartment"),
+                          onChange: (event) =>
+                            this.handleChange(event, "Usertypedepartment"),
+                          onFocus: () =>
+                            this.setState({
+                              checkMobile1: false,
+                              mobile1Err: false,
+                              mobile1HelperText: "",
+                            }),
+                          value: department,
+                          endAdornment:
+                            this.state.checkMobile1 !== true ? (
+                              <Icon>phone</Icon>
                             ) : (
                               <InputAdornment position="end">
                                 {" "}
@@ -4685,566 +5480,97 @@ handleTimeChange = (time, type) => {debugger
                             ),
                         }}
                       />
-                    </GridItem>
-                    <GridItem xs={12} sm={12} md={3}>
-                      <CustomInput
-                        labelText={<span>Address Line 2</span>}
-                        id="Usertypeaddressline2"
-                        name="Usertypeaddressline2"
-                        variant="outlined"
-                        formControlProps={{ fullWidth: true }}
-                        inputProps={{
-                          onFocus: () =>
-                            this.setState({
-                              UsertypecheckAddressLine2: false,
-                              UsertypeaddressLine2Err: false,
-                              UsertypeaddressLine2HelperText: "",
-                            }),
-                          onBlur: (event) =>
-                            this.handleChange(event, "Usertypeaddressline2"),
-                          onChange: (event) =>
-                            this.handleChange(event, "Usertypeaddressline2"),
-                          value: UsertypeAddressLine2, 
-                          endAdornment:
-                            this.state.UsertypecheckAddressLine2 !== true ? (
-                              <Icon>place</Icon>
-                            ) : (
-                              <InputAdornment position="end">
-                                {" "}
-                                <DoneIcon
-                                  style={{ color: green[500] }}
-                                  className={useStyles.success}
-                                />
-                              </InputAdornment>
-                            ),
-                        }}
-                      />
-                    </GridItem>
-                    </GridContainer>
-                    <GridContainer>
-                      <GridItem xs={12} sm={12} md={3}>
-                        <Autocomplete
-                          options={UsertypeCountryOptions}
-                          id="UsertypeCountry"
-                          getOptionLabel={(option) => option.label}
-                          value={UsertypeCountry} 
-                          autoSelect
-                          onChange={(event, value) =>
-                            this.ChangeCountry(value, "UsertypeCountry")
-                          }
-                          renderInput={(params) => (
-                            <TextField {...params} label="Country" />
-                          )}
-                        />
-                      </GridItem>
-                      <GridItem xs={12} sm={12} md={3}>
-                        <CustomInput
-                          labelText={<span>Zip</span>}
-                          id="Usertypezip"
-                          name="Usertypezip"
-                          variant="outlined"
-                          error={this.state.UsertypezipCodeErr}
-                          helperText={this.state.UsertypezipCodeHelperText}
-                          formControlProps={{ fullWidth: true }}
-                          inputProps={{
-                            onFocus: () =>
-                              this.setState({
-                                UsertypecheckZipCode: false,
-                                UsertypezipCodeErr: false,
-                                UsertypezipCodeHelperText: "",
-                              }),
-                            onBlur: (event) => this.handleZipBlur(event, "Usertypezip"),
-                            onChange: (event) =>
-                              this.handleChange(event, "Usertypezip"),
-                            value: UsertypeZipCode, 
-                            endAdornment:
-                              this.state.UsertypecheckZipCode !== true ? (
-                                <Icon>person</Icon>
-                              ) : this.state.UsertypezipCodeErr ? (
-                                <InputAdornment position="end">
-                                  <CloseIcon
-                                    style={{ color: red[500] }}
-                                    className={useStyles.danger}
-                                  />
-                                </InputAdornment>
-                              ) : (
-                                <InputAdornment position="end">
-                                  {" "}
-                                  <DoneIcon
-                                    style={{ color: green[500] }}
-                                    className={useStyles.success}
-                                  />
-                                </InputAdornment>
-                              ),
-                          }}
-                        />
-                      </GridItem>
-                      <GridItem xs={12} sm={12} md={3}>
-                        {this.state.UsertypeCityAutoComplete === false ? (
-                          <CustomInput
-                            labelText="City"
-                            id="Usertypecity"
-                            formControlProps={{ fullWidth: true }}
-                            inputProps={{
-                              value: UsertypeCity, 
-                              onChange: (event) =>
-                                this.handleChange(event, "UsertypeCity"),
-                              endAdornment: (
-                                <InputAdornment
-                                  position="end"
-                                  className={classes.inputAdornment}
-                                >
-                                  <Icon>location_city</Icon>
-                                </InputAdornment>
-                              ),
-                            }}
-                          />
-                        ) : (
-                          <Autocomplete
-                            options={usertypeCityOptions}
-                            id="Usertypefromcity"
-                            autoSelect
-                            getOptionLabel={(option) => option.label}
-                            value={UsertypeCity} 
-                            onChange={(event, value) =>
-                              this.ChangeCountry(event, value, "UsertypeCity")
-                            }
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                margin="normal"
-                                label="City"
-                                fullWidth
+                    </GridItem> */}
+                            <GridItem xs={12} sm={12} md={3}>
+                              <Autocomplete
+                                id="combo-box-demo"
+                                options={userTypeDepartmentDrop}
+                                value={this.state.userTypeDepartment}
+                                onChange={(event, value) =>
+                                  this.setUserDepartment(value)
+                                }
+                                getOptionLabel={(option) => option.label}
+                                renderInput={(params) => (
+                                  <TextField {...params} label="Department" />
+                                )}
                               />
-                            )}
-                          />
-                        )}
-                      </GridItem>
-                      <GridItem xs={12} sm={12} md={3}>
-                        {this.state.UsertypeStateAutoComplete === false ? (
-                          <CustomInput
-                            labelText="State"
-                            id="Usertypestate"
-                            formControlProps={{ fullWidth: true }}
-                            inputProps={{
-                              value: UsertypeState, 
-                              onChange: (event) =>
-                                this.handleChange(event, "UsertypeState"),
-                              endAdornment: (
-                                <InputAdornment
-                                  position="end"
-                                  className={classes.inputAdornment}
-                                >
-                                  <Icon>location_city</Icon>
-                                </InputAdornment>
-                              ),
-                            }}
-                          />
-                        ) : (
-                          <Autocomplete
-                            options={UsertypeStateOptions}
-                            id="UsertypeState"
-                            autoSelect
-                            getOptionLabel={(option) => option.label}
-                            value={UsertypeState} 
-                            onChange={(event, value) =>
-                              this.ChangeCountry(value, "UsertypeState")
-                            }
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                margin="normal"
-                                label="State"
-                                fullWidth
+                            </GridItem>
+                            <GridItem xs={12} sm={12} md={3}>
+                              <CustomInput
+                                labelText="Employee ID"
+                                id="employeeid"
+
+                                error={this.state.userTypeEmployeeIdErr}
+                                formControlProps={{ fullWidth: true }}
+                                helperText={this.state.userTypeEmployeeIdHelperText}
+                                inputProps={{
+                                  onBlur: (event) =>
+                                    this.handleBlurEmployee(event, "Usertypeemployeeid"),
+                                  onFocus: () =>
+                                    this.setState({
+                                      userTypeEmployeeIdErr: false,
+                                      userTypeEmployeeIdHelperText: "",
+                                      checkuserTypeEmployeeId: false,
+                                    }),
+                                  onChange: (event) =>
+                                    this.handleChange(event, "Usertypeemployeeid"),
+                                  value: Usertypeemployeeid,
+                                  endAdornment:
+                                    this.state.checkuserTypeEmployeeId !== true ? (
+                                      <Icon>info</Icon>
+                                    ) : this.state.userTypeEmployeeIdErr ? (
+                                      <InputAdornment position="end">
+                                        <CloseIcon
+                                          style={{ color: red[500] }}
+                                          className={useStyles.danger}
+                                        />
+                                      </InputAdornment>
+                                    ) : this.state.Usertypeemployeeid === "" ? (
+                                      <Icon>info</Icon>
+                                    ) : (
+                                      <InputAdornment position="end">
+                                        {" "}
+                                        <DoneIcon
+                                          style={{ color: green[500] }}
+                                          className={useStyles.success}
+                                        />
+                                      </InputAdornment>
+                                    ),
+                                }}
                               />
-                            )}
-                          />
-                        )}
-                      </GridItem>
-                    </GridContainer>
-                    <GridContainer>
-                      <GridItem xs={12} sm={12} md={3}>
-                        <CustomInput
-                          labelText={<span>Phone 1</span>}
-                          id="Usertypemobile"
-                          error={this.state.UsertypemobileErr}
-                          helperText={this.state.UsertypemobileHelperText}
-                          formControlProps={{ fullWidth: true }}
-                          type="number"
-                          inputProps={{
-                            onBlur: (event) =>
-                              this.handleChange(event, "Usertypemobile"),
-                            onChange: (event) =>
-                              this.handleChange(event, "Usertypemobile"),
-                            onFocus: () =>
-                              this.setState({
-                                UsertypecheckMobile: false,
-                                UsertypemobileErr: false,
-                                UsertypemobileHelperText: "",
-                              }),
-                            value: UsertypeMobile, 
-                            endAdornment:
-                              this.state.UsertypecheckMobile !== true ? (
-                                <Icon>phone</Icon>
-                              ) : this.state.UsertypemobileErr ? (
-                                <InputAdornment position="end">
-                                  <CloseIcon
-                                    style={{ color: red[500] }}
-                                    className={useStyles.danger}
-                                  />
-                                </InputAdornment>
-                              ) : (
-                                <InputAdornment position="end">
-                                  {" "}
-                                  <DoneIcon
-                                    style={{ color: green[500] }}
-                                    className={useStyles.success}
-                                  />
-                                </InputAdornment>
-                              ),
-                          }}
-                        />
-                      </GridItem>
-                      <GridItem xs={12} sm={12} md={3}>
-                        <CustomInput
-                          labelText={<span>Phone 2</span>}
-                          id="Usertypemobile1"
-                          error={this.state.UsertypemobileErr1}
-                          helperText={this.state.UsertypemobileHelperText1}
-                          formControlProps={{ fullWidth: true }}
-                          inputProps={{
-                            onBlur: (event) =>
-                              this.handleChange(event, "Usertypemobile1"),
-                            onChange: (event) =>
-                              this.handleChange(event, "Usertypemobile1"),
-                            onFocus: () =>
-                              this.setState({
-                                UsertypecheckMobile1: false,
-                                UsertypemobileErr1: false,
-                                UsertypemobileHelperText1: "",
-                              }),
-                            value: UsertypeMobile1, 
-                            endAdornment:
-                              this.state.UsertypecheckMobile1 !== true ? (
-                                <Icon>phone</Icon>
-                              ) :  this.state.UsertypemobileErr1 ? (
-                                <InputAdornment position="end">
-                                  <CloseIcon
-                                    style={{ color: red[500] }}
-                                    className={useStyles.danger}
-                                  />
-                                </InputAdornment>
-                              ) : this.state.UsertypeMobile1 === "" ? (
-                                <Icon>phone</Icon>
-                              ) : (
-                                <InputAdornment position="end">
-                                  {" "}
-                                  <DoneIcon
-                                    style={{ color: green[500] }}
-                                    className={useStyles.success}
-                                  />
-                                </InputAdornment>
-                              ),
-                          }}
-                        />
-                      </GridItem>
-                      <GridItem xs={12} sm={12} md={3}>
-                        <CustomInput
-                          labelText="Email"
-                          id="UsertypeEmail1"
-                          error={this.state.UsertypeemailErr1}
-                          formControlProps={{ fullWidth: true }}
-                          helperText={this.state.UsertypeemailHelperText1}
-                          inputProps={{
-                            onBlur: (event) =>
-                              this.handleChange(event, "Usertypeemail1"),
-                            onFocus: () =>
-                              this.setState({
-                                UsertypeemailErr1: false,
-                                UsertypeemailHelperText1: "",
-                                UsertypecheckEmail1: false,
-                              }),
-                            onChange: (event) =>
-                              this.handleChange(event, "Usertypeemail1"),
-                            value: UsertypeEmail1, 
-                            endAdornment:
-                              this.state.UsertypecheckEmail1 !== true ? (
-                                <Icon>email</Icon>
-                              ) : this.state.UsertypeemailErr1 ? (
-                                <InputAdornment position="end">
-                                  <CloseIcon
-                                    style={{ color: red[500] }}
-                                    className={useStyles.danger}
-                                  />
-                                </InputAdornment>
-                              ) : (
-                                <InputAdornment position="end">
-                                  {" "}
-                                  <DoneIcon
-                                    style={{ color: green[500] }}
-                                    className={useStyles.success}
-                                  />
-                                </InputAdornment>
-                              ),
-                          }}
-                        />
-                      </GridItem>
-                      <GridItem xs={12} sm={12} md={3}>
-                        <CustomInput
-                          labelText="Email2"
-                          id="UsertypeEmail2"
-                          error={this.state.UsertypeemailErr2}
-                          formControlProps={{ fullWidth: true }}
-                          helperText={this.state.UsertypeemailHelperText2}
-                          inputProps={{
-                            onBlur: (event) =>
-                              this.handleChange(event, "Usertypeemail2"),
-                            onFocus: () =>
-                              this.setState({
-                                UsertypeemailErr2: false,
-                                UsertypeemailHelperText2: "",
-                                UsertypecheckEmail2: false,
-                              }),
-                            onChange: (event) =>
-                              this.handleChange(event, "Usertypeemail2"),
-                            value: UsertypeEmail2,
-                            endAdornment:
-                              this.state.UsertypecheckEmail2 !== true ? (
-                                <Icon>email</Icon>
-                              ) : this.state.UsertypeemailErr2 ? (
-                                <InputAdornment position="end">
-                                  <CloseIcon
-                                    style={{ color: red[500] }}
-                                    className={useStyles.danger}
-                                  />
-                                </InputAdornment>
-                              ) : this.state.UsertypeEmail2 === ""? (
-                                <Icon>email</Icon>
-                              ) : (
-                                <InputAdornment position="end">
-                                  {" "}
-                                  <DoneIcon
-                                    style={{ color: green[500] }}
-                                    className={useStyles.success}
-                                  />
-                                </InputAdornment>
-                              ),
-                          }}
-                        />
-                      </GridItem>
-                    </GridContainer>
-                    <GridContainer>
-                    <GridItem xs={12} sm={12} md={3}>
-                        <CustomInput
-                          labelText={<span>Salary</span>}
-                          id="Usertypesalary"
-                          error={this.state.UsertypesalaryErr}
-                          helperText={this.state.UsertypesalaryHelperText}
-                          formControlProps={{ fullWidth: true }}
-                          type="number"
-                          inputProps={{
-                            onBlur: (event) =>
-                              this.handleChange(event, "Usertypesalary"),
-                            onChange: (event) =>
-                              this.handleChange(event, "Usertypesalary"),
-                            onFocus: () =>
-                              this.setState({
-                                Usertypechecksalary: false,
-                                salaryErr: false,
-                                salaryHelperText: "",
-                              }),
-                            value: UsertypeSalary, 
-                            endAdornment:
-                              this.state.Usertypechecksalary !== true ? (
-                                <Icon>money</Icon>
-                              ) : this.state.UsertypesalaryErr ? (
-                                <InputAdornment position="end">
-                                  <CloseIcon
-                                    style={{ color: red[500] }}
-                                    className={useStyles.danger}
-                                  />
-                                </InputAdornment>
-                              ) :  this.state.UsertypeSalary ==="" ? (
-                                <Icon>money</Icon>
-                              ) : (
-                                <InputAdornment position="end">
-                                  {" "}
-                                  <DoneIcon
-                                    style={{ color: green[500] }}
-                                    className={useStyles.success}
-                                  />
-                                </InputAdornment>
-                              ),
-                          }}
-                        />
-                         
-                      </GridItem>
-                      <GridItem xs={12} sm={12} md={3}>
-                        <Autocomplete
-                          id="combo-box-demo"
-                          options={userTypeCurrencyDrop}
-                          value={this.state.UsertypeCurrency}
-                          onChange={(event, value) =>
-                            this.setUserCurrency(value)
-                          }
-                          getOptionLabel={(option) => option.label}
-                          renderInput={(params) => (
-                            <TextField {...params} label="Currency" />
-                          )}
-                        />
-                      </GridItem>
-                      {/*<GridItem xs={12} sm={12} md={3}>
-                         <CustomInput
-                          labelText={<span>Curency</span>}
-                          id="Usertypecurrency"
-                          error={this.state.currencyErr}
-                          helperText={this.state.currencyHelperText}
-                          formControlProps={{ fullWidth: true }}
-                          inputProps={{
-                            onBlur: (event) =>
-                              this.handleChange(event, "Usertypecurrency"),
-                            onChange: (event) =>
-                              this.handleChange(event, "Usertypecurrency"),
-                            onFocus: () =>
-                              this.setState({
-                                checkcurrency: false,
-                                currencyErr: false,
-                                currencyHelperText: "",
-                              }),
-                            value: Currency,
-                            endAdornment:
-                              this.state.checkCurrency !== true ? (
-                                <Icon>currency</Icon>
-                              ) : this.state.currencyErr ? (
-                                <InputAdornment position="end">
-                                  <CloseIcon
-                                    style={{ color: red[500] }}
-                                    className={useStyles.danger}
-                                  />
-                                </InputAdornment>
-                              ) : (
-                                <InputAdornment position="end">
-                                  {" "}
-                                  <DoneIcon
-                                    style={{ color: green[500] }}
-                                    className={useStyles.success}
-                                  />
-                                </InputAdornment>
-                              ),
-                          }}
-                        /> 
-                      </GridItem>*/}
-                      {/* <GridItem xs={12} sm={12} md={3}>
-                        <CustomInput
-                          labelText={<span>Department</span>}
-                          id="Usertypedepartment"
-                          formControlProps={{ fullWidth: true }}
-                          inputProps={{
-                            onBlur: (event) =>
-                              this.handleChange(event, "Usertypedepartment"),
-                            onChange: (event) =>
-                              this.handleChange(event, "Usertypedepartment"),
-                            onFocus: () =>
-                              this.setState({
-                                checkMobile1: false,
-                                mobile1Err: false,
-                                mobile1HelperText: "",
-                              }),
-                            value: department,
-                            endAdornment:
-                              this.state.checkMobile1 !== true ? (
-                                <Icon>phone</Icon>
-                              ) : (
-                                <InputAdornment position="end">
-                                  {" "}
-                                  <DoneIcon
-                                    style={{ color: green[500] }}
-                                    className={useStyles.success}
-                                  />
-                                </InputAdornment>
-                              ),
-                          }}
-                        />
-                      </GridItem> */}
-                       <GridItem xs={12} sm={12} md={3}>
-                        <Autocomplete
-                          id="combo-box-demo"
-                          options={userTypeDepartmentDrop}
-                          value={this.state.userTypeDepartment} 
-                          onChange={(event, value) =>
-                            this.setUserDepartment(value)
-                          }
-                          getOptionLabel={(option) => option.label}
-                          renderInput={(params) => (
-                            <TextField {...params} label="Department" />
-                          )}
-                        />
-                      </GridItem>
-                      <GridItem xs={12} sm={12} md={3}>
-                        <CustomInput
-                          labelText="Employee ID"
-                          id="employeeid"
+                            </GridItem>
+
+                          </GridContainer>
                           
-                          error={this.state.userTypeEmployeeIdErr}
-                          formControlProps={{ fullWidth: true }}
-                          helperText={this.state.userTypeEmployeeIdHelperText}
-                          inputProps={{
-                            onBlur: (event) =>
-                              this.handleChange(event, "Usertypeemployeeid"),
-                            onFocus: () =>
-                              this.setState({
-                                userTypeEmployeeIdErr: false,
-                                userTypeEmployeeIdHelperText: "",
-                                checkuserTypeEmployeeId: false,
-                              }),
-                            onChange: (event) =>
-                              this.handleChange(event, "Usertypeemployeeid"),
-                            value: Usertypeemployeeid,
-                            endAdornment:
-                              this.state.checkuserTypeEmployeeId !== true ? (
-                                <Icon>info</Icon>
-                              ) : this.state.userTypeEmployeeIdErr ? (
-                                <InputAdornment position="end">
-                                  <CloseIcon
-                                    style={{ color: red[500] }}
-                                    className={useStyles.danger}
-                                  />
-                                </InputAdornment>
-                              ) : this.state.Usertypeemployeeid === "" ? (
-                                <Icon>info</Icon>
-                              ) :(
-                                <InputAdornment position="end">
-                                  {" "}
-                                  <DoneIcon
-                                    style={{ color: green[500] }}
-                                    className={useStyles.success}
-                                  />
-                                </InputAdornment>
-                              ),
-                          }}
-                        />
-                      </GridItem>
-                     
-                    </GridContainer>
-                    <Card>
-                  <CardHeader className="btn-right-outer" color="primary" icon>
-                    <h4 className="margin-right-auto text-color-black">
-                      Account Information 
-                  {    (this.state.bankList.filter((x) => x.Status === "Active")
-              .length ===0)?
-                  <Button
-                  
-                  color="facebook"
-                  onClick={() => this.addRowBank(0)}
-                  
-                >
-                  Add Acoount
-                </Button>
-                :""}
-                    </h4>
-                  </CardHeader>
-                  <Cardbody className="shipment-cardbody">
+                        </div>
+                      </Cardbody>
+                    </Card>
                     
+                                  
+                  ) : ""}
+                  {(this.state.userType !== null && this.state.userType.value === "Employee") ? (
+                  <Card>
+                    <CardHeader className="btn-right-outer" color="primary" icon>
+                      <CardIcon color="primary">
+                          <User />
+                      </CardIcon>
+                      <h4 className="margin-right-auto text-color-black">
+                        Account Information
+                      </h4>
+                      {(this.state.bankList.filter((x) => x.Status === "Active")
+                          .length === 0) ?
+                          <Button
+
+                            color="primary"
+                            onClick={() => this.addRowBank(0)}
+
+                          >
+                            Add Acoount
+                          </Button>
+                          : ""}
+                    </CardHeader>
+                    <Cardbody className="shipment-cardbody">
+
                       <GridContainer className="MuiGrid-justify-xs-center">
                         <GridItem xs={12} sm={12} md={12}>
                           <div className="package-table accounts-table no-scroll">
@@ -5264,325 +5590,351 @@ handleTimeChange = (time, type) => {debugger
                           </div>
                         </GridItem>
                       </GridContainer>
-                   
-                  </Cardbody>
-                </Card>
-                      </div>
+
                     </Cardbody>
-                     </Card>
-                     
-                      ):""}
-                    
+                  </Card>
+                  ) : ""}
                   </div>
                   <div className="shipment-pane mt-20" id="accessdetails">
-                    <div className="package-table lead-access-table">
-                      <table>
-                        <thead>
-                          <tr>
-                            <th className="wd-330">Module Name</th>
-                            <th className="align-left">
-                              <div className="th-check">
-                                Read Access<br></br>
-                                <FormControlLabel
-                                  control={
-                                    <Checkbox
-                                      onChange={(event) =>
-                                        this.handleInputChange(event, "ReadAll")
+                    <Card >
+                      <CardHeader className="btn-right-outer" color="primary" icon>
+                        <CardIcon color="primary">
+                          <User />
+                        </CardIcon>
+                        <h4 className="margin-right-auto text-color-black">
+                          Access Details                       </h4>
+                      </CardHeader>
+                      <Cardbody>
+                        <div className="package-table lead-access-table">
+                          <table>
+                            <thead>
+                              <tr>
+                                <th className="wd-330">Module Name</th>
+                                <th className="align-left">
+                                  <div className="th-check">
+                                    Read Access<br></br>
+                                    <FormControlLabel
+                                      control={
+                                        <Checkbox
+                                          onChange={(event) =>
+                                            this.handleInputChange(event, "ReadAll")
+                                          }
+                                        />
                                       }
+                                      classes={{
+                                        label: classes.label,
+                                        root: classes.labelRoot,
+                                      }}
                                     />
-                                  }
-                                  classes={{
-                                    label: classes.label,
-                                    root: classes.labelRoot,
-                                  }}
-                                />
-                              </div>
-                            </th>
-                            <th className="align-left">
-                              <div className="th-check">
-                                Write Access<br></br>
-                                <FormControlLabel
-                                  control={
-                                    <Checkbox
-                                      onChange={(event) =>
-                                        this.handleInputChange(
-                                          event,
-                                          "WriteAll"
-                                        )
+                                  </div>
+                                </th>
+                                <th className="align-left">
+                                  <div className="th-check">
+                                    Write Access<br></br>
+                                    <FormControlLabel
+                                      control={
+                                        <Checkbox
+                                          onChange={(event) =>
+                                            this.handleInputChange(
+                                              event,
+                                              "WriteAll"
+                                            )
+                                          }
+                                        />
                                       }
+                                      classes={{
+                                        label: classes.label,
+                                        root: classes.labelRoot,
+                                      }}
                                     />
-                                  }
-                                  classes={{
-                                    label: classes.label,
-                                    root: classes.labelRoot,
-                                  }}
-                                />
-                              </div>
-                            </th>
-                            <th className="align-left">
-                              <div className="th-check">
-                                Delete Access<br></br>
-                                <FormControlLabel
-                                  control={
-                                    <Checkbox
-                                      onChange={(event) =>
-                                        this.handleInputChange(
-                                          event,
-                                          "DeleteAll"
-                                        )
+                                  </div>
+                                </th>
+                                <th className="align-left">
+                                  <div className="th-check">
+                                    Delete Access<br></br>
+                                    <FormControlLabel
+                                      control={
+                                        <Checkbox
+                                          onChange={(event) =>
+                                            this.handleInputChange(
+                                              event,
+                                              "DeleteAll"
+                                            )
+                                          }
+                                        />
                                       }
+                                      classes={{
+                                        label: classes.label,
+                                        root: classes.labelRoot,
+                                      }}
                                     />
-                                  }
-                                  classes={{
-                                    label: classes.label,
-                                    root: classes.labelRoot,
-                                  }}
-                                />
-                              </div>
-                            </th>
-                            <th className="align-left">
-                              <div className="th-check">
-                                All Access<br></br>
-                                <FormControlLabel
-                                  control={
-                                    <Checkbox
-                                      onChange={(event) =>
-                                        this.handleInputChange(
-                                          event,
-                                          "AllAccess"
-                                        )
+                                  </div>
+                                </th>
+                                <th className="align-left">
+                                  <div className="th-check">
+                                    All Access<br></br>
+                                    <FormControlLabel
+                                      control={
+                                        <Checkbox
+                                          onChange={(event) =>
+                                            this.handleInputChange(
+                                              event,
+                                              "AllAccess"
+                                            )
+                                          }
+                                        />
                                       }
+                                      classes={{
+                                        label: classes.label,
+                                        root: classes.labelRoot,
+                                      }}
                                     />
-                                  }
-                                  classes={{
-                                    label: classes.label,
-                                    root: classes.labelRoot,
-                                  }}
-                                />
-                              </div>
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody>{this.renderModule()}</tbody>
-                      </table>
-                    </div>
+                                  </div>
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>{this.renderModule()}</tbody>
+                          </table>
+                        </div>
+                      </Cardbody>
+                    </Card>
                   </div>
                   <div className="shipment-pane mt-20" id="markupdetails">
-                    <div className="ft-outer">
-                      {/* <div
-                        className="filter-top-right"
-                        onMouseLeave={() =>
-                          this.setState({ IsDropDownShow: false })
-                        }
-                        onMouseOver={() => this.setState({ IsDropDownShow: true })}
-                      >
-                        <Button
-                          className="cm-toggle"
-                          color="rose"
-                          // onClick={() =>
-                          //   this.setState({
-                          //     IsDropDownShow:
-                          //       this.state.IsDropDownShow === true ? false : true,
-                          //   })
-                          // }
-                        >
-                          Country <ExpandMoreIcon />
-                        </Button>
-                        {this.state.IsDropDownShow === true ? (
-                          <div className="cm-dropdown" ref={this.state.ref}>
-                            <div className="overflow-handle">
-                              {this.state.countryWise.map((step, key) => {
-                                return (
-                                  <li>
-                                    <label>
-                                      <input
-                                        type="checkbox"
-                                        checked={step.IsSelected}
-                                        onChange={(e, value) =>
-                                          this.handleServiceCheckboxChange(
-                                            e,
-                                            step,
-                                            step.value
-                                          )
-                                        }
-                                        value={this.state.countryWise}
-                                      />{" "}
-                                      {step.label}
-                                    </label>
-                                  </li>
-                                );
-                              })}
-                            </div>
-                            <div className="cms-wrap">
-                              { <Button
-                                className="cm-search-btn"
-                                color="rose"
-                              // onClick={() => this.showSearchFilter("Shipment")}
-                              >
-                                Search
-                              </Button> }
-                            </div>
-                          </div>
-                        ) : null}
-                      </div> */}
-                    </div>
-                    <div className="package-table">
-                     <table>
-                        <thead>
-                          <tr>
-                            <th>
-                              <div className="relative">
-                              <div
-                        className="filter-top-right filter-top-right-user-markup left"
-                        onMouseLeave={() =>
-                          this.setState({ IsDropDownShow: false })
-                        }
-                        onMouseOver={() => this.setState({ IsDropDownShow: true })}
-                      >
-                        <Button
-                          className="cm-toggle"
-                          color="rose"
-                          // onClick={() =>
-                          //   this.setState({
-                          //     IsDropDownShow:
-                          //       this.state.IsDropDownShow === true ? false : true,
-                          //   })
-                          // }
-                        >
-                          Country <ExpandMoreIcon />
-                        </Button>
-                        {this.state.IsDropDownShow === true ? (
-                          <div className="cm-dropdown " ref={this.state.ref}>
-                            <div className="overflow-handle">
-                              {this.state.countryWise.map((step, key) => {
-                                return (
-                                  <li>
-                                    <label>
-                                      <input
-                                        type="checkbox"
-                                        checked={step.IsSelected}
-                                        onChange={(e, value) =>
-                                          this.handleStepValue(
-                                            e,
-                                            step,
-                                            step.value
-                                          )
-                                        }
-                                        value={this.state.countryWise}
-                                      />{" "}
-                                      {step.label}
-                                    </label>
-                                  </li>
-                                );
-                              })}
-                            </div>
-                            <div className="cms-wrap">
-                              <Button
-                                className="cm-search-btn"
-                                color="rose"
-                                onClick={() => this.handleServiceCheckboxChange(
-                                  this.state.eValue,
-                                  this.state.recordValue,
-                                  this.state.typeValue
-                                )}
-                              >
-                                Search
-                              </Button>
-                            </div>
-                          </div>
-                        ) : null}
-                      </div></div></th>
-                            <th>Type</th>
-                            <th>Service Name</th>
-                            <th>Sub Service Name</th>
-                            <th>Display Name</th>
-                            <th>Pkg Markup</th>
-                            <th>Env Markup</th>
-                            <th>Markup Type</th>
-                            <th>Status</th>
-                          </tr>
-                        </thead>
-                        <tbody>{this.renderMarkup()}</tbody>
-                      </table>
-                       
-                        {/* <ReactTable
-                          
-                          data={this.state.serviceList}
-                          
-                          minRows={0}
-                          filterable
-                          defaultFilterMethod={CommonConfig.filterCaseInsensitive}
-                          resizable={false}
-                          columns={columns1}
-                          defaultPageSize={10}
-                          showPaginationBottom={true}
-                          className="-striped -highlight"
-                        /> */}
-                    </div>
-                  </div>
+                    <Card >
+                      <CardHeader className="btn-right-outer" color="primary" icon>
+                        <CardIcon color="primary">
+                          <User />
+                        </CardIcon>
+                        <h4 className="margin-right-auto text-color-black">
+                          Markup Details                       </h4>
+                      </CardHeader>
+                      <Cardbody>
+                        <div className="ft-outer">
+                          {/* <div
+                            className="filter-top-right"
+                            onMouseLeave={() =>
+                              this.setState({ IsDropDownShow: false })
+                            }
+                            onMouseOver={() => this.setState({ IsDropDownShow: true })}
+                          >
+                            <Button
+                              className="cm-toggle"
+                              color="rose"
+                              // onClick={() =>
+                              //   this.setState({
+                              //     IsDropDownShow:
+                              //       this.state.IsDropDownShow === true ? false : true,
+                              //   })
+                              // }
+                            >
+                              Country <ExpandMoreIcon />
+                            </Button>
+                            {this.state.IsDropDownShow === true ? (
+                              <div className="cm-dropdown" ref={this.state.ref}>
+                                <div className="overflow-handle">
+                                  {this.state.countryWise.map((step, key) => {
+                                    return (
+                                      <li>
+                                        <label>
+                                          <input
+                                            type="checkbox"
+                                            checked={step.IsSelected}
+                                            onChange={(e, value) =>
+                                              this.handleServiceCheckboxChange(
+                                                e,
+                                                step,
+                                                step.value
+                                              )
+                                            }
+                                            value={this.state.countryWise}
+                                          />{" "}
+                                          {step.label}
+                                        </label>
+                                      </li>
+                                    );
+                                  })}
+                                </div>
+                                <div className="cms-wrap">
+                                  { <Button
+                                    className="cm-search-btn"
+                                    color="rose"
+                                  // onClick={() => this.showSearchFilter("Shipment")}
+                                  >
+                                    Search
+                                  </Button> }
+                                </div>
+                              </div>
+                            ) : null}
+                          </div> */}
+                        </div>
+                        <div className="package-table">
+                          <table>
+                            <thead>
+                              <tr>
+                                <th>
+                                  <div className="relative">
+                                    <div
+                                      className="filter-top-right filter-top-right-user-markup left"
+                                      onMouseLeave={() =>
+                                        this.setState({ IsDropDownShow: false })
+                                      }
+                                      onMouseOver={() => this.setState({ IsDropDownShow: true })}
+                                    >
+                                      <Button
+                                        className="cm-toggle"
+                                        color="rose"
+                                      // onClick={() =>
+                                      //   this.setState({
+                                      //     IsDropDownShow:
+                                      //       this.state.IsDropDownShow === true ? false : true,
+                                      //   })
+                                      // }
+                                      >
+                                        Country <ExpandMoreIcon />
+                                      </Button>
+                                      {this.state.IsDropDownShow === true ? (
+                                        <div className="cm-dropdown " ref={this.state.ref}>
+                                          <div className="overflow-handle">
+                                            {this.state.countryWise.map((step, key) => {
+                                              return (
+                                                <li>
+                                                  <label>
+                                                    <input
+                                                      type="checkbox"
+                                                      checked={step.IsSelected}
+                                                      onChange={(e, value) =>
+                                                        this.handleStepValue(
+                                                          e,
+                                                          step,
+                                                          step.value
+                                                        )
+                                                      }
+                                                      value={this.state.countryWise}
+                                                    />{" "}
+                                                    {step.label}
+                                                  </label>
+                                                </li>
+                                              );
+                                            })}
+                                          </div>
+                                          <div className="cms-wrap">
+                                            <Button
+                                              className="cm-search-btn"
+                                              color="rose"
+                                              onClick={() => this.handleServiceCheckboxChange(
+                                                this.state.eValue,
+                                                this.state.recordValue,
+                                                this.state.typeValue
+                                              )}
+                                            >
+                                              Search
+                                            </Button>
+                                          </div>
+                                        </div>
+                                      ) : null}
+                                    </div></div></th>
+                                <th>Type</th>
+                                <th>Service Name</th>
+                                <th>Sub Service Name</th>
+                                <th>Display Name</th>
+                                <th>Pkg Markup</th>
+                                <th>Env Markup</th>
+                                <th>Markup Type</th>
+                                <th>Status</th>
+                              </tr>
+                            </thead>
+                            <tbody>{this.renderMarkup()}</tbody>
+                          </table>
 
+                          {/* <ReactTable
+                              
+                              data={this.state.serviceList}
+                              
+                              minRows={0}
+                              filterable
+                              defaultFilterMethod={CommonConfig.filterCaseInsensitive}
+                              resizable={false}
+                              columns={columns1}
+                              defaultPageSize={10}
+                              showPaginationBottom={true}
+                              className="-striped -highlight"
+                            /> */}
+                        </div>
+                      </Cardbody>
+                    </Card>
+                  </div>
                   <div className="shipment-pane mt-20" id="documentation">
-                    <GridContainer justify="center">
-                      <GridItem xs={12} sm={12} md={12}>
-                        <ReactTable
-                          data={this.state.Attachments.filter(
-                            (x) => x.Status === "Active"
-                          )}
-                          sortable={true}
-                          filterable={true}
-                          resizable={false}
-                          minRows={2}
-                          columns={columns}
-                          defaultPageSize={10}
-                          align="center"
-                          className="-striped -highlight"
-                        />
-                      </GridItem>
-                    </GridContainer>
+                    <Card >
+                      <CardHeader className="btn-right-outer" color="primary" icon>
+                        <CardIcon color="primary">
+                          <User />
+                        </CardIcon>
+                        <h4 className="margin-right-auto text-color-black">
+                          Documentation                     </h4>
+                      </CardHeader>
+                      <Cardbody>
+                        <GridContainer justify="center">
+                          <GridItem xs={12} sm={12} md={12}>
+                            <ReactTable
+                              data={this.state.Attachments.filter(
+                                (x) => x.Status === "Active"
+                              )}
+                              sortable={true}
+                              filterable={true}
+                              resizable={false}
+                              minRows={2}
+                              columns={columns}
+                              defaultPageSize={10}
+                              align="center"
+                              className="-striped -highlight"
+                            />
+                          </GridItem>
+                        </GridContainer>
+                      </Cardbody>
+                    </Card>
                   </div>
                 </div>
-              </Cardbody>
-            </Card>
-           
-              <div className="shipment-submit">
+              
 
-                {CommonConfig.getUserAccess("User Management").DeleteAccess === 1 ?(
-                  <div className="left">
-                    <Button
-                      justify="center"
-                      color="danger"
-                      onClick={() => this.deleteUser()}
-                    >
-                      Delete
-                    </Button>
-                  </div>
-                ):null}
+            <div className="shipment-submit">
 
-                
-                {CommonConfig.getUserAccess("User Management").WriteAccess === 1 && (CommonConfig.loggedInUserData().PersonID == this.props.location.state) ?(
-                  <div className="right">
-                  
-                    {/* <div> */}
-                      {CommonConfig.isEmpty(this.props.location.state) ? null : (
-                        <Button color="rose" onClick={() => this.saveUser(false)}>
-                          Save
-                        </Button>
-                      )}
-                      <Button color="primary" onClick={() => this.saveUser(true)}>
-                        Save & Exit
-                      </Button>
-                    {/* </div> */}
-                  
-                    
-                    <Button color="secondary" onClick={() => this.cancelUser()}>
-                      Cancel
-                    </Button>
-                  </div>
-                ):
-                CommonConfig.getUserAccess("User Management").WriteAccess === 1 && CommonConfig.getUserAccess("User Management").AllAccess === 1 ?(
-                  <div className="right">
-                  
+              {CommonConfig.getUserAccess("User Management").DeleteAccess === 1 ? (
+                <div className="left">
+                  <Button
+                    justify="center"
+                    color="danger"
+                    onClick={() => this.deleteUser()}
+                  >
+                    Delete
+                  </Button>
+                </div>
+              ) : null}
+
+
+              {CommonConfig.getUserAccess("User Management").WriteAccess === 1 && (CommonConfig.loggedInUserData().PersonID == this.props.location.state) ? (
+                <div className="right">
+
                   {/* <div> */}
+                  {CommonConfig.isEmpty(this.props.location.state) ? null : (
+                    <Button color="rose" onClick={() => this.saveUser(false)}>
+                      Save
+                    </Button>
+                  )}
+                  <Button color="primary" onClick={() => this.saveUser(true)}>
+                    Save & Exit
+                  </Button>
+                  {/* </div> */}
+
+
+                  <Button color="secondary" onClick={() => this.cancelUser()}>
+                    Cancel
+                  </Button>
+                </div>
+              ) :
+                CommonConfig.getUserAccess("User Management").WriteAccess === 1 && CommonConfig.getUserAccess("User Management").AllAccess === 1 ? (
+                  <div className="right">
+
+                    {/* <div> */}
                     {CommonConfig.isEmpty(this.props.location.state) ? null : (
                       <Button color="rose" onClick={() => this.saveUser(false)}>
                         Save
@@ -5591,24 +5943,24 @@ handleTimeChange = (time, type) => {debugger
                     <Button color="primary" onClick={() => this.saveUser(true)}>
                       Save & Exit
                     </Button>
-                  {/* </div> */}
-                
-                  
-                  <Button color="secondary" onClick={() => this.cancelUser()}>
-                    Cancel
-                  </Button>
-                </div>
-                ):
+                    {/* </div> */}
+
+
+                    <Button color="secondary" onClick={() => this.cancelUser()}>
+                      Cancel
+                    </Button>
+                  </div>
+                ) :
                   <div className="right">
                     <Button color="secondary" onClick={() => this.cancelUser()}>
                       Cancel
                     </Button>
                   </div>
-                }
+              }
 
-               
-              </div>
-         
+
+            </div>
+
           </GridItem>
         </GridContainer>
         {this.state.Loading === true ? (
