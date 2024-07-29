@@ -159,9 +159,28 @@ class TMSReport extends Component {
 
     var managedByValue = 0;
     if (CommonConfig.getUserAccess("Time Booking Report").AllAccess === 1) {
-      managedByValue = this.state.ManagedBy.value;
+      managedByValue = this.state.ManagedBy?this.state.ManagedBy.value:0;
     } else {
       managedByValue = CommonConfig.loggedInUserData().PersonID;
+    }
+
+    let condition = ""
+    let fromDate = moment(this.state.FromDate)
+    .format(CommonConfig.dateFormat.dbDateOnly)
+    .toString()
+
+    let toDate = moment(this.state.ToDate)
+    .format(CommonConfig.dateFormat.dbDateOnly)
+    .toString()
+
+    if(managedByValue == 0){
+
+      condition = '(tml.`LeaveFromDate` BETWEEN "'+fromDate+'" AND "'+toDate+'")'
+
+    }else{
+
+      condition = 'tml.UserID = '+managedByValue+' AND (tml.`LeaveFromDate` BETWEEN "'+fromDate+'" AND "'+toDate+'")'
+
     }
 
     var pData = {
@@ -172,7 +191,7 @@ class TMSReport extends Component {
       toDate: moment(this.state.ToDate)
         .format(CommonConfig.dateFormat.dbDateOnly)
         .toString(),
-      puserdata: managedByValue,
+      puserdata: condition,
       
     };
     api.post("contactus/getTmsUserTimeOff", pData).then((res) => {
@@ -231,7 +250,7 @@ class TMSReport extends Component {
       managedByValue = CommonConfig.loggedInUserData().PersonID;
     }
 
-    if (managedByValue == 0 || managedByValue == undefined) {
+    if ((managedByValue == 0 || managedByValue == undefined) && this.state.LoginTypeValue.label != "Leave") {
       cogoToast.error("Please Select Managed By");
     } else if (this.state.LoginTypeValue == "") {
       cogoToast.error("Please Select Data Type");
@@ -803,6 +822,12 @@ class TMSReport extends Component {
       {
         Header: "Leave Day",
         accessor: "Day",
+        width: 100,
+      },
+
+      {
+        Header: "User",
+        accessor: "LoginID",
         width: 100,
       },
 

@@ -235,6 +235,7 @@ class Step1 extends React.Component {
       managedByErr: false,
       managedByHelperText: "",
       managedByList: [],
+      PaperSizePreviewData:"",
 
       CompanyName: "",
       companyNameErr: false,
@@ -406,6 +407,7 @@ class Step1 extends React.Component {
   componentDidMount() {
     debugger
     this.getDepartment();
+    this.getAccountType();
     this.setState({ Access: CommonConfig.getUserAccess("User Management") });
 
     this.getCountry();
@@ -439,7 +441,7 @@ class Step1 extends React.Component {
     }
   }
 
-  getDepartment() {
+  getAccountType() {
     debugger
     try {
       let data = {
@@ -488,10 +490,13 @@ class Step1 extends React.Component {
   };
   paperPreview(PapreSize) {debugger
     debugger
+    this.state.PaperSizePreviewData = PapreSize
     var previewLink = this.state.PaperSizeList.filter(
       (x) => x.PaperDisplayName === PapreSize.label
     );
-    this.setState({ pagePreviewLink: previewLink[0].PaperPreviewLink });
+    console.log("previewLink[0].PaperPreviewLink = , ",previewLink[0].PaperPreviewLink)
+    // this.setState({ pagePreviewLink: previewLink[0].PaperPreviewLink });
+    this.state.pagePreviewLink = previewLink[0].PaperPreviewLink;
     window.open(this.state.pagePreviewLink, "_blank", "noreferrer");
   };
 
@@ -862,7 +867,7 @@ class Step1 extends React.Component {
             }
             debugger
             if (userData.UserData[0].UserType == "Employee") {
-              let emp = { "label": "Employee", "value": "Employee" }
+              let emp = { "label": userData.UserData[0].UserType, "value": userData.UserData[0].UserType }
 
               this.setState({ userType: emp });
               if (userData.EmployeeData.length > 0) {
@@ -944,6 +949,10 @@ class Step1 extends React.Component {
                   }
                 }
               }
+            }else{
+              let emp = { "label": userData.UserData[0].UserType, "value": userData.UserData[0].UserType }
+
+              this.setState({ userType: emp });
             }
             this.hideLoader();
           }
@@ -1292,6 +1301,7 @@ class Step1 extends React.Component {
       }
     } else if (type === "Usertypezip") {
       this.setState({ UsertypecheckZipCode: true });
+       let addressVal = event.target.value.replace(/\D/g, "");
 
       this.setState({
         UsertypeZipCode: addressVal,
@@ -3677,6 +3687,16 @@ class Step1 extends React.Component {
                 }}
               />
             </td>
+            <td style={{ width: "197px" }} className="wd-full input-full">
+              <CustomInput
+                inputProps={{
+                  onChange: (event) =>
+                    this.handleChangeBank(event, "NameonAccount", method.Index),
+                  value: method.NameonAccount,
+
+                }}
+              />
+            </td>
             <td style={{ width: "186px" }}>
               <div className="pck-nowrap-input">
                 <CustomInput
@@ -3693,16 +3713,7 @@ class Step1 extends React.Component {
                 />
               </div>
             </td>
-            <td style={{ width: "197px" }} className="wd-full input-full">
-              <CustomInput
-                inputProps={{
-                  onChange: (event) =>
-                    this.handleChangeBank(event, "NameonAccount", method.Index),
-                  value: method.NameonAccount,
-
-                }}
-              />
-            </td>
+            
 
             <td style={{ width: "156px" }} className="input-full">
               <CustomInput
@@ -4732,7 +4743,7 @@ class Step1 extends React.Component {
                             <Autocomplete
                               id="combo-box-demo1"
                               options={paperSize}
-                              value={this.state.PaperSize}
+                              value={this.state.PaperSizePreviewData}
                               onChange={(event, value) =>
                                 this.paperPreview(value)
                               }
@@ -5578,9 +5589,9 @@ class Step1 extends React.Component {
                               <thead>
                                 <tr>
                                   <th>Account Type</th>
-                                  <th className="acc-wd200">Bank / Instittution Name </th>
+                                  <th className="acc-wd200">Institution Name </th>
+                                  <th className="acc-wd200">Account Holder Name</th>
                                   <th>Account No</th>
-                                  <th className="acc-wd200">Name on Bank / Institution</th>
                                   <th>Routing No / IFSCCODE</th>
                                   <th>Action</th>
                                 </tr>

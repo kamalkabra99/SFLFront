@@ -585,7 +585,7 @@ class AddEditVendors extends Component {
       )
         .then((result) => result.json())
         .then((data) => {
-          this.showLoader();
+          // this.showLoader();
           if (data["status"] === "OK") {
             if (
               data["results"][0] &&
@@ -678,16 +678,29 @@ class AddEditVendors extends Component {
                   label: FinalCity[0].Name,
                 };
               }
-
+              console.log('data["results"][0]["address_components"] = ',data["results"][0]["address_components"]);
               var state = _.filter(
                 data["results"][0]["address_components"],
                 function(data) {
                   return data.types[0] === "administrative_area_level_1";
                 }
-              )[0].long_name;
-              var SelectedState = { value: state, label: state };
+              )[0];
+              console.log("State = ",state);
+
+              if(state != undefined){
+                var SelectedState = { value: state.long_name, label: state.long_name };
+              }else{
+                // if(this.state.Vendorcity)
+                console.log("this.state.Vendorcity = ",this.state.Vendorcity)
+                var SelectedState = "";
+                state = ""
+                this.state.VendorcityAutoComplete = false
+              }
+
+             
 
               if (countryShortName === this.state.selectedVendorCountry.label) {
+                console.log("Here = ",SelectedState , " " , state , " ",this.state.stateList)
                 this.setState({
                   VendorcityAutoComplete: FinalCity.length ? true : false,
                   VendorstateAutoComplete: this.state.stateList.length
@@ -2446,6 +2459,15 @@ class AddEditVendors extends Component {
       if (restest.success) {
         console.log(restest.data[0][0]);
 
+        console.log("vendorDetails.Vendorcity = " , vendorDetails.Vendorcity)
+
+        var citydata = ""
+         if(vendorDetails.Vendorcity.label == undefined){
+          citydata = vendorDetails.Vendorcity
+         }else{
+          citydata = vendorDetails.Vendorcity.label
+         }
+
         let data = {
           vendorId: this.state.vendorId,
           vendorName: vendorDetails.vendorName,
@@ -2466,9 +2488,7 @@ class AddEditVendors extends Component {
           // City: CommonConfig.isEmpty(vendorDetails.Vendorcity.label)
           //   ? vendorDetails.Vendorcity
           //   : vendorDetails.Vendorcity.label,
-          City: CommonConfig.isEmpty(vendorDetails.Vendorcity)
-            ? vendorDetails.Vendorcity
-            : vendorDetails.Vendorcity.label,
+          City: citydata,
           State: CommonConfig.isEmpty(vendorDetails.Vendorstate)
             ? vendorDetails.Vendorstate
             : CommonConfig.isEmpty(vendorDetails.Vendorstate.label)

@@ -479,7 +479,12 @@ class TimeManagement extends React.Component {
       .format(CommonConfig.dateFormat.dbDateOnly)
       .toString(),
       TimeTypeValue: this.state.TimeTypeValue.value,
-      Reason: this.state.ReasonsValue.value
+      Reason: this.state.ReasonsValue.value,
+      ApplyName: CommonConfig.loggedInUserData().Name,
+      ApplyEmail: CommonConfig.loggedInUserData().Email,
+      ApplyDate: moment()
+      .format(CommonConfig.dateFormat.dbDateOnly)
+      .toString(),
     };
 
     console.log(pData)
