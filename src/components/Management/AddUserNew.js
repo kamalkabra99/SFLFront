@@ -908,8 +908,8 @@ class Step1 extends React.Component {
 
                 this.setState({
                   usertypeTimeZone: timezon,
-                  StartTime: userData.EmployeeData[0].StartTime,
-                  EndTime: userData.EmployeeData[0].EndTime,
+                  StartTime:  userData.EmployeeData[0].StartTime == null ? "" : userData.EmployeeData[0].StartTime,
+                  EndTime: userData.EmployeeData[0].EndTime == null ? "" : userData.EmployeeData[0].EndTime,
                   BirthDate: userData.EmployeeData[0].Birthdate == null ? "" : moment(userData.EmployeeData[0].Birthdate),
                   JoinDate: userData.EmployeeData[0].Joiningdate == null ? "" : moment(userData.EmployeeData[0].Joiningdate),
                   RelivingDate: userData.EmployeeData[0].Relivingdate == null ? "" : oment(userData.EmployeeData[0].Relivingdate),
@@ -2058,6 +2058,53 @@ class Step1 extends React.Component {
       //     });
       //   }
     }
+    else if (type === "ENDTIME") {
+      this.setState({
+        EndTime: date,
+        endtimeErr: false,
+        endtimeHelperText: "",
+      });
+    }
+      else if (type === "STARTTIME") {
+        this.setState({
+          StartTime: date,
+          starttimeErr: false,
+          starttimeHelperText: "",
+        });
+      }
+      // if(this.state.JoinDate !== "")
+      //   if(date < this.state.JoinDate){
+      //     this.setState({
+      //       BirthDate: date,
+      //       birthdateErr: false,
+      //       birthdateHelperText: "",
+      //     });
+      //   } 
+      //   else
+      //   {
+      //     this.setState({
+      //       BirthDate: "",
+      //       birthdateErr: true,
+      //       birthdateHelperText: "Date of Birth must be before Date of Join",
+      //     });
+      //   }
+      //   if(this.state.RelivingDate !== "")
+      //   if(date < this.state.RelivingDate){
+      //     this.setState({
+      //       BirthDate: date,
+      //       birthdateErr: false,
+      //       birthdateHelperText: "",
+      //     });
+      //   } 
+      //   else
+      //   {
+      //     this.setState({
+      //       BirthDate: "",
+      //       birthdateErr: true,
+      //       birthdateHelperText: "Date of Birth must be before Date of Reliving",
+      //     });
+      //   }
+    
   };
   handleDateValidation = (date, type) => {
     debugger
@@ -3807,6 +3854,7 @@ class Step1 extends React.Component {
     const paperSize = this.state.PaperSizeList.map((type) => {
       return { value: type.ID, label: type.PaperDisplayName };
     });
+ 
 
     const userstatus = this.state.UserStatusList.map((type) => {
       return { value: type.value, label: type.label };
@@ -4725,6 +4773,7 @@ class Step1 extends React.Component {
                             <Autocomplete
                               id="combo-box-demo"
                               options={paperSize}
+                              
                               value={this.state.PaperSize}
                               onChange={(event, value) =>
                                 this.ChangeCountry(value, "PaperSize")
@@ -4741,15 +4790,17 @@ class Step1 extends React.Component {
                         <GridItem xs={12} sm={12} md={3}>
                           <div className="ipt-addon">
                             <Autocomplete
+                            
                               id="combo-box-demo1"
                               options={paperSize}
                               value={this.state.PaperSizePreviewData}
                               onChange={(event, value) =>
                                 this.paperPreview(value)
                               }
+                              
                               getOptionLabel={(option) => option.label}
                               renderInput={(params) => (
-                                <TextField {...params} label="Paper Size Preview" />
+                                <TextField {...params} label="Paper Size Preview"  placeholder="Select One"/>
                               )}
 
                             />
@@ -4834,7 +4885,7 @@ class Step1 extends React.Component {
                                 )}
                               />
                             </GridItem>
-                            <GridItem xs={12} sm={12} md={3}>
+                            {/* <GridItem xs={12} sm={12} md={2}>
                               <div className="dt-vs date-spl">
                                 <FormControl fullWidth>
                                   <TextField
@@ -4857,8 +4908,41 @@ class Step1 extends React.Component {
 
                                 </FormControl>
                               </div>
-                            </GridItem>
+                            </GridItem> */}
                             <GridItem xs={12} sm={12} md={3}>
+                              <div className="dt-vs date-spl">
+                                <FormControl fullWidth>
+                                  <Datetime
+                                    dateFormat={false}
+                                    timeFormat={"hh:mm A"}
+                                    selected={this.state.StartTime}
+                                    value={this.state.StartTime}
+                                    initialValue={this.state.StartTime}
+                                    inputProps={{ placeholder: "Start Time" }}
+                                    onChange={(date) =>
+                                      this.handleDateChange(date, "STARTTIME")
+                                    }
+                                    onBlur={(date) =>
+                                      this.handleDateValidation(date, "STARTTIME")
+                                    }
+                                    closeOnSelect={true}
+                                    renderInput={(params) => (
+                                      <TextField
+                                        style={{ marginTop: "-15px" }}
+                                        error={this.state.starttimeErr}
+                                        helperText={this.state.starttimeHelperText}
+                                        {...params}
+                                        label="Start Time*"
+                                        margin="normal"
+                                        fullWidth
+                                      />
+                                    )}
+                                  />
+                                  <Icon className="date-icon tp-slam">date_range</Icon>
+                                </FormControl>
+                              </div>
+                            </GridItem>
+                            {/* <GridItem xs={12} sm={12} md={2}>
                               <div className="dt-vs date-spl">
                                 <FormControl fullWidth>
                                   <TextField
@@ -4879,6 +4963,38 @@ class Step1 extends React.Component {
                                     }}
                                   />
 
+                                </FormControl>
+                              </div>
+                            </GridItem> */}
+                            <GridItem xs={12} sm={12} md={3}>
+                              <div className="dt-vs date-spl">
+                                <FormControl fullWidth>
+                                  <Datetime
+                                    dateFormat={false}
+                                    timeFormat={"hh:mm A"}
+                                    selected={this.state.EndTime}
+                                    value={this.state.EndTime}
+                                    inputProps={{ placeholder: "End Time" }}
+                                    onChange={(date) =>
+                                      this.handleDateChange(date, "ENDTIME")
+                                    }
+                                    onBlur={(date) =>
+                                      this.handleDateValidation(date, "ENDTIME")
+                                    }
+                                    closeOnSelect={true}
+                                    renderInput={(params) => (
+                                      <TextField
+                                        style={{ marginTop: "-15px" }}
+                                        error={this.state.endtimeErr}
+                                        helperText={this.state.endtimeHelperText}
+                                        {...params}
+                                        label="End Time*"
+                                        margin="normal"
+                                        fullWidth
+                                      />
+                                    )}
+                                  />
+                                  <Icon className="date-icon tp-slam">date_range</Icon>
                                 </FormControl>
                               </div>
                             </GridItem>
@@ -5592,7 +5708,7 @@ class Step1 extends React.Component {
                                   <th className="acc-wd200">Institution Name </th>
                                   <th className="acc-wd200">Account Holder Name</th>
                                   <th>Account No</th>
-                                  <th>Routing No / IFSCCODE</th>
+                                  <th>Routing / IFSC</th>
                                   <th>Action</th>
                                 </tr>
                               </thead>
@@ -5718,6 +5834,67 @@ class Step1 extends React.Component {
                         </CardIcon>
                         <h4 className="margin-right-auto text-color-black">
                           Markup Details                       </h4>
+                          <div className="relative">
+                                    <div
+                                      className="filter-top-right filter-top-right-user-markup left"
+                                      onMouseLeave={() =>
+                                        this.setState({ IsDropDownShow: false })
+                                      }
+                                      onMouseOver={() => this.setState({ IsDropDownShow: true })}
+                                    >
+                                      <Button
+                                        className="cm-toggle"
+                                        color="rose"
+                                      // onClick={() =>
+                                      //   this.setState({
+                                      //     IsDropDownShow:
+                                      //       this.state.IsDropDownShow === true ? false : true,
+                                      //   })
+                                      // }
+                                      >
+                                        Country <ExpandMoreIcon />
+                                      </Button>
+                                      {this.state.IsDropDownShow === true ? (
+                                        <div className="cm-dropdown " ref={this.state.ref}>
+                                          <div className="overflow-handle">
+                                            {this.state.countryWise.map((step, key) => {
+                                              return (
+                                                <li>
+                                                  <label>
+                                                    <input
+                                                      type="checkbox"
+                                                      checked={step.IsSelected}
+                                                      onChange={(e, value) =>
+                                                        this.handleStepValue(
+                                                          e,
+                                                          step,
+                                                          step.value
+                                                        )
+                                                      }
+                                                      value={this.state.countryWise}
+                                                    />{" "}
+                                                    {step.label}
+                                                  </label>
+                                                </li>
+                                              );
+                                            })}
+                                          </div>
+                                          <div className="cms-wrap">
+                                            <Button
+                                              className="cm-search-btn"
+                                              color="rose"
+                                              onClick={() => this.handleServiceCheckboxChange(
+                                                this.state.eValue,
+                                                this.state.recordValue,
+                                                this.state.typeValue
+                                              )}
+                                            >
+                                              Search
+                                            </Button>
+                                          </div>
+                                        </div>
+                                      ) : null}
+                                    </div></div>
                       </CardHeader>
                       <Cardbody>
                         <div className="ft-outer">
@@ -5783,67 +5960,7 @@ class Step1 extends React.Component {
                             <thead>
                               <tr>
                                 <th>
-                                  <div className="relative">
-                                    <div
-                                      className="filter-top-right filter-top-right-user-markup left"
-                                      onMouseLeave={() =>
-                                        this.setState({ IsDropDownShow: false })
-                                      }
-                                      onMouseOver={() => this.setState({ IsDropDownShow: true })}
-                                    >
-                                      <Button
-                                        className="cm-toggle"
-                                        color="rose"
-                                      // onClick={() =>
-                                      //   this.setState({
-                                      //     IsDropDownShow:
-                                      //       this.state.IsDropDownShow === true ? false : true,
-                                      //   })
-                                      // }
-                                      >
-                                        Country <ExpandMoreIcon />
-                                      </Button>
-                                      {this.state.IsDropDownShow === true ? (
-                                        <div className="cm-dropdown " ref={this.state.ref}>
-                                          <div className="overflow-handle">
-                                            {this.state.countryWise.map((step, key) => {
-                                              return (
-                                                <li>
-                                                  <label>
-                                                    <input
-                                                      type="checkbox"
-                                                      checked={step.IsSelected}
-                                                      onChange={(e, value) =>
-                                                        this.handleStepValue(
-                                                          e,
-                                                          step,
-                                                          step.value
-                                                        )
-                                                      }
-                                                      value={this.state.countryWise}
-                                                    />{" "}
-                                                    {step.label}
-                                                  </label>
-                                                </li>
-                                              );
-                                            })}
-                                          </div>
-                                          <div className="cms-wrap">
-                                            <Button
-                                              className="cm-search-btn"
-                                              color="rose"
-                                              onClick={() => this.handleServiceCheckboxChange(
-                                                this.state.eValue,
-                                                this.state.recordValue,
-                                                this.state.typeValue
-                                              )}
-                                            >
-                                              Search
-                                            </Button>
-                                          </div>
-                                        </div>
-                                      ) : null}
-                                    </div></div></th>
+                                  Country</th>
                                 <th>Type</th>
                                 <th>Service Name</th>
                                 <th>Sub Service Name</th>
