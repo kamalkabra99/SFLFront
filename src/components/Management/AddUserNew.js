@@ -4963,7 +4963,7 @@ class Step1 extends React.Component {
                                 </FormControl>
                               </div>
                             </GridItem> */}
-                            <GridItem xs={12} sm={12} md={3}>
+                            <GridItem xs={12} sm={12} md={3} className="zindex99">
                               <div className="dt-vs date-spl">
                                 <FormControl fullWidth>
                                   <Datetime
@@ -5890,7 +5890,7 @@ class Step1 extends React.Component {
                           Markup Details                       </h4>
                           <div className="relative">
                                     <div
-                                      className="filter-top-right filter-top-right-user-markup left"
+                                      className="filter-top-right"
                                       onMouseLeave={() =>
                                         this.setState({ IsDropDownShow: false })
                                       }
