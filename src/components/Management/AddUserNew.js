@@ -43,6 +43,11 @@ import Tooltip from "@material-ui/core/Tooltip";
 import HelpIcon from "@material-ui/icons/Help";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Datetime from "react-datetime";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogContent from "@material-ui/core/DialogContent";
 const useStyles = makeStyles(styles);
 
 const classes = () => {
@@ -200,6 +205,8 @@ class Step1 extends React.Component {
       passwordErr: false,
       mobileErr: false,
       UsertypemobileErr: false,
+      delDoc:false,
+      recordDocument:"",
       Loading: false,
       ShipmentCount: 0,
       fullnameHelperText: "",
@@ -1913,6 +1920,9 @@ class Step1 extends React.Component {
     this.state.userTypeDepartment = e;
     console.log("userTypeDepartment", this.state.userTypeDepartment);
   }
+  DeleteDocument = (e, record) => {
+    this.setState({ recordDocument: record, delDoc: true });
+  };
   setUserTimeZone = (e) => {
     this.setState({ usertypeTimeZone: e });
     this.setState({ usertypeTimeZoneErr: false, usertypeTimeZoneHelperText: "" });
@@ -2839,6 +2849,50 @@ class Step1 extends React.Component {
     document.getElementById("markupdetails").style.display = "none";
     document.getElementById("documentation").style.display = "none";
   }
+
+  handleDocumentDelete = () => {
+    this.showLoader();
+    console.log("Records = ", this.state.recordDocument);
+    var data = {
+      Attachments: this.state.recordDocument,
+    };
+    api
+      .post("userManagement/deleteUserSingleDocument", data)
+      .then((res) => {
+        if (res.success) {
+          debugger;
+
+          if (res.data.data[0].length > 0) {
+            var response = res.data.data[0];
+            this.state.Attachments.length = 0;
+
+            for (var i = 0; i < response.length; i++) {
+              var filesList = response[i];
+              filesList.CreatedOn = moment(filesList.CreatedOn).format(
+                CommonConfig.dateFormat.dateOnly
+              );
+              this.state.Attachments.push(filesList);
+            }
+            this.setState({
+              Attachments: [
+                ...this.state.Attachments,
+                this.state.objAttachment,
+              ],
+            });
+          }
+          this.hideLoader();
+          //cogoToast.success("Document delete from the Server");
+        }
+      })
+      .catch((err) => {
+        console.log("error", err);
+      });
+
+    var AttachmentList = this.state.Attachments;
+    var Index = AttachmentList.indexOf(this.state.recordDocument);
+    AttachmentList[Index]["Status"] = "Inactive";
+    this.setState({ Attachments: AttachmentList, delDoc: false });
+  };
 
   zipChange = (zip, type) => {
     debugger
@@ -4112,7 +4166,7 @@ class Step1 extends React.Component {
             <div className="align-right">
               {this.state.Access.DeleteAccess === 1 ? (
                 <DeleteIcon
-                  onClick={(e) => this.handleDocumentDelete(e, record.original)}
+                  onClick={(e) => this.DeleteDocument(e, record.original)}
                 />
               ) : null}
             </div>
@@ -6087,6 +6141,41 @@ class Step1 extends React.Component {
               }
 
 
+            </div>
+
+
+            <div>
+              <Dialog
+                open={this.state.delDoc}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+              >
+                <DialogTitle id="alert-dialog-title">
+                  Confirm Delete
+                </DialogTitle>
+                <DialogContent>
+                  <DialogContentText id="alert-dialog-description">
+                    Are you sure want to delete?
+                  </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                  <Button
+                    onClick={() => this.setState({ delDoc: false })}
+                    color="primary"
+                  >
+                    Cancel
+                  </Button>
+                  {this.state.Access.DeleteAccess === 1 ? (
+                    <Button
+                      onClick={() => this.handleDocumentDelete()}
+                      color="primary"
+                      autoFocus
+                    >
+                      Delete
+                    </Button>
+                  ) : null}
+                </DialogActions>
+              </Dialog>
             </div>
 
           </GridItem>
