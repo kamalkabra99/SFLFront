@@ -395,7 +395,9 @@ class Step1 extends React.Component {
       ETA: "",
       etaErr: false,
       etaHelperText: "",
+      Attachment:"",
       Attachments: [],
+      AttachmentsData:[],
       AttachmentList: [],
       Accounts: [],
       AccountList: [],
@@ -442,7 +444,10 @@ class Step1 extends React.Component {
  //   this.getServiceListFiltered(89);
  //   this.getPaperSizeList();
     this.setState({ LoginpersonId: CommonConfig.loggedInUserData().PersonID });
-
+    if(this.props.history.location.state!=undefined && this.props.history.location.state.id !="")
+    setTimeout(() => {
+      this.geteditBookofWork();
+    }, 1500);
   }
 
   getStatus() {debugger
@@ -569,6 +574,95 @@ class Step1 extends React.Component {
     }
   }
 
+  geteditBookofWork = () => {debugger
+    let data = {
+      BookofWorkID: this.props.history.location.state.id,
+    };
+    this.setState({ BookofWorkID: data.BookofWorkID });
+    try {
+      this.setState({ Loading: true });
+      api.post("contactUs/GetBookofWorkById/", data).then((result) => {
+        if (result.Data.success) {
+          var WorkData = result.Data;
+          // this.setState({ Loading: false });
+          // if (
+          //   result.data.data.NoteList != null &&
+          //   result.data.data.NoteList.length > 0
+          // ) {
+          //   var i = 0;
+          //   result.data.data.NoteList.map((Obj) => {
+          //     Obj.Index = i;
+          //     i++;
+          //     return Obj;
+          //   });
+          //   result.data.data.NoteList.map((Obj) => {
+          //     Obj.disabled = i;
+          //     i++;
+          //     return Obj;
+          //   });
+          //   this.setState({
+          //     notes: result.data.data.NoteList,
+          //     notesDisabled: true,
+          //   });
+          // }
+          // var managedBY = this.state.WorkingonRequest.find(
+          //   (x) => x.PersonID === result.data.data.WorkingOnRequest
+          // );
+          // var selectedManagedby = {};
+          // if (managedBY !== undefined && managedBY !== null) {
+          //   selectedManagedby = {
+          //     value: managedBY.PersonID,
+          //     label: managedBY.Name,
+          //   };
+          // }
+          var selectedAssignedBy = {};
+          selectedAssignedBy = {
+                value: WorkData.data.AssignedBy,
+                label: WorkData.data.AssignedByName,
+              };
+              var selectedAssignedTo = {};
+          selectedAssignedTo = {
+                value: WorkData.data.AssignedTo,
+                label: WorkData.data.AssignedToName,
+              };
+              var selectedPriority = {};
+              selectedPriority = {
+                    value: WorkData.data.Priority,
+                    label: WorkData.data.Priority,
+                  }; 
+                  var selectedWorkStatus = {};
+                  selectedWorkStatus = {
+                        value: WorkData.data.WorkStatus,
+                        label: WorkData.data.WorkStatus,
+                      }; 
+                      
+          this.setState({
+            AssignedBy: selectedAssignedBy,
+            AssignedTo: selectedAssignedTo,
+            DateCreated: WorkData.data.DateCreated,
+            WorkName:   WorkData.data.WorkName,
+            Description: WorkData.data.Description,
+            Attachment: WorkData.data.AttachmentPath,
+            Priority: selectedPriority,
+            ETA: WorkData.data.ETA,
+            Status: selectedWorkStatus,
+          });
+          this.setState({ Loading: false });
+         // this.handleAddNotesRow();
+        } else {
+          this.setState({ Loading: false });
+          cogoToast.error("Something Went Wrong");
+        }
+      });
+    } catch (err) {
+      this.setState({ Loading: false });
+      cogoToast.error("Something Went Wrong");
+    }
+  };
+
+
+
+
   fileUpload = (event) => {debugger
     const files = event.target.files[0];
     debugger;
@@ -605,11 +699,11 @@ class Step1 extends React.Component {
         //  var editfilename = files.name;
 
        
-        this.state.Attachments.push(AttachmentList)
+        this.state.AttachmentsData.push(AttachmentList)
 
         this.setState({
-          // Attachments: [AttachmentList, files],
-          AttachmentList: [...this.state.AttachmentList, files],
+           Attachments: AttachmentList,
+          AttachmentList:  AttachmentList,
         });
       }
     }
@@ -1556,11 +1650,11 @@ handleDateValidation = (date, type) => {
         debugger
         var data = {};
         var finalAttachment = [];
-        console.log("this.state.Attachments = ", this.state.Attachments)
-        console.log("this.state.Attachments = ", this.state.Attachments.length)
-        for (var i = 0; i < this.state.Attachments.length; i++) {
+        console.log("this.state.Attachments = ", this.state.AttachmentsData)
+        console.log("this.state.Attachments = ", this.state.AttachmentsData.length)
+        for (var i = 0; i < this.state.AttachmentsData.length; i++) {
           // if (this.state.AttachmentList[i].hasOwnProperty("AttachmentName")) {
-            finalAttachment.push(this.state.Attachments[i]);
+            finalAttachment.push(this.state.AttachmentsData[i]);
           // }
         }
 
@@ -1614,6 +1708,17 @@ handleDateValidation = (date, type) => {
                       // console.log("res.success",res.success);
                       this.hideLoader();
                       cogoToast.success(res.message);
+                      if (redirect) {
+                        this.props.history.push({
+                          pathname: "/admin/BookofWorkList",
+                          state: {
+                            filterlist: this.props.history.location.filterlist,
+                            sortlist: this.props.history.location.sortlist,
+                          },
+                        });
+                      } else {
+                        this.geteditBookofWork();
+                      }
             } else {
               cogoToast.error(res.message);
             }
@@ -2943,7 +3048,7 @@ handleDateValidation = (date, type) => {
       AssignedBy,
       AssignedTo,
       WorkName,
-     
+     Description,
       Priority,
       Status,
       ETA,
@@ -3183,10 +3288,10 @@ handleDateValidation = (date, type) => {
         Cell: (record) => {
           return (
             <div>
-              {record.original.AttachmentPath ? (
+              {this.state.Attachment !="" ? (
                 <div>
                   <a
-                    href={fileBase + record.original.AttachmentPath}
+                    href={fileBase + this.state.Attachment}
                     className="normal-btn sm-orange"
                     rel="noopener noreferrer"
                     target="_blank"
@@ -3194,7 +3299,7 @@ handleDateValidation = (date, type) => {
                     View File
                   </a>
                 </div>
-              ) : this.state.Access.WriteAccess === 1 ? (
+              ) :
                 <div>
                   <div className="custom-file-browse">
                     <span>Upload</span>
@@ -3208,7 +3313,7 @@ handleDateValidation = (date, type) => {
                   </div>
                   <p>{this.stringTruncate(record.original.AttachmentName)}</p>
                 </div>
-              ) : null}
+              }
             </div>
           );
         },
@@ -3413,9 +3518,9 @@ handleDateValidation = (date, type) => {
                             Description
                             <textarea
                            
-                              name="NoteText"
+                              name="Description"
                             //  disabled={notes.disabled}
-                            //  value={notes.NoteText}
+                              value={Description}
                               onChange={(event) =>
                                 this.handleChangeNotes(event/*, notes.Index*/)
                               }
@@ -3425,7 +3530,23 @@ handleDateValidation = (date, type) => {
                         </GridItem>
                         <GridItem xs={12} sm={12} md={4}>
                           <div>
-                          <div className="custom-file-browse">
+
+                          {this.state.Attachment !="" && this.state.Attachment !=null ? (
+                            <div>
+                              <a
+                                href={fileBase + this.state.Attachment}
+                                className="normal-btn sm-orange"
+                                rel="noopener noreferrer"
+                                target="_blank"
+                              >
+                                View File
+                              </a>
+                           </div>
+
+                          ):
+                          <div>
+                          
+                         <div className="custom-file-browse">
                             <label>
                               Upload a File    :</label>
                               <span>Browse</span>
@@ -3439,7 +3560,10 @@ handleDateValidation = (date, type) => {
                               
                             </div>
                             <p>{this.stringTruncate(this.state.Attachments.AttachmentName)}</p>
-                            </div>
+                        </div>
+                          }
+
+               </div>
                         </GridItem>
                         </GridContainer>
                       <GridContainer>
@@ -3553,11 +3677,11 @@ handleDateValidation = (date, type) => {
 
                   {/* <div> */}
                   {CommonConfig.isEmpty(this.props.location.state) ? null : (
-                    <Button color="rose" onClick={() => this.saveUser(false)}>
+                    <Button color="rose" onClick={() => this.saveWork(false)}>
                       Save
                     </Button>
                   )}
-                  <Button color="primary" onClick={() => this.saveUser(true)}>
+                  <Button color="primary" onClick={() => this.saveWork(true)}>
                     Save & Exit
                   </Button>
                   {/* </div> */}

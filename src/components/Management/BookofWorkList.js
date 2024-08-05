@@ -26,13 +26,14 @@ import Checkbox from "@material-ui/core/Checkbox";
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
-class CallBack extends Component {
+class BookofWorkList extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      CallbackData: [],
+      
       BookofWorkData:[],
       WorkStatusList:[],
+      WorkStatus:[],
       checkdata: "",
       AllAccess: 0,
       Loading: false,
@@ -69,7 +70,7 @@ class CallBack extends Component {
         APIcheck = false;
         //  this.filterMethod("", this.props.history.location.state.statusList);
         if (this.props.history.location.state.statusList[0].label === "All") {
-          let newfilter = [{ label: "New", value: "New" }];
+          let newfilter = [{ label: "To Do", value: "To Do" }];
           this.filterMethod("", newfilter);
         } else {
           this.filterMethod("", this.props.history.location.state.statusList);
@@ -77,11 +78,11 @@ class CallBack extends Component {
       }
     } else {
       var finalStatus = {
-        id: "RequestStatus",
+        id: "WorkStatus",
         value: "",
       };
       var finalSort = {
-        id: "CreatedOn",
+        id: "DateCreated",
         desc: true,
       };
       this.setState({
@@ -91,7 +92,7 @@ class CallBack extends Component {
     }
     debugger;
     if (APIcheck) {
-      let newFilter = [{ label: "New", value: "New" }];
+      let newFilter = [{ label: "To Do", value: "To Do" }];
       this.filterMethod("", newFilter);
     }
     this.getStatus();
@@ -105,7 +106,7 @@ class CallBack extends Component {
     this.setState({ Loading: false });
   };
   handleCheckboxChange = (e, record, type) => {
-    let checkedArr = this.state.requestStatus;
+    let checkedArr = this.state.WorkStatus;
     if (type !== "All") {
       checkedArr
         .filter((x) => x.value === "All")
@@ -137,7 +138,7 @@ class CallBack extends Component {
         this.state.checkdata = `All`;
       }
       this.setState({
-        requestStatus: checkedArr,
+        WorkStatus: checkedArr,
       });
     }
   };
@@ -151,14 +152,14 @@ class CallBack extends Component {
       } else if (inputdata === "") {
         this.setState({ BookofWorkData: [] });
       } else if (inputdata.length === 1) {
-        Query = ` AND ( c.WorkStatus  = "` + inputdata[0].value + `")`;
+        Query = ` AND ( bw.WorkStatus  = "` + inputdata[0].value + `")`;
       } else {
         for (var j = 0; j < inputdata.length; j++) {
           if (j === 0) {
-            Query = ` AND ( c.WorkStatus  = "` + inputdata[j].value + `"`;
+            Query = ` AND ( bw.WorkStatus  = "` + inputdata[j].value + `"`;
           } else {
             Query =
-              Query + ` OR c.WorkStatus  = "` + inputdata[j].value + `"`;
+              Query + ` OR bw.WorkStatus  = "` + inputdata[j].value + `"`;
           }
         }
         if (!CommonConfig.isEmpty(Query)) {
@@ -172,7 +173,7 @@ class CallBack extends Component {
       cogoToast.error("Something went wrong 3");
     }
   };
-  getBookofWorkData(whereClause) {
+  getBookofWorkData(whereClause) {debugger
     if (whereClause !== "") {
       console.log("whereclause", whereClause);
       let data = {};
@@ -184,12 +185,12 @@ class CallBack extends Component {
         api
           .post("contactUs/getBookofWorkList", data)
           .then((result) => {
-            if (result.data.success) {
+            if (result.success) {
               this.hideLoador();
               if (this.state.AllAccess === 1) {
-                this.setState({ BookofWorkData: result.data.data });
+                this.setState({ BookofWorkData: result.Data });
               } else {
-                let finalData = result.data.data.filter(
+                let finalData = result.Data.filter(
                   (x) => x.WorkingOnRequest === this.state.loggedUser
                 );
                 this.setState({ BookofWorkData: finalData });
@@ -212,17 +213,20 @@ class CallBack extends Component {
     }
   }
 
-  handleEdit(record) {
+    handleEdit(record) {debugger
     let BookofWorkID = record.original.BookofWorkID;
     this.props.history.push({
       pathname: "BookofWork/" + BookofWorkID,
       state: {
+        id: BookofWorkID,
         filterlist: this.state.filterProps,
         sortlist: this.state.sortProps,
         statusList: this.state.statusList,
       },
     });
   }
+
+
 
   filterMethod = (event, value) => {
     //let value = this.state.checkdata;
@@ -244,15 +248,15 @@ class CallBack extends Component {
             if (j === 0) {
               if (value.length === 1) {
                 StatusQuery =
-                  ` AND ( c.RequestStatus = "` + value[j].value + `")`;
+                  ` AND ( bw.WorkStatus = "` + value[j].value + `")`;
               } else {
                 StatusQuery =
-                  ` AND ( c.RequestStatus = "` + value[j].value + `"`;
+                  ` AND ( bw.WorkStatus = "` + value[j].value + `"`;
               }
             } else if (j + 1 === value.length) {
-              StatusQuery = ` OR c.RequestStatus = "` + value[j].value + `")`;
+              StatusQuery = ` OR bw.WorkStatus = "` + value[j].value + `")`;
             } else {
-              StatusQuery = ` OR c.RequestStatus = "` + value[j].value + `"`;
+              StatusQuery = ` OR bw.WorkStatus = "` + value[j].value + `"`;
             }
             query = query + StatusQuery;
           }
@@ -276,17 +280,17 @@ class CallBack extends Component {
       api
         .post("stringMap/getstringMap", data)
         .then((result) => {
-          let WorkStatus = result.data;
+          let WorkStatus1 = result.data;
           let resultStatus = [];
           var i =0;
           resultStatus.push({ value: "All", label: "All" ,IsSelected: false, Index: i++ });
-            WorkStatus.map((type) => {
+            WorkStatus1.map((type) => {
               
               resultStatus.push({ value: type.Description, label: type.Description ,IsSelected: false, Index: i++ });
             });
             resultStatus[i-1].IsSelected = true; 
             console.log("resultStatus",resultStatus);
-          this.setState({ requestStatus:resultStatus });
+          this.setState({ WorkStatus:resultStatus });
 
         })
         .catch((err) => {
@@ -345,19 +349,20 @@ class CallBack extends Component {
   };
 
   render() {
-    const { CallbackData } = this.state;
+    const { BookofWorkData } = this.state;
     const column = [
+     
       {
         Header: "Assigned By",
-        accessor: "AssignedBy",
-        width: 100,
+        accessor: "AssignedByName",
+        width: 150,
         filterable: true,
         sortable: true,
         maxWidth: 150,
       },
       {
         Header: "Assigned To",
-        accessor: "AsignedTo",
+        accessor: "AssignedToName",
         filterable: true,
         sortable: true,
         width: 100,
@@ -368,8 +373,8 @@ class CallBack extends Component {
         accessor: "DateCreated",
         filterable: true,
         sortable: true,
-        width: 200,
-        maxWidth: 450,
+        width: 100,
+        maxWidth: 250,
       },
       {
         Header: "Work Name",
@@ -385,28 +390,20 @@ class CallBack extends Component {
         accessor: "Priority",
         filterable: true,
         sortable: true,
+        width: 100,
+        maxWidth: 250,
+      },
+      {
+        Header: "Work Status",
+        accessor: "WorkStatus",
+        filterable: true,
+        sortable: true,
         width: 150,
         maxWidth: 250,
       },
       {
         id: "ETA",
         Header: "ETA",
-        filterable: true,
-        sortMethod: (a, b) => {
-          return CommonConfig.dateSortMethod(a, b);
-        },
-        sortable: true,
-        accessor: (data) => {
-          return moment(data.CreatedOn).format(
-            CommonConfig.dateFormat.dateOnly
-          );
-        },
-        width: 150,
-        maxWidth: 200,
-      },
-      {
-        id: "Status",
-        Header: "Status",
         filterable: true,
         sortMethod: (a, b) => {
           return CommonConfig.dateSortMethod(a, b);
@@ -499,7 +496,7 @@ class CallBack extends Component {
                   {this.state.IsDropDownShow === true ? (
                     <div className="cm-dropdown">
                       <div className="overflow-handle">
-                        {this.state.requestStatus.map((step, key) => {
+                        {this.state.WorkStatus.map((step, key) => {
                           return (
                             <li>
                               <label>
@@ -545,7 +542,7 @@ class CallBack extends Component {
             </CardHeader>
             <CardBody>
               <ReactTable
-                data={CallbackData}
+                data={BookofWorkData}
                 defaultPageSize={10}
                 minRows={2}
                 defaultSorted={this.state.previousSortList}
@@ -566,4 +563,4 @@ class CallBack extends Component {
     );
   }
 }
-export default CallBack;
+export default BookofWorkList;
