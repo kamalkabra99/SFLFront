@@ -79,8 +79,10 @@ class EmailReports extends Component {
       ],
       SFLEmailStatus: [
         { value: "Active", label: "Active" },
+        { value: "Complaints", label: "Complaints" },
         { value: "Hard Bounce", label: "Hard Bounce" },
         { value: "Unsubscribed", label: "Unsubscribed" },
+        
       ],
     };
   }

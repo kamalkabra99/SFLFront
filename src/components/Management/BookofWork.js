@@ -589,20 +589,26 @@ class Step1 extends React.Component {
       if (files.size > 5000000) {
         cogoToast.error("please upload the file maximum 5MB");
       } else {
-        let AttachmentList = this.state.Attachments;
+        let AttachmentList = this.state.AttachmentList;
        // let Index = this.state.Attachments.indexOf(record.original);
         let dateNow = new Date().getTime();
 
+        AttachmentList = {
+          DateTime:dateNow,
+          AttachmentName: files.name,
+          AttachmentType:files.type,
+          AttachmentID:null,
+          Status: "Active"
+
+        }
+
         //  var editfilename = files.name;
 
-        AttachmentList["DateTime"] = dateNow;
-        AttachmentList["AttachmentName"] = files.name;
+       
+        this.state.Attachments.push(AttachmentList)
 
-        AttachmentList["AttachmentType"] = files.type;
-        AttachmentList["AttachmentID"] = null;
-        AttachmentList["Status"] = "Active";
         this.setState({
-          Attachments: AttachmentList,
+          // Attachments: [AttachmentList, files],
           AttachmentList: [...this.state.AttachmentList, files],
         });
       }
@@ -1550,11 +1556,15 @@ handleDateValidation = (date, type) => {
         debugger
         var data = {};
         var finalAttachment = [];
-        for (var i = 0; i < this.state.AttachmentList.length; i++) {
-          if (this.state.AttachmentList[i].hasOwnProperty("AttachmentName")) {
-            finalAttachment.push(this.state.AttachmentList[i]);
-          }
+        console.log("this.state.Attachments = ", this.state.Attachments)
+        console.log("this.state.Attachments = ", this.state.Attachments.length)
+        for (var i = 0; i < this.state.Attachments.length; i++) {
+          // if (this.state.AttachmentList[i].hasOwnProperty("AttachmentName")) {
+            finalAttachment.push(this.state.Attachments[i]);
+          // }
         }
+
+        console.log("finalAttachment = ",finalAttachment)
    
         if (CommonConfig.isEmpty(this.state.BookofWorkID) !== true) {
           data = {
@@ -1601,7 +1611,9 @@ handleDateValidation = (date, type) => {
           .post(calledApi, formData)
           .then((res) => {
             if (res.success) {
-                      console.log("res.success",res.success);
+                      // console.log("res.success",res.success);
+                      this.hideLoader();
+                      cogoToast.success(res.message);
             } else {
               cogoToast.error(res.message);
             }

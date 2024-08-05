@@ -2526,7 +2526,7 @@ class Step1 extends React.Component {
       } catch (error) {
         this.hideLoader();
         console.log("SaveUser Error", error);
-        cogoToast.error("Something Went Wrong 9");
+        cogoToast.error("Something Went Wrong");
       }
     } else {
       cogoToast.error("Please correct error and resubmit the form");

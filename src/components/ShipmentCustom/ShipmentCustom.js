@@ -5521,7 +5521,7 @@ class ShipmentCustom extends React.Component {
       for (var i = Index; i < PackageList.length; i++) {
         if (PackageList[i]["Status"] === "Active") {
           PackageList[i]["PackageNumber"] = PackageList[i].PackageNumber - 1;
-          PackageList[i]["Sequence"] = PackageList[i].Sequence - 1;
+          // PackageList[i]["Sequence"] = PackageList[i].Sequence - 1;
         }
       }
 
@@ -10224,6 +10224,22 @@ class ShipmentCustom extends React.Component {
 
             console.log("pppppp111", objdata.manualTrackingData);
             if (this.state.createDuplicate == "1") {
+              if (objdata.shipments.shipment_type == "Ocean") {
+                  objdata.UserAdditionalData = {
+                    NameAsPerPassport: "",
+                    PassportNumber: "",
+                    YearsOutsideIndia: "",
+                    UserAdditionalDetailsID: null,
+                    StayInIndia: "",
+                    LatestArrivalDate: null,
+                    AppliedForTR: "",
+                    AbleToProvidePassport: "",
+                    VisaValidDate: null,
+                    VisaCategory: "",
+                    CustomClearanceDate:
+                       null,
+                  };
+              }
               var todayDate = new Date();
               const note1 = {
                 NoteText:
@@ -10350,6 +10366,9 @@ class ShipmentCustom extends React.Component {
                 }
               }
             }
+
+            
+
             console.log("objdata = ", objdata);
             var formData = new FormData();
             formData.append("data", JSON.stringify(objdata));
@@ -10358,6 +10377,7 @@ class ShipmentCustom extends React.Component {
                 formData.append("Attachments", file);
               });
             }
+            
             this.showLoader();
             try {
               api
