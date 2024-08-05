@@ -17,6 +17,7 @@ import WaterIcon from "@material-ui/icons/Waves";
 import MonetizationOnIcon from "@material-ui/icons/MonetizationOn";
 import Place from "@material-ui/icons/Place";
 import People from "@material-ui/icons/People";
+import Task from "@material-ui/icons/Archive";
 import AttachMoney from "@material-ui/icons/AttachMoney";
 import VendorListIcon from "@material-ui/icons/FormatListBulleted";
 import User from "@material-ui/icons/AccountBox";
@@ -152,6 +153,8 @@ export class ManagementNavigation extends Component {
           Icon: People,
           classname: "inactive",
         },
+       
+        
       ],
       navigate: "",
     };

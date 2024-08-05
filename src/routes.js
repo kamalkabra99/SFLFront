@@ -11,6 +11,8 @@ import Scheduleshipment from "components/Scheduleshipment/Scheduleshipment.js";
 import UserList from "components/Management/UserList";
 // import AddUser from "components/Management/Adduser";
 import AddUserNew from "components/Management/AddUserNew";
+import BookofWork from "components/Management/BookofWork";
+import BookofWorkList from "components/Management/BookofWorkList";
 //import VendorSearch from "components/Management/VendorSearch";
 import Vendor from "components/Management/Vendor/Vendor";
 //import EditVendor from "components/Management/EditVendor";
@@ -131,6 +133,7 @@ import AssignmentIcon from "@material-ui/icons/Assignment";
 import ChatManagement from "components/Management/ChatManagement";
 import GetQuoteLive from "components/GetQuote/GetQuoteLive";
 import GetQuoteThankyou from "components/GetQuote/GetQuoteThankyou";
+
 const Components = {
   GetRates: GetRates,
 };
@@ -813,6 +816,22 @@ var dashRoutes = [
     name: "Referred Management",
     icon: EditSalesLeadIcon,
     component: invoiceservice,
+    layout: "/admin",
+    invisible: false,
+  },
+  {
+    path: "/BookofWorkList",
+    name: "Book Of Work",
+    icon: VendorListIcon,
+    component: BookofWorkList,
+    layout: "/admin",
+    invisible: false,
+  },
+  {
+    path: "/BookofWork",
+    name: "Book Of Wor",
+    icon: EditSalesLeadIcon,
+    component: BookofWork,
     layout: "/admin",
     invisible: false,
   },
