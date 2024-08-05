@@ -919,7 +919,7 @@ class Step1 extends React.Component {
                   EndTime: userData.EmployeeData[0].EndTime == null ? "" : userData.EmployeeData[0].EndTime,
                   BirthDate: userData.EmployeeData[0].Birthdate == null ? "" : moment(userData.EmployeeData[0].Birthdate),
                   JoinDate: userData.EmployeeData[0].Joiningdate == null ? "" : moment(userData.EmployeeData[0].Joiningdate),
-                  RelivingDate: userData.EmployeeData[0].Relivingdate == null ? "" : oment(userData.EmployeeData[0].Relivingdate),
+                  RelivingDate: userData.EmployeeData[0].Relivingdate == null ? "" : moment(userData.EmployeeData[0].Relivingdate),
                   UsertypeAddressLine1: userData.EmployeeData[0].Addr1,
                   UsertypeAddressLine2: userData.EmployeeData[0].Addr2,
                   UsertypeCountry: selectedCountry,
@@ -2862,24 +2862,7 @@ class Step1 extends React.Component {
         if (res.success) {
           debugger;
 
-          if (res.data.data[0].length > 0) {
-            var response = res.data.data[0];
-            this.state.Attachments.length = 0;
-
-            for (var i = 0; i < response.length; i++) {
-              var filesList = response[i];
-              filesList.CreatedOn = moment(filesList.CreatedOn).format(
-                CommonConfig.dateFormat.dateOnly
-              );
-              this.state.Attachments.push(filesList);
-            }
-            this.setState({
-              Attachments: [
-                ...this.state.Attachments,
-                this.state.objAttachment,
-              ],
-            });
-          }
+          this.getUserDetail();
           this.hideLoader();
           //cogoToast.success("Document delete from the Server");
         }
@@ -2888,10 +2871,9 @@ class Step1 extends React.Component {
         console.log("error", err);
       });
 
-    var AttachmentList = this.state.Attachments;
-    var Index = AttachmentList.indexOf(this.state.recordDocument);
-    AttachmentList[Index]["Status"] = "Inactive";
-    this.setState({ Attachments: AttachmentList, delDoc: false });
+    
+    this.setState({  delDoc: false });
+    
   };
 
   zipChange = (zip, type) => {
