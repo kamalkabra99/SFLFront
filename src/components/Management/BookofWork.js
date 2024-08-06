@@ -440,8 +440,8 @@ class Step1 extends React.Component {
     try {
       let data = {
         ShippingID:
-          this.props.location.state && this.props.location.state.ShipppingID
-            ? this.props.location.state.ShipppingID
+          this.props.location.state && this.props.history.location.state.id
+            ? this.props.history.location.state.id
             : null,
       };
       api
@@ -1714,7 +1714,7 @@ handleDateValidation = (date, type) => {
           data = {
             BookofWorkID:this.state.BookofWorkID,
             AssignedBy: this.state.AssignedBy.value,
-            DocumentList: finalAttachment,
+            Attachments: finalAttachment,
             AssignedTo: this.state.AssignedTo.value,
             DateCreated: moment(this.state.DateCreated).format(CommonConfig.dateFormat.dbDateOnly).toString(),
             WorkName: this.state.WorkName,
@@ -1731,7 +1731,7 @@ handleDateValidation = (date, type) => {
         data = {
           AssignedBy: this.state.AssignedBy.value,
           AssignedTo: this.state.AssignedTo.value,
-          DocumentList: finalAttachment,
+          Attachments: finalAttachment,
           DateCreated: moment(this.state.DateCreated).format(CommonConfig.dateFormat.dbDateOnly).toString(),
           WorkName: this.state.WorkName,
           Description: this.state.Description,
