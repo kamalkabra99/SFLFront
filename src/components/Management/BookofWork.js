@@ -37,8 +37,9 @@ import Checkbox from "@material-ui/core/Checkbox";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import ReactTable from "react-table";
 import DeleteIcon from "@material-ui/icons/Delete";
+import Note from "@material-ui/icons/Assessment";
 import { fileBase } from "../../utils/config";
-import { Attachment, Description } from "@material-ui/icons";
+import { Attachment, Description, Notes } from "@material-ui/icons";
 import Tooltip from "@material-ui/core/Tooltip";
 import HelpIcon from "@material-ui/icons/Help";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
@@ -48,6 +49,8 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
+import momentTimezone from "moment-timezone";
+import InfoIcon from "@material-ui/icons/PriorityHigh";
 const useStyles = makeStyles(styles);
 
 const classes = () => {
@@ -237,7 +240,7 @@ class Step1 extends React.Component {
       assignedByList: [],
       BookofWorkID:"",
       PaperSizePreviewData:"",
-
+      AssignedBySelected: CommonConfig.loggedInUserData().Name,
       CompanyName: "",
       companyNameErr: false,
       companyNameHelperText: "",
@@ -255,30 +258,11 @@ class Step1 extends React.Component {
       descriptionHelperText: "",
       checkDescription: false,
 
-      AddressLine2: "",
-      checkAddressLine2: false,
-      addressLine2Err: false,
-      addressLine2HelperText: "",
+      
 
-      AddressLine3: "",
-      checkAddressLine3: false,
-      addressLine3Err: false,
-      addressLine3HelperText: "",
 
-      ZipCode: "",
-      zipCodeErr: false,
-      zipCodeHelperText: "",
-      checkZipCode: false,
 
-      City: "",
-      cityErr: false,
-      cityHelperText: "",
-      checkCity: false,
-
-      State: "",
-      stateErr: false,
-      stateHelperText: "",
-      checkState: false,
+      
       WorkStatusList:[],
       Status: "",
       statusErr: false,
@@ -295,74 +279,10 @@ class Step1 extends React.Component {
       priorityErr: false,
       priorityHelperText: "",
       priorityStatus:false,
-
-      checkcurrency: false,
-      currencyErr: false,
-      currencyHelperText: "",
-      Currency: "",
-      checkCurrency: false,
-
-      UsertypeAddressLine1: "",
-      UsertypeaddressLine1Err: false,
-      UsertypeaddressLine1HelperText: "",
-      UsertypecheckAddressLine1: false,
-
-      UsertypeAddressLine2: "",
-      UsertypecheckAddressLine2: false,
-      UsertypeaddressLine2Err: false,
-      UsertypeaddressLine2HelperText: "",
-
-      UsertypeZipCode: "",
-      UsertypezipCodeErr: false,
-      UsertypezipCodeHelperText: "",
-      UsertypecheckZipCode: false,
-
-      UsertypeCity: "",
-      UsertypecityErr: false,
-      UsertypecityHelperText: "",
-      UsertypecheckCity: false,
-
-      UsertypeState: "",
-      UsertypestateErr: false,
-      UsertypestateHelperText: "",
-      UsertypecheckState: false,
-
-      UsertypeCountry: "",
-      UserTypeCountryList: [],
-      UsertypecountryErr: false,
-      UserTypecountryHelperText: "",
-
-      Usertypeemployeeid: "",
-      userTypeEmployeeIdErr: false,
-      userTypeEmployeeIdHelperText: "",
-      checkuserTypeEmployeeId: false,
-
-      CityAutoComplete: false,
-      StateAutoComplete: false,
-      GoogleAPICityList: [],
-      StateList: [],
-
-      UsertypeCityAutoComplete: false,
-      UsertypeStateAutoComplete: false,
-      UsertypeGoogleAPICityList: [],
-      UsertypeStateList: [],
-
-      UsertypeSalary: "",
-      UsertypesalaryErr: false,
-      UsertypesalaryHelperText: "",
-      Usertypechecksalary: false,
-
-
-      Mobile1: "",
-      Mobile1ID: null,
-      mobile1Err: false,
-      mobile1HelperText: "",
-      checkMobile1: false,
-      UsertypeMobile1: "",
-      UsertypeMobile1ID: null,
-      Usertypemobile1Err: false,
-      Usertypemobile1HelperText: "",
-      UsertypecheckMobile1: false,
+      notes: [],
+      notesDisabled: true,
+      noteErr: false,
+      isNotesVisible: true,
       EntityID: "",
       bankList: [],
       UserDetailID: null,
@@ -428,7 +348,7 @@ class Step1 extends React.Component {
     };
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     debugger
    // this.getDepartment();
   //  this.getAccountType();
@@ -439,6 +359,8 @@ class Step1 extends React.Component {
   this.getAssignedBy();
   this.getStatus();
   this.getPriority();
+  await this.getnotesByID();
+
   //  this.getManagedBy();
  //   this.getUserDetail();
  //   this.getServiceListFiltered(89);
@@ -514,6 +436,108 @@ class Step1 extends React.Component {
     }
   }
 
+  getnotesByID() {
+    try {
+      let data = {
+        ShippingID:
+          this.props.location.state && this.props.location.state.ShipppingID
+            ? this.props.location.state.ShipppingID
+            : null,
+      };
+      api
+        .post("contactUs/getBookofWorkNotesByID", data)
+        .then((result) => {
+          var i = 0;
+          result.data.map((Obj) => {
+            Obj.Index = i;
+            i++;
+            return Obj;
+          });
+          result.data.map((Obj) => {
+            Obj.disabled = i;
+            i++;
+            return Obj;
+          });
+          if (result.data.length > 0) {
+            this.setState({ isNotesVisible: true });
+          }
+          this.setState({ notes: result.data });
+          this.handleAddNotesRow();
+        })
+        .catch((err) => {
+          console.log("error......", err);
+        });
+    } catch (err) {
+      console.log("error", err);
+    }
+  }
+  handleAddNotesRow = () => {
+    var addnotes = this.state.notes.filter(
+      (x) => x.Status === "Active" && (x.NoteText === null || x.NoteText === "")
+    );
+    if (addnotes.length === 0) {
+      var todayDate = new Date();
+      const note = {
+        NoteText: "",
+        NoteType: null,
+        NoteTitle: null,
+        Status: "Active",
+        AttachmentID: null,
+        AttachmentType: null,
+        AttachmentName: null,
+        CreatedOn: moment(todayDate).format(CommonConfig.dateFormat.dateTime),
+        disabled: false,
+        closebutton: true,
+        CreatedBy: CommonConfig.loggedInUserData().PersonID,
+        NoteID: null,
+        CreatedByNote: CommonConfig.loggedInUserData().Name,
+        AddedBy: CommonConfig.loggedInUserData().Name,
+        Index: this.state.notes.length + 1,
+      };
+      this.setState({
+        notesDisabled: false,
+        notes: [...this.state.notes, note],
+      });
+    } else {
+      cogoToast.error("Please fill above note first");
+    }
+  };
+
+  handleChangeNotes = (event, idx) => {
+    const { value } = event.target;
+    const notes = [...this.state.notes];
+    var noteIndex = notes.findIndex((x) => x.Index === idx);
+    if (noteIndex !== -1) {
+      notes[noteIndex]["NoteText"] = value;
+      if (
+        notes[noteIndex]["NoteText"] === null ||
+        notes[noteIndex]["NoteText"] === ""
+      ) {
+        this.setState({ noteErr: true });
+      } else {
+        this.setState({ noteErr: false });
+      }
+    }
+    this.setState({ notes: notes });
+  };
+
+  handleNotesRemoveRow = (Index) => {
+    const removeNotes = [...this.state.notes];
+    var noteIndex = this.state.notes.findIndex((x) => x.Index === Index);
+    if (noteIndex !== -1) {
+      removeNotes[noteIndex]["Status"] = "Inactive";
+      removeNotes[noteIndex]["AttachmentStatus"] = "Inactive";
+      this.setState({ notes: removeNotes });
+      // if (removeNotes.filter((x) => x.Status === "Active").length === 0) {
+      //   this.handleAddNotesRow();
+      // }
+      if (removeNotes.filter((x) => x.Status === "Active").length === 0) {
+        this.setState({
+          isNotesVisible: false,
+        });
+      }
+    }
+  };
 
 
   getStates(countryData, type) {
@@ -635,7 +659,9 @@ class Step1 extends React.Component {
                         value: WorkData.data.WorkStatus,
                         label: WorkData.data.WorkStatus,
                       }; 
-                      
+                      var FinalNotes = this.state.notes.filter(
+                        (x) => x.NoteText !== "" && x.NoteText !== null
+                      );
           this.setState({
             AssignedBy: selectedAssignedBy,
             AssignedTo: selectedAssignedTo,
@@ -646,7 +672,9 @@ class Step1 extends React.Component {
             Priority: selectedPriority,
             ETA: WorkData.data.ETA,
             Status: selectedWorkStatus,
+            notes:FinalNotes,
           });
+      
           this.setState({ Loading: false });
          // this.handleAddNotesRow();
         } else {
@@ -1071,7 +1099,7 @@ class Step1 extends React.Component {
     this.setState({ Loading: false });
   };
 
-  handleChange = (event, type) => {
+  handleChangeValidation = (event, type) => {
     
     if (type === "WorkName") {
       this.setState({ checkWorkName: true });
@@ -1096,6 +1124,22 @@ class Step1 extends React.Component {
         });
       }
     } 
+   
+    
+  };
+  handleChange = (event, type) => {
+    
+    if (type === "WorkName") {
+      this.setState({ checkWorkName: true });
+      let worknameval = event.target.value;
+      
+        this.setState({
+          WorkName: worknameval,
+          workNameErr: false,
+          workNameHelperText: "",
+        });
+      
+    } 
     else
     if (type === "Description") {
         this.setState({
@@ -1107,7 +1151,7 @@ class Step1 extends React.Component {
     
   };
 
-  handleChangeNotes = (event) => {
+  handleChangeDes = (event) => {
     const { value } = event.target;
     
     this.setState({ Description: value });
@@ -1640,6 +1684,9 @@ handleDateValidation = (date, type) => {
       }
     });
   };
+  deleteBookOfWork=()=>{
+    this.showLoader();
+  }
   saveWork = (redirect) => {
     debugger
     if (this.validate()) {
@@ -1649,6 +1696,9 @@ handleDateValidation = (date, type) => {
        
         debugger
         var data = {};
+        var FinalNotes = this.state.notes.filter(
+          (x) => x.NoteText !== "" && x.NoteText !== null
+        );
         var finalAttachment = [];
         console.log("this.state.Attachments = ", this.state.AttachmentsData)
         console.log("this.state.Attachments = ", this.state.AttachmentsData.length)
@@ -1673,6 +1723,7 @@ handleDateValidation = (date, type) => {
             ETA: this.state.ETA !=""?moment(this.state.ETA).format(CommonConfig.dateFormat.dbDateOnly).toString():"",
             WorkStatus: this.state.Status.value,
             UpdatedBy:CommonConfig.loggedInUserData().PersonID,
+            notes:FinalNotes,
           };
       
         }
@@ -1688,6 +1739,7 @@ handleDateValidation = (date, type) => {
           ETA: this.state.ETA !=""?moment(this.state.ETA).format(CommonConfig.dateFormat.dbDateOnly).toString():"",
           WorkStatus: this.state.Status.value,
           CreatedBy:CommonConfig.loggedInUserData().PersonID,
+          notes:FinalNotes,
         };
         console.log("Book Of Work Data",data)
         var formData = new FormData();
@@ -2839,6 +2891,90 @@ handleDateValidation = (date, type) => {
 
   };
 
+  viewNotes = () => {
+    return this.state.notes
+      .filter((x) => x.Status === "Active")
+      .map((notes, idx) => {
+        return (
+          <tr>
+            <td style={{ width: "154px" }}>
+              {momentTimezone(notes.CreatedOn)
+                .tz(CommonConfig.UStimezone)
+                .format(CommonConfig.dateFormat.dateTime)}
+            </td>
+            <td>
+              {notes.disabled ? (
+                <p
+                  id="noteText"
+                  dangerouslySetInnerHTML={{
+                    __html: notes.NoteText.replace(/\r?\n/g, "<br />"),
+                  }}
+                ></p>
+              ) : (
+                <div className="table-textarea">
+                  <textarea
+                    name="NoteText"
+                    disabled={notes.disabled}
+                    value={notes.NoteText}
+                    onChange={(event) =>
+                      this.handleChangeNotes(event, notes.Index)
+                    }
+                  ></textarea>
+                </div>
+              )}
+            </td>
+            <td className="pck-action-column">
+              <div className="pck-subbtn">
+                {/* {this.state.DeleteAccess === 1? */}
+                <Button
+                  justIcon
+                  color="danger"
+                  className="Plus-btn "
+                  onClick={() => this.handleNotesRemoveRow(notes.Index)}
+                  disabled={this.state.notesDisabled}
+                >
+                  <i className={"fas fa-minus"} />
+                </Button>
+                {this.state.notes.filter((x) => x.Status === "Active")
+                  .length ===
+                idx + 1 ? (
+                  <Button
+                    justIcon
+                    color="facebook"
+                    onClick={() => this.handleAddNotesRow()}
+                    className="Plus-btn "
+                  >
+                    <i className={"fas fa-plus"} />
+                  </Button>
+                ) : null}
+                <Tooltip title={notes.CreatedByNote} arrow>
+                  <Button
+                    className="Plus-btn info-icon"
+                    justIcon
+                    color="twitter"
+                  >
+                    <InfoIcon />
+                  </Button>
+                </Tooltip>
+              </div>
+            </td>
+          </tr>
+        );
+      });
+  };
+
+  showDiv = (type, packageType) => {
+    this.setState({
+      [type]: true,
+    });
+   
+    if (
+      packageType === "NotesVisible" &&
+      this.state.notes.filter((x) => x.Status === "Active").length === 0
+    ) {
+      this.handleAddNotesRow();
+    }
+  };
   handleZipBlur = (e, type) => {
     if (type === "zip") {
       this.zipChange(e.target.value, "All");
@@ -3044,7 +3180,7 @@ handleDateValidation = (date, type) => {
 
   render() {
     const {
-      
+      isNotesVisible,
       AssignedBy,
       AssignedTo,
       WorkName,
@@ -3052,7 +3188,7 @@ handleDateValidation = (date, type) => {
       Priority,
       Status,
       ETA,
-      
+      AssignedBySelected,
      
     } = this.state;
 
@@ -3076,317 +3212,14 @@ handleDateValidation = (date, type) => {
       return { value: type.value, label: type.label };
     });
 
-    const userTypeDepartmentDrop = this.state.usertypeDepartmentList.map((type) => {
-
-      return { value: type.Description, label: type.Description };
-    });
 
 
-    const userTypeTimeZone = this.state.UserTypeTimeZoneList.map((type) => {
-      return { value: type.value, label: type.label };
-    });
-    const userTypeCurrencyDrop = this.state.usertypeCurrencyList.map((type) => {
-      return { value: type.value, label: type.label };
-    });
-
-    const userType = this.state.UserTypeList.map((type) => {
-      return { value: type.value, label: type.label };
-    });
-
-    const CityOptions = this.state.GoogleAPICityList.map((city) => {
-      return { value: city.City_code, label: city.Name };
-    });
-    const usertypeCityOptions = this.state.GoogleAPICityList.map((UsertypeCity) => {
-      return { value: UsertypeCity.City_code, label: UsertypeCity.Name };
-    });
-    const StateOptions = this.state.StateList.map((state) => {
-      return { value: state.StateName, label: state.StateName };
-    });
-    const UsertypeStateOptions = this.state.UsertypeStateList.map((UsertypeState) => {
-      return { value: UsertypeState.StateName, label: UsertypeState.StateName };
-    });
-    const CountryOptions = this.state.CountryList.map((fromCountry) => {
-      return { value: fromCountry.CountryID, label: fromCountry.CountryName };
-    });
-    const UsertypeCountryOptions = this.state.CountryList.map((UsertypeCountry) => {
-      return { value: UsertypeCountry.CountryID, label: UsertypeCountry.CountryName };
-    });
-    const columns1 = [
-      {
-        Header: "Country",
-        accessor: "CountryName",
-        width: 110,
-        maxWidth: 110,
-      },
-      {
-        Header: "Shipment Type",
-        accessor: "ServiceType",
-        width: 110,
-        maxWidth: 110,
-      },
-      {
-        Header: "Service Name",
-        accessor: "MainServiceName",
-        width: 100,
-        maxWidth: 100,
-      },
-      {
-        Header: "Sub Service Name",
-        accessor: "ServiceName",
-        width: 320,
-        maxWidth: 320,
-      },
-      {
-        Header: "Display Name",
-        accessor: "DisplayName",
-        width: 180,
-        maxWidth: 180,
-      },
-      {
-        Header: "Package Markup",
-        accessor: "Markup",
-        width: 120,
-        maxWidth: 120,
-        Cell: (record) => {
-          return (
-            <div className="table-common-btn">
-              <input
-                size={10}
-                type="text"
-                name={"Markup" + record.original.ServiceID}
-                id={"Markup" + record.original.ServiceID}
-                className="form-control"
-                value={record.original.Markup}
-                onChange={(event) =>
-                  this.handledInput(event, record.original.ServiceID, record.original.MarkupType, "Markup")
-                }
-                onBlur={(e) =>
-                  this.handleBlur(e, record.original.ServiceID, record.original.MarkupType, "Markup")
-                }
-              />
-            </div>
-          );
-        },
-      },
-      {
-        Header: "Envelop Markup",
-        accessor: "test",
-        width: 120,
-        sortMethod: (a, b) => {
-          return CommonConfig.dateSortMethod(a, b);
-        },
-        maxWidth: 120,
-        Cell: (record) => {
-          console.log("record = ", record)
-          console.log("record = ", record.index)
-          var ids = "EnvelopMarkup" + record.original.ServiceID;
-          return (
-            <div className="table-common-btn">
-
-              <input
-                size={10}
-                type="text"
-                name={"EnvelopMarkup" + record.original.ServiceID}
-                id={"EnvelopMarkup" + record.original.ServiceID}
-                className="form-control"
-                value={record.original.EnvelopMarkup}
-
-                onChange={(event) =>
-                  this.handledInput(event, record.original.ServiceID, record.original.MarkupType, "EnvelopMarkup")
-                }
-                onBlur={(e) =>
-                  this.handleBlur(e, record.original.ServiceID, record.original.MarkupType, "EnvelopMarkup")
-                }
-              />
-
-            </div>
-          );
-        },
-      },
-      {
-        Header: "Markup Type",
-        accessor: "MarkupType",
-        width: 100,
-        maxWidth: 100,
-        Cell: (record) => {
-          return (<FormControl className={classes.selectFormControl}>
-            <Select
-              size={50}
-              MenuProps={{ className: classes.selectMenu }}
-              classes={{ select: classes.select }}
-              value={record.original.MarkupType}
-              inputProps={{
-                name: "simpleSelect",
-                id: "simple-select",
-              }}
-              onChange={(event) => this.handledropdown(event, record.original.ServiceID)}
-            >
-              <MenuItem
-                classes={{
-                  root: classes.selectMenuItem,
-                  selected: classes.selectMenuItemSelected,
-                }}
-                value="Percentage"
-              >
-                Percentage
-              </MenuItem>
-              <MenuItem
-                classes={{
-                  root: classes.selectMenuItem,
-                  selected: classes.selectMenuItemSelected,
-                }}
-                value="USD"
-              >
-                USD
-              </MenuItem>
-            </Select>
-          </FormControl>
-
-          );
-        },
-
-
-
-
-      },
-      {
-        Header: "Status",
-        accessor: "Status",
-        width: 80,
-      }
-    ];
-
-    const columns = [
-      {
-        Header: "Document Name",
-        accessor: "FileName",
-        width: 220,
-        maxWidth: 220,
-        Cell: this.renderDocumentName,
-      },
-      {
-        Header: "CreatedOn",
-        accessor: "CreatedOn",
-        width: 220,
-        sortMethod: (a, b) => {
-          return CommonConfig.dateSortMethod(a, b);
-        },
-        maxWidth: 220,
-      },
-      {
-        Header: "Added By",
-        accessor: "Description",
-        width: 280,
-        maxWidth: 280,
-      },
-      {
-        Header: "Attachment",
-        accessor: "actions",
-        width: 80,
-        filterable: false,
-        sortable: false,
-        Cell: (record) => {
-          return (
-            <div>
-              {this.state.Attachment !="" ? (
-                <div>
-                  <a
-                    href={fileBase + this.state.Attachment}
-                    className="normal-btn sm-orange"
-                    rel="noopener noreferrer"
-                    target="_blank"
-                  >
-                    View File
-                  </a>
-                </div>
-              ) :
-                <div>
-                  <div className="custom-file-browse">
-                    <span>Upload</span>
-                    <input
-                      type="file"
-                      name="selectedfile"
-                      id="file"
-                      style={{ width: 140, border: 0 }}
-                      onChange={(event) => this.fileUpload(event, record)}
-                    />
-                  </div>
-                  <p>{this.stringTruncate(record.original.AttachmentName)}</p>
-                </div>
-              }
-            </div>
-          );
-        },
-      },
-      {
-        width: 100,
-        filterable: false,
-        sortable: false,
-        Header: "Actions",
-        Cell: (record) => {
-          return record.original.AttachmentPath ? (
-            <div className="align-right">
-              {this.state.Access.DeleteAccess === 1 ? (
-                <DeleteIcon
-                  onClick={(e) => this.DeleteDocument(e, record.original)}
-                />
-              ) : null}
-            </div>
-          ) : this.state.Attachments.filter((x) => x.Status === "Active")
-            .length ===
-            record.index + 1 ? (
-            <div className="align-right">
-              <Icon color="secondary" onClick={() => this.AddNewRowData()}>
-                add_circle
-              </Icon>
-            </div>
-          ) : null;
-        },
-      },
-    ];
-
+   
     return (
       <div>
         <GridContainer className="MuiGrid-justify-xs-center">
-          <GridItem xs={12} sm={12} md={4}>
-            <div className="shipment-nav">
-              <ul>
-                {this.state.Steps.map((step, key) => {
-                  return (
-                    this.state.isAccountAlready == false && step.stepName != "Markup Details" ? (
-                      <li>
-                        <a
-                          className={step.classname}
-                          href="#"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            this.navigateChange(key);
-                          }}
-                        >
-                          <span>{/*console.log("lok",this.state.AccountNumber,"esh ",step.stepName)*/}{step.stepName}</span>
-                        </a>
-                      </li>) : this.state.isAccountAlready == true ? (
-                        <li>
-                          <a
-                            className={step.classname}
-                            href="#"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              this.navigateChange(key);
-                            }}
-                          >
-                            <span>{console.log("lok", this.state.AccountNumber, "esh ", step.stepName)}{step.stepName}</span>
-                          </a>
-                        </li>) : ("")
-                  );
-                })}
-              </ul>
-            </div>
-            </GridItem>
+       
             <div className="shipment-content mt-30">
-            
-
-                
                   <div className="shipment-pane mt-20" id="bookofwork">
                   <Card>
                     <CardHeader className="btn-right-outer" color="primary" icon>
@@ -3400,6 +3233,7 @@ handleDateValidation = (date, type) => {
                     <Cardbody>
                       <GridContainer>
                       <GridItem xs={12} sm={12} md={3}>
+          
                           <Autocomplete
                             id="AssignedBy"
                             options={assignedByDrop}
@@ -3491,7 +3325,7 @@ handleDateValidation = (date, type) => {
                                   workNameHelperText: "",
                                 }),
                               onBlur: (event) =>
-                                this.handleChange(event, "WorkName"),
+                                this.handleChangeValidation(event, "WorkName"),
                               onChange: (event) =>
                                 this.handleChange(event, "WorkName"),
                               value: WorkName,
@@ -3511,21 +3345,20 @@ handleDateValidation = (date, type) => {
                           />
                         </GridItem>
                       </GridContainer>
-                      <GridContainer>
+                      <GridContainer className="mt-20">
                         <GridItem xs={12} sm={12} md={8}>
-                          <div className="table-textarea">
-                           <label>
-                            Description
+                          <div className="material-textarea">
+                           <label className="mui-custom-label">Description</label>
                             <textarea
                            
                               name="Description"
                             //  disabled={notes.disabled}
                               value={Description}
                               onChange={(event) =>
-                                this.handleChangeNotes(event/*, notes.Index*/)
+                                this.handleChangeDes(event/*, notes.Index*/)
                               }
                             ></textarea>
-                            </label>
+                            
                           </div>
                         </GridItem>
                         <GridItem xs={12} sm={12} md={4}>
@@ -3546,20 +3379,20 @@ handleDateValidation = (date, type) => {
                           ):
                           <div>
                           
-                         <div className="custom-file-browse">
-                            <label>
-                              Upload a File    :</label>
-                              <span>Browse</span>
-                              <input
-                                type="file"
-                                name="selectedfile"
-                                id="file"
-                                style={{ width: 140, border: 0 }}
-                                onChange={(event) => this.fileUpload(event)}
-                              />
-                              
+                            <div className="file-upload-input">
+                              <label className="mui-custom-label">Upload a File    :</label>
+                              <div className="fui-inner"> 
+                                <span>Browse</span>
+                                <input
+                                  type="file"
+                                  name="selectedfile"
+                                  id="file"
+                                  onChange={(event) => this.fileUpload(event)}
+                                />
+                                <p>{this.stringTruncate(this.state.Attachments.AttachmentName)}</p>  
+                              </div>
                             </div>
-                            <p>{this.stringTruncate(this.state.Attachments.AttachmentName)}</p>
+                            
                         </div>
                           }
 
@@ -3651,7 +3484,53 @@ handleDateValidation = (date, type) => {
                    
                     </Cardbody>
                   </Card>
-                   
+                  <Card>
+                      <CardHeader className="btn-right-outer" color="primary" icon>
+                        <CardIcon color="primary">
+                          <Note />
+                        </CardIcon>
+                        <h4 className="margin-right-auto text-color-black">Notes</h4>
+                        <div style={{ textAlign: "right", marginTop: "12px" }}>
+                          {this.state.notes.filter((x) => x.Status === "Active")
+                            .length === 0 ? (
+                            // <i onClick={() => this.showDiv("isInvoiceVisible","Invoice")} class="fas fa-car"></i>
+                            // <img
+                            //   style={{ width: "32px", marginLeft: "20px" }}
+                            //   src={carSVG}
+                            //   onClick={() =>
+                            //     this.showDiv("isNotesVisible", "NotesVisible")
+                            //   }
+                            // />
+                            <Button
+                              onClick={() =>
+                                this.showDiv("isNotesVisible", "NotesVisible")
+                              }
+                              style={{ width: "70px", height: "20px" }}
+                              color="primary"
+                            >
+                              Open
+                            </Button>
+                          ) : null}
+                        </div>
+                      </CardHeader>
+
+                      <div className="notes-table">
+                        {isNotesVisible ? (
+                          <div className="package-table">
+                            <table>
+                              <thead>
+                                <tr>
+                                  <th>Date</th>
+                                  <th>Comments</th>
+                                  <th>Action</th>
+                                </tr>
+                              </thead>
+                              <tbody>{this.viewNotes()}</tbody>
+                            </table>
+                          </div>
+                        ) : null}
+                      </div>
+                  </Card>
                  
                   </div>
                 </div>
@@ -3664,7 +3543,7 @@ handleDateValidation = (date, type) => {
                   <Button
                     justify="center"
                     color="danger"
-                    onClick={() => this.deleteUser()}
+                    onClick={() => this.deleteBookOfWork()}
                   >
                     Delete
                   </Button>

@@ -70,7 +70,7 @@ class BookofWorkList extends Component {
         APIcheck = false;
         //  this.filterMethod("", this.props.history.location.state.statusList);
         if (this.props.history.location.state.statusList[0].label === "All") {
-          let newfilter = [{ label: "To Do", value: "To Do" }];
+          let newfilter =[{ label: "New", value: "New" },{ label: "Open", value: "Open" }];
           this.filterMethod("", newfilter);
         } else {
           this.filterMethod("", this.props.history.location.state.statusList);
@@ -92,7 +92,7 @@ class BookofWorkList extends Component {
     }
     debugger;
     if (APIcheck) {
-      let newFilter = [{ label: "To Do", value: "To Do" }];
+      let newFilter = [{ label: "New", value: "New" },{ label: "Open", value: "Open" }];
       this.filterMethod("", newFilter);
     }
     this.getStatus();
@@ -286,9 +286,9 @@ class BookofWorkList extends Component {
           resultStatus.push({ value: "All", label: "All" ,IsSelected: false, Index: i++ });
             WorkStatus1.map((type) => {
               
-              resultStatus.push({ value: type.Description, label: type.Description ,IsSelected: false, Index: i++ });
+              type.Description == "New" || type.Description == "Open"?resultStatus.push({ value: type.Description, label: type.Description ,IsSelected: true, Index: i++ }):resultStatus.push({ value: type.Description, label: type.Description ,IsSelected: false, Index: i++ });
             });
-            resultStatus[i-1].IsSelected = true; 
+           
             console.log("resultStatus",resultStatus);
           this.setState({ WorkStatus:resultStatus });
 
@@ -532,7 +532,7 @@ class BookofWorkList extends Component {
                   </Button>
                 <Button
                 color="primary"
-                className=""
+                className="wd-auto"
                 onClick={() => this.BookofWork()}
               >
                 Add New Work
