@@ -6682,3 +6682,67 @@ button.file-doc {
 .zindex99 {
   z-index: 99;
 }
+
+.file-upload-input {
+  width: 100%;
+}
+
+.fui-inner {
+  width: 100%;
+  position: relative;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  padding: 6px 0 6px 90px;
+  min-height: 50px;
+}
+
+.fui-inner span {
+  background: #e91e63;
+  border-radius: 4px;
+  padding: 8px 13px;
+  color: #fff;
+  position: absolute;
+  left: 0;
+  top: 5px;
+}
+
+.fui-inner input {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+}
+
+.fui-inner p {
+  width: 100%;
+  margin: 0;
+  padding: 8px 0px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mui-custom-label {
+  color: rgba(0, 0, 0, 0.54);
+  font-size: 10px;
+  position: relative;
+  width: 100%;
+  display: inline-block;
+  vertical-align: top;
+}
+
+.material-textarea {
+  width: 100%;
+}
+
+.material-textarea textarea {
+  width: 100%;
+  border: 1px solid rgba(0,0,0,0.2);
+  border-width: 0 0 1px 0;
+  height: 50px;
+}
+
+.filter-top-right button.wd-auto {
+  width: auto;
+}
