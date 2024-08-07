@@ -251,7 +251,10 @@ class Step1 extends React.Component {
       workNameHelperText: "",
       checkWorkName: false,
 
-      
+      checkDefectId: false,
+      defectIdErr: false,
+      defectIdHelperText: "",
+      DefectId:"",
 
       Description: "",
       descriptionErr: false,
@@ -3188,6 +3191,7 @@ handleDateValidation = (date, type) => {
       Priority,
       Status,
       ETA,
+      DefectId,
       AssignedBySelected,
      
     } = this.state;
@@ -3234,25 +3238,26 @@ handleDateValidation = (date, type) => {
                       <GridContainer>
                       <GridItem xs={12} sm={12} md={3}>
                         <CustomInput
-                            labelText={<span>Work Name</span>}
-                            id="WorkName"
-                            name="WorkName"
+                            labelText={<span>Defect ID</span>}
+                            id="DefectId"
+                            name="DefectId"
                             variant="outlined"
-                            error={this.state.workNameErr}
-                            helperText={this.state.workNameHelperText}
+                            disabled="true"
+                            error={this.state.defectIdErr}
+                            helperText={this.state.defectIdHelperText}
                             formControlProps={{ fullWidth: true }}
                             inputProps={{
                               onFocus: () =>
                                 this.setState({
-                                  checkWorkName: false,
-                                  workNameErr: false,
-                                  workNameHelperText: "",
+                                  checkDefectId: false,
+                                  defectIdErr: false,
+                                  defectIdHelperText: "",
                                 }),
                               onBlur: (event) =>
-                                this.handleChangeValidation(event, "WorkName"),
+                                this.handleChangeValidation(event, "DefectId"),
                               onChange: (event) =>
-                                this.handleChange(event, "WorkName"),
-                              value: WorkName,
+                                this.handleChange(event, "DefectId"),
+                              value: DefectId,
                               endAdornment:
                                 this.state.checkcompanyName !== true ? (
                                   <Icon>work</Icon>
