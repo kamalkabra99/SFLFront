@@ -373,6 +373,12 @@ class Step1 extends React.Component {
     this.setState({ LoginpersonId: CommonConfig.loggedInUserData().PersonID });
 
     if (CommonConfig.getUserAccess("Book of Work").AllAccess == 1) {
+      this.setState({
+        AssignedBy: {
+          value: CommonConfig.loggedInUserData().PersonID,
+          label: CommonConfig.loggedInUserData().Name,
+        },
+      });
     } else {
       this.state.viewAllClear = true;
       this.setState({
@@ -1142,7 +1148,7 @@ class Step1 extends React.Component {
           workNameErr: true,
           workNameHelperText: "Please enter Work Name",
         });
-      } else if (worknameval.trim() !== worknameval) {
+      } else if (worknameval.trim() == "") {
         this.setState({
           WorkName: worknameval,
           workNameErr: true,
@@ -1792,7 +1798,7 @@ class Step1 extends React.Component {
           (x) => x.NoteText !== "" && x.NoteText !== null
         );
         var finalAttachment = [];
-        console.log("this.state.Attachments = ", this.state.Attachments[0])
+        console.log("this.state.Attachments = ", this.state.Attachments.Files)
         // console.log("this.state.Attachments = ", this.state.Attachments.length)
         // for (var i = 0; i < this.state.Attachments.length; i++) {
           // if (this.state.AttachmentList[i].hasOwnProperty("AttachmentName")) {
@@ -1801,6 +1807,27 @@ class Step1 extends React.Component {
         // }
 
         console.log("finalAttachment = ", finalAttachment)
+
+        var flag = 0
+
+        if (CommonConfig.isEmpty(this.state.BookofWorkID) !== true) {
+            if(CommonConfig.getUserAccess("Book of Work").AllAccess == 1){
+              flag = 0
+            }else{
+              if(this.state.AssignedBy.value == CommonConfig.loggedInUserData().PersonID){
+                flag = 0
+              }else{
+                if(this.state.Status.value == "Cancelled" || this.state.Status.value == "Closed"){
+                  flag = 1
+                }else{
+                  flag = 0
+                }
+                
+              }
+            }
+        }
+
+
 
         if (CommonConfig.isEmpty(this.state.BookofWorkID) !== true) {
           data = {
@@ -1845,7 +1872,9 @@ class Step1 extends React.Component {
 
         let calledApi = "contactUs/addBookofWork";
 
-        api
+
+        if(flag == 0){
+          api
           .post(calledApi, formData)
           .then((res) => {
             if (res.success) {
@@ -1872,6 +1901,16 @@ class Step1 extends React.Component {
             this.hideLoader();
             cogoToast.error(err);
           });
+
+        }else{
+
+          this.hideLoader();
+          // console.log("SaveUser Error", error);
+          cogoToast.error("You don't have access to move status to Cancel or Closed");
+
+        }
+
+        
       } catch (error) {
         this.hideLoader();
         console.log("SaveUser Error", error);
@@ -3575,7 +3614,7 @@ class Step1 extends React.Component {
                     </GridItem>   
                   </GridContainer>
                   <GridContainer>
-                    <GridItem xs={6} sm={6} md={6}>
+                    <GridItem xs={12} sm={12} md={12}>
                       <div className="material-textarea">
                         <label className="mui-custom-label">Description</label>
                         <textarea
@@ -3679,12 +3718,12 @@ class Step1 extends React.Component {
                 {/* </div> */}
 
 
-                <Button color="secondary" onClick={() => this.cancelUser()}>
+                <Button color="secondary" onClick={() => this.cancelWork()}>
                   Cancel
                 </Button>
               </div>
             ) :
-            <Button color="secondary" onClick={() => this.cancelUser()}>
+            <Button color="secondary" onClick={() => this.cancelWork()}>
               Cancel
             </Button>
             }
