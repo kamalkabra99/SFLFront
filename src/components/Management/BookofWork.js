@@ -436,7 +436,7 @@ class Step1 extends React.Component {
     }
   }
 
-  getnotesByID() {
+  getnotesByID() {debugger
     try {
       let data = {
         ShippingID:
@@ -448,20 +448,20 @@ class Step1 extends React.Component {
         .post("contactUs/getBookofWorkNotesByID", data)
         .then((result) => {
           var i = 0;
-          result.data.map((Obj) => {
+          result.data.data.map((Obj) => {
             Obj.Index = i;
             i++;
             return Obj;
           });
-          result.data.map((Obj) => {
+          result.data.data.map((Obj) => {
             Obj.disabled = i;
             i++;
             return Obj;
           });
-          if (result.data.length > 0) {
+          if (result.data.data.length > 0) {
             this.setState({ isNotesVisible: true });
           }
-          this.setState({ notes: result.data });
+          this.setState({ notes: result.data.data });
           this.handleAddNotesRow();
         })
         .catch((err) => {
@@ -3233,6 +3233,42 @@ handleDateValidation = (date, type) => {
                     <Cardbody>
                       <GridContainer>
                       <GridItem xs={12} sm={12} md={3}>
+                        <CustomInput
+                            labelText={<span>Work Name</span>}
+                            id="WorkName"
+                            name="WorkName"
+                            variant="outlined"
+                            error={this.state.workNameErr}
+                            helperText={this.state.workNameHelperText}
+                            formControlProps={{ fullWidth: true }}
+                            inputProps={{
+                              onFocus: () =>
+                                this.setState({
+                                  checkWorkName: false,
+                                  workNameErr: false,
+                                  workNameHelperText: "",
+                                }),
+                              onBlur: (event) =>
+                                this.handleChangeValidation(event, "WorkName"),
+                              onChange: (event) =>
+                                this.handleChange(event, "WorkName"),
+                              value: WorkName,
+                              endAdornment:
+                                this.state.checkcompanyName !== true ? (
+                                  <Icon>work</Icon>
+                                ) : (
+                                  <InputAdornment position="end">
+                                    {" "}
+                                    <DoneIcon
+                                      style={{ color: green[500] }}
+                                      className={useStyles.success}
+                                    />
+                                  </InputAdornment>
+                                ),
+                            }}
+                          />
+                        </GridItem>
+                      <GridItem xs={12} sm={12} md={3}>
           
                           <Autocomplete
                             id="AssignedBy"
@@ -3252,7 +3288,7 @@ handleDateValidation = (date, type) => {
                                 fullWidth />
                             )}
                           />
-                        </GridItem>
+                      </GridItem>
 
                         <GridItem xs={12} sm={12} md={3}>
                           <Autocomplete
@@ -3308,6 +3344,89 @@ handleDateValidation = (date, type) => {
                             </FormControl>
                           </div>
                         </GridItem>
+                        
+                      </GridContainer>
+                      <GridContainer className="mt-20">
+                      <GridItem xs={12} sm={12} md={3}>
+                         
+                         <Autocomplete
+                           options={statusDrop}
+                           id="Status"
+                           autoSelect
+                           getOptionLabel={(option) => option.label}
+                           value={Status}
+                           onChange={(event, value) =>
+                             this.ChangeInput( value, "Status")
+                           }
+                           onFocus={(event, value) =>
+                             this.setState({statusErr:"",statusHelperText:""})
+                           }
+                           renderInput={(params) => (
+                             <TextField {...params} label="Status*"
+                             margin="normal"
+                             error={this.state.statusErr}
+                             helperText={this.state.statusHelperText}
+                             fullWidth />
+                            
+                           )}
+                         />
+                     
+                     </GridItem>
+
+                     <GridItem xs={12} sm={12} md={3}>
+                          <Autocomplete
+                            options={priotiryDrop}
+                            id="Priority"
+                            getOptionLabel={(option) => option.label}
+                            value={Priority}
+                            autoSelect
+                            onChange={(event, value) =>
+                              this.ChangeInput(value, "Priority")
+                            }
+                            onFocus={(event, value) =>
+                              this.setState({priorityErr:"",priorityHelperText:""})
+                            }
+                            renderInput={(params) => (
+                              <TextField {...params} label="Priority*"
+                                error={this.state.priorityErr}
+                                helperText={this.state.priorityHelperText}
+                                fullWidth />
+                            )}
+                          />
+                        </GridItem>     
+                        <GridItem xs={12} sm={12} md={3}>
+                          <div className="dt-vs date-spl">
+                              <FormControl fullWidth>
+                                <Datetime
+                                  dateFormat={"MM/DD/YYYY"}
+                                  timeFormat={false}
+                                  selected={ETA}
+                                  value={ETA}
+                                  inputProps={{ placeholder: "ETA" }}
+                                  onChange={(date) =>
+                                    this.handleDateChange(date, "ETA")
+                                  }
+                                  onBlur={(date) =>
+                                    this.handleDateValidation(date, "ETA")
+                                  }
+                                  closeOnSelect={true}
+                                  renderInput={(params) => (
+                                    <TextField
+                                      style={{ marginTop: "-15px" }}
+                                      error={this.state.etaErr}
+                                      helperText={this.state.etaHelperText}
+                                      {...params}
+                                      label="ETA"
+                                      margin="normal"
+                                      fullWidth
+                                    />
+                                  )}
+                                />
+                                <Icon className="date-icon tp-slam">date_range</Icon>
+                              </FormControl>
+                            </div>
+                        </GridItem>
+                        
                         <GridItem xs={12} sm={12} md={3}>
                         <CustomInput
                             labelText={<span>Work Name</span>}
@@ -3344,9 +3463,10 @@ handleDateValidation = (date, type) => {
                             }}
                           />
                         </GridItem>
-                      </GridContainer>
-                      <GridContainer className="mt-20">
-                        <GridItem xs={12} sm={12} md={8}>
+                       
+                        </GridContainer>
+                      <GridContainer>
+                      <GridItem xs={8} sm={8} md={8}>
                           <div className="material-textarea">
                            <label className="mui-custom-label">Description</label>
                             <textarea
@@ -3398,87 +3518,7 @@ handleDateValidation = (date, type) => {
 
                </div>
                         </GridItem>
-                        </GridContainer>
-                      <GridContainer>
-                        <GridItem xs={12} sm={12} md={3}>
-                          <Autocomplete
-                            options={priotiryDrop}
-                            id="Priority"
-                            getOptionLabel={(option) => option.label}
-                            value={Priority}
-                            autoSelect
-                            onChange={(event, value) =>
-                              this.ChangeInput(value, "Priority")
-                            }
-                            onFocus={(event, value) =>
-                              this.setState({priorityErr:"",priorityHelperText:""})
-                            }
-                            renderInput={(params) => (
-                              <TextField {...params} label="Priority*"
-                                error={this.state.priorityErr}
-                                helperText={this.state.priorityHelperText}
-                                fullWidth />
-                            )}
-                          />
-                        </GridItem>
-                        <GridItem xs={12} sm={12} md={3}>
-                          <div className="dt-vs date-spl">
-                              <FormControl fullWidth>
-                                <Datetime
-                                  dateFormat={"MM/DD/YYYY"}
-                                  timeFormat={false}
-                                  selected={ETA}
-                                  value={ETA}
-                                  inputProps={{ placeholder: "ETA" }}
-                                  onChange={(date) =>
-                                    this.handleDateChange(date, "ETA")
-                                  }
-                                  onBlur={(date) =>
-                                    this.handleDateValidation(date, "ETA")
-                                  }
-                                  closeOnSelect={true}
-                                  renderInput={(params) => (
-                                    <TextField
-                                      style={{ marginTop: "-15px" }}
-                                      error={this.state.etaErr}
-                                      helperText={this.state.etaHelperText}
-                                      {...params}
-                                      label="ETA"
-                                      margin="normal"
-                                      fullWidth
-                                    />
-                                  )}
-                                />
-                                <Icon className="date-icon tp-slam">date_range</Icon>
-                              </FormControl>
-                            </div>
-                        </GridItem>
-                        <GridItem xs={12} sm={12} md={3}>
-                         
-                            <Autocomplete
-                              options={statusDrop}
-                              id="Status"
-                              autoSelect
-                              getOptionLabel={(option) => option.label}
-                              value={Status}
-                              onChange={(event, value) =>
-                                this.ChangeInput( value, "Status")
-                              }
-                              onFocus={(event, value) =>
-                                this.setState({statusErr:"",statusHelperText:""})
-                              }
-                              renderInput={(params) => (
-                                <TextField {...params} label="Status*"
-                                margin="normal"
-                                error={this.state.statusErr}
-                                helperText={this.state.statusHelperText}
-                                fullWidth />
-                               
-                              )}
-                            />
                         
-                        </GridItem>
-                       
                       </GridContainer>
                      
                    
