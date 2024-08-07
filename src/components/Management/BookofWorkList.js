@@ -373,10 +373,10 @@ class BookofWorkList extends Component {
       {
         Header: "Defect ID",
         accessor: "BookofWorkID",
-        width: 100,
+        width: 70,
         filterable: true,
         sortable: true,
-        maxWidth: 100,
+        maxWidth: 70,
       },
       {
         Header: "Assigned By",

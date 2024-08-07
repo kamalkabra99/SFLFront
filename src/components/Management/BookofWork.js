@@ -1839,7 +1839,7 @@ class Step1 extends React.Component {
             WorkName: this.state.WorkName,
             Description: this.state.Description,
             Priority: this.state.Priority.value,
-            ETA: this.state.ETA != "" ? moment(this.state.ETA).format(CommonConfig.dateFormat.dbDateOnly).toString() : "",
+            ETA: this.state.ETA == "" ? "NULL": moment(this.state.ETA).format(CommonConfig.dateFormat.dbDateOnly).toString(),
             WorkStatus: this.state.Status.value,
             UpdatedBy: CommonConfig.loggedInUserData().PersonID,
             notes: FinalNotes,
