@@ -67,7 +67,7 @@ class Step1 extends React.Component {
           stepId: "bookofworklist",
           classname: "active",
         },
-      
+
       ],
       Status: "",
       UserStatusList: [
@@ -194,8 +194,8 @@ class Step1 extends React.Component {
       passwordErr: false,
       mobileErr: false,
       UsertypemobileErr: false,
-      delDoc:false,
-      recordDocument:"",
+      delDoc: false,
+      recordDocument: "",
       Loading: false,
       ShipmentCount: 0,
       fullnameHelperText: "",
@@ -238,8 +238,8 @@ class Step1 extends React.Component {
       assignedToErr: false,
       assignedToHelperText: "",
       assignedByList: [],
-      BookofWorkID:"",
-      PaperSizePreviewData:"",
+      BookofWorkID: "",
+      PaperSizePreviewData: "",
       AssignedBySelected: CommonConfig.loggedInUserData().Name,
       CompanyName: "",
       companyNameErr: false,
@@ -254,19 +254,19 @@ class Step1 extends React.Component {
       checkDefectId: false,
       defectIdErr: false,
       defectIdHelperText: "",
-      DefectId:"",
+      DefectId: "",
 
       Description: "",
       descriptionErr: false,
       descriptionHelperText: "",
       checkDescription: false,
 
-      
 
 
 
-      
-      WorkStatusList:[],
+
+
+      WorkStatusList: [],
       Status: "",
       statusErr: false,
       statusHelperText: "",
@@ -281,7 +281,7 @@ class Step1 extends React.Component {
       PriorityList: [],
       priorityErr: false,
       priorityHelperText: "",
-      priorityStatus:false,
+      priorityStatus: false,
       notes: [],
       notesDisabled: true,
       noteErr: false,
@@ -318,9 +318,9 @@ class Step1 extends React.Component {
       ETA: "",
       etaErr: false,
       etaHelperText: "",
-      Attachment:"",
+      Attachment: "",
       Attachments: [],
-      AttachmentsData:[],
+      AttachmentsData: [],
       AttachmentList: [],
       Accounts: [],
       AccountList: [],
@@ -353,29 +353,30 @@ class Step1 extends React.Component {
 
   async componentDidMount() {
     debugger
-   // this.getDepartment();
-  //  this.getAccountType();
+    // this.getDepartment();
+    //  this.getAccountType();
     this.setState({ Access: CommonConfig.getUserAccess("User Management") });
 
-   // this.getCountry();
-  //  this.showHide();
-  this.getAssignedBy();
-  this.getStatus();
-  this.getPriority();
-  await this.getnotesByID();
+    // this.getCountry();
+    //  this.showHide();
+    this.getAssignedBy();
+    this.getStatus();
+    this.getPriority();
+    await this.getnotesByID();
 
-  //  this.getManagedBy();
- //   this.getUserDetail();
- //   this.getServiceListFiltered(89);
- //   this.getPaperSizeList();
+    //  this.getManagedBy();
+    //   this.getUserDetail();
+    //   this.getServiceListFiltered(89);
+    //   this.getPaperSizeList();
     this.setState({ LoginpersonId: CommonConfig.loggedInUserData().PersonID });
-    if(this.props.history.location.state!=undefined && this.props.history.location.state.id !="")
-    setTimeout(() => {
-      this.geteditBookofWork();
-    }, 1500);
+    if (this.props.history.location.state != undefined && this.props.history.location.state.id != "")
+      setTimeout(() => {
+        this.geteditBookofWork();
+      }, 1500);
   }
 
-  getStatus() {debugger
+  getStatus() {
+    debugger
     try {
       let data = {
         stringMapType: "WORKSTATUS",
@@ -395,8 +396,9 @@ class Step1 extends React.Component {
       console.log("error", err);
     }
   }
-  
-  getPriority() {debugger
+
+  getPriority() {
+    debugger
     try {
       let data = {
         stringMapType: "PRIORITY",
@@ -407,7 +409,7 @@ class Step1 extends React.Component {
         .then((result) => {
 
           this.setState({ PriorityList: result.data });
-        
+
         })
         .catch((err) => {
           console.log(err);
@@ -417,16 +419,17 @@ class Step1 extends React.Component {
     }
   }
 
-  getAssignedBy() {debugger
+  getAssignedBy() {
+    debugger
     try {
       api
         .get("contactus/getUsersForTMSList")
         .then((result) => {
           const fieldObj = result.Data;
-         // fieldObj.push({ UserID: 0, Name: "Set to Null" });
-         const AccountTypeDrop = fieldObj.map((type) => {
-          return { UserID: type.PersonId, Name: type.ContactName };
-        });
+          // fieldObj.push({ UserID: 0, Name: "Set to Null" });
+          const AccountTypeDrop = fieldObj.map((type) => {
+            return { UserID: type.PersonId, Name: type.ContactName };
+          });
           this.setState({
             assignedByList: AccountTypeDrop,
           });
@@ -439,7 +442,8 @@ class Step1 extends React.Component {
     }
   }
 
-  getnotesByID() {debugger
+  getnotesByID() {
+    debugger
     try {
       let data = {
         ShippingID:
@@ -601,7 +605,8 @@ class Step1 extends React.Component {
     }
   }
 
-  geteditBookofWork = () => {debugger
+  geteditBookofWork = () => {
+    debugger
     let data = {
       BookofWorkID: this.props.history.location.state.id,
     };
@@ -644,42 +649,42 @@ class Step1 extends React.Component {
           // }
           var selectedAssignedBy = {};
           selectedAssignedBy = {
-                value: WorkData.data.AssignedBy,
-                label: WorkData.data.AssignedByName,
-              };
-              var selectedAssignedTo = {};
+            value: WorkData.data.AssignedBy,
+            label: WorkData.data.AssignedByName,
+          };
+          var selectedAssignedTo = {};
           selectedAssignedTo = {
-                value: WorkData.data.AssignedTo,
-                label: WorkData.data.AssignedToName,
-              };
-              var selectedPriority = {};
-              selectedPriority = {
-                    value: WorkData.data.Priority,
-                    label: WorkData.data.Priority,
-                  }; 
-                  var selectedWorkStatus = {};
-                  selectedWorkStatus = {
-                        value: WorkData.data.WorkStatus,
-                        label: WorkData.data.WorkStatus,
-                      }; 
-                      var FinalNotes = this.state.notes.filter(
-                        (x) => x.NoteText !== "" && x.NoteText !== null
-                      );
+            value: WorkData.data.AssignedTo,
+            label: WorkData.data.AssignedToName,
+          };
+          var selectedPriority = {};
+          selectedPriority = {
+            value: WorkData.data.Priority,
+            label: WorkData.data.Priority,
+          };
+          var selectedWorkStatus = {};
+          selectedWorkStatus = {
+            value: WorkData.data.WorkStatus,
+            label: WorkData.data.WorkStatus,
+          };
+          var FinalNotes = this.state.notes.filter(
+            (x) => x.NoteText !== "" && x.NoteText !== null
+          );
           this.setState({
             AssignedBy: selectedAssignedBy,
             AssignedTo: selectedAssignedTo,
             DateCreated: WorkData.data.DateCreated,
-            WorkName:   WorkData.data.WorkName,
+            WorkName: WorkData.data.WorkName,
             Description: WorkData.data.Description,
             Attachment: WorkData.data.AttachmentPath,
             Priority: selectedPriority,
             ETA: WorkData.data.ETA,
             Status: selectedWorkStatus,
-            notes:FinalNotes,
+            notes: FinalNotes,
           });
-      
+
           this.setState({ Loading: false });
-         // this.handleAddNotesRow();
+          // this.handleAddNotesRow();
         } else {
           this.setState({ Loading: false });
           cogoToast.error("Something Went Wrong");
@@ -694,7 +699,8 @@ class Step1 extends React.Component {
 
 
 
-  fileUpload = (event) => {debugger
+  fileUpload = (event) => {
+    debugger
     const files = event.target.files[0];
     debugger;
     console.log("FileSizes = ", files);
@@ -715,26 +721,26 @@ class Step1 extends React.Component {
         cogoToast.error("please upload the file maximum 5MB");
       } else {
         let AttachmentList = this.state.AttachmentList;
-       // let Index = this.state.Attachments.indexOf(record.original);
+        // let Index = this.state.Attachments.indexOf(record.original);
         let dateNow = new Date().getTime();
 
         AttachmentList = {
-          DateTime:dateNow,
+          DateTime: dateNow,
           AttachmentName: files.name,
-          AttachmentType:files.type,
-          AttachmentID:null,
+          AttachmentType: files.type,
+          AttachmentID: null,
           Status: "Active"
 
         }
 
         //  var editfilename = files.name;
 
-       
+
         this.state.AttachmentsData.push(AttachmentList)
 
         this.setState({
-           Attachments: AttachmentList,
-          AttachmentList:  AttachmentList,
+          Attachments: AttachmentList,
+          AttachmentList: AttachmentList,
         });
       }
     }
@@ -800,7 +806,7 @@ class Step1 extends React.Component {
   };
 
   // getUserDetail() {
-    
+
   //   try {
   //     this.showLoader();
   //     this.setState({ Attachments: [], AttachmentList: [] });
@@ -1103,7 +1109,7 @@ class Step1 extends React.Component {
   };
 
   handleChangeValidation = (event, type) => {
-    
+
     if (type === "WorkName") {
       this.setState({ checkWorkName: true });
       let worknameval = event.target.value;
@@ -1126,37 +1132,37 @@ class Step1 extends React.Component {
           workNameHelperText: "",
         });
       }
-    } 
-   
-    
+    }
+
+
   };
   handleChange = (event, type) => {
-    
+
     if (type === "WorkName") {
       this.setState({ checkWorkName: true });
       let worknameval = event.target.value;
-      
-        this.setState({
-          WorkName: worknameval,
-          workNameErr: false,
-          workNameHelperText: "",
-        });
-      
-    } 
+
+      this.setState({
+        WorkName: worknameval,
+        workNameErr: false,
+        workNameHelperText: "",
+      });
+
+    }
     else
-    if (type === "Description") {
+      if (type === "Description") {
         this.setState({
           Description: worknameval,
           descriptionErr: false,
           descriptionHelperText: "",
         });
       }
-    
+
   };
 
   handleChangeDes = (event) => {
     const { value } = event.target;
-    
+
     this.setState({ Description: value });
   };
   handledInput = (e, id, MarkupType, Type) => {
@@ -1428,9 +1434,10 @@ class Step1 extends React.Component {
     let IsFormValid = true;
     if (this.state.WorkName === null || this.state.WorkName === "") {
       this.setState({ workNameErr: true, workNameHelperText: "Please Enter Work Name" });
-      IsFormValid = false;}
+      IsFormValid = false;
+    }
 
-    
+
     // if (
     //   this.state.objAttachment.FileName === "" &&
     //   this.state.uploadedfilename !== ""
@@ -1448,7 +1455,7 @@ class Step1 extends React.Component {
     if (this.state.DateCreated === null || this.state.DateCreated === "") {
       IsFormValid = false;
       this.setState({ dateCreatedErr: true, dateCreatedHelperText: "Please Select Date Created" });
-    }  
+    }
     if (this.state.Priority === null || this.state.Priority === "") {
       IsFormValid = false;
       this.setState({ priorityErr: true, priorityHelperText: "Please Select Priority" });
@@ -1509,120 +1516,120 @@ class Step1 extends React.Component {
         etaErr: false,
         etaHelperText: "",
       });
-     
+
     } else if (type === "DOC") {
       this.setState({
         DateCreated: date,
         dateCreatedErr: false,
         dateCreatedHelperText: "",
       });
-    
+
+    }
   }
-}
 
-handleDateValidation = (date, type) => {
-  debugger
+  handleDateValidation = (date, type) => {
+    debugger
 
-  if (type === "DOC") {
-    this.setState({
-      DateCreated: date,
-      dateCreatedErr: false,
-      dateCreatedHelperText: "",
-    });
-    if (this.state.ETA !== "")
-      if (date < this.state.ETA) {
-        this.setState({
-          DateCreated: date,
-          dateCreatedErr: false,
-          dateCreatedHelperText: "",
-        });
-      }
-      else {
-        this.setState({
-          JoinDate: "",
-          joindateErr: true,
-          joindateHelperText: "Date Created must be Before ETA",
-        });
-      }
-   
-      
-  } else if (type === "ETA") {
-
-    this.setState({
-      ETA: date,
-      etaErr: false,
-      etaHelperText: "",
-    });
-    if (this.state.DOC !== "")
-      if (date > this.state.BirthDate) {
-        this.setState({
-          RelivingDate: date,
-          relivingdateErr: false,
-          relivingdateHelperText: "",
-        });
-      }
-      else
-        if (date != "") {
+    if (type === "DOC") {
+      this.setState({
+        DateCreated: date,
+        dateCreatedErr: false,
+        dateCreatedHelperText: "",
+      });
+      if (this.state.ETA !== "")
+        if (date < this.state.ETA) {
           this.setState({
-            RelivingDate: "",
-            relivingdateErr: true,
-            relivingdateHelperText: "Reliving Date must be after Date of Birth",
+            DateCreated: date,
+            dateCreatedErr: false,
+            dateCreatedHelperText: "",
           });
         }
-    if (this.state.JoinDate !== "")
-      if (date > this.state.JoinDate) {
-        this.setState({
-          RelivingDate: date,
-          relivingdateErr: false,
-          relivingdateHelperText: "",
-        });
-      }
-      else
-        if (date != "") {
+        else {
           this.setState({
-            RelivingDate: "",
-            relivingdateErr: true,
-            relivingdateHelperText: "Reliving Date must be after Date of Join",
+            JoinDate: "",
+            joindateErr: true,
+            joindateHelperText: "Date Created must be Before ETA",
           });
         }
-  } else if (type === "DOB") {
-    this.setState({
-      BirthDate: date,
-      birthdateErr: false,
-      birthdateHelperText: "",
-    });
-    if (this.state.JoinDate !== "")
-      if (date < this.state.JoinDate) {
-        this.setState({
-          BirthDate: date,
-          birthdateErr: false,
-          birthdateHelperText: "",
-        });
-      }
-      else {
-        this.setState({
-          BirthDate: "",
-          birthdateErr: true,
-          birthdateHelperText: "Date of Birth must be before Date of Join",
-        });
-      }
-    if (this.state.RelivingDate !== "")
-      if (date < this.state.RelivingDate) {
-        this.setState({
-          BirthDate: date,
-          birthdateErr: false,
-          birthdateHelperText: "",
-        });
-      }
-      else {
-        this.setState({
-          BirthDate: "",
-          birthdateErr: true,
-          birthdateHelperText: "Date of Birth must be before Date of Reliving",
-        });
-      }
-  }
-};
+
+
+    } else if (type === "ETA") {
+
+      this.setState({
+        ETA: date,
+        etaErr: false,
+        etaHelperText: "",
+      });
+      if (this.state.DOC !== "")
+        if (date > this.state.BirthDate) {
+          this.setState({
+            RelivingDate: date,
+            relivingdateErr: false,
+            relivingdateHelperText: "",
+          });
+        }
+        else
+          if (date != "") {
+            this.setState({
+              RelivingDate: "",
+              relivingdateErr: true,
+              relivingdateHelperText: "Reliving Date must be after Date of Birth",
+            });
+          }
+      if (this.state.JoinDate !== "")
+        if (date > this.state.JoinDate) {
+          this.setState({
+            RelivingDate: date,
+            relivingdateErr: false,
+            relivingdateHelperText: "",
+          });
+        }
+        else
+          if (date != "") {
+            this.setState({
+              RelivingDate: "",
+              relivingdateErr: true,
+              relivingdateHelperText: "Reliving Date must be after Date of Join",
+            });
+          }
+    } else if (type === "DOB") {
+      this.setState({
+        BirthDate: date,
+        birthdateErr: false,
+        birthdateHelperText: "",
+      });
+      if (this.state.JoinDate !== "")
+        if (date < this.state.JoinDate) {
+          this.setState({
+            BirthDate: date,
+            birthdateErr: false,
+            birthdateHelperText: "",
+          });
+        }
+        else {
+          this.setState({
+            BirthDate: "",
+            birthdateErr: true,
+            birthdateHelperText: "Date of Birth must be before Date of Join",
+          });
+        }
+      if (this.state.RelivingDate !== "")
+        if (date < this.state.RelivingDate) {
+          this.setState({
+            BirthDate: date,
+            birthdateErr: false,
+            birthdateHelperText: "",
+          });
+        }
+        else {
+          this.setState({
+            BirthDate: "",
+            birthdateErr: true,
+            birthdateHelperText: "Date of Birth must be before Date of Reliving",
+          });
+        }
+    }
+  };
   handleTimeChange = (time, type) => {
     debugger
     if (type === "start_time") {
@@ -1687,7 +1694,7 @@ handleDateValidation = (date, type) => {
       }
     });
   };
-  deleteBookOfWork=()=>{
+  deleteBookOfWork = () => {
     this.showLoader();
   }
   saveWork = (redirect) => {
@@ -1696,7 +1703,7 @@ handleDateValidation = (date, type) => {
       try {
         this.showLoader();
 
-       
+
         debugger
         var data = {};
         var FinalNotes = this.state.notes.filter(
@@ -1707,15 +1714,15 @@ handleDateValidation = (date, type) => {
         console.log("this.state.Attachments = ", this.state.AttachmentsData.length)
         for (var i = 0; i < this.state.AttachmentsData.length; i++) {
           // if (this.state.AttachmentList[i].hasOwnProperty("AttachmentName")) {
-            finalAttachment.push(this.state.AttachmentsData[i]);
+          finalAttachment.push(this.state.AttachmentsData[i]);
           // }
         }
 
-        console.log("finalAttachment = ",finalAttachment)
-   
+        console.log("finalAttachment = ", finalAttachment)
+
         if (CommonConfig.isEmpty(this.state.BookofWorkID) !== true) {
           data = {
-            BookofWorkID:this.state.BookofWorkID,
+            BookofWorkID: this.state.BookofWorkID,
             AssignedBy: this.state.AssignedBy.value,
             Attachments: finalAttachment,
             AssignedTo: this.state.AssignedTo.value,
@@ -1723,28 +1730,28 @@ handleDateValidation = (date, type) => {
             WorkName: this.state.WorkName,
             Description: this.state.Description,
             Priority: this.state.Priority.value,
-            ETA: this.state.ETA !=""?moment(this.state.ETA).format(CommonConfig.dateFormat.dbDateOnly).toString():"",
+            ETA: this.state.ETA != "" ? moment(this.state.ETA).format(CommonConfig.dateFormat.dbDateOnly).toString() : "",
             WorkStatus: this.state.Status.value,
-            UpdatedBy:CommonConfig.loggedInUserData().PersonID,
-            notes:FinalNotes,
+            UpdatedBy: CommonConfig.loggedInUserData().PersonID,
+            notes: FinalNotes,
           };
-      
+
         }
         else
-        data = {
-          AssignedBy: this.state.AssignedBy.value,
-          AssignedTo: this.state.AssignedTo.value,
-          Attachments: finalAttachment,
-          DateCreated: moment(this.state.DateCreated).format(CommonConfig.dateFormat.dbDateOnly).toString(),
-          WorkName: this.state.WorkName,
-          Description: this.state.Description,
-          Priority: this.state.Priority.value,
-          ETA: this.state.ETA !=""?moment(this.state.ETA).format(CommonConfig.dateFormat.dbDateOnly).toString():"",
-          WorkStatus: this.state.Status.value,
-          CreatedBy:CommonConfig.loggedInUserData().PersonID,
-          notes:FinalNotes,
-        };
-        console.log("Book Of Work Data",data)
+          data = {
+            AssignedBy: this.state.AssignedBy.value,
+            AssignedTo: this.state.AssignedTo.value,
+            Attachments: finalAttachment,
+            DateCreated: moment(this.state.DateCreated).format(CommonConfig.dateFormat.dbDateOnly).toString(),
+            WorkName: this.state.WorkName,
+            Description: this.state.Description,
+            Priority: this.state.Priority.value,
+            ETA: this.state.ETA != "" ? moment(this.state.ETA).format(CommonConfig.dateFormat.dbDateOnly).toString() : "",
+            WorkStatus: this.state.Status.value,
+            CreatedBy: CommonConfig.loggedInUserData().PersonID,
+            notes: FinalNotes,
+          };
+        console.log("Book Of Work Data", data)
         var formData = new FormData();
         formData.append("data", JSON.stringify(data));
 
@@ -1754,26 +1761,26 @@ handleDateValidation = (date, type) => {
           });
         }
 
-        let calledApi =  "contactUs/addBookofWork";
+        let calledApi = "contactUs/addBookofWork";
 
         api
           .post(calledApi, formData)
           .then((res) => {
             if (res.success) {
-                      // console.log("res.success",res.success);
-                      this.hideLoader();
-                      cogoToast.success(res.message);
-                      if (redirect) {
-                        this.props.history.push({
-                          pathname: "/admin/BookofWorkList",
-                          state: {
-                            filterlist: this.props.history.location.filterlist,
-                            sortlist: this.props.history.location.sortlist,
-                          },
-                        });
-                      } else {
-                        this.geteditBookofWork();
-                      }
+              // console.log("res.success",res.success);
+              this.hideLoader();
+              cogoToast.success(res.message);
+              if (redirect) {
+                this.props.history.push({
+                  pathname: "/admin/BookofWorkList",
+                  state: {
+                    filterlist: this.props.history.location.filterlist,
+                    sortlist: this.props.history.location.sortlist,
+                  },
+                });
+              } else {
+                this.geteditBookofWork();
+              }
             } else {
               cogoToast.error(res.message);
             }
@@ -2103,8 +2110,8 @@ handleDateValidation = (date, type) => {
   };
 
   showHide() {
-  //  document.getElementById("bookofwork").style.display = "block";
-    
+    //  document.getElementById("bookofwork").style.display = "block";
+
   }
 
   handleDocumentDelete = () => {
@@ -2212,310 +2219,310 @@ handleDateValidation = (date, type) => {
                 }
                 else {
                   fetch(CommonConfig.zipCodeAPIKey(zip, this.state.Country.label))
-                  .then((result) => result.json())
-                  .then((data) => {
-                    this.showLoader();
-                    if (data["status"] === "OK") {
-                      if (
-                        data["results"][0] &&
-                        data["results"][0].hasOwnProperty("postcode_localities")
-                      ) {
-                        var FinalCity = [];
-                        var countryShortName = "";
-
-                        countryShortName = _.filter(
-                          data["results"][0]["address_components"],
-                          function (data) {
-                            return data.types[0] === "country";
-                          }
-                        )[0].long_name;
-                        var CityData = _.filter(
-                          data["results"][0]["address_components"],
-                          function (data) {
-                            if (data.types[0] == "locality") {
-                              return data.types[0] === "locality";
-                            }
-                          }
-                        );
-
-                        var CityData2 = _.filter(
-                          data["results"][0]["address_components"],
-                          function (data) {
-                            if (data.types[0] == "neighborhood") {
-                              return data.types[0] === "neighborhood";
-                            }
-                          }
-                        );
-
-                        var CityData3 = _.filter(
-                          data["results"][0]["address_components"],
-                          function (data) {
-                            if (data.types[0] == "administrative_area_level_2") {
-                              return data.types[0] === "administrative_area_level_2";
-                            }
-                          }
-                        );
-
-                        var CityData4 = _.filter(
-                          data["results"][0]["address_components"],
-                          function (data) {
-                            if (data.types[0] == "administrative_area_level_1") {
-                              return data.types[0] === "administrative_area_level_1";
-                            }
-                          }
-                        );
-
-                        if (CityData.length > 0) {
-                          CityData = CityData[0].long_name;
-                          FinalCity.push({
-                            City_code: CityData,
-                            Name: CityData,
-                          });
-                          var SelectedCity = {
-                            value: FinalCity[0].City_code,
-                            label: FinalCity[0].Name,
-                          };
-                        } else if (CityData2.length > 0) {
-                          CityData2 = CityData2[0].long_name;
-                          FinalCity.push({
-                            City_code: CityData2,
-                            Name: CityData2,
-                          });
-                          var SelectedCity = {
-                            value: FinalCity[0].City_code,
-                            label: FinalCity[0].Name,
-                          };
-                        } else if (CityData3.length > 0) {
-                          CityData3 = CityData3[0].long_name;
-                          FinalCity.push({
-                            City_code: CityData3,
-                            Name: CityData3,
-                          });
-                          var SelectedCity = {
-                            value: FinalCity[0].City_code,
-                            label: FinalCity[0].Name,
-                          };
-                        } else if (CityData4.length > 0) {
-                          CityData4 = CityData4[0].long_name;
-                          FinalCity.push({
-                            City_code: CityData4,
-                            Name: CityData4,
-                          });
-                          var SelectedCity = {
-                            value: FinalCity[0].City_code,
-                            label: FinalCity[0].Name,
-                          };
-                        }
-
-                        var state = _.filter(
-                          data["results"][0]["address_components"],
-                          function (data) {
-                            return data.types[0] === "administrative_area_level_1";
-                          }
-                        )[0].long_name;
-                        var SelectedState = { value: state, label: state };
-
-                        if (countryShortName === this.state.Country.label) {
-                          this.setState({
-                            CityAutoComplete: FinalCity.length ? true : false,
-                            StateAutoComplete: this.state.StateList.length ? true : false,
-                            GoogleAPICityList: FinalCity,
-                            State: this.state.StateList.length ? SelectedState : state,
-                            City: SelectedCity,
-                          });
-                        } else {
-                          this.setState({
-                            CityAutoComplete: false,
-                            StateAutoComplete: this.state.StateList.length ? true : false,
-                            GoogleAPICityList: [],
-                            State: "",
-                            City: "",
-                          });
-                        }
-                        this.hideLoader();
-                      } else if (data["results"][0]) {
-                        var FinalCity = [];
-                        var city = "";
-                        var countryShortName = "";
-
-                        countryShortName = _.filter(
-                          data["results"][0]["address_components"],
-                          function (data) {
-                            return data.types[0] === "country";
-                          }
-                        )[0].long_name;
-
+                    .then((result) => result.json())
+                    .then((data) => {
+                      this.showLoader();
+                      if (data["status"] === "OK") {
                         if (
-                          city == "" &&
-                          _.filter(data["results"][0]["address_components"], function (
-                            data
-                          ) {
-                            return data.types[0] === "locality";
-                          }).length > 0
+                          data["results"][0] &&
+                          data["results"][0].hasOwnProperty("postcode_localities")
                         ) {
-                          city = _.filter(
+                          var FinalCity = [];
+                          var countryShortName = "";
+
+                          countryShortName = _.filter(
                             data["results"][0]["address_components"],
                             function (data) {
-                              return data.types[0] === "locality";
-                            }
-                          )[0].short_name;
-                        } else if (
-                          city == "" &&
-                          _.filter(data["results"][0]["address_components"], function (
-                            data
-                          ) {
-                            return data.types[0] === "administrative_area_level_3";
-                          }).length > 0
-                        ) {
-                          city = _.filter(
-                            data["results"][0]["address_components"],
-                            function (data) {
-                              return data.types[0] === "administrative_area_level_3";
-                            }
-                          )[0].short_name;
-                        } else if (
-                          city == "" &&
-                          _.filter(data["results"][0]["address_components"], function (
-                            data
-                          ) {
-                            return data.types[0] === "political";
-                          }).length > 0
-                        ) {
-                          city = _.filter(
-                            data["results"][0]["address_components"],
-                            function (data) {
-                              return data.types[0] === "political";
-                            }
-                          )[0].short_name;
-                        } else if (
-                          city == "" &&
-                          _.filter(data["results"][0]["address_components"], function (
-                            data
-                          ) {
-                            return data.types[0] === "neighborhood";
-                          }).length > 0
-                        ) {
-                          city = _.filter(
-                            data["results"][0]["address_components"],
-                            function (data) {
-                              return data.types[0] === "neighborhood";
-                            }
-                          )[0].short_name;
-                        } else if (
-                          city == "" &&
-                          _.filter(data["results"][0]["address_components"], function (
-                            data
-                          ) {
-                            return data.types[0] === "administrative_area_level_2";
-                          }).length > 0
-                        ) {
-                          city = _.filter(
-                            data["results"][0]["address_components"],
-                            function (data) {
-                              return data.types[0] === "administrative_area_level_2";
+                              return data.types[0] === "country";
                             }
                           )[0].long_name;
-                        } else if (
-                          city == "" &&
-                          _.filter(data["results"][0]["address_components"], function (
-                            data
-                          ) {
-                            return data.types[0] === "administrative_area_level_1";
-                          }).length > 0
-                        ) {
-                          city = _.filter(
+                          var CityData = _.filter(
                             data["results"][0]["address_components"],
                             function (data) {
-                              return data.types[0] === "administrative_area_level_1";
-                            }
-                          )[0].long_name;
-                        } else if (city == "") {
-                          city = "";
-                        }
-
-                        var state = _.filter(
-                          data["results"][0]["address_components"],
-                          function (data) {
-                            return data.types[0] === "administrative_area_level_1";
-                          }
-                        )[0].long_name;
-
-                        FinalCity.push({
-                          City_code: city,
-                          Name: city,
-                        });
-
-                        var SelectedCity = {
-                          value: FinalCity[0].City_code,
-                          label: FinalCity[0].Name,
-                        };
-
-                        var SelectedState = { value: state, label: state };
-
-                        if (countryShortName === this.state.Country.label) {
-                          this.setState({
-                            CityAutoComplete: FinalCity.length ? true : false,
-                            StateAutoComplete: this.state.StateList.length ? true : false,
-                            GoogleAPICityList: FinalCity,
-                            State: this.state.StateList.length ? SelectedState : state,
-                            City: SelectedCity,
-                          });
-                        } else {
-                          this.setState({
-                            CityAutoComplete: false,
-                            StateAutoComplete: this.state.StateList.length ? true : false,
-                            GoogleAPICityList: [],
-                            State: "",
-                            City: "",
-                          });
-                        }
-                        this.hideLoader();
-
-
-                      }
-                      if (this.state.Country.label == "United States" || this.state.Country.label == "India" || this.state.Country.label == "Canada") {
-
-                        var newZipcodedata = {
-                          "Pincode": zip,
-                          "PickupCityList": SelectedCity.label,
-                          "CountryID": this.state.Country.value,
-                          "CountryName": this.state.Country.label,
-                          "StateName": state,
-
-                        };
-                        console.log("newZipcodedata", newZipcodedata);
-                        api
-                          .post(
-                            "https://hubapi.sflworldwide.com/contactus/SflInsertPostalCode",
-                            newZipcodedata
-                          )
-                          .then((res) => {
-                            if (res.success) {
-                              console.log("CheckRessData", res);
-                              if (res.success === true) {
-
-                                console.log("New Zipcode Enter Successfully");
-                              } else {
-                                console.log("Something Went Wrong 10");
+                              if (data.types[0] == "locality") {
+                                return data.types[0] === "locality";
                               }
                             }
-                          })
-                          .catch((err) => {
-                            console.log("err...", err);
+                          );
 
+                          var CityData2 = _.filter(
+                            data["results"][0]["address_components"],
+                            function (data) {
+                              if (data.types[0] == "neighborhood") {
+                                return data.types[0] === "neighborhood";
+                              }
+                            }
+                          );
+
+                          var CityData3 = _.filter(
+                            data["results"][0]["address_components"],
+                            function (data) {
+                              if (data.types[0] == "administrative_area_level_2") {
+                                return data.types[0] === "administrative_area_level_2";
+                              }
+                            }
+                          );
+
+                          var CityData4 = _.filter(
+                            data["results"][0]["address_components"],
+                            function (data) {
+                              if (data.types[0] == "administrative_area_level_1") {
+                                return data.types[0] === "administrative_area_level_1";
+                              }
+                            }
+                          );
+
+                          if (CityData.length > 0) {
+                            CityData = CityData[0].long_name;
+                            FinalCity.push({
+                              City_code: CityData,
+                              Name: CityData,
+                            });
+                            var SelectedCity = {
+                              value: FinalCity[0].City_code,
+                              label: FinalCity[0].Name,
+                            };
+                          } else if (CityData2.length > 0) {
+                            CityData2 = CityData2[0].long_name;
+                            FinalCity.push({
+                              City_code: CityData2,
+                              Name: CityData2,
+                            });
+                            var SelectedCity = {
+                              value: FinalCity[0].City_code,
+                              label: FinalCity[0].Name,
+                            };
+                          } else if (CityData3.length > 0) {
+                            CityData3 = CityData3[0].long_name;
+                            FinalCity.push({
+                              City_code: CityData3,
+                              Name: CityData3,
+                            });
+                            var SelectedCity = {
+                              value: FinalCity[0].City_code,
+                              label: FinalCity[0].Name,
+                            };
+                          } else if (CityData4.length > 0) {
+                            CityData4 = CityData4[0].long_name;
+                            FinalCity.push({
+                              City_code: CityData4,
+                              Name: CityData4,
+                            });
+                            var SelectedCity = {
+                              value: FinalCity[0].City_code,
+                              label: FinalCity[0].Name,
+                            };
+                          }
+
+                          var state = _.filter(
+                            data["results"][0]["address_components"],
+                            function (data) {
+                              return data.types[0] === "administrative_area_level_1";
+                            }
+                          )[0].long_name;
+                          var SelectedState = { value: state, label: state };
+
+                          if (countryShortName === this.state.Country.label) {
+                            this.setState({
+                              CityAutoComplete: FinalCity.length ? true : false,
+                              StateAutoComplete: this.state.StateList.length ? true : false,
+                              GoogleAPICityList: FinalCity,
+                              State: this.state.StateList.length ? SelectedState : state,
+                              City: SelectedCity,
+                            });
+                          } else {
+                            this.setState({
+                              CityAutoComplete: false,
+                              StateAutoComplete: this.state.StateList.length ? true : false,
+                              GoogleAPICityList: [],
+                              State: "",
+                              City: "",
+                            });
+                          }
+                          this.hideLoader();
+                        } else if (data["results"][0]) {
+                          var FinalCity = [];
+                          var city = "";
+                          var countryShortName = "";
+
+                          countryShortName = _.filter(
+                            data["results"][0]["address_components"],
+                            function (data) {
+                              return data.types[0] === "country";
+                            }
+                          )[0].long_name;
+
+                          if (
+                            city == "" &&
+                            _.filter(data["results"][0]["address_components"], function (
+                              data
+                            ) {
+                              return data.types[0] === "locality";
+                            }).length > 0
+                          ) {
+                            city = _.filter(
+                              data["results"][0]["address_components"],
+                              function (data) {
+                                return data.types[0] === "locality";
+                              }
+                            )[0].short_name;
+                          } else if (
+                            city == "" &&
+                            _.filter(data["results"][0]["address_components"], function (
+                              data
+                            ) {
+                              return data.types[0] === "administrative_area_level_3";
+                            }).length > 0
+                          ) {
+                            city = _.filter(
+                              data["results"][0]["address_components"],
+                              function (data) {
+                                return data.types[0] === "administrative_area_level_3";
+                              }
+                            )[0].short_name;
+                          } else if (
+                            city == "" &&
+                            _.filter(data["results"][0]["address_components"], function (
+                              data
+                            ) {
+                              return data.types[0] === "political";
+                            }).length > 0
+                          ) {
+                            city = _.filter(
+                              data["results"][0]["address_components"],
+                              function (data) {
+                                return data.types[0] === "political";
+                              }
+                            )[0].short_name;
+                          } else if (
+                            city == "" &&
+                            _.filter(data["results"][0]["address_components"], function (
+                              data
+                            ) {
+                              return data.types[0] === "neighborhood";
+                            }).length > 0
+                          ) {
+                            city = _.filter(
+                              data["results"][0]["address_components"],
+                              function (data) {
+                                return data.types[0] === "neighborhood";
+                              }
+                            )[0].short_name;
+                          } else if (
+                            city == "" &&
+                            _.filter(data["results"][0]["address_components"], function (
+                              data
+                            ) {
+                              return data.types[0] === "administrative_area_level_2";
+                            }).length > 0
+                          ) {
+                            city = _.filter(
+                              data["results"][0]["address_components"],
+                              function (data) {
+                                return data.types[0] === "administrative_area_level_2";
+                              }
+                            )[0].long_name;
+                          } else if (
+                            city == "" &&
+                            _.filter(data["results"][0]["address_components"], function (
+                              data
+                            ) {
+                              return data.types[0] === "administrative_area_level_1";
+                            }).length > 0
+                          ) {
+                            city = _.filter(
+                              data["results"][0]["address_components"],
+                              function (data) {
+                                return data.types[0] === "administrative_area_level_1";
+                              }
+                            )[0].long_name;
+                          } else if (city == "") {
+                            city = "";
+                          }
+
+                          var state = _.filter(
+                            data["results"][0]["address_components"],
+                            function (data) {
+                              return data.types[0] === "administrative_area_level_1";
+                            }
+                          )[0].long_name;
+
+                          FinalCity.push({
+                            City_code: city,
+                            Name: city,
                           });
+
+                          var SelectedCity = {
+                            value: FinalCity[0].City_code,
+                            label: FinalCity[0].Name,
+                          };
+
+                          var SelectedState = { value: state, label: state };
+
+                          if (countryShortName === this.state.Country.label) {
+                            this.setState({
+                              CityAutoComplete: FinalCity.length ? true : false,
+                              StateAutoComplete: this.state.StateList.length ? true : false,
+                              GoogleAPICityList: FinalCity,
+                              State: this.state.StateList.length ? SelectedState : state,
+                              City: SelectedCity,
+                            });
+                          } else {
+                            this.setState({
+                              CityAutoComplete: false,
+                              StateAutoComplete: this.state.StateList.length ? true : false,
+                              GoogleAPICityList: [],
+                              State: "",
+                              City: "",
+                            });
+                          }
+                          this.hideLoader();
+
+
+                        }
+                        if (this.state.Country.label == "United States" || this.state.Country.label == "India" || this.state.Country.label == "Canada") {
+
+                          var newZipcodedata = {
+                            "Pincode": zip,
+                            "PickupCityList": SelectedCity.label,
+                            "CountryID": this.state.Country.value,
+                            "CountryName": this.state.Country.label,
+                            "StateName": state,
+
+                          };
+                          console.log("newZipcodedata", newZipcodedata);
+                          api
+                            .post(
+                              "https://hubapi.sflworldwide.com/contactus/SflInsertPostalCode",
+                              newZipcodedata
+                            )
+                            .then((res) => {
+                              if (res.success) {
+                                console.log("CheckRessData", res);
+                                if (res.success === true) {
+
+                                  console.log("New Zipcode Enter Successfully");
+                                } else {
+                                  console.log("Something Went Wrong 10");
+                                }
+                              }
+                            })
+                            .catch((err) => {
+                              console.log("err...", err);
+
+                            });
+                        }
+                      } else {
+                        this.setState({
+                          CityAutoComplete: false,
+                          StateAutoComplete: this.state.StateList.length ? true : false,
+                          GoogleAPICityList: [],
+                          State: "",
+                          City: "",
+                        });
+                        this.hideLoader();
                       }
-                    } else {
-                      this.setState({
-                        CityAutoComplete: false,
-                        StateAutoComplete: this.state.StateList.length ? true : false,
-                        GoogleAPICityList: [],
-                        State: "",
-                        City: "",
-                      });
-                      this.hideLoader();
-                    }
-                  });
+                    });
                 }
               }
             }
@@ -2581,310 +2588,310 @@ handleDateValidation = (date, type) => {
                 }
                 else {
                   fetch(CommonConfig.zipCodeAPIKey(zip, this.state.UsertypeCountry.label))
-                  .then((result) => result.json())
-                  .then((data) => {
-                    this.showLoader();
-                    if (data["status"] === "OK") {
-                      if (
-                        data["results"][0] &&
-                        data["results"][0].hasOwnProperty("postcode_localities")
-                      ) {
-                        var FinalCity = [];
-                        var countryShortName = "";
-
-                        countryShortName = _.filter(
-                          data["results"][0]["address_components"],
-                          function (data) {
-                            return data.types[0] === "country";
-                          }
-                        )[0].long_name;
-                        var CityData = _.filter(
-                          data["results"][0]["address_components"],
-                          function (data) {
-                            if (data.types[0] == "locality") {
-                              return data.types[0] === "locality";
-                            }
-                          }
-                        );
-
-                        var CityData2 = _.filter(
-                          data["results"][0]["address_components"],
-                          function (data) {
-                            if (data.types[0] == "neighborhood") {
-                              return data.types[0] === "neighborhood";
-                            }
-                          }
-                        );
-
-                        var CityData3 = _.filter(
-                          data["results"][0]["address_components"],
-                          function (data) {
-                            if (data.types[0] == "administrative_area_level_2") {
-                              return data.types[0] === "administrative_area_level_2";
-                            }
-                          }
-                        );
-
-                        var CityData4 = _.filter(
-                          data["results"][0]["address_components"],
-                          function (data) {
-                            if (data.types[0] == "administrative_area_level_1") {
-                              return data.types[0] === "administrative_area_level_1";
-                            }
-                          }
-                        );
-
-                        if (CityData.length > 0) {
-                          CityData = CityData[0].long_name;
-                          FinalCity.push({
-                            City_code: CityData,
-                            Name: CityData,
-                          });
-                          var SelectedCity = {
-                            value: FinalCity[0].City_code,
-                            label: FinalCity[0].Name,
-                          };
-                        } else if (CityData2.length > 0) {
-                          CityData2 = CityData2[0].long_name;
-                          FinalCity.push({
-                            City_code: CityData2,
-                            Name: CityData2,
-                          });
-                          var SelectedCity = {
-                            value: FinalCity[0].City_code,
-                            label: FinalCity[0].Name,
-                          };
-                        } else if (CityData3.length > 0) {
-                          CityData3 = CityData3[0].long_name;
-                          FinalCity.push({
-                            City_code: CityData3,
-                            Name: CityData3,
-                          });
-                          var SelectedCity = {
-                            value: FinalCity[0].City_code,
-                            label: FinalCity[0].Name,
-                          };
-                        } else if (CityData4.length > 0) {
-                          CityData4 = CityData4[0].long_name;
-                          FinalCity.push({
-                            City_code: CityData4,
-                            Name: CityData4,
-                          });
-                          var SelectedCity = {
-                            value: FinalCity[0].City_code,
-                            label: FinalCity[0].Name,
-                          };
-                        }
-
-                        var state = _.filter(
-                          data["results"][0]["address_components"],
-                          function (data) {
-                            return data.types[0] === "administrative_area_level_1";
-                          }
-                        )[0].long_name;
-                        var SelectedState = { value: state, label: state };
-
-                        if (countryShortName === this.state.Country.label) {
-                          this.setState({
-                            UsertypeCityAutoComplete: FinalCity.length ? true : false,
-                            StateAutoComplete: this.state.StateList.length ? true : false,
-                            GoogleAPICityList: FinalCity,
-                            State: this.state.StateList.length ? SelectedState : state,
-                            City: SelectedCity,
-                          });
-                        } else {
-                          this.setState({
-                            UsertypeCityAutoComplete: false,
-                            StateAutoComplete: this.state.StateList.length ? true : false,
-                            GoogleAPICityList: [],
-                            State: "",
-                            City: "",
-                          });
-                        }
-                        this.hideLoader();
-                      } else if (data["results"][0]) {
-                        var FinalCity = [];
-                        var city = "";
-                        var countryShortName = "";
-
-                        countryShortName = _.filter(
-                          data["results"][0]["address_components"],
-                          function (data) {
-                            return data.types[0] === "country";
-                          }
-                        )[0].long_name;
-
+                    .then((result) => result.json())
+                    .then((data) => {
+                      this.showLoader();
+                      if (data["status"] === "OK") {
                         if (
-                          city == "" &&
-                          _.filter(data["results"][0]["address_components"], function (
-                            data
-                          ) {
-                            return data.types[0] === "locality";
-                          }).length > 0
+                          data["results"][0] &&
+                          data["results"][0].hasOwnProperty("postcode_localities")
                         ) {
-                          city = _.filter(
+                          var FinalCity = [];
+                          var countryShortName = "";
+
+                          countryShortName = _.filter(
                             data["results"][0]["address_components"],
                             function (data) {
-                              return data.types[0] === "locality";
-                            }
-                          )[0].short_name;
-                        } else if (
-                          city == "" &&
-                          _.filter(data["results"][0]["address_components"], function (
-                            data
-                          ) {
-                            return data.types[0] === "administrative_area_level_3";
-                          }).length > 0
-                        ) {
-                          city = _.filter(
-                            data["results"][0]["address_components"],
-                            function (data) {
-                              return data.types[0] === "administrative_area_level_3";
-                            }
-                          )[0].short_name;
-                        } else if (
-                          city == "" &&
-                          _.filter(data["results"][0]["address_components"], function (
-                            data
-                          ) {
-                            return data.types[0] === "political";
-                          }).length > 0
-                        ) {
-                          city = _.filter(
-                            data["results"][0]["address_components"],
-                            function (data) {
-                              return data.types[0] === "political";
-                            }
-                          )[0].short_name;
-                        } else if (
-                          city == "" &&
-                          _.filter(data["results"][0]["address_components"], function (
-                            data
-                          ) {
-                            return data.types[0] === "neighborhood";
-                          }).length > 0
-                        ) {
-                          city = _.filter(
-                            data["results"][0]["address_components"],
-                            function (data) {
-                              return data.types[0] === "neighborhood";
-                            }
-                          )[0].short_name;
-                        } else if (
-                          city == "" &&
-                          _.filter(data["results"][0]["address_components"], function (
-                            data
-                          ) {
-                            return data.types[0] === "administrative_area_level_2";
-                          }).length > 0
-                        ) {
-                          city = _.filter(
-                            data["results"][0]["address_components"],
-                            function (data) {
-                              return data.types[0] === "administrative_area_level_2";
+                              return data.types[0] === "country";
                             }
                           )[0].long_name;
-                        } else if (
-                          city == "" &&
-                          _.filter(data["results"][0]["address_components"], function (
-                            data
-                          ) {
-                            return data.types[0] === "administrative_area_level_1";
-                          }).length > 0
-                        ) {
-                          city = _.filter(
+                          var CityData = _.filter(
                             data["results"][0]["address_components"],
                             function (data) {
-                              return data.types[0] === "administrative_area_level_1";
-                            }
-                          )[0].long_name;
-                        } else if (city == "") {
-                          city = "";
-                        }
-
-                        var state = _.filter(
-                          data["results"][0]["address_components"],
-                          function (data) {
-                            return data.types[0] === "administrative_area_level_1";
-                          }
-                        )[0].long_name;
-
-                        FinalCity.push({
-                          City_code: city,
-                          Name: city,
-                        });
-
-                        var SelectedCity = {
-                          value: FinalCity[0].City_code,
-                          label: FinalCity[0].Name,
-                        };
-
-                        var SelectedState = { value: state, label: state };
-
-                        if (countryShortName === this.state.Country.label) {
-                          this.setState({
-                            CityAutoComplete: FinalCity.length ? true : false,
-                            StateAutoComplete: this.state.StateList.length ? true : false,
-                            GoogleAPICityList: FinalCity,
-                            State: this.state.StateList.length ? SelectedState : state,
-                            City: SelectedCity,
-                          });
-                        } else {
-                          this.setState({
-                            CityAutoComplete: false,
-                            StateAutoComplete: this.state.StateList.length ? true : false,
-                            GoogleAPICityList: [],
-                            State: "",
-                            City: "",
-                          });
-                        }
-                        this.hideLoader();
-
-
-                      }
-                      if (this.state.Country.label == "United States" || this.state.Country.label == "India" || this.state.Country.label == "Canada") {
-
-                        var newZipcodedata = {
-                          "Pincode": zip,
-                          "PickupCityList": SelectedCity.label,
-                          "CountryID": this.state.Country.value,
-                          "CountryName": this.state.Country.label,
-                          "StateName": state,
-
-                        };
-                        console.log("newZipcodedata", newZipcodedata);
-                        api
-                          .post(
-                            "https://hubapi.sflworldwide.com/contactus/SflInsertPostalCode",
-                            newZipcodedata
-                          )
-                          .then((res) => {
-                            if (res.success) {
-                              console.log("CheckRessData", res);
-                              if (res.success === true) {
-
-                                console.log("New Zipcode Enter Successfully");
-                              } else {
-                                console.log("Something Went Wrong 11");
+                              if (data.types[0] == "locality") {
+                                return data.types[0] === "locality";
                               }
                             }
-                          })
-                          .catch((err) => {
-                            console.log("err...", err);
+                          );
 
+                          var CityData2 = _.filter(
+                            data["results"][0]["address_components"],
+                            function (data) {
+                              if (data.types[0] == "neighborhood") {
+                                return data.types[0] === "neighborhood";
+                              }
+                            }
+                          );
+
+                          var CityData3 = _.filter(
+                            data["results"][0]["address_components"],
+                            function (data) {
+                              if (data.types[0] == "administrative_area_level_2") {
+                                return data.types[0] === "administrative_area_level_2";
+                              }
+                            }
+                          );
+
+                          var CityData4 = _.filter(
+                            data["results"][0]["address_components"],
+                            function (data) {
+                              if (data.types[0] == "administrative_area_level_1") {
+                                return data.types[0] === "administrative_area_level_1";
+                              }
+                            }
+                          );
+
+                          if (CityData.length > 0) {
+                            CityData = CityData[0].long_name;
+                            FinalCity.push({
+                              City_code: CityData,
+                              Name: CityData,
+                            });
+                            var SelectedCity = {
+                              value: FinalCity[0].City_code,
+                              label: FinalCity[0].Name,
+                            };
+                          } else if (CityData2.length > 0) {
+                            CityData2 = CityData2[0].long_name;
+                            FinalCity.push({
+                              City_code: CityData2,
+                              Name: CityData2,
+                            });
+                            var SelectedCity = {
+                              value: FinalCity[0].City_code,
+                              label: FinalCity[0].Name,
+                            };
+                          } else if (CityData3.length > 0) {
+                            CityData3 = CityData3[0].long_name;
+                            FinalCity.push({
+                              City_code: CityData3,
+                              Name: CityData3,
+                            });
+                            var SelectedCity = {
+                              value: FinalCity[0].City_code,
+                              label: FinalCity[0].Name,
+                            };
+                          } else if (CityData4.length > 0) {
+                            CityData4 = CityData4[0].long_name;
+                            FinalCity.push({
+                              City_code: CityData4,
+                              Name: CityData4,
+                            });
+                            var SelectedCity = {
+                              value: FinalCity[0].City_code,
+                              label: FinalCity[0].Name,
+                            };
+                          }
+
+                          var state = _.filter(
+                            data["results"][0]["address_components"],
+                            function (data) {
+                              return data.types[0] === "administrative_area_level_1";
+                            }
+                          )[0].long_name;
+                          var SelectedState = { value: state, label: state };
+
+                          if (countryShortName === this.state.Country.label) {
+                            this.setState({
+                              UsertypeCityAutoComplete: FinalCity.length ? true : false,
+                              StateAutoComplete: this.state.StateList.length ? true : false,
+                              GoogleAPICityList: FinalCity,
+                              State: this.state.StateList.length ? SelectedState : state,
+                              City: SelectedCity,
+                            });
+                          } else {
+                            this.setState({
+                              UsertypeCityAutoComplete: false,
+                              StateAutoComplete: this.state.StateList.length ? true : false,
+                              GoogleAPICityList: [],
+                              State: "",
+                              City: "",
+                            });
+                          }
+                          this.hideLoader();
+                        } else if (data["results"][0]) {
+                          var FinalCity = [];
+                          var city = "";
+                          var countryShortName = "";
+
+                          countryShortName = _.filter(
+                            data["results"][0]["address_components"],
+                            function (data) {
+                              return data.types[0] === "country";
+                            }
+                          )[0].long_name;
+
+                          if (
+                            city == "" &&
+                            _.filter(data["results"][0]["address_components"], function (
+                              data
+                            ) {
+                              return data.types[0] === "locality";
+                            }).length > 0
+                          ) {
+                            city = _.filter(
+                              data["results"][0]["address_components"],
+                              function (data) {
+                                return data.types[0] === "locality";
+                              }
+                            )[0].short_name;
+                          } else if (
+                            city == "" &&
+                            _.filter(data["results"][0]["address_components"], function (
+                              data
+                            ) {
+                              return data.types[0] === "administrative_area_level_3";
+                            }).length > 0
+                          ) {
+                            city = _.filter(
+                              data["results"][0]["address_components"],
+                              function (data) {
+                                return data.types[0] === "administrative_area_level_3";
+                              }
+                            )[0].short_name;
+                          } else if (
+                            city == "" &&
+                            _.filter(data["results"][0]["address_components"], function (
+                              data
+                            ) {
+                              return data.types[0] === "political";
+                            }).length > 0
+                          ) {
+                            city = _.filter(
+                              data["results"][0]["address_components"],
+                              function (data) {
+                                return data.types[0] === "political";
+                              }
+                            )[0].short_name;
+                          } else if (
+                            city == "" &&
+                            _.filter(data["results"][0]["address_components"], function (
+                              data
+                            ) {
+                              return data.types[0] === "neighborhood";
+                            }).length > 0
+                          ) {
+                            city = _.filter(
+                              data["results"][0]["address_components"],
+                              function (data) {
+                                return data.types[0] === "neighborhood";
+                              }
+                            )[0].short_name;
+                          } else if (
+                            city == "" &&
+                            _.filter(data["results"][0]["address_components"], function (
+                              data
+                            ) {
+                              return data.types[0] === "administrative_area_level_2";
+                            }).length > 0
+                          ) {
+                            city = _.filter(
+                              data["results"][0]["address_components"],
+                              function (data) {
+                                return data.types[0] === "administrative_area_level_2";
+                              }
+                            )[0].long_name;
+                          } else if (
+                            city == "" &&
+                            _.filter(data["results"][0]["address_components"], function (
+                              data
+                            ) {
+                              return data.types[0] === "administrative_area_level_1";
+                            }).length > 0
+                          ) {
+                            city = _.filter(
+                              data["results"][0]["address_components"],
+                              function (data) {
+                                return data.types[0] === "administrative_area_level_1";
+                              }
+                            )[0].long_name;
+                          } else if (city == "") {
+                            city = "";
+                          }
+
+                          var state = _.filter(
+                            data["results"][0]["address_components"],
+                            function (data) {
+                              return data.types[0] === "administrative_area_level_1";
+                            }
+                          )[0].long_name;
+
+                          FinalCity.push({
+                            City_code: city,
+                            Name: city,
                           });
+
+                          var SelectedCity = {
+                            value: FinalCity[0].City_code,
+                            label: FinalCity[0].Name,
+                          };
+
+                          var SelectedState = { value: state, label: state };
+
+                          if (countryShortName === this.state.Country.label) {
+                            this.setState({
+                              CityAutoComplete: FinalCity.length ? true : false,
+                              StateAutoComplete: this.state.StateList.length ? true : false,
+                              GoogleAPICityList: FinalCity,
+                              State: this.state.StateList.length ? SelectedState : state,
+                              City: SelectedCity,
+                            });
+                          } else {
+                            this.setState({
+                              CityAutoComplete: false,
+                              StateAutoComplete: this.state.StateList.length ? true : false,
+                              GoogleAPICityList: [],
+                              State: "",
+                              City: "",
+                            });
+                          }
+                          this.hideLoader();
+
+
+                        }
+                        if (this.state.Country.label == "United States" || this.state.Country.label == "India" || this.state.Country.label == "Canada") {
+
+                          var newZipcodedata = {
+                            "Pincode": zip,
+                            "PickupCityList": SelectedCity.label,
+                            "CountryID": this.state.Country.value,
+                            "CountryName": this.state.Country.label,
+                            "StateName": state,
+
+                          };
+                          console.log("newZipcodedata", newZipcodedata);
+                          api
+                            .post(
+                              "https://hubapi.sflworldwide.com/contactus/SflInsertPostalCode",
+                              newZipcodedata
+                            )
+                            .then((res) => {
+                              if (res.success) {
+                                console.log("CheckRessData", res);
+                                if (res.success === true) {
+
+                                  console.log("New Zipcode Enter Successfully");
+                                } else {
+                                  console.log("Something Went Wrong 11");
+                                }
+                              }
+                            })
+                            .catch((err) => {
+                              console.log("err...", err);
+
+                            });
+                        }
+                      } else {
+                        this.setState({
+                          CityAutoComplete: false,
+                          StateAutoComplete: this.state.StateList.length ? true : false,
+                          GoogleAPICityList: [],
+                          State: "",
+                          City: "",
+                        });
+                        this.hideLoader();
                       }
-                    } else {
-                      this.setState({
-                        CityAutoComplete: false,
-                        StateAutoComplete: this.state.StateList.length ? true : false,
-                        GoogleAPICityList: [],
-                        State: "",
-                        City: "",
-                      });
-                      this.hideLoader();
-                    }
-                  });
+                    });
                 }
               }
             }
@@ -2940,7 +2947,7 @@ handleDateValidation = (date, type) => {
                 </Button>
                 {this.state.notes.filter((x) => x.Status === "Active")
                   .length ===
-                idx + 1 ? (
+                  idx + 1 ? (
                   <Button
                     justIcon
                     color="facebook"
@@ -2970,7 +2977,7 @@ handleDateValidation = (date, type) => {
     this.setState({
       [type]: true,
     });
-   
+
     if (
       packageType === "NotesVisible" &&
       this.state.notes.filter((x) => x.Status === "Active").length === 0
@@ -2987,7 +2994,8 @@ handleDateValidation = (date, type) => {
     }
   };
 
-  ChangeInput = (value, type) => {debugger
+  ChangeInput = (value, type) => {
+    debugger
     if (value !== null) {
       if (type === "AssignedBy") {
         this.setState({ AssignedBy: value });
@@ -2998,7 +3006,7 @@ handleDateValidation = (date, type) => {
         this.setState({ Priority: value });
       } else if (type === "Status") {
         this.setState({ Status: value });
-        
+
       }
     }
 
@@ -3006,7 +3014,7 @@ handleDateValidation = (date, type) => {
   addRowBank = (e, index) => {
     debugger
     console.log("this.state.bankList", this.state.bankList);
-  
+
     if (e == 0)
       this.setState({ bankList: [...this.state.bankList, row] });
     else
@@ -3049,15 +3057,15 @@ handleDateValidation = (date, type) => {
       bankList[idx][type] = event.target.outerText;
     }
     else
-    if (type === "RoutingNumber" || type === "AccountNumber") {
-      bankList[idx][type] = value;/*value.replace(/\D/g, "");*/
-    } else if (type === "InvoiceAmount") {
-      if (value.match(/^[-+]?\d{0,}(\.\d{0,2})?$/) || value === "") {
+      if (type === "RoutingNumber" || type === "AccountNumber") {
+        bankList[idx][type] = value;/*value.replace(/\D/g, "");*/
+      } else if (type === "InvoiceAmount") {
+        if (value.match(/^[-+]?\d{0,}(\.\d{0,2})?$/) || value === "") {
+          bankList[idx][type] = value;
+        }
+      } else {
         bankList[idx][type] = value;
       }
-    } else {
-      bankList[idx][type] = value;
-    }
     this.setState({ bankList: bankList });
   };
   viewBankList = () => {
@@ -3135,7 +3143,7 @@ handleDateValidation = (date, type) => {
                 />
               </div>
             </td>
-            
+
 
             <td style={{ width: "156px" }} className="input-full">
               <CustomInput
@@ -3187,30 +3195,30 @@ handleDateValidation = (date, type) => {
       AssignedBy,
       AssignedTo,
       WorkName,
-     Description,
+      Description,
       Priority,
       Status,
       ETA,
       DefectId,
       AssignedBySelected,
-     
+
     } = this.state;
 
     const assignedByDrop = this.state.assignedByList.map((type) => {
       return { value: type.UserID, label: type.Name };
     });
 
-     const statusDrop =  this.state.WorkStatusList.map((type) => {
-     return { value: type.Description, label: type.Description };
-    });
-    const priotiryDrop =  this.state.PriorityList.map((type) => {
+    const statusDrop = this.state.WorkStatusList.map((type) => {
       return { value: type.Description, label: type.Description };
-     });
-    
+    });
+    const priotiryDrop = this.state.PriorityList.map((type) => {
+      return { value: type.Description, label: type.Description };
+    });
+
     const paperSize = this.state.PaperSizeList.map((type) => {
       return { value: type.ID, label: type.PaperDisplayName };
     });
- 
+
 
     const userstatus = this.state.UserStatusList.map((type) => {
       return { value: type.value, label: type.label };
@@ -3218,295 +3226,239 @@ handleDateValidation = (date, type) => {
 
 
 
-   
+
     return (
       <div>
         <GridContainer className="MuiGrid-justify-xs-center">
-       
-            <div className="shipment-content mt-30">
-                  <div className="shipment-pane mt-20" id="bookofwork">
-                  <Card>
-                    <CardHeader className="btn-right-outer" color="primary" icon>
-                      <CardIcon color="primary">
-                        <Adduser />
-                      </CardIcon>
-                      <h4 className="margin-right-auto text-color-black">
-                        Book of Work
-                      </h4>
-                    </CardHeader>
-                    <Cardbody>
-                      <GridContainer>
-                      <GridItem xs={12} sm={12} md={3}>
-                        <CustomInput
-                            labelText={<span>Defect ID</span>}
-                            id="DefectId"
-                            name="DefectId"
-                            variant="outlined"
-                            disabled="true"
-                            error={this.state.defectIdErr}
-                            helperText={this.state.defectIdHelperText}
-                            formControlProps={{ fullWidth: true }}
-                            inputProps={{
-                              onFocus: () =>
-                                this.setState({
-                                  checkDefectId: false,
-                                  defectIdErr: false,
-                                  defectIdHelperText: "",
-                                }),
-                              onBlur: (event) =>
-                                this.handleChangeValidation(event, "DefectId"),
-                              onChange: (event) =>
-                                this.handleChange(event, "DefectId"),
-                              value: DefectId,
-                              endAdornment:
-                                this.state.checkcompanyName !== true ? (
-                                  <Icon>work</Icon>
-                                ) : (
-                                  <InputAdornment position="end">
-                                    {" "}
-                                    <DoneIcon
-                                      style={{ color: green[500] }}
-                                      className={useStyles.success}
-                                    />
-                                  </InputAdornment>
-                                ),
-                            }}
-                          />
-                        </GridItem>
-                      <GridItem xs={12} sm={12} md={3}>
-          
-                          <Autocomplete
-                            id="AssignedBy"
-                            options={assignedByDrop}
-                            value={AssignedBy}
-                            onChange={(event, value) =>
-                              this.ChangeInput(value, "AssignedBy")
-                            }
-                            onFocus={(event, value) =>
-                              this.setState({assignedByErr:"",assignedByHelperText:""})
-                            }
-                            getOptionLabel={(option) => option.label}
-                            renderInput={(params) => (
-                              <TextField {...params} label="Assigned By*"
-                                error={this.state.assignedByErr}
-                                helperText={this.state.assignedByHelperText}
-                                fullWidth />
-                            )}
-                          />
-                      </GridItem>
 
-                        <GridItem xs={12} sm={12} md={3}>
-                          <Autocomplete
-                            id="AssignedTo"
-                            options={assignedByDrop}
-                            value={AssignedTo}
-                            onChange={(event, value) =>
-                              this.ChangeInput(value, "AssignedTo")
+          <div className="shipment-content mt-30">
+            <div className="shipment-pane mt-20" id="bookofwork">
+              <Card>
+                <CardHeader className="btn-right-outer" color="primary" icon>
+                  <CardIcon color="primary">
+                    <Adduser />
+                  </CardIcon>
+                  <h4 className="margin-right-auto text-color-black">
+                    Book of Work
+                  </h4>
+                </CardHeader>
+                <Cardbody>
+                  <GridContainer>
+                    <GridItem xs={12} sm={12} md={3}>
+
+                      <Autocomplete
+                        id="AssignedBy"
+                        options={assignedByDrop}
+                        value={AssignedBy}
+                        onChange={(event, value) =>
+                          this.ChangeInput(value, "AssignedBy")
+                        }
+                        onFocus={(event, value) =>
+                          this.setState({ assignedByErr: "", assignedByHelperText: "" })
+                        }
+                        getOptionLabel={(option) => option.label}
+                        renderInput={(params) => (
+                          <TextField {...params} label="Assigned By*"
+                            error={this.state.assignedByErr}
+                            helperText={this.state.assignedByHelperText}
+                            fullWidth />
+                        )}
+                      />
+                    </GridItem>
+                    <GridItem xs={12} sm={12} md={3}>
+                      <Autocomplete
+                        id="AssignedTo"
+                        options={assignedByDrop}
+                        value={AssignedTo}
+                        onChange={(event, value) =>
+                          this.ChangeInput(value, "AssignedTo")
+                        }
+                        onFocus={(event, value) =>
+                          this.setState({ assignedToErr: "", assignedToHelperText: "" })
+                        }
+                        getOptionLabel={(option) => option.label}
+                        renderInput={(params) => (
+                          <TextField {...params} label="Assigned To*"
+                            error={this.state.assignedToErr}
+                            helperText={this.state.assignedToHelperText}
+                            fullWidth />
+                        )}
+                      />
+                    </GridItem>
+                    <GridItem xs={12} sm={12} md={3}>
+                      <div className="dt-vs date-spl">
+                        <FormControl fullWidth>
+                          <Datetime
+                            dateFormat={"MM/DD/YYYY"}
+                            timeFormat={false}
+                            startDate={"08/01/2024"}
+                            selected={this.state.DateCreated}
+                            value={this.state.DateCreated}
+                            inputProps={{ placeholder: "Date Created" }}
+                            onChange={(date) =>
+                              this.handleDateChange(date, "DOC")
                             }
-                            onFocus={(event, value) =>
-                              this.setState({assignedToErr:"",assignedToHelperText:""})
+                            onBlur={(date) =>
+                              this.handleDateValidation(date, "DOC")
                             }
-                            getOptionLabel={(option) => option.label}
+                            closeOnSelect={true}
                             renderInput={(params) => (
-                              <TextField {...params} label="Assigned To*"
-                                error={this.state.assignedToErr}
-                                helperText={this.state.assignedToHelperText}
-                                fullWidth />
-                            )}
-                          />
-                        </GridItem>
-                        <GridItem xs={12} sm={12} md={3}>
-                          <div className="dt-vs date-spl">
-                            <FormControl fullWidth>
-                              <Datetime
-                                dateFormat={"MM/DD/YYYY"}
-                                timeFormat={false}
-                                startDate={"08/01/2024"}
-                                selected={this.state.DateCreated}
-                                value={this.state.DateCreated}
-                                inputProps={{ placeholder: "Date Created" }}
-                                onChange={(date) =>
-                                  this.handleDateChange(date, "DOC")
-                                }
-                                onBlur={(date) =>
-                                  this.handleDateValidation(date, "DOC")
-                                }
-                                closeOnSelect={true}
-                                renderInput={(params) => (
-                                  <TextField
-                                    style={{ marginTop: "-15px" }}
-                                    error={this.state.dateCreatedErr}
-                                    helperText={this.state.dateCreatedHelperText}
-                                    inputProps={{ min: moment().format("YYYY-MM-DD")}}
-                                    {...params}
-                                    label="Date Created*"
-                                    margin="normal"
-                                    fullWidth
-                                  />
-                                )}
+                              <TextField
+                                style={{ marginTop: "-15px" }}
+                                error={this.state.dateCreatedErr}
+                                helperText={this.state.dateCreatedHelperText}
+                                inputProps={{ min: moment().format("YYYY-MM-DD") }}
+                                {...params}
+                                label="Date Created*"
+                                margin="normal"
+                                fullWidth
                               />
-                              <Icon className="date-icon tp-slam">date_range</Icon>
-                            </FormControl>
-                          </div>
-                        </GridItem>
-                        
-                      </GridContainer>
-                      <GridContainer className="mt-20">
-                      <GridItem xs={12} sm={12} md={3}>
-                         
-                         <Autocomplete
-                           options={statusDrop}
-                           id="Status"
-                           autoSelect
-                           getOptionLabel={(option) => option.label}
-                           value={Status}
-                           onChange={(event, value) =>
-                             this.ChangeInput( value, "Status")
-                           }
-                           onFocus={(event, value) =>
-                             this.setState({statusErr:"",statusHelperText:""})
-                           }
-                           renderInput={(params) => (
-                             <TextField {...params} label="Status*"
-                             margin="normal"
-                             error={this.state.statusErr}
-                             helperText={this.state.statusHelperText}
-                             fullWidth />
-                            
-                           )}
-                         />
-                     
-                     </GridItem>
-
-                     <GridItem xs={12} sm={12} md={3}>
-                          <Autocomplete
-                            options={priotiryDrop}
-                            id="Priority"
-                            getOptionLabel={(option) => option.label}
-                            value={Priority}
-                            autoSelect
-                            onChange={(event, value) =>
-                              this.ChangeInput(value, "Priority")
-                            }
-                            onFocus={(event, value) =>
-                              this.setState({priorityErr:"",priorityHelperText:""})
-                            }
-                            renderInput={(params) => (
-                              <TextField {...params} label="Priority*"
-                                error={this.state.priorityErr}
-                                helperText={this.state.priorityHelperText}
-                                fullWidth />
                             )}
                           />
-                        </GridItem>     
-                        <GridItem xs={12} sm={12} md={3}>
-                          <div className="dt-vs date-spl">
-                              <FormControl fullWidth>
-                                <Datetime
-                                  dateFormat={"MM/DD/YYYY"}
-                                  timeFormat={false}
-                                  selected={ETA}
-                                  value={ETA}
-                                  inputProps={{ placeholder: "ETA" }}
-                                  onChange={(date) =>
-                                    this.handleDateChange(date, "ETA")
-                                  }
-                                  onBlur={(date) =>
-                                    this.handleDateValidation(date, "ETA")
-                                  }
-                                  closeOnSelect={true}
-                                  renderInput={(params) => (
-                                    <TextField
-                                      style={{ marginTop: "-15px" }}
-                                      error={this.state.etaErr}
-                                      helperText={this.state.etaHelperText}
-                                      {...params}
-                                      label="ETA"
-                                      margin="normal"
-                                      fullWidth
-                                    />
-                                  )}
-                                />
-                                <Icon className="date-icon tp-slam">date_range</Icon>
-                              </FormControl>
-                            </div>
-                        </GridItem>
-                        
-                        <GridItem xs={12} sm={12} md={3}>
-                        <CustomInput
-                            labelText={<span>Work Name</span>}
-                            id="WorkName"
-                            name="WorkName"
-                            variant="outlined"
-                            error={this.state.workNameErr}
-                            helperText={this.state.workNameHelperText}
-                            formControlProps={{ fullWidth: true }}
-                            inputProps={{
-                              onFocus: () =>
-                                this.setState({
-                                  checkWorkName: false,
-                                  workNameErr: false,
-                                  workNameHelperText: "",
-                                }),
-                              onBlur: (event) =>
-                                this.handleChangeValidation(event, "WorkName"),
-                              onChange: (event) =>
-                                this.handleChange(event, "WorkName"),
-                              value: WorkName,
-                              endAdornment:
-                                this.state.checkcompanyName !== true ? (
-                                  <Icon>work</Icon>
-                                ) : (
-                                  <InputAdornment position="end">
-                                    {" "}
-                                    <DoneIcon
-                                      style={{ color: green[500] }}
-                                      className={useStyles.success}
-                                    />
-                                  </InputAdornment>
-                                ),
-                            }}
+                          <Icon className="date-icon tp-slam">date_range</Icon>
+                        </FormControl>
+                      </div>
+                    </GridItem>
+                    <GridItem xs={12} sm={12} md={3}>
+
+                      <Autocomplete
+                        options={statusDrop}
+                        id="Status"
+                        autoSelect
+                        getOptionLabel={(option) => option.label}
+                        value={Status}
+                        onChange={(event, value) =>
+                          this.ChangeInput(value, "Status")
+                        }
+                        onFocus={(event, value) =>
+                          this.setState({ statusErr: "", statusHelperText: "" })
+                        }
+                        renderInput={(params) => (
+                          <TextField {...params} label="Status*"
+                            margin="normal"
+                            error={this.state.statusErr}
+                            helperText={this.state.statusHelperText}
+                            fullWidth />
+
+                        )}
+                      />
+
+                    </GridItem>
+                  </GridContainer>
+                  <GridContainer className="mt-20">
+
+
+                    <GridItem xs={12} sm={12} md={3}>
+                      <Autocomplete
+                        options={priotiryDrop}
+                        id="Priority"
+                        getOptionLabel={(option) => option.label}
+                        value={Priority}
+                        autoSelect
+                        onChange={(event, value) =>
+                          this.ChangeInput(value, "Priority")
+                        }
+                        onFocus={(event, value) =>
+                          this.setState({ priorityErr: "", priorityHelperText: "" })
+                        }
+                        renderInput={(params) => (
+                          <TextField {...params} label="Priority*"
+                            error={this.state.priorityErr}
+                            helperText={this.state.priorityHelperText}
+                            fullWidth />
+                        )}
+                      />
+                    </GridItem>
+                    <GridItem xs={12} sm={12} md={3}>
+                      <div className="dt-vs date-spl">
+                        <FormControl fullWidth>
+                          <Datetime
+                            dateFormat={"MM/DD/YYYY"}
+                            timeFormat={false}
+                            selected={ETA}
+                            value={ETA}
+                            inputProps={{ placeholder: "ETA" }}
+                            onChange={(date) =>
+                              this.handleDateChange(date, "ETA")
+                            }
+                            onBlur={(date) =>
+                              this.handleDateValidation(date, "ETA")
+                            }
+                            closeOnSelect={true}
+                            renderInput={(params) => (
+                              <TextField
+                                style={{ marginTop: "-15px" }}
+                                error={this.state.etaErr}
+                                helperText={this.state.etaHelperText}
+                                {...params}
+                                label="ETA"
+                                margin="normal"
+                                fullWidth
+                              />
+                            )}
                           />
-                        </GridItem>
-                       
-                        </GridContainer>
-                      <GridContainer>
-                      <GridItem xs={8} sm={8} md={8}>
-                          <div className="material-textarea">
-                           <label className="mui-custom-label">Description</label>
-                            <textarea
-                           
-                              name="Description"
-                            //  disabled={notes.disabled}
-                              value={Description}
-                              onChange={(event) =>
-                                this.handleChangeDes(event/*, notes.Index*/)
-                              }
-                            ></textarea>
-                            
+                          <Icon className="date-icon tp-slam">date_range</Icon>
+                        </FormControl>
+                      </div>
+                    </GridItem>
+
+                    <GridItem xs={12} sm={12} md={3}>
+                      <CustomInput
+                        labelText={<span>Work Name</span>}
+                        id="WorkName"
+                        name="WorkName"
+                        variant="outlined"
+                        error={this.state.workNameErr}
+                        helperText={this.state.workNameHelperText}
+                        formControlProps={{ fullWidth: true }}
+                        inputProps={{
+                          onFocus: () =>
+                            this.setState({
+                              checkWorkName: false,
+                              workNameErr: false,
+                              workNameHelperText: "",
+                            }),
+                          onBlur: (event) =>
+                            this.handleChangeValidation(event, "WorkName"),
+                          onChange: (event) =>
+                            this.handleChange(event, "WorkName"),
+                          value: WorkName,
+                          endAdornment:
+                            this.state.checkcompanyName !== true ? (
+                              <Icon>work</Icon>
+                            ) : (
+                              <InputAdornment position="end">
+                                {" "}
+                                <DoneIcon
+                                  style={{ color: green[500] }}
+                                  className={useStyles.success}
+                                />
+                              </InputAdornment>
+                            ),
+                        }}
+                      />
+                    </GridItem>
+                    <GridItem xs={3} sm={3} md={3}>
+                      <div>
+
+                        {this.state.Attachment != "" && this.state.Attachment != null ? (
+                          <div>
+                            <a
+                              href={fileBase + this.state.Attachment}
+                              className="normal-btn sm-orange"
+                              rel="noopener noreferrer"
+                              target="_blank"
+                            >
+                              View File
+                            </a>
                           </div>
-                        </GridItem>
-                        <GridItem xs={12} sm={12} md={4}>
+
+                        ) :
                           <div>
 
-                          {this.state.Attachment !="" && this.state.Attachment !=null ? (
-                            <div>
-                              <a
-                                href={fileBase + this.state.Attachment}
-                                className="normal-btn sm-orange"
-                                rel="noopener noreferrer"
-                                target="_blank"
-                              >
-                                View File
-                              </a>
-                           </div>
-
-                          ):
-                          <div>
-                          
                             <div className="file-upload-input">
                               <label className="mui-custom-label">Upload a File    :</label>
-                              <div className="fui-inner"> 
+                              <div className="fui-inner">
                                 <span>Browse</span>
                                 <input
                                   type="file"
@@ -3514,89 +3466,127 @@ handleDateValidation = (date, type) => {
                                   id="file"
                                   onChange={(event) => this.fileUpload(event)}
                                 />
-                                <p>{this.stringTruncate(this.state.Attachments.AttachmentName)}</p>  
+                                <p>{this.stringTruncate(this.state.Attachments.AttachmentName)}</p>
                               </div>
                             </div>
-                            
-                        </div>
-                          }
 
-               </div>
-                        </GridItem>
-                        
-                      </GridContainer>
-                     
-                   
-                    </Cardbody>
-                  </Card>
-                  <Card>
-                      <CardHeader className="btn-right-outer" color="primary" icon>
-                        <CardIcon color="primary">
-                          <Note />
-                        </CardIcon>
-                        <h4 className="margin-right-auto text-color-black">Notes</h4>
-                        <div style={{ textAlign: "right", marginTop: "12px" }}>
-                          {this.state.notes.filter((x) => x.Status === "Active")
-                            .length === 0 ? (
-                            // <i onClick={() => this.showDiv("isInvoiceVisible","Invoice")} class="fas fa-car"></i>
-                            // <img
-                            //   style={{ width: "32px", marginLeft: "20px" }}
-                            //   src={carSVG}
-                            //   onClick={() =>
-                            //     this.showDiv("isNotesVisible", "NotesVisible")
-                            //   }
-                            // />
-                            <Button
-                              onClick={() =>
-                                this.showDiv("isNotesVisible", "NotesVisible")
-                              }
-                              style={{ width: "70px", height: "20px" }}
-                              color="primary"
-                            >
-                              Open
-                            </Button>
-                          ) : null}
-                        </div>
-                      </CardHeader>
-
-                      <div className="notes-table">
-                        {isNotesVisible ? (
-                          <div className="package-table">
-                            <table>
-                              <thead>
-                                <tr>
-                                  <th>Date</th>
-                                  <th>Comments</th>
-                                  <th>Action</th>
-                                </tr>
-                              </thead>
-                              <tbody>{this.viewNotes()}</tbody>
-                            </table>
                           </div>
-                        ) : null}
+                        }
+
                       </div>
-                  </Card>
-                 
+                    </GridItem>   
+                  </GridContainer>
+                  <GridContainer>
+                    <GridItem xs={6} sm={6} md={6}>
+                      <div className="material-textarea">
+                        <label className="mui-custom-label">Description</label>
+                        <textarea
+
+                          name="Description"
+                          //  disabled={notes.disabled}
+                          value={Description}
+                          onChange={(event) =>
+                            this.handleChangeDes(event/*, notes.Index*/)
+                          }
+                        ></textarea>
+
+                      </div>
+                    </GridItem>
+                
+
+                  </GridContainer>
+
+
+                </Cardbody>
+              </Card>
+              <Card>
+                <CardHeader className="btn-right-outer" color="primary" icon>
+                  <CardIcon color="primary">
+                    <Note />
+                  </CardIcon>
+                  <h4 className="margin-right-auto text-color-black">Notes</h4>
+                  <div style={{ textAlign: "right", marginTop: "12px" }}>
+                    {this.state.notes.filter((x) => x.Status === "Active")
+                      .length === 0 ? (
+                      // <i onClick={() => this.showDiv("isInvoiceVisible","Invoice")} class="fas fa-car"></i>
+                      // <img
+                      //   style={{ width: "32px", marginLeft: "20px" }}
+                      //   src={carSVG}
+                      //   onClick={() =>
+                      //     this.showDiv("isNotesVisible", "NotesVisible")
+                      //   }
+                      // />
+                      <Button
+                        onClick={() =>
+                          this.showDiv("isNotesVisible", "NotesVisible")
+                        }
+                        style={{ width: "70px", height: "20px" }}
+                        color="primary"
+                      >
+                        Open
+                      </Button>
+                    ) : null}
                   </div>
+                </CardHeader>
+
+                <div className="notes-table">
+                  {isNotesVisible ? (
+                    <div className="package-table">
+                      <table>
+                        <thead>
+                          <tr>
+                            <th>Date</th>
+                            <th>Comments</th>
+                            <th>Action</th>
+                          </tr>
+                        </thead>
+                        <tbody>{this.viewNotes()}</tbody>
+                      </table>
+                    </div>
+                  ) : null}
                 </div>
-              
+              </Card>
 
-            <div className="shipment-submit">
+            </div>
+          </div>
 
-              {CommonConfig.getUserAccess("User Management").DeleteAccess === 1 ? (
-                <div className="left">
-                  <Button
-                    justify="center"
-                    color="danger"
-                    onClick={() => this.deleteBookOfWork()}
-                  >
-                    Delete
+
+          <div className="shipment-submit">
+
+            {CommonConfig.getUserAccess("User Management").DeleteAccess === 1 ? (
+              <div className="left">
+                <Button
+                  justify="center"
+                  color="danger"
+                  onClick={() => this.deleteBookOfWork()}
+                >
+                  Delete
+                </Button>
+              </div>
+            ) : null}
+
+
+            {CommonConfig.getUserAccess("User Management").WriteAccess === 1 && (CommonConfig.loggedInUserData().PersonID == this.props.location.state) ? (
+              <div className="right">
+
+                {/* <div> */}
+                {CommonConfig.isEmpty(this.props.location.state) ? null : (
+                  <Button color="rose" onClick={() => this.saveWork(false)}>
+                    Save
                   </Button>
-                </div>
-              ) : null}
+                )}
+                <Button color="primary" onClick={() => this.saveWork(true)}>
+                  Save & Exit
+                </Button>
+                {/* </div> */}
 
 
-              {CommonConfig.getUserAccess("User Management").WriteAccess === 1 && (CommonConfig.loggedInUserData().PersonID == this.props.location.state) ? (
+                <Button color="secondary" onClick={() => this.cancelUser()}>
+                  Cancel
+                </Button>
+              </div>
+            ) :
+              CommonConfig.getUserAccess("User Management").WriteAccess === 1 && CommonConfig.getUserAccess("User Management").AllAccess === 1 ? (
                 <div className="right">
 
                   {/* <div> */}
@@ -3611,77 +3601,57 @@ handleDateValidation = (date, type) => {
                   {/* </div> */}
 
 
-                  <Button color="secondary" onClick={() => this.cancelUser()}>
+                  <Button color="secondary" onClick={() => this.cancelWork()}>
                     Cancel
                   </Button>
                 </div>
               ) :
-                CommonConfig.getUserAccess("User Management").WriteAccess === 1 && CommonConfig.getUserAccess("User Management").AllAccess === 1 ? (
-                  <div className="right">
-
-                    {/* <div> */}
-                    {CommonConfig.isEmpty(this.props.location.state) ? null : (
-                      <Button color="rose" onClick={() => this.saveWork(false)}>
-                        Save
-                      </Button>
-                    )}
-                    <Button color="primary" onClick={() => this.saveWork(true)}>
-                      Save & Exit
-                    </Button>
-                    {/* </div> */}
-
-
-                    <Button color="secondary" onClick={() => this.cancelWork()}>
-                      Cancel
-                    </Button>
-                  </div>
-                ) :
-                  <div className="right">
-                    <Button color="secondary" onClick={() => this.cancelWork()}>
-                      Cancel
-                    </Button>
-                  </div>
-              }
-
-
-            </div>
-
-
-            <div>
-              <Dialog
-                open={this.state.delDoc}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-              >
-                <DialogTitle id="alert-dialog-title">
-                  Confirm Delete
-                </DialogTitle>
-                <DialogContent>
-                  <DialogContentText id="alert-dialog-description">
-                    Are you sure want to delete?
-                  </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                  <Button
-                    onClick={() => this.setState({ delDoc: false })}
-                    color="primary"
-                  >
+                <div className="right">
+                  <Button color="secondary" onClick={() => this.cancelWork()}>
                     Cancel
                   </Button>
-                  {this.state.Access.DeleteAccess === 1 ? (
-                    <Button
-                      onClick={() => this.handleDocumentDelete()}
-                      color="primary"
-                      autoFocus
-                    >
-                      Delete
-                    </Button>
-                  ) : null}
-                </DialogActions>
-              </Dialog>
-            </div>
+                </div>
+            }
 
-          
+
+          </div>
+
+
+          <div>
+            <Dialog
+              open={this.state.delDoc}
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description"
+            >
+              <DialogTitle id="alert-dialog-title">
+                Confirm Delete
+              </DialogTitle>
+              <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                  Are you sure want to delete?
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button
+                  onClick={() => this.setState({ delDoc: false })}
+                  color="primary"
+                >
+                  Cancel
+                </Button>
+                {this.state.Access.DeleteAccess === 1 ? (
+                  <Button
+                    onClick={() => this.handleDocumentDelete()}
+                    color="primary"
+                    autoFocus
+                  >
+                    Delete
+                  </Button>
+                ) : null}
+              </DialogActions>
+            </Dialog>
+          </div>
+
+
         </GridContainer>
         {this.state.Loading === true ? (
           <div className="loading">
