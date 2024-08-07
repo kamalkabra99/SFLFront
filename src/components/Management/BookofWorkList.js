@@ -162,10 +162,22 @@ class BookofWorkList extends Component {
               Query + ` OR bw.WorkStatus  = "` + inputdata[j].value + `"`;
           }
         }
+
+        
         if (!CommonConfig.isEmpty(Query)) {
           Query = Query + `)`;
         }
       }
+
+      if(CommonConfig.getUserAccess("Book of Work").AllAccess != 1){
+
+        Query = Query + ` AND (bw.AssignedBy = "`+CommonConfig.loggedInUserData().PersonID+`" OR bw.AssignedTo = "`+CommonConfig.loggedInUserData().PersonID+`")`
+
+      }
+
+     
+
+      
       console.log("query: ", Query);
       //  this.getProposalData(Query);
       this.getBookofWorkData(Query);
@@ -263,6 +275,12 @@ class BookofWorkList extends Component {
         } else {
           value = [{ label: "All", value: "All" }];
         }
+        
+      if(CommonConfig.getUserAccess("Book of Work").AllAccess != 1){
+
+        query = query + ` AND (bw.AssignedBy = "`+CommonConfig.loggedInUserData().PersonID+`" OR bw.AssignedTo = "`+CommonConfig.loggedInUserData().PersonID+`")`
+
+      }
         this.getBookofWorkData(query);
       } else {
         this.setState({ BookofWorkData: [] });
@@ -352,6 +370,14 @@ class BookofWorkList extends Component {
     const { BookofWorkData } = this.state;
     const column = [
      
+      {
+        Header: "Defect ID",
+        accessor: "BookofWorkID",
+        width: 100,
+        filterable: true,
+        sortable: true,
+        maxWidth: 100,
+      },
       {
         Header: "Assigned By",
         accessor: "AssignedByName",

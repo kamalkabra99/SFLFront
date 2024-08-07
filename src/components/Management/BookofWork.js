@@ -86,6 +86,8 @@ class Step1 extends React.Component {
       usertypeTimeZone: "",
       usertypeTimeZoneErr: "",
       usertypeTimeZoneHelperText: "",
+      viewAllClear: false,
+      deleteopen:false,
 
       UserTypeTimeZoneList: [
         {
@@ -369,10 +371,26 @@ class Step1 extends React.Component {
     //   this.getServiceListFiltered(89);
     //   this.getPaperSizeList();
     this.setState({ LoginpersonId: CommonConfig.loggedInUserData().PersonID });
-    if (this.props.history.location.state != undefined && this.props.history.location.state.id != "")
+
+    if (CommonConfig.getUserAccess("Book of Work").AllAccess == 1) {
+    } else {
+      this.state.viewAllClear = true;
+      this.setState({
+        AssignedBy: {
+          value: CommonConfig.loggedInUserData().PersonID,
+          label: CommonConfig.loggedInUserData().Name,
+        },
+      });
+    }
+
+    if (this.props.history.location.state != undefined && this.props.history.location.state.id != ""){
+      this.state.DefectId = this.props.history.location.state.id
       setTimeout(() => {
         this.geteditBookofWork();
       }, 1500);
+    }
+      
+    
   }
 
   getStatus() {
@@ -444,7 +462,9 @@ class Step1 extends React.Component {
 
   getnotesByID() {
     debugger
+    this.showLoader();
     try {
+
       let data = {
         ShippingID:
           this.props.location.state && this.props.history.location.state.id
@@ -454,6 +474,7 @@ class Step1 extends React.Component {
       api
         .post("contactUs/getBookofWorkNotesByID", data)
         .then((result) => {
+          this.hideLoader();
           var i = 0;
           result.data.data.map((Obj) => {
             Obj.Index = i;
@@ -475,6 +496,7 @@ class Step1 extends React.Component {
           console.log("error......", err);
         });
     } catch (err) {
+      this.hideLoader();
       console.log("error", err);
     }
   }
@@ -724,28 +746,29 @@ class Step1 extends React.Component {
         // let Index = this.state.Attachments.indexOf(record.original);
         let dateNow = new Date().getTime();
 
-        AttachmentList = {
-          DateTime: dateNow,
-          AttachmentName: files.name,
-          AttachmentType: files.type,
-          AttachmentID: null,
-          Status: "Active"
-
-        }
+        
 
         //  var editfilename = files.name;
 
+        
+        // console.log("files = ",files.File)
+        files.DateTime = dateNow
 
-        this.state.AttachmentsData.push(AttachmentList)
+        console.log("files = ",files)
 
-        this.setState({
-          Attachments: AttachmentList,
-          AttachmentList: AttachmentList,
-        });
+
+        this.state.AttachmentsData.push(files)
+
+
+       
+        this.state.Attachments =  files
+          this.state.AttachmentList = files
+        
       }
     }
   };
   stringTruncate = (filename) => {
+    console.log("filename = ",filename)
     var maxLength = 15;
     if (filename !== undefined && filename !== null) {
       if (filename.length > 15) {
@@ -1695,8 +1718,67 @@ class Step1 extends React.Component {
     });
   };
   deleteBookOfWork = () => {
-    this.showLoader();
+    // this.showLoader();
+    this.setState({ deleteopen: true });
   }
+  closeDeletework = () =>{
+
+    this.setState({ deleteopen: false });
+
+  }
+
+  handleDeleteBookOfWork = () => {
+    debugger
+    this.setState({
+      deleteopen: false,
+    });
+    this.showLoader();
+    try {
+      let data = {
+        BookofWorkID: this.state.BookofWorkID,
+      };
+      api.post("contactUs/DeleteBookofWorkByID", data).then((result) => {
+        if (result.success) {
+          this.hideLoader();
+          cogoToast.success("Deleted successfully");
+          this.props.history.push({
+            pathname: "/admin/BookofWorkList",
+            state: {
+              filterlist:
+                this.props.history.location.state &&
+                this.props.history.location.state.filterlist
+                  ? this.props.history.location.state.filterlist
+                  : null,
+              sortlist:
+                this.props.history.location.state &&
+                this.props.history.location.state.sortlist
+                  ? this.props.history.location.state.sortlist
+                  : null,
+              packageValue:
+                this.props.history.location.state &&
+                this.props.history.location.state.packageValue
+                  ? this.props.history.location.state.packageValue
+                  : null,
+              statusfilter:
+                this.props.history.location.state &&
+                this.props.history.location.state.statusfilter
+                  ? this.props.history.location.state.statusfilter
+                  : null,
+            },
+          });
+        } else {
+          this.hideLoader();
+          cogoToast.error("Something went wrong11");
+        }
+      });
+    } catch (err) {
+      this.hideLoader();
+      cogoToast.error("Something Went 12");
+    }
+  };
+
+
+
   saveWork = (redirect) => {
     debugger
     if (this.validate()) {
@@ -1710,13 +1792,13 @@ class Step1 extends React.Component {
           (x) => x.NoteText !== "" && x.NoteText !== null
         );
         var finalAttachment = [];
-        console.log("this.state.Attachments = ", this.state.AttachmentsData)
-        console.log("this.state.Attachments = ", this.state.AttachmentsData.length)
-        for (var i = 0; i < this.state.AttachmentsData.length; i++) {
+        console.log("this.state.Attachments = ", this.state.Attachments[0])
+        // console.log("this.state.Attachments = ", this.state.Attachments.length)
+        // for (var i = 0; i < this.state.Attachments.length; i++) {
           // if (this.state.AttachmentList[i].hasOwnProperty("AttachmentName")) {
-          finalAttachment.push(this.state.AttachmentsData[i]);
+          finalAttachment.push(this.state.Attachments);
           // }
-        }
+        // }
 
         console.log("finalAttachment = ", finalAttachment)
 
@@ -1780,6 +1862,7 @@ class Step1 extends React.Component {
                 });
               } else {
                 this.geteditBookofWork();
+                this.getnotesByID()
               }
             } else {
               cogoToast.error(res.message);
@@ -3199,6 +3282,7 @@ class Step1 extends React.Component {
       Priority,
       Status,
       ETA,
+      viewAllClear,
       DefectId,
       AssignedBySelected,
 
@@ -3241,6 +3325,19 @@ class Step1 extends React.Component {
                   <h4 className="margin-right-auto text-color-black">
                     Book of Work
                   </h4>
+
+                  {this.state.DefectId != "" ? (
+                      <div className="mg-info">
+                        <br />
+                        <p className="text-color-black">
+                          Defect ID:
+                          <TextField
+                            disabled={true}
+                            value={this.state.BookofWorkID}
+                          />
+                        </p>
+                      </div>
+                    ) : null}
                 </CardHeader>
                 <Cardbody>
                   <GridContainer>
@@ -3250,6 +3347,7 @@ class Step1 extends React.Component {
                         id="AssignedBy"
                         options={assignedByDrop}
                         value={AssignedBy}
+                        disabled={viewAllClear === false ? false : true}
                         onChange={(event, value) =>
                           this.ChangeInput(value, "AssignedBy")
                         }
@@ -3466,7 +3564,7 @@ class Step1 extends React.Component {
                                   id="file"
                                   onChange={(event) => this.fileUpload(event)}
                                 />
-                                <p>{this.stringTruncate(this.state.Attachments.AttachmentName)}</p>
+                                <p>{this.stringTruncate(this.state.Attachments.name)}</p>
                               </div>
                             </div>
 
@@ -3553,7 +3651,7 @@ class Step1 extends React.Component {
 
           <div className="shipment-submit">
 
-            {CommonConfig.getUserAccess("User Management").DeleteAccess === 1 ? (
+            {CommonConfig.getUserAccess("Book of Work").DeleteAccess === 1 ? (
               <div className="left">
                 <Button
                   justify="center"
@@ -3566,7 +3664,7 @@ class Step1 extends React.Component {
             ) : null}
 
 
-            {CommonConfig.getUserAccess("User Management").WriteAccess === 1 && (CommonConfig.loggedInUserData().PersonID == this.props.location.state) ? (
+            {CommonConfig.getUserAccess("Book of Work").WriteAccess === 1  ? (
               <div className="right">
 
                 {/* <div> */}
@@ -3586,31 +3684,9 @@ class Step1 extends React.Component {
                 </Button>
               </div>
             ) :
-              CommonConfig.getUserAccess("User Management").WriteAccess === 1 && CommonConfig.getUserAccess("User Management").AllAccess === 1 ? (
-                <div className="right">
-
-                  {/* <div> */}
-                  {CommonConfig.isEmpty(this.props.location.state) ? null : (
-                    <Button color="rose" onClick={() => this.saveWork(false)}>
-                      Save
-                    </Button>
-                  )}
-                  <Button color="primary" onClick={() => this.saveWork(true)}>
-                    Save & Exit
-                  </Button>
-                  {/* </div> */}
-
-
-                  <Button color="secondary" onClick={() => this.cancelWork()}>
-                    Cancel
-                  </Button>
-                </div>
-              ) :
-                <div className="right">
-                  <Button color="secondary" onClick={() => this.cancelWork()}>
-                    Cancel
-                  </Button>
-                </div>
+            <Button color="secondary" onClick={() => this.cancelUser()}>
+              Cancel
+            </Button>
             }
 
 
@@ -3619,7 +3695,7 @@ class Step1 extends React.Component {
 
           <div>
             <Dialog
-              open={this.state.delDoc}
+              open={this.state.deleteopen}
               aria-labelledby="alert-dialog-title"
               aria-describedby="alert-dialog-description"
             >
@@ -3633,14 +3709,14 @@ class Step1 extends React.Component {
               </DialogContent>
               <DialogActions>
                 <Button
-                  onClick={() => this.setState({ delDoc: false })}
+                  onClick={() => this.closeDeletework()}
                   color="primary"
                 >
                   Cancel
                 </Button>
                 {this.state.Access.DeleteAccess === 1 ? (
                   <Button
-                    onClick={() => this.handleDocumentDelete()}
+                    onClick={() => this.handleDeleteBookOfWork()}
                     color="primary"
                     autoFocus
                   >
@@ -3650,6 +3726,8 @@ class Step1 extends React.Component {
               </DialogActions>
             </Dialog>
           </div>
+
+         
 
 
         </GridContainer>
