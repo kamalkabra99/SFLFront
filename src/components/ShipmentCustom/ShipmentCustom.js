@@ -459,6 +459,7 @@ class ShipmentCustom extends React.Component {
       VendorAccessForInvoice: 0,
       AllClear: "",
       viewAllClear: false,
+      NewviewAllClear:false,
       IsChanged: false,
       confirmAllClear: false,
       PaymentShowData: {},
@@ -1628,6 +1629,7 @@ class ShipmentCustom extends React.Component {
             this.setState({ previousAllClear: res.data[0].AllClear });
             if (res.data[0].AllClear === 1) {
               this.setState({ viewAllClear: true });
+              this.setState({ NewviewAllClear: true });
             }
             var allclearlist = {
               value:
@@ -7059,7 +7061,7 @@ class ShipmentCustom extends React.Component {
               />
             </td>
             <td className="pck-action-column">
-              {!this.state.viewAllClear && !this.state.hasInvoiceAccess ? (
+              {!this.state.NewviewAllClear && !this.state.hasInvoiceAccess ? (
                 <Button
                   justIcon
                   color="danger"
@@ -7072,7 +7074,7 @@ class ShipmentCustom extends React.Component {
               {this.state.PaymentList.filter((x) => x.Status === "Active")
                 .length ===
                 idx + 1 &&
-              !this.state.viewAllClear &&
+              !this.state.NewviewAllClear &&
               // CommonConfig.getUserAccess("Shipment").DeleteAccess === 1 &&
               // CommonConfig.getUserAccess("Shipment").WriteAccess === 1
               !this.state.hasInvoiceAccess ? (
