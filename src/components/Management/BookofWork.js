@@ -51,6 +51,7 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import momentTimezone from "moment-timezone";
 import InfoIcon from "@material-ui/icons/PriorityHigh";
+import {decode as base64_decode, encode as base64_encode} from 'base-64';
 const useStyles = makeStyles(styles);
 
 const classes = () => {
@@ -698,12 +699,13 @@ class Step1 extends React.Component {
           var FinalNotes = this.state.notes.filter(
             (x) => x.NoteText !== "" && x.NoteText !== null
           );
+  
           this.setState({
             AssignedBy: selectedAssignedBy,
             AssignedTo: selectedAssignedTo,
             DateCreated: WorkData.data.DateCreated,
             WorkName: WorkData.data.WorkName,
-            Description: WorkData.data.Description,
+            Description: base64_decode(WorkData.data.Description),
             Attachment: WorkData.data.AttachmentPath,
             Priority: selectedPriority,
             ETA: WorkData.data.ETA,
@@ -1828,7 +1830,7 @@ class Step1 extends React.Component {
         }
 
 
-
+   
         if (CommonConfig.isEmpty(this.state.BookofWorkID) !== true) {
           data = {
             BookofWorkID: this.state.BookofWorkID,
@@ -1837,7 +1839,7 @@ class Step1 extends React.Component {
             AssignedTo: this.state.AssignedTo.value,
             DateCreated: moment(this.state.DateCreated).format(CommonConfig.dateFormat.dbDateOnly).toString(),
             WorkName: this.state.WorkName,
-            Description: this.state.Description,
+            Description: base64_encode(this.state.Description),
             Priority: this.state.Priority.value,
             ETA: this.state.ETA == null  || this.state.ETA == ""? "NULL": moment(this.state.ETA).format(CommonConfig.dateFormat.dbDateOnly).toString(),
             WorkStatus: this.state.Status.value,
@@ -1853,7 +1855,7 @@ class Step1 extends React.Component {
             Attachments: finalAttachment,
             DateCreated: moment(this.state.DateCreated).format(CommonConfig.dateFormat.dbDateOnly).toString(),
             WorkName: this.state.WorkName,
-            Description: this.state.Description,
+            Description: base64_encode(this.state.Description),
             Priority: this.state.Priority.value,
             ETA: this.state.ETA == null  || this.state.ETA == "" ? "NULL": moment(this.state.ETA).format(CommonConfig.dateFormat.dbDateOnly).toString(),
             WorkStatus: this.state.Status.value,
