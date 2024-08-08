@@ -67,7 +67,6 @@ class Step1 extends React.Component {
           stepId: "bookofworklist",
           classname: "active",
         },
-
       ],
       Status: "",
       UserStatusList: [
@@ -87,7 +86,7 @@ class Step1 extends React.Component {
       usertypeTimeZoneErr: "",
       usertypeTimeZoneHelperText: "",
       viewAllClear: false,
-      deleteopen:false,
+      deleteopen: false,
 
       UserTypeTimeZoneList: [
         {
@@ -124,7 +123,6 @@ class Step1 extends React.Component {
           label: "EUR",
           value: "EUR",
         },
-
       ],
       UsertypeCurrency: "",
       userTypeDepartment: "",
@@ -263,16 +261,13 @@ class Step1 extends React.Component {
       descriptionHelperText: "",
       checkDescription: false,
 
-
-
-
-
-
       WorkStatusList: [],
       Status: "",
       statusErr: false,
       statusHelperText: "",
       checkStatus: false,
+      datatoUploadFile:[],
+      datafile:0,
 
       Country: {},
       CountryList: [],
@@ -354,7 +349,7 @@ class Step1 extends React.Component {
   }
 
   async componentDidMount() {
-    debugger
+    debugger;
     // this.getDepartment();
     //  this.getAccountType();
     this.setState({ Access: CommonConfig.getUserAccess("User Management") });
@@ -389,18 +384,19 @@ class Step1 extends React.Component {
       });
     }
 
-    if (this.props.history.location.state != undefined && this.props.history.location.state.id != ""){
-      this.state.DefectId = this.props.history.location.state.id
+    if (
+      this.props.history.location.state != undefined &&
+      this.props.history.location.state.id != ""
+    ) {
+      this.state.DefectId = this.props.history.location.state.id;
       setTimeout(() => {
         this.geteditBookofWork();
       }, 1500);
     }
-      
-    
   }
 
   getStatus() {
-    debugger
+    debugger;
     try {
       let data = {
         stringMapType: "WORKSTATUS",
@@ -409,9 +405,7 @@ class Step1 extends React.Component {
       api
         .post("stringMap/getstringMap", data)
         .then((result) => {
-
           this.setState({ WorkStatusList: result.data });
-
         })
         .catch((err) => {
           console.log(err);
@@ -422,7 +416,7 @@ class Step1 extends React.Component {
   }
 
   getPriority() {
-    debugger
+    debugger;
     try {
       let data = {
         stringMapType: "PRIORITY",
@@ -431,9 +425,7 @@ class Step1 extends React.Component {
       api
         .post("stringMap/getstringMap", data)
         .then((result) => {
-
           this.setState({ PriorityList: result.data });
-
         })
         .catch((err) => {
           console.log(err);
@@ -444,7 +436,7 @@ class Step1 extends React.Component {
   }
 
   getAssignedBy() {
-    debugger
+    debugger;
     try {
       api
         .get("contactus/getUsersForTMSList")
@@ -467,10 +459,9 @@ class Step1 extends React.Component {
   }
 
   getnotesByID() {
-    debugger
+    debugger;
     this.showLoader();
     try {
-
       let data = {
         ShippingID:
           this.props.location.state && this.props.history.location.state.id
@@ -574,7 +565,6 @@ class Step1 extends React.Component {
     }
   };
 
-
   getStates(countryData, type) {
     try {
       if (type === "All") {
@@ -601,8 +591,7 @@ class Step1 extends React.Component {
             console.log("err...", err);
             cogoToast.error("Something Went Wrong 1");
           });
-      }
-      else if (type === "Usertype") {
+      } else if (type === "Usertype") {
         let data = {
           countryId: countryData.value,
         };
@@ -627,14 +616,13 @@ class Step1 extends React.Component {
             cogoToast.error("Something Went Wrong 2");
           });
       }
-
     } catch (error) {
       this.hideLoader();
     }
   }
 
   geteditBookofWork = () => {
-    debugger
+    debugger;
     let data = {
       BookofWorkID: this.props.history.location.state.id,
     };
@@ -724,69 +712,101 @@ class Step1 extends React.Component {
     }
   };
 
-
-
-
   fileUpload = (event) => {
-    debugger
     const files = event.target.files[0];
-    debugger;
-    console.log("FileSizes = ", files);
-    console.log("FileSizes = ", files.size);
-    this.setState({ uploadedfilename: files.name });
-    // const updatedFileSizes = files.map((fileSize) => ({
-    //   ...fileSize,
-    //   name: "newFileName.jpg", // Change to the new name you desire
-    // }));
-    // console.log("......", updatedFileSizes);
     var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.pdf|\.xls|\.xlsx|\.doc|\.docx|\.ppt|\.pptx)$/i;
     if (!allowedExtensions.exec(files.name)) {
       cogoToast.error(
-        "Please upload file having extensions .jpeg/.jpg/.png/.pdf /.xls/.xlsx/.doc/.docx/.ppt/.pptx only."
+        "Please upload file having extensions .jpeg/.jpg/.png/.pdf only."
       );
     } else {
       if (files.size > 5000000) {
         cogoToast.error("please upload the file maximum 5MB");
       } else {
-        let AttachmentList = this.state.AttachmentList;
-        // let Index = this.state.Attachments.indexOf(record.original);
+        const data = new FormData();
+        files.DateTime = new Date().getTime()
+        
+        data.append("file", files);
+
+
+        console.log("data = ",data);
+
+        this.state.datatoUploadFile = data
+        this.state.datafile = 1
+       
+
+        let AttachmentList = [];
+
+        let Index = 0;
         let dateNow = new Date().getTime();
 
-        
-
         //  var editfilename = files.name;
+        let datasets = {
 
-        
-        // console.log("files = ",files.File)
-        files.DateTime = dateNow
+          DateTime : dateNow,
+          AttachmentName : files.name,
 
-        console.log("files = ",files)
+          AttachmentType : files.type,
+          AttachmentID : null,
+          Status : "Active",
 
+        }
 
-        this.state.AttachmentsData.push(files)
+        AttachmentList.push(datasets)
 
-
+        console.log("AttachmentList = ",AttachmentList)
        
-        this.state.Attachments =  files
-          this.state.AttachmentList = files
-        
+        this.setState({
+          Attachments: AttachmentList,
+          AttachmentList: [...this.state.AttachmentList, files],
+        });
+
+        // setTimeout(() => {
+        //   // if (checkImage) {
+        //     api
+        //       .post("reviewsitemanage/uploadwoorkAttachment", this.state.datatoUploadFile)
+        //       .then((res) => {
+        //         cogoToast.success("Logo uploaded successfully");
+        //         // if (fileBase.includes("docs.sflworldwide")) {
+        //         //   var url = backendurl + "document/" + res.filename;
+        //         // } else {
+        //         //   var url = backendurl + res.filename;
+        //         // }
+        //         // this.setState({
+        //         //   reviewSiteLogoUrl: url,
+        //         //   filename: res.filename,
+        //         // });
+        //       });
+        //   // } else {
+        //   //   cogoToast.error("Height or width not matched");
+        //   // }
+        // }, 2000);
+
+
+
       }
     }
   };
+
+
   stringTruncate = (filename) => {
-    console.log("filename = ",filename)
-    var maxLength = 15;
-    if (filename !== undefined && filename !== null) {
-      if (filename.length > 15) {
-        filename = filename.substring(0, maxLength) + "...";
-      } else {
-        filename = filename;
+    if(filename.length > 0){
+      console.log("filename = ", filename);
+      filename = filename[0].AttachmentName
+      var maxLength = 15;
+      if (filename !== undefined && filename !== null) {
+        if (filename.length > 15) {
+          filename = filename.substring(0, maxLength) + "...";
+        } else {
+          filename = filename;
+        }
       }
+      return filename;
     }
-    return filename;
+    
   };
   handleDocumentChange = (e, record) => {
-    debugger
+    debugger;
     var Index = this.state.Attachments.indexOf(record.original);
     this.state.Attachments[Index]["FileName"] = e.target.value;
     this.setState({ Attachments: [...this.state.Attachments] });
@@ -805,7 +825,6 @@ class Step1 extends React.Component {
       </div>
     );
   };
-
 
   AddNewRowData = () => {
     let attachments = this.state.Attachments;
@@ -872,8 +891,6 @@ class Step1 extends React.Component {
   //                     : null,
   //                 })
   //               }
-
-
 
   //             }
 
@@ -1100,15 +1117,18 @@ class Step1 extends React.Component {
   //   }
   // }
   getServiceListFiltered(CountryParam) {
-    debugger
+    debugger;
     try {
       this.setState({ Loading: true });
       const data = {
         CountryIds: CountryParam,
-        userID: this.props.location.state
-      }
+        userID: this.props.location.state,
+      };
       api
-        .post("https://hubapi.sflworldwide.com/userManagement/getServiceListUserMarkupFilter", data)
+        .post(
+          "https://hubapi.sflworldwide.com/userManagement/getServiceListUserMarkupFilter",
+          data
+        )
         .then((res) => {
           if (res.success) {
             this.setState({ serviceList: [] });
@@ -1127,7 +1147,7 @@ class Step1 extends React.Component {
         .catch((err) => {
           cogoToast.error("Something Went Wrong 6");
         });
-    } catch (error) { }
+    } catch (error) {}
   }
   showLoader = () => {
     this.setState({ Loading: true });
@@ -1138,7 +1158,6 @@ class Step1 extends React.Component {
   };
 
   handleChangeValidation = (event, type) => {
-
     if (type === "WorkName") {
       this.setState({ checkWorkName: true });
       let worknameval = event.target.value;
@@ -1162,11 +1181,8 @@ class Step1 extends React.Component {
         });
       }
     }
-
-
   };
   handleChange = (event, type) => {
-
     if (type === "WorkName") {
       this.setState({ checkWorkName: true });
       let worknameval = event.target.value;
@@ -1176,17 +1192,13 @@ class Step1 extends React.Component {
         workNameErr: false,
         workNameHelperText: "",
       });
-
+    } else if (type === "Description") {
+      this.setState({
+        Description: worknameval,
+        descriptionErr: false,
+        descriptionHelperText: "",
+      });
     }
-    else
-      if (type === "Description") {
-        this.setState({
-          Description: worknameval,
-          descriptionErr: false,
-          descriptionHelperText: "",
-        });
-      }
-
   };
 
   handleChangeDes = (event) => {
@@ -1380,13 +1392,12 @@ class Step1 extends React.Component {
       let arrType = "previousSelected" + this.state.chatlist;
       let SelectedCountryCode = "1";
 
-      checkedArr.filter((x) => x.IsSelected === true)
+      checkedArr
+        .filter((x) => x.IsSelected === true)
         .map((OBJ) => {
-
           SelectedCountryCode = SelectedCountryCode + "," + OBJ.value;
           return OBJ;
         });
-
     } else {
       // else {
       this.setState({ shipmentquery: "" });
@@ -1414,32 +1425,27 @@ class Step1 extends React.Component {
       // this.filterMethod("Hello", previousList);
       // }
     }
-
   };
   handleServiceCheckboxChange = (e, record, type) => {
-
     let checkedArr = this.state.countryWise;
     if (type !== "All") {
-
-
       let SelectedCountryCode = "1";
       //this.filterMethod("Hello", previousList);
-      checkedArr.filter((x) => x.IsSelected === true)
+      checkedArr
+        .filter((x) => x.IsSelected === true)
         .map((OBJ) => {
-
           SelectedCountryCode = SelectedCountryCode + "," + OBJ.value;
           return OBJ;
         });
       if (SelectedCountryCode === undefined || SelectedCountryCode === "1")
         SelectedCountryCode = "1,37,89,202,0";
-      this.getServiceListFiltered(SelectedCountryCode)
+      this.getServiceListFiltered(SelectedCountryCode);
     } else {
       // else {
 
-
-
       let SelectedCountryCode = "1";
-      checkedArr.filter((x) => x.IsSelected === true)
+      checkedArr
+        .filter((x) => x.IsSelected === true)
         .map((OBJ) => {
           if (OBJ.value !== "All")
             SelectedCountryCode = SelectedCountryCode + "," + OBJ.value;
@@ -1455,17 +1461,16 @@ class Step1 extends React.Component {
     // console.log("checkedArr = ",checkdata);
   };
 
-
-
-
   validate() {
-    debugger
+    debugger;
     let IsFormValid = true;
     if (this.state.WorkName === null || this.state.WorkName === "") {
-      this.setState({ workNameErr: true, workNameHelperText: "Please Enter Work Name" });
+      this.setState({
+        workNameErr: true,
+        workNameHelperText: "Please Enter Work Name",
+      });
       IsFormValid = false;
     }
-
 
     // if (
     //   this.state.objAttachment.FileName === "" &&
@@ -1475,57 +1480,70 @@ class Step1 extends React.Component {
     // }
     if (this.state.AssignedBy === null || this.state.AssignedBy === "") {
       IsFormValid = false;
-      this.setState({ assignedByErr: true, assignedByHelperText: "Please Select Value" });
+      this.setState({
+        assignedByErr: true,
+        assignedByHelperText: "Please Select Value",
+      });
     }
     if (this.state.AssignedTo === null || this.state.AssignedTo === "") {
       IsFormValid = false;
-      this.setState({ assignedToErr: true, assignedToHelperText: "Please Select Value" });
+      this.setState({
+        assignedToErr: true,
+        assignedToHelperText: "Please Select Value",
+      });
     }
     if (this.state.DateCreated === null || this.state.DateCreated === "") {
       IsFormValid = false;
-      this.setState({ dateCreatedErr: true, dateCreatedHelperText: "Please Select Date Created" });
+      this.setState({
+        dateCreatedErr: true,
+        dateCreatedHelperText: "Please Select Date Created",
+      });
     }
     if (this.state.Priority === null || this.state.Priority === "") {
       IsFormValid = false;
-      this.setState({ priorityErr: true, priorityHelperText: "Please Select Priority" });
+      this.setState({
+        priorityErr: true,
+        priorityHelperText: "Please Select Priority",
+      });
     }
     if (this.state.Status === null || this.state.Status === "") {
       IsFormValid = false;
-      this.setState({ statusErr: true, statusHelperText: "Please Select Status" });
+      this.setState({
+        statusErr: true,
+        statusHelperText: "Please Select Status",
+      });
     }
-
-
-
 
     return IsFormValid;
   }
   setUserDepartment = (e) => {
-    debugger
+    debugger;
 
     this.setState({ userTypeDepartment: e });
     this.state.userTypeDepartment = e;
     console.log("userTypeDepartment", this.state.userTypeDepartment);
-  }
+  };
   DeleteDocument = (e, record) => {
     this.setState({ recordDocument: record, delDoc: true });
   };
   setUserTimeZone = (e) => {
     this.setState({ usertypeTimeZone: e });
-    this.setState({ usertypeTimeZoneErr: false, usertypeTimeZoneHelperText: "" });
-  }
+    this.setState({
+      usertypeTimeZoneErr: false,
+      usertypeTimeZoneHelperText: "",
+    });
+  };
   setUserCurrency = (e) => {
     this.setState({ UsertypeCurrency: e });
-  }
+  };
 
   setUserType = (e) => {
     this.setState({ userType: e });
     if (this.state.userTimeZone != "" && this.state.usertypeTimeZone == "")
-      this.setState({ usertypeTimeZone: this.state.userTimeZone })
-
-
-  }
+      this.setState({ usertypeTimeZone: this.state.userTimeZone });
+  };
   handleDateChange = (date, type) => {
-    debugger
+    debugger;
     // if (type === "start") {
     //   this.setState({
     //     StartDate: date,
@@ -1538,26 +1556,24 @@ class Step1 extends React.Component {
     //     enddateErr: false,
     //     enddateHelperText: "",
     //   });
-    // }else 
+    // }else
     if (type === "ETA") {
       this.setState({
         ETA: date,
         etaErr: false,
         etaHelperText: "",
       });
-
     } else if (type === "DOC") {
       this.setState({
         DateCreated: date,
         dateCreatedErr: false,
         dateCreatedHelperText: "",
       });
-
     }
-  }
+  };
 
   handleDateValidation = (date, type) => {
-    debugger
+    debugger;
 
     if (type === "DOC") {
       this.setState({
@@ -1572,18 +1588,14 @@ class Step1 extends React.Component {
             dateCreatedErr: false,
             dateCreatedHelperText: "",
           });
-        }
-        else {
+        } else {
           this.setState({
             JoinDate: "",
             joindateErr: true,
             joindateHelperText: "Date Created must be Before ETA",
           });
         }
-
-
     } else if (type === "ETA") {
-
       this.setState({
         ETA: date,
         etaErr: false,
@@ -1596,15 +1608,13 @@ class Step1 extends React.Component {
             relivingdateErr: false,
             relivingdateHelperText: "",
           });
+        } else if (date != "") {
+          this.setState({
+            RelivingDate: "",
+            relivingdateErr: true,
+            relivingdateHelperText: "Reliving Date must be after Date of Birth",
+          });
         }
-        else
-          if (date != "") {
-            this.setState({
-              RelivingDate: "",
-              relivingdateErr: true,
-              relivingdateHelperText: "Reliving Date must be after Date of Birth",
-            });
-          }
       if (this.state.JoinDate !== "")
         if (date > this.state.JoinDate) {
           this.setState({
@@ -1612,15 +1622,13 @@ class Step1 extends React.Component {
             relivingdateErr: false,
             relivingdateHelperText: "",
           });
+        } else if (date != "") {
+          this.setState({
+            RelivingDate: "",
+            relivingdateErr: true,
+            relivingdateHelperText: "Reliving Date must be after Date of Join",
+          });
         }
-        else
-          if (date != "") {
-            this.setState({
-              RelivingDate: "",
-              relivingdateErr: true,
-              relivingdateHelperText: "Reliving Date must be after Date of Join",
-            });
-          }
     } else if (type === "DOB") {
       this.setState({
         BirthDate: date,
@@ -1634,8 +1642,7 @@ class Step1 extends React.Component {
             birthdateErr: false,
             birthdateHelperText: "",
           });
-        }
-        else {
+        } else {
           this.setState({
             BirthDate: "",
             birthdateErr: true,
@@ -1649,18 +1656,18 @@ class Step1 extends React.Component {
             birthdateErr: false,
             birthdateHelperText: "",
           });
-        }
-        else {
+        } else {
           this.setState({
             BirthDate: "",
             birthdateErr: true,
-            birthdateHelperText: "Date of Birth must be before Date of Reliving",
+            birthdateHelperText:
+              "Date of Birth must be before Date of Reliving",
           });
         }
     }
   };
   handleTimeChange = (time, type) => {
-    debugger
+    debugger;
     if (type === "start_time") {
       this.setState({
         StartTime: time.currentTarget.value,
@@ -1726,15 +1733,13 @@ class Step1 extends React.Component {
   deleteBookOfWork = () => {
     // this.showLoader();
     this.setState({ deleteopen: true });
-  }
-  closeDeletework = () =>{
-
+  };
+  closeDeletework = () => {
     this.setState({ deleteopen: false });
-
-  }
+  };
 
   handleDeleteBookOfWork = () => {
-    debugger
+    debugger;
     this.setState({
       deleteopen: false,
     });
@@ -1783,84 +1788,96 @@ class Step1 extends React.Component {
     }
   };
 
-
-
   saveWork = (redirect) => {
-    debugger
+    debugger;
     if (this.validate()) {
       try {
         this.showLoader();
 
-
-        debugger
+        debugger;
         var data = {};
         var FinalNotes = this.state.notes.filter(
           (x) => x.NoteText !== "" && x.NoteText !== null
         );
         var finalAttachment = [];
-        console.log("this.state.Attachments = ", this.state.Attachments.Files)
+        console.log("this.state.Attachments = ", this.state.Attachments.Files);
         // console.log("this.state.Attachments = ", this.state.Attachments.length)
         // for (var i = 0; i < this.state.Attachments.length; i++) {
-          // if (this.state.AttachmentList[i].hasOwnProperty("AttachmentName")) {
-          finalAttachment.push(this.state.Attachments);
-          // }
+        // if (this.state.AttachmentList[i].hasOwnProperty("AttachmentName")) {
+        finalAttachment.push(this.state.Attachments);
+        // }
         // }
 
-        console.log("finalAttachment = ", finalAttachment)
+        console.log("finalAttachment = ", finalAttachment);
 
-        var flag = 0
+        var flag = 0;
 
         if (CommonConfig.isEmpty(this.state.BookofWorkID) !== true) {
-            if(CommonConfig.getUserAccess("Book of Work").AllAccess == 1){
-              flag = 0
-            }else{
-              if(this.state.AssignedBy.value == CommonConfig.loggedInUserData().PersonID){
-                flag = 0
-              }else{
-                if(this.state.Status.value == "Cancelled" || this.state.Status.value == "Closed"){
-                  flag = 1
-                }else{
-                  flag = 0
-                }
-                
+          if (CommonConfig.getUserAccess("Book of Work").AllAccess == 1) {
+            flag = 0;
+          } else {
+            if (
+              this.state.AssignedBy.value ==
+              CommonConfig.loggedInUserData().PersonID
+            ) {
+              flag = 0;
+            } else {
+              if (
+                this.state.Status.value == "Cancelled" ||
+                this.state.Status.value == "Closed"
+              ) {
+                flag = 1;
+              } else {
+                flag = 0;
               }
             }
+          }
         }
-
-
 
         if (CommonConfig.isEmpty(this.state.BookofWorkID) !== true) {
           data = {
             BookofWorkID: this.state.BookofWorkID,
             AssignedBy: this.state.AssignedBy.value,
-            Attachments: finalAttachment,
+            Attachments: "",
             AssignedTo: this.state.AssignedTo.value,
-            DateCreated: moment(this.state.DateCreated).format(CommonConfig.dateFormat.dbDateOnly).toString(),
+            DateCreated: moment(this.state.DateCreated)
+              .format(CommonConfig.dateFormat.dbDateOnly)
+              .toString(),
             WorkName: this.state.WorkName,
             Description: this.state.Description,
             Priority: this.state.Priority.value,
-            ETA: this.state.ETA == null  || this.state.ETA == ""? "NULL": moment(this.state.ETA).format(CommonConfig.dateFormat.dbDateOnly).toString(),
+            ETA:
+              this.state.ETA == null || this.state.ETA == ""
+                ? "NULL"
+                : moment(this.state.ETA)
+                    .format(CommonConfig.dateFormat.dbDateOnly)
+                    .toString(),
             WorkStatus: this.state.Status.value,
             UpdatedBy: CommonConfig.loggedInUserData().PersonID,
             notes: FinalNotes,
           };
-
-        }
-        else
+        } else
           data = {
             AssignedBy: this.state.AssignedBy.value,
             AssignedTo: this.state.AssignedTo.value,
             Attachments: finalAttachment,
-            DateCreated: moment(this.state.DateCreated).format(CommonConfig.dateFormat.dbDateOnly).toString(),
+            DateCreated: moment(this.state.DateCreated)
+              .format(CommonConfig.dateFormat.dbDateOnly)
+              .toString(),
             WorkName: this.state.WorkName,
             Description: this.state.Description,
             Priority: this.state.Priority.value,
-            ETA: this.state.ETA == null  || this.state.ETA == "" ? "NULL": moment(this.state.ETA).format(CommonConfig.dateFormat.dbDateOnly).toString(),
+            ETA:
+              this.state.ETA == null || this.state.ETA == ""
+                ? "NULL"
+                : moment(this.state.ETA)
+                    .format(CommonConfig.dateFormat.dbDateOnly)
+                    .toString(),
             WorkStatus: this.state.Status.value,
             CreatedBy: CommonConfig.loggedInUserData().PersonID,
             notes: FinalNotes,
           };
-        console.log("Book Of Work Data", data)
+        console.log("Book Of Work Data", data);
         var formData = new FormData();
         formData.append("data", JSON.stringify(data));
 
@@ -1872,45 +1889,43 @@ class Step1 extends React.Component {
 
         let calledApi = "contactUs/addBookofWork";
 
-
-        if(flag == 0){
+        if (flag == 0) {
           api
-          .post(calledApi, formData)
-          .then((res) => {
-            if (res.success) {
-              // console.log("res.success",res.success);
-              this.hideLoader();
-              cogoToast.success(res.message);
-              if (redirect) {
-                this.props.history.push({
-                  pathname: "/admin/BookofWorkList",
-                  state: {
-                    filterlist: this.props.history.location.filterlist,
-                    sortlist: this.props.history.location.sortlist,
-                  },
-                });
+            .post(calledApi, formData)
+            .then((res) => {
+              if (res.success) {
+                // console.log("res.success",res.success);
+                this.hideLoader();
+                cogoToast.success(res.message);
+                if (redirect) {
+                  this.props.history.push({
+                    pathname: "/admin/BookofWorkList",
+                    state: {
+                      filterlist: this.props.history.location.filterlist,
+                      sortlist: this.props.history.location.sortlist,
+                    },
+                  });
+                } else {
+
+                  
+                  this.geteditBookofWork();
+                  this.getnotesByID();
+                }
               } else {
-                this.geteditBookofWork();
-                this.getnotesByID()
+                cogoToast.error(res.message);
               }
-            } else {
-              cogoToast.error(res.message);
-            }
-          })
-          .catch((err) => {
-            this.hideLoader();
-            cogoToast.error(err);
-          });
-
-        }else{
-
+            })
+            .catch((err) => {
+              this.hideLoader();
+              cogoToast.error(err);
+            });
+        } else {
           this.hideLoader();
           // console.log("SaveUser Error", error);
-          cogoToast.error("You don't have access to move status to Cancel or Closed");
-
+          cogoToast.error(
+            "You don't have access to move status to Cancel or Closed"
+          );
         }
-
-        
       } catch (error) {
         this.hideLoader();
         console.log("SaveUser Error", error);
@@ -1932,7 +1947,7 @@ class Step1 extends React.Component {
   };
 
   renderMarkup = () => {
-    console.log("this.state.serviceList = ", this.state.serviceList)
+    console.log("this.state.serviceList = ", this.state.serviceList);
     return this.state.serviceList.map((service) => {
       const {
         CountryName,
@@ -1944,7 +1959,7 @@ class Step1 extends React.Component {
         Markup,
         EnvelopMarkup,
         MarkupType,
-        Status
+        Status,
       } = service;
 
       return (
@@ -2233,7 +2248,6 @@ class Step1 extends React.Component {
 
   showHide() {
     //  document.getElementById("bookofwork").style.display = "block";
-
   }
 
   handleDocumentDelete = () => {
@@ -2281,13 +2295,13 @@ class Step1 extends React.Component {
   };
 
   zipChange = (zip, type) => {
-    debugger
+    debugger;
     if (type === "All") {
       if (zip.length) {
         let citydata = {
-          "PostalCode": zip,
-          "CountryID": this.state.Country.value
-        }
+          PostalCode: zip,
+          CountryID: this.state.Country.value,
+        };
         api
           .post(
             "https://hubapi.sflworldwide.com/contactus/SflPostalCode",
@@ -2307,7 +2321,7 @@ class Step1 extends React.Component {
                   var FinalCity = [];
                   var city = "";
 
-                  var countryShortName = data[0].Country
+                  var countryShortName = data[0].Country;
                   for (let i = 0; i < RecCount; i++)
                     FinalCity.push({
                       City_code: data[i].City,
@@ -2323,44 +2337,53 @@ class Step1 extends React.Component {
                   if (countryShortName === this.state.Country.label) {
                     this.setState({
                       CityAutoComplete: FinalCity.length ? true : false,
-                      StateAutoComplete: this.state.StateList.length ? true : false,
+                      StateAutoComplete: this.state.StateList.length
+                        ? true
+                        : false,
                       GoogleAPICityList: FinalCity,
-                      State: this.state.StateList.length ? SelectedState : state,
+                      State: this.state.StateList.length
+                        ? SelectedState
+                        : state,
                       City: SelectedCity,
                     });
                   } else {
                     this.setState({
                       CityAutoComplete: false,
-                      StateAutoComplete: this.state.StateList.length ? true : false,
+                      StateAutoComplete: this.state.StateList.length
+                        ? true
+                        : false,
                       GoogleAPICityList: [],
                       State: "",
                       City: "",
                     });
                   }
                   this.hideLoader();
-                }
-                else {
-                  fetch(CommonConfig.zipCodeAPIKey(zip, this.state.Country.label))
+                } else {
+                  fetch(
+                    CommonConfig.zipCodeAPIKey(zip, this.state.Country.label)
+                  )
                     .then((result) => result.json())
                     .then((data) => {
                       this.showLoader();
                       if (data["status"] === "OK") {
                         if (
                           data["results"][0] &&
-                          data["results"][0].hasOwnProperty("postcode_localities")
+                          data["results"][0].hasOwnProperty(
+                            "postcode_localities"
+                          )
                         ) {
                           var FinalCity = [];
                           var countryShortName = "";
 
                           countryShortName = _.filter(
                             data["results"][0]["address_components"],
-                            function (data) {
+                            function(data) {
                               return data.types[0] === "country";
                             }
                           )[0].long_name;
                           var CityData = _.filter(
                             data["results"][0]["address_components"],
-                            function (data) {
+                            function(data) {
                               if (data.types[0] == "locality") {
                                 return data.types[0] === "locality";
                               }
@@ -2369,7 +2392,7 @@ class Step1 extends React.Component {
 
                           var CityData2 = _.filter(
                             data["results"][0]["address_components"],
-                            function (data) {
+                            function(data) {
                               if (data.types[0] == "neighborhood") {
                                 return data.types[0] === "neighborhood";
                               }
@@ -2378,18 +2401,28 @@ class Step1 extends React.Component {
 
                           var CityData3 = _.filter(
                             data["results"][0]["address_components"],
-                            function (data) {
-                              if (data.types[0] == "administrative_area_level_2") {
-                                return data.types[0] === "administrative_area_level_2";
+                            function(data) {
+                              if (
+                                data.types[0] == "administrative_area_level_2"
+                              ) {
+                                return (
+                                  data.types[0] ===
+                                  "administrative_area_level_2"
+                                );
                               }
                             }
                           );
 
                           var CityData4 = _.filter(
                             data["results"][0]["address_components"],
-                            function (data) {
-                              if (data.types[0] == "administrative_area_level_1") {
-                                return data.types[0] === "administrative_area_level_1";
+                            function(data) {
+                              if (
+                                data.types[0] == "administrative_area_level_1"
+                              ) {
+                                return (
+                                  data.types[0] ===
+                                  "administrative_area_level_1"
+                                );
                               }
                             }
                           );
@@ -2438,8 +2471,10 @@ class Step1 extends React.Component {
 
                           var state = _.filter(
                             data["results"][0]["address_components"],
-                            function (data) {
-                              return data.types[0] === "administrative_area_level_1";
+                            function(data) {
+                              return (
+                                data.types[0] === "administrative_area_level_1"
+                              );
                             }
                           )[0].long_name;
                           var SelectedState = { value: state, label: state };
@@ -2447,15 +2482,21 @@ class Step1 extends React.Component {
                           if (countryShortName === this.state.Country.label) {
                             this.setState({
                               CityAutoComplete: FinalCity.length ? true : false,
-                              StateAutoComplete: this.state.StateList.length ? true : false,
+                              StateAutoComplete: this.state.StateList.length
+                                ? true
+                                : false,
                               GoogleAPICityList: FinalCity,
-                              State: this.state.StateList.length ? SelectedState : state,
+                              State: this.state.StateList.length
+                                ? SelectedState
+                                : state,
                               City: SelectedCity,
                             });
                           } else {
                             this.setState({
                               CityAutoComplete: false,
-                              StateAutoComplete: this.state.StateList.length ? true : false,
+                              StateAutoComplete: this.state.StateList.length
+                                ? true
+                                : false,
                               GoogleAPICityList: [],
                               State: "",
                               City: "",
@@ -2469,93 +2510,117 @@ class Step1 extends React.Component {
 
                           countryShortName = _.filter(
                             data["results"][0]["address_components"],
-                            function (data) {
+                            function(data) {
                               return data.types[0] === "country";
                             }
                           )[0].long_name;
 
                           if (
                             city == "" &&
-                            _.filter(data["results"][0]["address_components"], function (
-                              data
-                            ) {
-                              return data.types[0] === "locality";
-                            }).length > 0
+                            _.filter(
+                              data["results"][0]["address_components"],
+                              function(data) {
+                                return data.types[0] === "locality";
+                              }
+                            ).length > 0
                           ) {
                             city = _.filter(
                               data["results"][0]["address_components"],
-                              function (data) {
+                              function(data) {
                                 return data.types[0] === "locality";
                               }
                             )[0].short_name;
                           } else if (
                             city == "" &&
-                            _.filter(data["results"][0]["address_components"], function (
-                              data
-                            ) {
-                              return data.types[0] === "administrative_area_level_3";
-                            }).length > 0
+                            _.filter(
+                              data["results"][0]["address_components"],
+                              function(data) {
+                                return (
+                                  data.types[0] ===
+                                  "administrative_area_level_3"
+                                );
+                              }
+                            ).length > 0
                           ) {
                             city = _.filter(
                               data["results"][0]["address_components"],
-                              function (data) {
-                                return data.types[0] === "administrative_area_level_3";
+                              function(data) {
+                                return (
+                                  data.types[0] ===
+                                  "administrative_area_level_3"
+                                );
                               }
                             )[0].short_name;
                           } else if (
                             city == "" &&
-                            _.filter(data["results"][0]["address_components"], function (
-                              data
-                            ) {
-                              return data.types[0] === "political";
-                            }).length > 0
+                            _.filter(
+                              data["results"][0]["address_components"],
+                              function(data) {
+                                return data.types[0] === "political";
+                              }
+                            ).length > 0
                           ) {
                             city = _.filter(
                               data["results"][0]["address_components"],
-                              function (data) {
+                              function(data) {
                                 return data.types[0] === "political";
                               }
                             )[0].short_name;
                           } else if (
                             city == "" &&
-                            _.filter(data["results"][0]["address_components"], function (
-                              data
-                            ) {
-                              return data.types[0] === "neighborhood";
-                            }).length > 0
+                            _.filter(
+                              data["results"][0]["address_components"],
+                              function(data) {
+                                return data.types[0] === "neighborhood";
+                              }
+                            ).length > 0
                           ) {
                             city = _.filter(
                               data["results"][0]["address_components"],
-                              function (data) {
+                              function(data) {
                                 return data.types[0] === "neighborhood";
                               }
                             )[0].short_name;
                           } else if (
                             city == "" &&
-                            _.filter(data["results"][0]["address_components"], function (
-                              data
-                            ) {
-                              return data.types[0] === "administrative_area_level_2";
-                            }).length > 0
+                            _.filter(
+                              data["results"][0]["address_components"],
+                              function(data) {
+                                return (
+                                  data.types[0] ===
+                                  "administrative_area_level_2"
+                                );
+                              }
+                            ).length > 0
                           ) {
                             city = _.filter(
                               data["results"][0]["address_components"],
-                              function (data) {
-                                return data.types[0] === "administrative_area_level_2";
+                              function(data) {
+                                return (
+                                  data.types[0] ===
+                                  "administrative_area_level_2"
+                                );
                               }
                             )[0].long_name;
                           } else if (
                             city == "" &&
-                            _.filter(data["results"][0]["address_components"], function (
-                              data
-                            ) {
-                              return data.types[0] === "administrative_area_level_1";
-                            }).length > 0
+                            _.filter(
+                              data["results"][0]["address_components"],
+                              function(data) {
+                                return (
+                                  data.types[0] ===
+                                  "administrative_area_level_1"
+                                );
+                              }
+                            ).length > 0
                           ) {
                             city = _.filter(
                               data["results"][0]["address_components"],
-                              function (data) {
-                                return data.types[0] === "administrative_area_level_1";
+                              function(data) {
+                                return (
+                                  data.types[0] ===
+                                  "administrative_area_level_1"
+                                );
                               }
                             )[0].long_name;
                           } else if (city == "") {
@@ -2564,8 +2629,10 @@ class Step1 extends React.Component {
 
                           var state = _.filter(
                             data["results"][0]["address_components"],
-                            function (data) {
-                              return data.types[0] === "administrative_area_level_1";
+                            function(data) {
+                              return (
+                                data.types[0] === "administrative_area_level_1"
+                              );
                             }
                           )[0].long_name;
 
@@ -2584,33 +2651,39 @@ class Step1 extends React.Component {
                           if (countryShortName === this.state.Country.label) {
                             this.setState({
                               CityAutoComplete: FinalCity.length ? true : false,
-                              StateAutoComplete: this.state.StateList.length ? true : false,
+                              StateAutoComplete: this.state.StateList.length
+                                ? true
+                                : false,
                               GoogleAPICityList: FinalCity,
-                              State: this.state.StateList.length ? SelectedState : state,
+                              State: this.state.StateList.length
+                                ? SelectedState
+                                : state,
                               City: SelectedCity,
                             });
                           } else {
                             this.setState({
                               CityAutoComplete: false,
-                              StateAutoComplete: this.state.StateList.length ? true : false,
+                              StateAutoComplete: this.state.StateList.length
+                                ? true
+                                : false,
                               GoogleAPICityList: [],
                               State: "",
                               City: "",
                             });
                           }
                           this.hideLoader();
-
-
                         }
-                        if (this.state.Country.label == "United States" || this.state.Country.label == "India" || this.state.Country.label == "Canada") {
-
+                        if (
+                          this.state.Country.label == "United States" ||
+                          this.state.Country.label == "India" ||
+                          this.state.Country.label == "Canada"
+                        ) {
                           var newZipcodedata = {
-                            "Pincode": zip,
-                            "PickupCityList": SelectedCity.label,
-                            "CountryID": this.state.Country.value,
-                            "CountryName": this.state.Country.label,
-                            "StateName": state,
-
+                            Pincode: zip,
+                            PickupCityList: SelectedCity.label,
+                            CountryID: this.state.Country.value,
+                            CountryName: this.state.Country.label,
+                            StateName: state,
                           };
                           console.log("newZipcodedata", newZipcodedata);
                           api
@@ -2622,7 +2695,6 @@ class Step1 extends React.Component {
                               if (res.success) {
                                 console.log("CheckRessData", res);
                                 if (res.success === true) {
-
                                   console.log("New Zipcode Enter Successfully");
                                 } else {
                                   console.log("Something Went Wrong 10");
@@ -2631,13 +2703,14 @@ class Step1 extends React.Component {
                             })
                             .catch((err) => {
                               console.log("err...", err);
-
                             });
                         }
                       } else {
                         this.setState({
                           CityAutoComplete: false,
-                          StateAutoComplete: this.state.StateList.length ? true : false,
+                          StateAutoComplete: this.state.StateList.length
+                            ? true
+                            : false,
                           GoogleAPICityList: [],
                           State: "",
                           City: "",
@@ -2650,13 +2723,12 @@ class Step1 extends React.Component {
             }
           });
       }
-    }
-    else if (type === "Usertype") {
+    } else if (type === "Usertype") {
       if (zip.length) {
         let citydata = {
-          "PostalCode": zip,
-          "CountryID": this.state.UsertypeCountry.value
-        }
+          PostalCode: zip,
+          CountryID: this.state.UsertypeCountry.value,
+        };
         api
           .post(
             "https://hubapi.sflworldwide.com/contactus/SflPostalCode",
@@ -2676,7 +2748,7 @@ class Step1 extends React.Component {
                   var FinalCity = [];
                   var city = "";
 
-                  var countryShortName = data[0].Country
+                  var countryShortName = data[0].Country;
                   for (let i = 0; i < RecCount; i++)
                     FinalCity.push({
                       City_code: data[i].City,
@@ -2692,44 +2764,58 @@ class Step1 extends React.Component {
                   if (countryShortName === this.state.UsertypeCountry.label) {
                     this.setState({
                       UsertypeCityAutoComplete: FinalCity.length ? true : false,
-                      UsertypeStateAutoComplete: this.state.UsertypeStateList.length ? true : false,
+                      UsertypeStateAutoComplete: this.state.UsertypeStateList
+                        .length
+                        ? true
+                        : false,
                       UsertypeGoogleAPICityList: FinalCity,
-                      UsertypeState: this.state.UsertypeStateList.length ? SelectedState : state,
+                      UsertypeState: this.state.UsertypeStateList.length
+                        ? SelectedState
+                        : state,
                       UsertypeCity: SelectedCity,
                     });
                   } else {
                     this.setState({
                       UsertypeCityAutoComplete: false,
-                      UsertypeStateAutoComplete: this.state.UsertypeStateList.length ? true : false,
+                      UsertypeStateAutoComplete: this.state.UsertypeStateList
+                        .length
+                        ? true
+                        : false,
                       UsertypeGoogleAPICityList: [],
                       UsertypeState: "",
                       UsertypeCity: "",
                     });
                   }
                   this.hideLoader();
-                }
-                else {
-                  fetch(CommonConfig.zipCodeAPIKey(zip, this.state.UsertypeCountry.label))
+                } else {
+                  fetch(
+                    CommonConfig.zipCodeAPIKey(
+                      zip,
+                      this.state.UsertypeCountry.label
+                    )
+                  )
                     .then((result) => result.json())
                     .then((data) => {
                       this.showLoader();
                       if (data["status"] === "OK") {
                         if (
                           data["results"][0] &&
-                          data["results"][0].hasOwnProperty("postcode_localities")
+                          data["results"][0].hasOwnProperty(
+                            "postcode_localities"
+                          )
                         ) {
                           var FinalCity = [];
                           var countryShortName = "";
 
                           countryShortName = _.filter(
                             data["results"][0]["address_components"],
-                            function (data) {
+                            function(data) {
                               return data.types[0] === "country";
                             }
                           )[0].long_name;
                           var CityData = _.filter(
                             data["results"][0]["address_components"],
-                            function (data) {
+                            function(data) {
                               if (data.types[0] == "locality") {
                                 return data.types[0] === "locality";
                               }
@@ -2738,7 +2824,7 @@ class Step1 extends React.Component {
 
                           var CityData2 = _.filter(
                             data["results"][0]["address_components"],
-                            function (data) {
+                            function(data) {
                               if (data.types[0] == "neighborhood") {
                                 return data.types[0] === "neighborhood";
                               }
@@ -2747,18 +2833,28 @@ class Step1 extends React.Component {
 
                           var CityData3 = _.filter(
                             data["results"][0]["address_components"],
-                            function (data) {
-                              if (data.types[0] == "administrative_area_level_2") {
-                                return data.types[0] === "administrative_area_level_2";
+                            function(data) {
+                              if (
+                                data.types[0] == "administrative_area_level_2"
+                              ) {
+                                return (
+                                  data.types[0] ===
+                                  "administrative_area_level_2"
+                                );
                               }
                             }
                           );
 
                           var CityData4 = _.filter(
                             data["results"][0]["address_components"],
-                            function (data) {
-                              if (data.types[0] == "administrative_area_level_1") {
-                                return data.types[0] === "administrative_area_level_1";
+                            function(data) {
+                              if (
+                                data.types[0] == "administrative_area_level_1"
+                              ) {
+                                return (
+                                  data.types[0] ===
+                                  "administrative_area_level_1"
+                                );
                               }
                             }
                           );
@@ -2807,24 +2903,34 @@ class Step1 extends React.Component {
 
                           var state = _.filter(
                             data["results"][0]["address_components"],
-                            function (data) {
-                              return data.types[0] === "administrative_area_level_1";
+                            function(data) {
+                              return (
+                                data.types[0] === "administrative_area_level_1"
+                              );
                             }
                           )[0].long_name;
                           var SelectedState = { value: state, label: state };
 
                           if (countryShortName === this.state.Country.label) {
                             this.setState({
-                              UsertypeCityAutoComplete: FinalCity.length ? true : false,
-                              StateAutoComplete: this.state.StateList.length ? true : false,
+                              UsertypeCityAutoComplete: FinalCity.length
+                                ? true
+                                : false,
+                              StateAutoComplete: this.state.StateList.length
+                                ? true
+                                : false,
                               GoogleAPICityList: FinalCity,
-                              State: this.state.StateList.length ? SelectedState : state,
+                              State: this.state.StateList.length
+                                ? SelectedState
+                                : state,
                               City: SelectedCity,
                             });
                           } else {
                             this.setState({
                               UsertypeCityAutoComplete: false,
-                              StateAutoComplete: this.state.StateList.length ? true : false,
+                              StateAutoComplete: this.state.StateList.length
+                                ? true
+                                : false,
                               GoogleAPICityList: [],
                               State: "",
                               City: "",
@@ -2838,93 +2944,117 @@ class Step1 extends React.Component {
 
                           countryShortName = _.filter(
                             data["results"][0]["address_components"],
-                            function (data) {
+                            function(data) {
                               return data.types[0] === "country";
                             }
                           )[0].long_name;
 
                           if (
                             city == "" &&
-                            _.filter(data["results"][0]["address_components"], function (
-                              data
-                            ) {
-                              return data.types[0] === "locality";
-                            }).length > 0
+                            _.filter(
+                              data["results"][0]["address_components"],
+                              function(data) {
+                                return data.types[0] === "locality";
+                              }
+                            ).length > 0
                           ) {
                             city = _.filter(
                               data["results"][0]["address_components"],
-                              function (data) {
+                              function(data) {
                                 return data.types[0] === "locality";
                               }
                             )[0].short_name;
                           } else if (
                             city == "" &&
-                            _.filter(data["results"][0]["address_components"], function (
-                              data
-                            ) {
-                              return data.types[0] === "administrative_area_level_3";
-                            }).length > 0
+                            _.filter(
+                              data["results"][0]["address_components"],
+                              function(data) {
+                                return (
+                                  data.types[0] ===
+                                  "administrative_area_level_3"
+                                );
+                              }
+                            ).length > 0
                           ) {
                             city = _.filter(
                               data["results"][0]["address_components"],
-                              function (data) {
-                                return data.types[0] === "administrative_area_level_3";
+                              function(data) {
+                                return (
+                                  data.types[0] ===
+                                  "administrative_area_level_3"
+                                );
                               }
                             )[0].short_name;
                           } else if (
                             city == "" &&
-                            _.filter(data["results"][0]["address_components"], function (
-                              data
-                            ) {
-                              return data.types[0] === "political";
-                            }).length > 0
+                            _.filter(
+                              data["results"][0]["address_components"],
+                              function(data) {
+                                return data.types[0] === "political";
+                              }
+                            ).length > 0
                           ) {
                             city = _.filter(
                               data["results"][0]["address_components"],
-                              function (data) {
+                              function(data) {
                                 return data.types[0] === "political";
                               }
                             )[0].short_name;
                           } else if (
                             city == "" &&
-                            _.filter(data["results"][0]["address_components"], function (
-                              data
-                            ) {
-                              return data.types[0] === "neighborhood";
-                            }).length > 0
+                            _.filter(
+                              data["results"][0]["address_components"],
+                              function(data) {
+                                return data.types[0] === "neighborhood";
+                              }
+                            ).length > 0
                           ) {
                             city = _.filter(
                               data["results"][0]["address_components"],
-                              function (data) {
+                              function(data) {
                                 return data.types[0] === "neighborhood";
                               }
                             )[0].short_name;
                           } else if (
                             city == "" &&
-                            _.filter(data["results"][0]["address_components"], function (
-                              data
-                            ) {
-                              return data.types[0] === "administrative_area_level_2";
-                            }).length > 0
+                            _.filter(
+                              data["results"][0]["address_components"],
+                              function(data) {
+                                return (
+                                  data.types[0] ===
+                                  "administrative_area_level_2"
+                                );
+                              }
+                            ).length > 0
                           ) {
                             city = _.filter(
                               data["results"][0]["address_components"],
-                              function (data) {
-                                return data.types[0] === "administrative_area_level_2";
+                              function(data) {
+                                return (
+                                  data.types[0] ===
+                                  "administrative_area_level_2"
+                                );
                               }
                             )[0].long_name;
                           } else if (
                             city == "" &&
-                            _.filter(data["results"][0]["address_components"], function (
-                              data
-                            ) {
-                              return data.types[0] === "administrative_area_level_1";
-                            }).length > 0
+                            _.filter(
+                              data["results"][0]["address_components"],
+                              function(data) {
+                                return (
+                                  data.types[0] ===
+                                  "administrative_area_level_1"
+                                );
+                              }
+                            ).length > 0
                           ) {
                             city = _.filter(
                               data["results"][0]["address_components"],
-                              function (data) {
-                                return data.types[0] === "administrative_area_level_1";
+                              function(data) {
+                                return (
+                                  data.types[0] ===
+                                  "administrative_area_level_1"
+                                );
                               }
                             )[0].long_name;
                           } else if (city == "") {
@@ -2933,8 +3063,10 @@ class Step1 extends React.Component {
 
                           var state = _.filter(
                             data["results"][0]["address_components"],
-                            function (data) {
-                              return data.types[0] === "administrative_area_level_1";
+                            function(data) {
+                              return (
+                                data.types[0] === "administrative_area_level_1"
+                              );
                             }
                           )[0].long_name;
 
@@ -2953,33 +3085,39 @@ class Step1 extends React.Component {
                           if (countryShortName === this.state.Country.label) {
                             this.setState({
                               CityAutoComplete: FinalCity.length ? true : false,
-                              StateAutoComplete: this.state.StateList.length ? true : false,
+                              StateAutoComplete: this.state.StateList.length
+                                ? true
+                                : false,
                               GoogleAPICityList: FinalCity,
-                              State: this.state.StateList.length ? SelectedState : state,
+                              State: this.state.StateList.length
+                                ? SelectedState
+                                : state,
                               City: SelectedCity,
                             });
                           } else {
                             this.setState({
                               CityAutoComplete: false,
-                              StateAutoComplete: this.state.StateList.length ? true : false,
+                              StateAutoComplete: this.state.StateList.length
+                                ? true
+                                : false,
                               GoogleAPICityList: [],
                               State: "",
                               City: "",
                             });
                           }
                           this.hideLoader();
-
-
                         }
-                        if (this.state.Country.label == "United States" || this.state.Country.label == "India" || this.state.Country.label == "Canada") {
-
+                        if (
+                          this.state.Country.label == "United States" ||
+                          this.state.Country.label == "India" ||
+                          this.state.Country.label == "Canada"
+                        ) {
                           var newZipcodedata = {
-                            "Pincode": zip,
-                            "PickupCityList": SelectedCity.label,
-                            "CountryID": this.state.Country.value,
-                            "CountryName": this.state.Country.label,
-                            "StateName": state,
-
+                            Pincode: zip,
+                            PickupCityList: SelectedCity.label,
+                            CountryID: this.state.Country.value,
+                            CountryName: this.state.Country.label,
+                            StateName: state,
                           };
                           console.log("newZipcodedata", newZipcodedata);
                           api
@@ -2991,7 +3129,6 @@ class Step1 extends React.Component {
                               if (res.success) {
                                 console.log("CheckRessData", res);
                                 if (res.success === true) {
-
                                   console.log("New Zipcode Enter Successfully");
                                 } else {
                                   console.log("Something Went Wrong 11");
@@ -3000,13 +3137,14 @@ class Step1 extends React.Component {
                             })
                             .catch((err) => {
                               console.log("err...", err);
-
                             });
                         }
                       } else {
                         this.setState({
                           CityAutoComplete: false,
-                          StateAutoComplete: this.state.StateList.length ? true : false,
+                          StateAutoComplete: this.state.StateList.length
+                            ? true
+                            : false,
                           GoogleAPICityList: [],
                           State: "",
                           City: "",
@@ -3020,7 +3158,6 @@ class Step1 extends React.Component {
           });
       }
     }
-
   };
 
   viewNotes = () => {
@@ -3055,11 +3192,7 @@ class Step1 extends React.Component {
                 </div>
               )}
             </td>
-            <td>
-              
-                {notes.AddedBy}
-                
-            </td>
+            <td>{notes.AddedBy}</td>
             <td className="pck-action-column">
               <div className="pck-subbtn">
                 {/* {this.state.DeleteAccess === 1? */}
@@ -3074,7 +3207,7 @@ class Step1 extends React.Component {
                 </Button>
                 {this.state.notes.filter((x) => x.Status === "Active")
                   .length ===
-                  idx + 1 ? (
+                idx + 1 ? (
                   <Button
                     justIcon
                     color="facebook"
@@ -3115,14 +3248,13 @@ class Step1 extends React.Component {
   handleZipBlur = (e, type) => {
     if (type === "zip") {
       this.zipChange(e.target.value, "All");
-    }
-    else if (type === "Usertypezip") {
+    } else if (type === "Usertypezip") {
       this.zipChange(e.target.value, "Usertype");
     }
   };
 
   ChangeInput = (value, type) => {
-    debugger
+    debugger;
     if (value !== null) {
       if (type === "AssignedBy") {
         this.setState({ AssignedBy: value });
@@ -3133,24 +3265,17 @@ class Step1 extends React.Component {
         this.setState({ Priority: value });
       } else if (type === "Status") {
         this.setState({ Status: value });
-
       }
     }
-
   };
   addRowBank = (e, index) => {
-    debugger
+    debugger;
     console.log("this.state.bankList", this.state.bankList);
 
-    if (e == 0)
+    if (e == 0) this.setState({ bankList: [...this.state.bankList, row] });
+    else if (this.state.bankList[index - 1].AccountType != "")
       this.setState({ bankList: [...this.state.bankList, row] });
-    else
-      if (this.state.bankList[index - 1].AccountType != "")
-        this.setState({ bankList: [...this.state.bankList, row] });
-      else
-        cogoToast.error("Please Fill Account Details before add new row.");
-
-
+    else cogoToast.error("Please Fill Account Details before add new row.");
   };
   removeBank = (index) => {
     if (this.state.bankList.length == 1 && index == 0)
@@ -3159,12 +3284,17 @@ class Step1 extends React.Component {
       var BankList = this.state.bankList;
       let Index = this.state.bankList.findIndex((x) => x.Index === index);
       if (Index !== -1) {
-        if (BankList[Index].AccountType == "" && BankList[Index].AccountType == "" && BankList[Index].AccountNumber == "" &&
-          BankList[Index].BankName == "" && BankList[Index].NameonAccount == "" && BankList[Index].RoutingNumber == "")
+        if (
+          BankList[Index].AccountType == "" &&
+          BankList[Index].AccountType == "" &&
+          BankList[Index].AccountNumber == "" &&
+          BankList[Index].BankName == "" &&
+          BankList[Index].NameonAccount == "" &&
+          BankList[Index].RoutingNumber == ""
+        )
           BankList.pop();
         else {
           BankList[Index]["Status"] = "Inactive";
-
         }
         this.setState({ bankList: BankList });
         if (BankList.filter((x) => x.Status === "Active").length === 0) {
@@ -3176,23 +3306,21 @@ class Step1 extends React.Component {
     }
   };
   handleChangeBank = (event, type, index) => {
-    debugger
+    debugger;
     const { value } = event.target;
     const bankList = this.state.bankList;
     let idx = bankList.findIndex((x) => x.Index === index);
     if (type === "AccountType") {
       bankList[idx][type] = event.target.outerText;
-    }
-    else
-      if (type === "RoutingNumber" || type === "AccountNumber") {
-        bankList[idx][type] = value;/*value.replace(/\D/g, "");*/
-      } else if (type === "InvoiceAmount") {
-        if (value.match(/^[-+]?\d{0,}(\.\d{0,2})?$/) || value === "") {
-          bankList[idx][type] = value;
-        }
-      } else {
+    } else if (type === "RoutingNumber" || type === "AccountNumber") {
+      bankList[idx][type] = value; /*value.replace(/\D/g, "");*/
+    } else if (type === "InvoiceAmount") {
+      if (value.match(/^[-+]?\d{0,}(\.\d{0,2})?$/) || value === "") {
         bankList[idx][type] = value;
       }
+    } else {
+      bankList[idx][type] = value;
+    }
     this.setState({ bankList: bankList });
   };
   viewBankList = () => {
@@ -3205,7 +3333,7 @@ class Step1 extends React.Component {
         const AccountType = {
           value: method.AccountType,
           label: method.AccountType,
-        }
+        };
 
         return (
           <tr>
@@ -3226,7 +3354,6 @@ class Step1 extends React.Component {
                   value={AccountType}
                   disabled={this.state.Access.WriteAccess === 1 ? false : true}
                   getOptionLabel={(option) => option.label}
-
                   onChange={(event) =>
                     this.handleChangeBank(event, "AccountType", method.Index)
                   }
@@ -3250,7 +3377,6 @@ class Step1 extends React.Component {
                   onChange: (event) =>
                     this.handleChangeBank(event, "NameonAccount", method.Index),
                   value: method.NameonAccount,
-
                 }}
               />
             </td>
@@ -3271,20 +3397,17 @@ class Step1 extends React.Component {
               </div>
             </td>
 
-
             <td style={{ width: "156px" }} className="input-full">
               <CustomInput
                 inputProps={{
                   onChange: (event) =>
                     this.handleChangeBank(event, "RoutingNumber", method.Index),
                   value: method.RoutingNumber,
-
                 }}
               />
             </td>
 
             <td className="pck-action-column">
-
               <Button
                 justIcon
                 color="danger"
@@ -3296,7 +3419,7 @@ class Step1 extends React.Component {
 
               {this.state.bankList.filter((x) => x.Status === "Active")
                 .length ===
-                idx + 1 ? (
+              idx + 1 ? (
                 <Button
                   justIcon
                   color="facebook"
@@ -3306,15 +3429,11 @@ class Step1 extends React.Component {
                   <i className={"fas fa-plus"} />
                 </Button>
               ) : null}
-
-
-
             </td>
           </tr>
         );
       });
   };
-
 
   render() {
     const {
@@ -3329,7 +3448,6 @@ class Step1 extends React.Component {
       viewAllClear,
       DefectId,
       AssignedBySelected,
-
     } = this.state;
 
     const assignedByDrop = this.state.assignedByList.map((type) => {
@@ -3347,18 +3465,13 @@ class Step1 extends React.Component {
       return { value: type.ID, label: type.PaperDisplayName };
     });
 
-
     const userstatus = this.state.UserStatusList.map((type) => {
       return { value: type.value, label: type.label };
     });
 
-
-
-
     return (
       <div>
         <GridContainer className="MuiGrid-justify-xs-center">
-
           <div className="shipment-content mt-30">
             <div className="shipment-pane mt-20" id="bookofwork">
               <Card>
@@ -3371,22 +3484,21 @@ class Step1 extends React.Component {
                   </h4>
 
                   {this.state.DefectId != "" ? (
-                      <div className="mg-info">
-                        <br />
-                        <p className="text-color-black">
-                          BOW ID:
-                          <TextField
-                            disabled={true}
-                            value={this.state.BookofWorkID}
-                          />
-                        </p>
-                      </div>
-                    ) : null}
+                    <div className="mg-info">
+                      <br />
+                      <p className="text-color-black">
+                        BOW ID:
+                        <TextField
+                          disabled={true}
+                          value={this.state.BookofWorkID}
+                        />
+                      </p>
+                    </div>
+                  ) : null}
                 </CardHeader>
                 <Cardbody>
                   <GridContainer>
                     <GridItem xs={12} sm={12} md={3}>
-
                       <Autocomplete
                         id="AssignedBy"
                         options={assignedByDrop}
@@ -3396,14 +3508,20 @@ class Step1 extends React.Component {
                           this.ChangeInput(value, "AssignedBy")
                         }
                         onFocus={(event, value) =>
-                          this.setState({ assignedByErr: "", assignedByHelperText: "" })
+                          this.setState({
+                            assignedByErr: "",
+                            assignedByHelperText: "",
+                          })
                         }
                         getOptionLabel={(option) => option.label}
                         renderInput={(params) => (
-                          <TextField {...params} label="Assigned By*"
+                          <TextField
+                            {...params}
+                            label="Assigned By*"
                             error={this.state.assignedByErr}
                             helperText={this.state.assignedByHelperText}
-                            fullWidth />
+                            fullWidth
+                          />
                         )}
                       />
                     </GridItem>
@@ -3416,14 +3534,20 @@ class Step1 extends React.Component {
                           this.ChangeInput(value, "AssignedTo")
                         }
                         onFocus={(event, value) =>
-                          this.setState({ assignedToErr: "", assignedToHelperText: "" })
+                          this.setState({
+                            assignedToErr: "",
+                            assignedToHelperText: "",
+                          })
                         }
                         getOptionLabel={(option) => option.label}
                         renderInput={(params) => (
-                          <TextField {...params} label="Assigned To*"
+                          <TextField
+                            {...params}
+                            label="Assigned To*"
                             error={this.state.assignedToErr}
                             helperText={this.state.assignedToHelperText}
-                            fullWidth />
+                            fullWidth
+                          />
                         )}
                       />
                     </GridItem>
@@ -3449,7 +3573,9 @@ class Step1 extends React.Component {
                                 style={{ marginTop: "-15px" }}
                                 error={this.state.dateCreatedErr}
                                 helperText={this.state.dateCreatedHelperText}
-                                inputProps={{ min: moment().format("YYYY-MM-DD") }}
+                                inputProps={{
+                                  min: moment().format("YYYY-MM-DD"),
+                                }}
                                 {...params}
                                 label="Date Created*"
                                 margin="normal"
@@ -3462,7 +3588,6 @@ class Step1 extends React.Component {
                       </div>
                     </GridItem>
                     <GridItem xs={12} sm={12} md={3}>
-
                       <Autocomplete
                         options={statusDrop}
                         id="Status"
@@ -3476,20 +3601,19 @@ class Step1 extends React.Component {
                           this.setState({ statusErr: "", statusHelperText: "" })
                         }
                         renderInput={(params) => (
-                          <TextField {...params} label="Status*"
+                          <TextField
+                            {...params}
+                            label="Status*"
                             margin="normal"
                             error={this.state.statusErr}
                             helperText={this.state.statusHelperText}
-                            fullWidth />
-
+                            fullWidth
+                          />
                         )}
                       />
-
                     </GridItem>
                   </GridContainer>
                   <GridContainer className="mt-20">
-
-
                     <GridItem xs={12} sm={12} md={3}>
                       <Autocomplete
                         options={priotiryDrop}
@@ -3501,13 +3625,19 @@ class Step1 extends React.Component {
                           this.ChangeInput(value, "Priority")
                         }
                         onFocus={(event, value) =>
-                          this.setState({ priorityErr: "", priorityHelperText: "" })
+                          this.setState({
+                            priorityErr: "",
+                            priorityHelperText: "",
+                          })
                         }
                         renderInput={(params) => (
-                          <TextField {...params} label="Priority*"
+                          <TextField
+                            {...params}
+                            label="Priority*"
                             error={this.state.priorityErr}
                             helperText={this.state.priorityHelperText}
-                            fullWidth />
+                            fullWidth
+                          />
                         )}
                       />
                     </GridItem>
@@ -3582,8 +3712,8 @@ class Step1 extends React.Component {
                     </GridItem>
                     <GridItem xs={3} sm={3} md={3}>
                       <div>
-
-                        {this.state.Attachment != "" && this.state.Attachment != null ? (
+                        {this.state.Attachment != "" &&
+                        this.state.Attachment != null ? (
                           <div>
                             <a
                               href={fileBase + this.state.Attachment}
@@ -3594,12 +3724,12 @@ class Step1 extends React.Component {
                               View File
                             </a>
                           </div>
-
-                        ) :
+                        ) : (
                           <div>
-
                             <div className="file-upload-input">
-                              <label className="mui-custom-label">Upload a File    :</label>
+                              <label className="mui-custom-label">
+                                Upload a File :
+                              </label>
                               <div className="fui-inner">
                                 <span>Browse</span>
                                 <input
@@ -3608,37 +3738,33 @@ class Step1 extends React.Component {
                                   id="file"
                                   onChange={(event) => this.fileUpload(event)}
                                 />
-                                <p>{this.stringTruncate(this.state.Attachments.name)}</p>
+                                <p>
+                                  {this.stringTruncate(
+                                    this.state.Attachments
+                                  )}
+                                </p>
                               </div>
                             </div>
-
                           </div>
-                        }
-
+                        )}
                       </div>
-                    </GridItem>   
+                    </GridItem>
                   </GridContainer>
                   <GridContainer>
                     <GridItem xs={12} sm={12} md={12}>
                       <div className="material-textarea">
                         <label className="mui-custom-label">Description</label>
                         <textarea
-
                           name="Description"
                           //  disabled={notes.disabled}
                           value={Description}
                           onChange={(event) =>
-                            this.handleChangeDes(event/*, notes.Index*/)
+                            this.handleChangeDes(event /*, notes.Index*/)
                           }
                         ></textarea>
-
                       </div>
                     </GridItem>
-                
-
                   </GridContainer>
-
-
                 </Cardbody>
               </Card>
               <Card>
@@ -3689,13 +3815,10 @@ class Step1 extends React.Component {
                   ) : null}
                 </div>
               </Card>
-
             </div>
           </div>
 
-
           <div className="shipment-submit">
-
             {CommonConfig.getUserAccess("Book of Work").DeleteAccess === 1 ? (
               <div className="left">
                 <Button
@@ -3708,10 +3831,8 @@ class Step1 extends React.Component {
               </div>
             ) : null}
 
-
-            {CommonConfig.getUserAccess("Book of Work").WriteAccess === 1  ? (
+            {CommonConfig.getUserAccess("Book of Work").WriteAccess === 1 ? (
               <div className="right">
-
                 {/* <div> */}
                 {CommonConfig.isEmpty(this.props.location.state) ? null : (
                   <Button color="rose" onClick={() => this.saveWork(false)}>
@@ -3723,20 +3844,16 @@ class Step1 extends React.Component {
                 </Button>
                 {/* </div> */}
 
-
                 <Button color="secondary" onClick={() => this.cancelWork()}>
                   Cancel
                 </Button>
               </div>
-            ) :
-            <Button color="secondary" onClick={() => this.cancelWork()}>
-              Cancel
-            </Button>
-            }
-
-
+            ) : (
+              <Button color="secondary" onClick={() => this.cancelWork()}>
+                Cancel
+              </Button>
+            )}
           </div>
-
 
           <div>
             <Dialog
@@ -3744,19 +3861,14 @@ class Step1 extends React.Component {
               aria-labelledby="alert-dialog-title"
               aria-describedby="alert-dialog-description"
             >
-              <DialogTitle id="alert-dialog-title">
-                Confirm Delete
-              </DialogTitle>
+              <DialogTitle id="alert-dialog-title">Confirm Delete</DialogTitle>
               <DialogContent>
                 <DialogContentText id="alert-dialog-description">
                   Are you sure want to delete?
                 </DialogContentText>
               </DialogContent>
               <DialogActions>
-                <Button
-                  onClick={() => this.closeDeletework()}
-                  color="primary"
-                >
+                <Button onClick={() => this.closeDeletework()} color="primary">
                   Cancel
                 </Button>
                 {this.state.Access.DeleteAccess === 1 ? (
@@ -3771,10 +3883,6 @@ class Step1 extends React.Component {
               </DialogActions>
             </Dialog>
           </div>
-
-         
-
-
         </GridContainer>
         {this.state.Loading === true ? (
           <div className="loading">

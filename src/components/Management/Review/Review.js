@@ -148,6 +148,8 @@ class Review extends Component {
         const data = new FormData();
     data.append("file", event.target.files[0]);
 
+    console.log("data = " , data)
+
     var regex = new RegExp("([a-zA-Z0-9s_\\.-:])+(.jpg|.png|.gif)$");
     if (regex.test(event.target.value.toLowerCase())) {
       if (typeof event.target.files != "undefined") {
