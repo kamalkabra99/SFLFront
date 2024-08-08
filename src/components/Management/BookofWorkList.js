@@ -436,7 +436,7 @@ class BookofWorkList extends Component {
         },
         sortable: true,
         accessor: (data) => {
-          return moment(data.CreatedOn).format(
+          return data.ETA == null ?"":moment(data.ETA).format(
             CommonConfig.dateFormat.dateOnly
           );
         },

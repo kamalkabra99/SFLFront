@@ -3055,6 +3055,11 @@ class Step1 extends React.Component {
                 </div>
               )}
             </td>
+            <td>
+              
+                {notes.AddedBy}
+                
+            </td>
             <td className="pck-action-column">
               <div className="pck-subbtn">
                 {/* {this.state.DeleteAccess === 1? */}
@@ -3361,7 +3366,7 @@ class Step1 extends React.Component {
                   <CardIcon color="primary">
                     <Adduser />
                   </CardIcon>
-                  <h4 className="margin-right-auto text-color-black">
+                  <h4 className="margin-right-auto text-color-black header-width">
                     Book of Work
                   </h4>
 
@@ -3369,7 +3374,7 @@ class Step1 extends React.Component {
                       <div className="mg-info">
                         <br />
                         <p className="text-color-black">
-                          Defect ID:
+                          BOW ID:
                           <TextField
                             disabled={true}
                             value={this.state.BookofWorkID}
@@ -3674,6 +3679,7 @@ class Step1 extends React.Component {
                           <tr>
                             <th>Date</th>
                             <th>Comments</th>
+                            <th>Added By</th>
                             <th>Action</th>
                           </tr>
                         </thead>
