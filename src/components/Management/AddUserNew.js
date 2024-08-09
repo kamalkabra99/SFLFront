@@ -2070,14 +2070,14 @@ class Step1 extends React.Component {
     }
     else if (type === "ENDTIME") {
       this.setState({
-        EndTime: date,
+        EndTime:  moment(date).format(CommonConfig.dateFormat.time12Only).toString(),
         endtimeErr: false,
         endtimeHelperText: "",
       });
     }
       else if (type === "STARTTIME") {
         this.setState({
-          StartTime: date,
+          StartTime:  moment(date).format(CommonConfig.dateFormat.time12Only).toString(),
           starttimeErr: false,
           starttimeHelperText: "",
         });
@@ -2375,8 +2375,8 @@ class Step1 extends React.Component {
             EmployeeDetailID: this.state.EmployeementID,
             usertypeTimeZone: this.state.usertypeTimeZone == "" ? "" : this.state.usertypeTimeZone.value,
             UserType: this.state.userType.value,
-            usertypeStartTime: this.state.StartTime == "" ? "NULL" : moment(this.state.StartTime).format(CommonConfig.dateFormat.time12Only).toString(),
-            usertypeEndTime: this.state.EndTime  == "" ? "NULL" : moment(this.state.EndTime ).format(CommonConfig.dateFormat.time12Only).toString(),
+            usertypeStartTime: this.state.StartTime == "" ? "NULL" : this.state.StartTime,
+            usertypeEndTime: this.state.EndTime  == "" ? "NULL" : this.state.EndTime ,
             usertypeBirthDate: this.state.BirthDate == "" ? "NULL" : moment(this.state.BirthDate).format(CommonConfig.dateFormat.dbDateOnly).toString(),
             usertypeJoiningDate: this.state.JoinDate == "" ? "NULL" : moment(this.state.JoinDate).format(CommonConfig.dateFormat.dbDateOnly).toString(),
             usertypeRelivingDate: this.state.RelivingDate == "" ? "NULL" : moment(this.state.RelivingDate).format(CommonConfig.dateFormat.dbDateOnly).toString(),
@@ -2422,8 +2422,8 @@ class Step1 extends React.Component {
             EmployeeDetailID: this.state.EmployeementID,
             usertypeTimeZone: this.state.usertypeTimeZone.value,
             UserType: this.state.userType.value,
-            usertypeStartTime: this.state.StartTime == "" ? "NULL" : moment(this.state.StartTime).format(CommonConfig.dateFormat.time12Only).toString(),
-            usertypeEndTime: this.state.EndTime  == "" ? "NULL" : moment(this.state.EndTime ).format(CommonConfig.dateFormat.time12Only).toString(),
+            usertypeStartTime: this.state.StartTime == "" ? "NULL" : this.state.StartTime,
+            usertypeEndTime: this.state.EndTime  == "" ? "NULL" : this.state.EndTime ,
            usertypeBirthDate: this.state.BirthDate == "" ? "NULL" : moment(this.state.BirthDate).format(CommonConfig.dateFormat.dbDateOnly).toString(),
             usertypeJoiningDate: this.state.JoinDate == "" ? "NULL" : moment(this.state.JoinDate).format(CommonConfig.dateFormat.dbDateOnly).toString(),
             usertypeRelivingDate: this.state.RelivingDate == "" ? "NULL" : moment(this.state.RelivingDate).format(CommonConfig.dateFormat.dbDateOnly).toString(),

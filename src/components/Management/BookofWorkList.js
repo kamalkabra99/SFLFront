@@ -203,7 +203,7 @@ class BookofWorkList extends Component {
                 this.setState({ BookofWorkData: result.Data });
               } else {
                 let finalData = result.Data.filter(
-                  (x) => x.WorkingOnRequest === this.state.loggedUser
+                  (x) => x.AssignedBy === this.state.loggedUser || x.AssignedTo === this.state.loggedUser
                 );
                 this.setState({ BookofWorkData: finalData });
               }
@@ -275,7 +275,7 @@ class BookofWorkList extends Component {
         } else {
           value = [{ label: "All", value: "All" }];
         }
-        
+        debugger
       if(CommonConfig.getUserAccess("Book of Work").AllAccess != 1){
 
         query = query + ` AND (bw.AssignedBy = "`+CommonConfig.loggedInUserData().PersonID+`" OR bw.AssignedTo = "`+CommonConfig.loggedInUserData().PersonID+`")`
