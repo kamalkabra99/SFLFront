@@ -1883,6 +1883,16 @@ class Step1 extends React.Component {
     ) {
       IsFormValid = false;
     }
+    if (this.state.StartTime === "" || this.state.StartTime === null || this.state.starttimeErr === true) {
+      IsFormValid = false;
+      this.setState({ starttimeErr: true, starttimeHelperText: "Start Time is Mandatory" });
+    }
+    else
+    if (this.state.EndTime === "" ||this.state.EndTime === null || this.state.endtimeErr === true) {
+      IsFormValid = false;
+      this.setState({ endtimeErr: true, endtimeHelperText: "End Time is Mandatory" });
+    }
+
     if (this.state.userType === null || this.state.userType === "") {
       IsFormValid = false;
       this.setState({ userTypeErr: true, userTypeHelperText: "Mandatory Field" });
@@ -2069,15 +2079,19 @@ class Step1 extends React.Component {
       //   }
     }
     else if (type === "ENDTIME") {
+    
       this.setState({
-        EndTime:  moment(date).format(CommonConfig.dateFormat.time12Only).toString(),
+        EndTime: date==""?date: moment(date).format(CommonConfig.dateFormat.time12Only).toString(),
         endtimeErr: false,
         endtimeHelperText: "",
       });
+      
+
     }
       else if (type === "STARTTIME") {
+       
         this.setState({
-          StartTime:  moment(date).format(CommonConfig.dateFormat.time12Only).toString(),
+          StartTime:  date==""?date: moment(date).format(CommonConfig.dateFormat.time12Only).toString(),
           starttimeErr: false,
           starttimeHelperText: "",
         });
@@ -2243,6 +2257,39 @@ class Step1 extends React.Component {
           });
         }
     }
+    else
+    if (type === "ENDTIME") {
+      if(date=="")
+        this.setState({
+          EndTime: "",
+          endtimeErr: true,
+          endtimeHelperText: "End Time is Mandatory",
+        });
+      else
+        if(moment(date).format(CommonConfig.dateFormat.time12Only).toString()=="Invalid date")
+            this.setState({
+              EndTime:  "",
+              endtimeErr: true,
+              endtimeHelperText: "Please enter valid date",
+            });
+    }
+      else if (type === "STARTTIME") {
+        if(date=="")
+          this.setState({
+            StartTime:  "",
+            starttimeErr: true,
+            starttimeHelperText: "Start Time is Mandatory",
+          });
+        else{
+          console.log("moment(date).format(CommonConfig.dateFormat.time12Only).toString()",moment(date).format(CommonConfig.dateFormat.time12Only).toString());
+        if(moment(date).format(CommonConfig.dateFormat.time12Only).toString()=="Invalid date")
+          this.setState({
+            StartTime:  "",
+            starttimeErr: true,
+            starttimeHelperText: "Please enter valid date",
+          });
+        }
+      }
   };
   handleTimeChange = (time, type) => {
     debugger
@@ -4950,7 +4997,7 @@ class Step1 extends React.Component {
                                 <FormControl fullWidth>
                                   <Datetime
                                     dateFormat={false}
-                                    timeFormat={"hh:mm A"}
+                                   
                                     selected={this.state.StartTime}
                                     value={this.state.StartTime}
                                     initialValue={this.state.StartTime}
@@ -5007,7 +5054,7 @@ class Step1 extends React.Component {
                                 <FormControl fullWidth>
                                   <Datetime
                                     dateFormat={false}
-                                    timeFormat={"hh:mm A"}
+                                    
                                     selected={this.state.EndTime}
                                     value={this.state.EndTime}
                                     inputProps={{ placeholder: "End Time" }}
