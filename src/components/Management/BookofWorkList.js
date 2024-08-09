@@ -22,7 +22,9 @@ import TextField from "@material-ui/core/TextField";
 import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
 import Checkbox from "@material-ui/core/Checkbox";
-
+import InfoIcon from "@material-ui/icons/PriorityHigh";
+import Tooltip from "@material-ui/core/Tooltip";
+import {decode as base64_decode, encode as base64_encode} from 'base-64';
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
@@ -461,6 +463,15 @@ class BookofWorkList extends Component {
               >
                 <i className="fas fa-edit"></i>
               </Button>
+              <Tooltip title={base64_decode(record.original.Description)} arrow>
+                  <Button
+                    className="Plus-btn info-icon"
+                    justIcon
+                    color="twitter"
+                  >
+                    <InfoIcon />
+                  </Button>
+                </Tooltip>
             </div>
           );
         },
