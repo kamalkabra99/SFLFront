@@ -998,7 +998,7 @@ class TimeManagement extends React.Component {
                                 dateFormat={"MM/DD/YYYY"}
                                 timeFormat={false}
                                 value={ToDate}
-                                disabled={true}
+                                disabled
                                 onChange={(date) => this.dateChange(date, "ToDate")}
                                 closeOnSelect={true}
                                 renderInput={(params) => (

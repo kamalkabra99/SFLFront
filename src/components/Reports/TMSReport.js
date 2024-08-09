@@ -155,6 +155,71 @@ class TMSReport extends Component {
     });
   };
 
+
+  getTimeOffDatawithoutSetArray(){
+
+    var managedByValue = 0;
+    if (CommonConfig.getUserAccess("Time Booking Report").AllAccess === 1) {
+      managedByValue = this.state.ManagedBy?this.state.ManagedBy.value:0;
+    } else {
+      managedByValue = CommonConfig.loggedInUserData().PersonID;
+    }
+
+    let condition = ""
+    let fromDate = moment(this.state.FromDate)
+    .format(CommonConfig.dateFormat.dbDateOnly)
+    .toString()
+
+    let toDate = moment(this.state.ToDate)
+    .format(CommonConfig.dateFormat.dbDateOnly)
+    .toString()
+
+    if(managedByValue == 0){
+
+      condition = '(tml.`LeaveFromDate` BETWEEN "'+fromDate+'" AND "'+toDate+'")'
+
+    }else{
+
+      condition = 'tml.UserID = '+managedByValue+' AND (tml.`LeaveFromDate` BETWEEN "'+fromDate+'" AND "'+toDate+'")'
+
+    }
+
+    var pData = {
+      fromDate: moment(this.state.FromDate)
+        .format(CommonConfig.dateFormat.dbDateOnly)
+        .toString(),
+
+      toDate: moment(this.state.ToDate)
+        .format(CommonConfig.dateFormat.dbDateOnly)
+        .toString(),
+      puserdata: condition,
+      
+    };
+    api.post("contactus/getTmsUserTimeOff", pData).then((res) => {
+      if (res.success) {
+
+        console.log("Data = ",res);
+        let requestData = res.Data[0];
+        
+        
+        if(requestData.length > 0){
+          // this.state.timeoffStyle = "table-pane.active"
+          this.setState({TimeoffProposalData : res.Data[0]})
+          // this.setState({totalLeave : requestData.length})
+        }
+       
+
+        
+
+        } else {
+          this.hideLoador();
+          // this.setState({loggedUser:0})
+          cogoToast.error("Something went wrong. Please try again...");
+        }
+      });
+
+  }
+
   getTimeOffData(setArrprev){
 
     var managedByValue = 0;
@@ -266,7 +331,7 @@ class TMSReport extends Component {
         puserdata: managedByValue,
         logintypes: this.state.LoginTypeValue.label,
       };
-      // this.getTimeOffData()
+      this.getTimeOffDatawithoutSetArray()
 
       var daysArr = [
         "Sunday",

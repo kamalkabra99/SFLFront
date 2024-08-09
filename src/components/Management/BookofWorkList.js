@@ -440,9 +440,7 @@ class BookofWorkList extends Component {
         },
         sortable: true,
         accessor: (data) => {
-          return data.ETA == null ?"":moment(data.ETA).format(
-            CommonConfig.dateFormat.dateOnly
-          );
+          return data.ETA == null ?"":data.ETA;
         },
         width: 150,
         maxWidth: 200,
