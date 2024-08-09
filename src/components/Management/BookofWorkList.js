@@ -327,6 +327,8 @@ class BookofWorkList extends Component {
   };
 
   filterProps = (e) => {
+    console.log("e = " , e)
+    console.log("this.state.filterProps = ",this.state.filterProps , this.state.sortProps)
     if (this.state.filterProps !== e.filtered) {
       this.setFilterProps(e);
     }

@@ -175,6 +175,7 @@ class Step1 extends React.Component {
       Email: "",
       UsertypeEmail1: "",
       UsertypeEmail2: "",
+      fileuploadUpdate:"Yes",
       Email: "",
       EmailID: "",
       EmployeementID: "",
@@ -624,12 +625,13 @@ class Step1 extends React.Component {
 
   geteditBookofWork = () => {
     debugger;
+    this.setState({ Loading: true });
     let data = {
       BookofWorkID: this.props.history.location.state.id,
     };
     this.setState({ BookofWorkID: data.BookofWorkID });
     try {
-      this.setState({ Loading: true });
+      
       api.post("contactUs/GetBookofWorkById/", data).then((result) => {
         if (result.Data.success) {
           var WorkData = result.Data;
@@ -664,6 +666,10 @@ class Step1 extends React.Component {
           //     label: managedBY.Name,
           //   };
           // }
+
+          if(WorkData.data.AttachmentPath != null){
+            this.state.fileuploadUpdate = "No"
+          }
           var selectedAssignedBy = {};
           selectedAssignedBy = {
             value: WorkData.data.AssignedBy,
@@ -687,6 +693,8 @@ class Step1 extends React.Component {
           var FinalNotes = this.state.notes.filter(
             (x) => x.NoteText !== "" && x.NoteText !== null
           );
+
+          
   
           this.setState({
             AssignedBy: selectedAssignedBy,
@@ -700,8 +708,10 @@ class Step1 extends React.Component {
             Status: selectedWorkStatus,
             notes: FinalNotes,
           });
-
-          this.setState({ Loading: false });
+          setTimeout(() => {
+            this.setState({ Loading: false });
+          }, 2000);
+          
           // this.handleAddNotesRow();
         } else {
           this.setState({ Loading: false });
@@ -1749,6 +1759,7 @@ class Step1 extends React.Component {
     try {
       let data = {
         BookofWorkID: this.state.BookofWorkID,
+        AttachmentUrl: this.state.Attachment
       };
       api.post("contactUs/DeleteBookofWorkByID", data).then((result) => {
         if (result.success) {
@@ -1786,7 +1797,7 @@ class Step1 extends React.Component {
       });
     } catch (err) {
       this.hideLoader();
-      cogoToast.error("Something Went 12");
+      cogoToast.error("Something Went");
     }
   };
 
@@ -1842,7 +1853,7 @@ class Step1 extends React.Component {
           data = {
             BookofWorkID: this.state.BookofWorkID,
             AssignedBy: this.state.AssignedBy.value,
-            Attachments: "",
+            Attachments: this.state.fileuploadUpdate == "Yes" ? finalAttachment:"" ,
             AssignedTo: this.state.AssignedTo.value,
             DateCreated: moment(this.state.DateCreated)
               .format(CommonConfig.dateFormat.dbDateOnly)
@@ -1859,6 +1870,7 @@ class Step1 extends React.Component {
             WorkStatus: this.state.Status.value,
             UpdatedBy: CommonConfig.loggedInUserData().PersonID,
             notes: FinalNotes,
+            UserId: CommonConfig.loggedInUserData().PersonID,
           };
         } else
           data = {
@@ -1880,6 +1892,7 @@ class Step1 extends React.Component {
             WorkStatus: this.state.Status.value,
             CreatedBy: CommonConfig.loggedInUserData().PersonID,
             notes: FinalNotes,
+            UserId: CommonConfig.loggedInUserData().PersonID,
           };
         console.log("Book Of Work Data", data);
         var formData = new FormData();
@@ -3196,7 +3209,7 @@ class Step1 extends React.Component {
                 </div>
               )}
             </td>
-            <td>{notes.AddedBy}</td>
+            {/* <td>{notes.AddedBy}</td> */}
             <td className="pck-action-column">
               <div className="pck-subbtn">
                 {/* {this.state.DeleteAccess === 1? */}
@@ -3809,7 +3822,7 @@ class Step1 extends React.Component {
                           <tr>
                             <th>Date</th>
                             <th>Comments</th>
-                            <th>Added By</th>
+                            {/* <th>Added By</th> */}
                             <th>Action</th>
                           </tr>
                         </thead>
