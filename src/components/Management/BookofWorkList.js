@@ -24,7 +24,8 @@ import CheckBoxIcon from "@material-ui/icons/CheckBox";
 import Checkbox from "@material-ui/core/Checkbox";
 import InfoIcon from "@material-ui/icons/PriorityHigh";
 import Tooltip from "@material-ui/core/Tooltip";
-import {decode as base64_decode, encode as base64_encode} from 'base-64';
+import { decode as base64_decode, encode as base64_encode } from 'base-64';
+import AttachFileIcon from '@material-ui/icons/AttachFile';
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
@@ -32,10 +33,10 @@ class BookofWorkList extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      
-      BookofWorkData:[],
-      WorkStatusList:[],
-      WorkStatus:[],
+
+      BookofWorkData: [],
+      WorkStatusList: [],
+      WorkStatus: [],
       checkdata: "",
       AllAccess: 0,
       Loading: false,
@@ -72,7 +73,7 @@ class BookofWorkList extends Component {
         APIcheck = false;
         //  this.filterMethod("", this.props.history.location.state.statusList);
         if (this.props.history.location.state.statusList[0].label === "All") {
-          let newfilter =[{ label: "New", value: "New" },{ label: "Open", value: "Open" }];
+          let newfilter = [{ label: "New", value: "New" }, { label: "Open", value: "Open" }];
           this.filterMethod("", newfilter);
         } else {
           this.filterMethod("", this.props.history.location.state.statusList);
@@ -94,7 +95,7 @@ class BookofWorkList extends Component {
     }
     debugger;
     if (APIcheck) {
-      let newFilter = [{ label: "New", value: "New" },{ label: "Open", value: "Open" }];
+      let newFilter = [{ label: "New", value: "New" }, { label: "Open", value: "Open" }];
       this.filterMethod("", newFilter);
     }
     this.getStatus();
@@ -145,12 +146,13 @@ class BookofWorkList extends Component {
     }
   };
   searchfilter = () => {
+    debugger
     this.setState({ IsDropDownShow: false });
     try {
       let Query = "";
       let inputdata = this.state.checkdata;
       if (inputdata === "All") {
-        Query = inputdata;
+        Query = " And 1 ";
       } else if (inputdata === "") {
         this.setState({ BookofWorkData: [] });
       } else if (inputdata.length === 1) {
@@ -165,21 +167,21 @@ class BookofWorkList extends Component {
           }
         }
 
-        
+
         if (!CommonConfig.isEmpty(Query)) {
           Query = Query + `)`;
         }
       }
 
-      if(CommonConfig.getUserAccess("Book of Work").AllAccess != 1){
+      if (CommonConfig.getUserAccess("Book of Work").AllAccess != 1) {
 
-        Query = Query + ` AND (bw.AssignedBy = "`+CommonConfig.loggedInUserData().PersonID+`" OR bw.AssignedTo = "`+CommonConfig.loggedInUserData().PersonID+`")`
+        Query = Query + ` AND (bw.AssignedBy = "` + CommonConfig.loggedInUserData().PersonID + `" OR bw.AssignedTo = "` + CommonConfig.loggedInUserData().PersonID + `")`
 
       }
 
-     
 
-      
+
+
       console.log("query: ", Query);
       //  this.getProposalData(Query);
       this.getBookofWorkData(Query);
@@ -187,7 +189,8 @@ class BookofWorkList extends Component {
       cogoToast.error("Something went wrong 3");
     }
   };
-  getBookofWorkData(whereClause) {debugger
+  getBookofWorkData(whereClause) {
+    debugger
     if (whereClause !== "") {
       console.log("whereclause", whereClause);
       let data = {};
@@ -227,7 +230,8 @@ class BookofWorkList extends Component {
     }
   }
 
-    handleEdit(record) {debugger
+  handleEdit(record) {
+    debugger
     let BookofWorkID = record.original.BookofWorkID;
     this.props.history.push({
       pathname: "BookofWork/" + BookofWorkID,
@@ -278,11 +282,11 @@ class BookofWorkList extends Component {
           value = [{ label: "All", value: "All" }];
         }
         debugger
-      if(CommonConfig.getUserAccess("Book of Work").AllAccess != 1){
+        if (CommonConfig.getUserAccess("Book of Work").AllAccess != 1) {
 
-        query = query + ` AND (bw.AssignedBy = "`+CommonConfig.loggedInUserData().PersonID+`" OR bw.AssignedTo = "`+CommonConfig.loggedInUserData().PersonID+`")`
+          query = query + ` AND (bw.AssignedBy = "` + CommonConfig.loggedInUserData().PersonID + `" OR bw.AssignedTo = "` + CommonConfig.loggedInUserData().PersonID + `")`
 
-      }
+        }
         this.getBookofWorkData(query);
       } else {
         this.setState({ BookofWorkData: [] });
@@ -291,7 +295,8 @@ class BookofWorkList extends Component {
     }
   };
 
-  getStatus() {debugger
+  getStatus() {
+    debugger
     try {
       let data = {
         stringMapType: "WORKSTATUS",
@@ -302,15 +307,15 @@ class BookofWorkList extends Component {
         .then((result) => {
           let WorkStatus1 = result.data;
           let resultStatus = [];
-          var i =0;
-          resultStatus.push({ value: "All", label: "All" ,IsSelected: false, Index: i++ });
-            WorkStatus1.map((type) => {
-              
-              type.Description == "New" || type.Description == "Open"?resultStatus.push({ value: type.Description, label: type.Description ,IsSelected: true, Index: i++ }):resultStatus.push({ value: type.Description, label: type.Description ,IsSelected: false, Index: i++ });
-            });
-           
-            console.log("resultStatus",resultStatus);
-          this.setState({ WorkStatus:resultStatus });
+          var i = 0;
+          resultStatus.push({ value: "All", label: "All", IsSelected: false, Index: i++ });
+          WorkStatus1.map((type) => {
+
+            type.Description == "New" || type.Description == "Open" ? resultStatus.push({ value: type.Description, label: type.Description, IsSelected: true, Index: i++ }) : resultStatus.push({ value: type.Description, label: type.Description, IsSelected: false, Index: i++ });
+          });
+
+          console.log("resultStatus", resultStatus);
+          this.setState({ WorkStatus: resultStatus });
 
         })
         .catch((err) => {
@@ -320,7 +325,7 @@ class BookofWorkList extends Component {
       console.log("error", err);
     }
   }
-  
+
   setFilterProps = (filterValue) => {
     this.setState({
       filterProps: filterValue.filtered,
@@ -329,8 +334,8 @@ class BookofWorkList extends Component {
   };
 
   filterProps = (e) => {
-    console.log("e = " , e)
-    console.log("this.state.filterProps = ",this.state.filterProps , this.state.sortProps)
+    console.log("e = ", e)
+    console.log("this.state.filterProps = ", this.state.filterProps, this.state.sortProps)
     if (this.state.filterProps !== e.filtered) {
       this.setFilterProps(e);
     }
@@ -373,7 +378,7 @@ class BookofWorkList extends Component {
   render() {
     const { BookofWorkData } = this.state;
     const column = [
-     
+
       {
         Header: "Defect ID",
         accessor: "BookofWorkID",
@@ -440,7 +445,7 @@ class BookofWorkList extends Component {
         },
         sortable: true,
         accessor: (data) => {
-          return data.ETA == null ?"":data.ETA;
+          return data.ETA == null ? "" : data.ETA;
         },
         width: 150,
         maxWidth: 200,
@@ -462,14 +467,21 @@ class BookofWorkList extends Component {
                 <i className="fas fa-edit"></i>
               </Button>
               <Tooltip title={base64_decode(record.original.Description)} arrow>
-                  <Button
-                    className="Plus-btn info-icon"
-                    justIcon
-                    color="twitter"
-                  >
-                    <InfoIcon />
-                  </Button>
-                </Tooltip>
+                <Button
+                  className="Plus-btn info-icon"
+                  justIcon
+                  color="twitter"
+                >
+                  <InfoIcon />
+                </Button>
+              </Tooltip>
+              {record.original.AttachmentID != null ? (
+                <Button
+                  className="transparent-btn"
+                >
+                  <AttachFileIcon />
+                </Button>)
+                : ""}
             </div>
           );
         },
@@ -523,58 +535,58 @@ class BookofWorkList extends Component {
               <div className="filter-wrap">
                 <div
                   className="filter-top-right"
-                 
+
                 >
                   <Button className="cm-toggle" color="rose"
-                   onMouseLeave={() => this.setState({ IsDropDownShow: false })}
-                   onMouseOver={() => this.setState({ IsDropDownShow: true })}>
+                    onMouseLeave={() => this.setState({ IsDropDownShow: false })}
+                    onMouseOver={() => this.setState({ IsDropDownShow: true })}>
                     Book of Work Status <ExpandMoreIcon />
-                  
-                  {this.state.IsDropDownShow === true ? (
-                    <div className="cm-dropdown">
-                      <div className="overflow-handle">
-                        {this.state.WorkStatus.map((step, key) => {
-                          return (
-                            <li>
-                              <label>
-                                <input
-                                  type="checkbox"
-                                  checked={step.IsSelected}
-                                  onChange={(e) =>
-                                    this.handleCheckboxChange(
-                                      e,
-                                      step,
-                                      step.value
-                                    )
-                                  }
-                                />{" "}
-                                {step.value}
-                              </label>
-                            </li>
-                          );
-                        })}
+
+                    {this.state.IsDropDownShow === true ? (
+                      <div className="cm-dropdown">
+                        <div className="overflow-handle">
+                          {this.state.WorkStatus.map((step, key) => {
+                            return (
+                              <li>
+                                <label>
+                                  <input
+                                    type="checkbox"
+                                    checked={step.IsSelected}
+                                    onChange={(e) =>
+                                      this.handleCheckboxChange(
+                                        e,
+                                        step,
+                                        step.value
+                                      )
+                                    }
+                                  />{" "}
+                                  {step.value}
+                                </label>
+                              </li>
+                            );
+                          })}
+                        </div>
+                        <div className="cms-wrap">
+                          <Button
+                            className="cm-search-btn"
+                            color="rose"
+                            onClick={() => this.searchfilter()}
+                          >
+                            Search
+                          </Button>
+                        </div>
                       </div>
-                      <div className="cms-wrap">
-                        <Button
-                          className="cm-search-btn"
-                          color="rose"
-                          onClick={() => this.searchfilter()}
-                        >
-                          Search
-                        </Button>
-                      </div>
-                    </div>
-                  ) : null}
-                  
+                    ) : null}
+
                   </Button>
-                <Button
-                color="primary"
-                className="wd-auto"
-                onClick={() => this.BookofWork()}
-              >
-                Add New Work
-              </Button>
-              </div>
+                  <Button
+                    color="primary"
+                    className="wd-auto"
+                    onClick={() => this.BookofWork()}
+                  >
+                    Add New Work
+                  </Button>
+                </div>
               </div>
             </CardHeader>
             <CardBody>

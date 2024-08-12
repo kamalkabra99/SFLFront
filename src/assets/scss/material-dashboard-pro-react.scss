@@ -6692,13 +6692,13 @@ button.file-doc {
   position: relative;
   border-bottom: 1px solid rgba(0, 0, 0, 0.2);
   padding: 6px 0 6px 90px;
-  min-height: 50px;
+  min-height: 37px;
 }
 
 .fui-inner span {
   background: #e91e63;
   border-radius: 4px;
-  padding: 8px 13px;
+  padding: 3px 13px;
   color: #fff;
   position: absolute;
   left: 0;
@@ -6717,7 +6717,7 @@ button.file-doc {
 .fui-inner p {
   width: 100%;
   margin: 0;
-  padding: 8px 0px;
+  padding: 1px 0px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -6748,4 +6748,22 @@ button.file-doc {
 }
 .header-width{
   width: 75% !important;
+}
+
+.transparent-btn {
+  background: transparent;
+  box-shadow: none;
+  color: #222;
+  cursor: auto;
+}
+
+.transparent-btn:hover {
+  color: #222;
+  background: transparent;
+  box-shadow: none;
+}
+
+.bow-view-filebtn {
+  width: 100%;
+  padding-top: 28px;
 }

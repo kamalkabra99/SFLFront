@@ -51,7 +51,7 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import momentTimezone from "moment-timezone";
 import InfoIcon from "@material-ui/icons/PriorityHigh";
-import {decode as base64_decode, encode as base64_encode} from 'base-64';
+import { decode as base64_decode, encode as base64_encode } from 'base-64';
 const useStyles = makeStyles(styles);
 
 const classes = () => {
@@ -175,7 +175,7 @@ class Step1 extends React.Component {
       Email: "",
       UsertypeEmail1: "",
       UsertypeEmail2: "",
-      fileuploadUpdate:"Yes",
+      fileuploadUpdate: "Yes",
       Email: "",
       EmailID: "",
       EmployeementID: "",
@@ -268,8 +268,8 @@ class Step1 extends React.Component {
       statusErr: false,
       statusHelperText: "",
       checkStatus: false,
-      datatoUploadFile:[],
-      datafile:0,
+      datatoUploadFile: [],
+      datafile: 0,
 
       Country: {},
       CountryList: [],
@@ -631,7 +631,7 @@ class Step1 extends React.Component {
     };
     this.setState({ BookofWorkID: data.BookofWorkID });
     try {
-      
+
       api.post("contactUs/GetBookofWorkById/", data).then((result) => {
         if (result.Data.success) {
           var WorkData = result.Data;
@@ -667,7 +667,7 @@ class Step1 extends React.Component {
           //   };
           // }
 
-          if(WorkData.data.AttachmentPath != null){
+          if (WorkData.data.AttachmentPath != null) {
             this.state.fileuploadUpdate = "No"
           }
           var selectedAssignedBy = {};
@@ -694,8 +694,8 @@ class Step1 extends React.Component {
             (x) => x.NoteText !== "" && x.NoteText !== null
           );
 
-          
-  
+
+
           this.setState({
             AssignedBy: selectedAssignedBy,
             AssignedTo: selectedAssignedTo,
@@ -711,7 +711,7 @@ class Step1 extends React.Component {
           setTimeout(() => {
             this.setState({ Loading: false });
           }, 2000);
-          
+
           // this.handleAddNotesRow();
         } else {
           this.setState({ Loading: false });
@@ -737,15 +737,15 @@ class Step1 extends React.Component {
       } else {
         const data = new FormData();
         files.DateTime = new Date().getTime()
-        
+
         data.append("file", files);
 
 
-        console.log("data = ",data);
+        console.log("data = ", data);
 
         this.state.datatoUploadFile = data
         this.state.datafile = 1
-       
+
 
         let AttachmentList = [];
 
@@ -755,19 +755,19 @@ class Step1 extends React.Component {
         //  var editfilename = files.name;
         let datasets = {
 
-          DateTime : dateNow,
-          AttachmentName : files.name,
+          DateTime: dateNow,
+          AttachmentName: files.name,
 
-          AttachmentType : files.type,
-          AttachmentID : null,
-          Status : "Active",
+          AttachmentType: files.type,
+          AttachmentID: null,
+          Status: "Active",
 
         }
 
         AttachmentList.push(datasets)
 
-        console.log("AttachmentList = ",AttachmentList)
-       
+        console.log("AttachmentList = ", AttachmentList)
+
         this.setState({
           Attachments: AttachmentList,
           AttachmentList: [...this.state.AttachmentList, files],
@@ -802,7 +802,7 @@ class Step1 extends React.Component {
 
 
   stringTruncate = (filename) => {
-    if(filename.length > 0){
+    if (filename.length > 0) {
       console.log("filename = ", filename);
       filename = filename[0].AttachmentName
       var maxLength = 15;
@@ -815,7 +815,7 @@ class Step1 extends React.Component {
       }
       return filename;
     }
-    
+
   };
   handleDocumentChange = (e, record) => {
     debugger;
@@ -1159,7 +1159,7 @@ class Step1 extends React.Component {
         .catch((err) => {
           cogoToast.error("Something Went Wrong 6");
         });
-    } catch (error) {}
+    } catch (error) { }
   }
   showLoader = () => {
     this.setState({ Loading: true });
@@ -1770,22 +1770,22 @@ class Step1 extends React.Component {
             state: {
               filterlist:
                 this.props.history.location.state &&
-                this.props.history.location.state.filterlist
+                  this.props.history.location.state.filterlist
                   ? this.props.history.location.state.filterlist
                   : null,
               sortlist:
                 this.props.history.location.state &&
-                this.props.history.location.state.sortlist
+                  this.props.history.location.state.sortlist
                   ? this.props.history.location.state.sortlist
                   : null,
               packageValue:
                 this.props.history.location.state &&
-                this.props.history.location.state.packageValue
+                  this.props.history.location.state.packageValue
                   ? this.props.history.location.state.packageValue
                   : null,
               statusfilter:
                 this.props.history.location.state &&
-                this.props.history.location.state.statusfilter
+                  this.props.history.location.state.statusfilter
                   ? this.props.history.location.state.statusfilter
                   : null,
             },
@@ -1848,12 +1848,12 @@ class Step1 extends React.Component {
         }
 
 
-   
+
         if (CommonConfig.isEmpty(this.state.BookofWorkID) !== true) {
           data = {
             BookofWorkID: this.state.BookofWorkID,
             AssignedBy: this.state.AssignedBy.value,
-            Attachments: this.state.fileuploadUpdate == "Yes" ? finalAttachment:"" ,
+            Attachments: this.state.fileuploadUpdate == "Yes" ? finalAttachment : "",
             AssignedTo: this.state.AssignedTo.value,
             DateCreated: moment(this.state.DateCreated)
               .format(CommonConfig.dateFormat.dbDateOnly)
@@ -1865,8 +1865,8 @@ class Step1 extends React.Component {
               this.state.ETA == null || this.state.ETA == ""
                 ? "NULL"
                 : moment(this.state.ETA)
-                    .format(CommonConfig.dateFormat.dbDateOnly)
-                    .toString(),
+                  .format(CommonConfig.dateFormat.dbDateOnly)
+                  .toString(),
             WorkStatus: this.state.Status.value,
             UpdatedBy: CommonConfig.loggedInUserData().PersonID,
             notes: FinalNotes,
@@ -1887,8 +1887,8 @@ class Step1 extends React.Component {
               this.state.ETA == null || this.state.ETA == ""
                 ? "NULL"
                 : moment(this.state.ETA)
-                    .format(CommonConfig.dateFormat.dbDateOnly)
-                    .toString(),
+                  .format(CommonConfig.dateFormat.dbDateOnly)
+                  .toString(),
             WorkStatus: this.state.Status.value,
             CreatedBy: CommonConfig.loggedInUserData().PersonID,
             notes: FinalNotes,
@@ -1924,7 +1924,7 @@ class Step1 extends React.Component {
                   });
                 } else {
 
-                  
+
                   this.geteditBookofWork();
                   this.getnotesByID();
                 }
@@ -2394,13 +2394,13 @@ class Step1 extends React.Component {
 
                           countryShortName = _.filter(
                             data["results"][0]["address_components"],
-                            function(data) {
+                            function (data) {
                               return data.types[0] === "country";
                             }
                           )[0].long_name;
                           var CityData = _.filter(
                             data["results"][0]["address_components"],
-                            function(data) {
+                            function (data) {
                               if (data.types[0] == "locality") {
                                 return data.types[0] === "locality";
                               }
@@ -2409,7 +2409,7 @@ class Step1 extends React.Component {
 
                           var CityData2 = _.filter(
                             data["results"][0]["address_components"],
-                            function(data) {
+                            function (data) {
                               if (data.types[0] == "neighborhood") {
                                 return data.types[0] === "neighborhood";
                               }
@@ -2418,7 +2418,7 @@ class Step1 extends React.Component {
 
                           var CityData3 = _.filter(
                             data["results"][0]["address_components"],
-                            function(data) {
+                            function (data) {
                               if (
                                 data.types[0] == "administrative_area_level_2"
                               ) {
@@ -2432,7 +2432,7 @@ class Step1 extends React.Component {
 
                           var CityData4 = _.filter(
                             data["results"][0]["address_components"],
-                            function(data) {
+                            function (data) {
                               if (
                                 data.types[0] == "administrative_area_level_1"
                               ) {
@@ -2488,7 +2488,7 @@ class Step1 extends React.Component {
 
                           var state = _.filter(
                             data["results"][0]["address_components"],
-                            function(data) {
+                            function (data) {
                               return (
                                 data.types[0] === "administrative_area_level_1"
                               );
@@ -2527,7 +2527,7 @@ class Step1 extends React.Component {
 
                           countryShortName = _.filter(
                             data["results"][0]["address_components"],
-                            function(data) {
+                            function (data) {
                               return data.types[0] === "country";
                             }
                           )[0].long_name;
@@ -2536,14 +2536,14 @@ class Step1 extends React.Component {
                             city == "" &&
                             _.filter(
                               data["results"][0]["address_components"],
-                              function(data) {
+                              function (data) {
                                 return data.types[0] === "locality";
                               }
                             ).length > 0
                           ) {
                             city = _.filter(
                               data["results"][0]["address_components"],
-                              function(data) {
+                              function (data) {
                                 return data.types[0] === "locality";
                               }
                             )[0].short_name;
@@ -2551,7 +2551,7 @@ class Step1 extends React.Component {
                             city == "" &&
                             _.filter(
                               data["results"][0]["address_components"],
-                              function(data) {
+                              function (data) {
                                 return (
                                   data.types[0] ===
                                   "administrative_area_level_3"
@@ -2561,7 +2561,7 @@ class Step1 extends React.Component {
                           ) {
                             city = _.filter(
                               data["results"][0]["address_components"],
-                              function(data) {
+                              function (data) {
                                 return (
                                   data.types[0] ===
                                   "administrative_area_level_3"
@@ -2572,14 +2572,14 @@ class Step1 extends React.Component {
                             city == "" &&
                             _.filter(
                               data["results"][0]["address_components"],
-                              function(data) {
+                              function (data) {
                                 return data.types[0] === "political";
                               }
                             ).length > 0
                           ) {
                             city = _.filter(
                               data["results"][0]["address_components"],
-                              function(data) {
+                              function (data) {
                                 return data.types[0] === "political";
                               }
                             )[0].short_name;
@@ -2587,14 +2587,14 @@ class Step1 extends React.Component {
                             city == "" &&
                             _.filter(
                               data["results"][0]["address_components"],
-                              function(data) {
+                              function (data) {
                                 return data.types[0] === "neighborhood";
                               }
                             ).length > 0
                           ) {
                             city = _.filter(
                               data["results"][0]["address_components"],
-                              function(data) {
+                              function (data) {
                                 return data.types[0] === "neighborhood";
                               }
                             )[0].short_name;
@@ -2602,7 +2602,7 @@ class Step1 extends React.Component {
                             city == "" &&
                             _.filter(
                               data["results"][0]["address_components"],
-                              function(data) {
+                              function (data) {
                                 return (
                                   data.types[0] ===
                                   "administrative_area_level_2"
@@ -2612,7 +2612,7 @@ class Step1 extends React.Component {
                           ) {
                             city = _.filter(
                               data["results"][0]["address_components"],
-                              function(data) {
+                              function (data) {
                                 return (
                                   data.types[0] ===
                                   "administrative_area_level_2"
@@ -2623,7 +2623,7 @@ class Step1 extends React.Component {
                             city == "" &&
                             _.filter(
                               data["results"][0]["address_components"],
-                              function(data) {
+                              function (data) {
                                 return (
                                   data.types[0] ===
                                   "administrative_area_level_1"
@@ -2633,7 +2633,7 @@ class Step1 extends React.Component {
                           ) {
                             city = _.filter(
                               data["results"][0]["address_components"],
-                              function(data) {
+                              function (data) {
                                 return (
                                   data.types[0] ===
                                   "administrative_area_level_1"
@@ -2646,7 +2646,7 @@ class Step1 extends React.Component {
 
                           var state = _.filter(
                             data["results"][0]["address_components"],
-                            function(data) {
+                            function (data) {
                               return (
                                 data.types[0] === "administrative_area_level_1"
                               );
@@ -2826,13 +2826,13 @@ class Step1 extends React.Component {
 
                           countryShortName = _.filter(
                             data["results"][0]["address_components"],
-                            function(data) {
+                            function (data) {
                               return data.types[0] === "country";
                             }
                           )[0].long_name;
                           var CityData = _.filter(
                             data["results"][0]["address_components"],
-                            function(data) {
+                            function (data) {
                               if (data.types[0] == "locality") {
                                 return data.types[0] === "locality";
                               }
@@ -2841,7 +2841,7 @@ class Step1 extends React.Component {
 
                           var CityData2 = _.filter(
                             data["results"][0]["address_components"],
-                            function(data) {
+                            function (data) {
                               if (data.types[0] == "neighborhood") {
                                 return data.types[0] === "neighborhood";
                               }
@@ -2850,7 +2850,7 @@ class Step1 extends React.Component {
 
                           var CityData3 = _.filter(
                             data["results"][0]["address_components"],
-                            function(data) {
+                            function (data) {
                               if (
                                 data.types[0] == "administrative_area_level_2"
                               ) {
@@ -2864,7 +2864,7 @@ class Step1 extends React.Component {
 
                           var CityData4 = _.filter(
                             data["results"][0]["address_components"],
-                            function(data) {
+                            function (data) {
                               if (
                                 data.types[0] == "administrative_area_level_1"
                               ) {
@@ -2920,7 +2920,7 @@ class Step1 extends React.Component {
 
                           var state = _.filter(
                             data["results"][0]["address_components"],
-                            function(data) {
+                            function (data) {
                               return (
                                 data.types[0] === "administrative_area_level_1"
                               );
@@ -2961,7 +2961,7 @@ class Step1 extends React.Component {
 
                           countryShortName = _.filter(
                             data["results"][0]["address_components"],
-                            function(data) {
+                            function (data) {
                               return data.types[0] === "country";
                             }
                           )[0].long_name;
@@ -2970,14 +2970,14 @@ class Step1 extends React.Component {
                             city == "" &&
                             _.filter(
                               data["results"][0]["address_components"],
-                              function(data) {
+                              function (data) {
                                 return data.types[0] === "locality";
                               }
                             ).length > 0
                           ) {
                             city = _.filter(
                               data["results"][0]["address_components"],
-                              function(data) {
+                              function (data) {
                                 return data.types[0] === "locality";
                               }
                             )[0].short_name;
@@ -2985,7 +2985,7 @@ class Step1 extends React.Component {
                             city == "" &&
                             _.filter(
                               data["results"][0]["address_components"],
-                              function(data) {
+                              function (data) {
                                 return (
                                   data.types[0] ===
                                   "administrative_area_level_3"
@@ -2995,7 +2995,7 @@ class Step1 extends React.Component {
                           ) {
                             city = _.filter(
                               data["results"][0]["address_components"],
-                              function(data) {
+                              function (data) {
                                 return (
                                   data.types[0] ===
                                   "administrative_area_level_3"
@@ -3006,14 +3006,14 @@ class Step1 extends React.Component {
                             city == "" &&
                             _.filter(
                               data["results"][0]["address_components"],
-                              function(data) {
+                              function (data) {
                                 return data.types[0] === "political";
                               }
                             ).length > 0
                           ) {
                             city = _.filter(
                               data["results"][0]["address_components"],
-                              function(data) {
+                              function (data) {
                                 return data.types[0] === "political";
                               }
                             )[0].short_name;
@@ -3021,14 +3021,14 @@ class Step1 extends React.Component {
                             city == "" &&
                             _.filter(
                               data["results"][0]["address_components"],
-                              function(data) {
+                              function (data) {
                                 return data.types[0] === "neighborhood";
                               }
                             ).length > 0
                           ) {
                             city = _.filter(
                               data["results"][0]["address_components"],
-                              function(data) {
+                              function (data) {
                                 return data.types[0] === "neighborhood";
                               }
                             )[0].short_name;
@@ -3036,7 +3036,7 @@ class Step1 extends React.Component {
                             city == "" &&
                             _.filter(
                               data["results"][0]["address_components"],
-                              function(data) {
+                              function (data) {
                                 return (
                                   data.types[0] ===
                                   "administrative_area_level_2"
@@ -3046,7 +3046,7 @@ class Step1 extends React.Component {
                           ) {
                             city = _.filter(
                               data["results"][0]["address_components"],
-                              function(data) {
+                              function (data) {
                                 return (
                                   data.types[0] ===
                                   "administrative_area_level_2"
@@ -3057,7 +3057,7 @@ class Step1 extends React.Component {
                             city == "" &&
                             _.filter(
                               data["results"][0]["address_components"],
-                              function(data) {
+                              function (data) {
                                 return (
                                   data.types[0] ===
                                   "administrative_area_level_1"
@@ -3067,7 +3067,7 @@ class Step1 extends React.Component {
                           ) {
                             city = _.filter(
                               data["results"][0]["address_components"],
-                              function(data) {
+                              function (data) {
                                 return (
                                   data.types[0] ===
                                   "administrative_area_level_1"
@@ -3080,7 +3080,7 @@ class Step1 extends React.Component {
 
                           var state = _.filter(
                             data["results"][0]["address_components"],
-                            function(data) {
+                            function (data) {
                               return (
                                 data.types[0] === "administrative_area_level_1"
                               );
@@ -3224,7 +3224,7 @@ class Step1 extends React.Component {
                 </Button>
                 {this.state.notes.filter((x) => x.Status === "Active")
                   .length ===
-                idx + 1 ? (
+                  idx + 1 ? (
                   <Button
                     justIcon
                     color="facebook"
@@ -3436,7 +3436,7 @@ class Step1 extends React.Component {
 
               {this.state.bankList.filter((x) => x.Status === "Active")
                 .length ===
-              idx + 1 ? (
+                idx + 1 ? (
                 <Button
                   justIcon
                   color="facebook"
@@ -3730,8 +3730,8 @@ class Step1 extends React.Component {
                     <GridItem xs={3} sm={3} md={3}>
                       <div>
                         {this.state.Attachment != "" &&
-                        this.state.Attachment != null ? (
-                          <div>
+                          this.state.Attachment != null ? (
+                          <div className="bow-view-filebtn">
                             <a
                               href={fileBase + this.state.Attachment}
                               className="normal-btn sm-orange"
