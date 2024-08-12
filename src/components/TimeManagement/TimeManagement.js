@@ -65,6 +65,7 @@ class TimeManagement extends React.Component {
       finalLength: 0,
       open: false,
       Leaveopen: false,
+      pickupDisable: true,
       userTimeZone: "",
 
       // ManagedBy: "",
@@ -506,6 +507,11 @@ class TimeManagement extends React.Component {
   }
 
   dateChange = (date, type) => {
+    if(type == "FromDate"){
+      this.setState({
+        ToDate: date,
+      });
+    }
     this.setState({
       [type]: date,
     });
@@ -998,11 +1004,15 @@ class TimeManagement extends React.Component {
                                 dateFormat={"MM/DD/YYYY"}
                                 timeFormat={false}
                                 value={ToDate}
-                                disabled
-                                onChange={(date) => this.dateChange(date, "ToDate")}
+                                disabled={this.state.pickupDisable}
+                                // displayTimezone="utc"
                                 closeOnSelect={true}
+                                onChange={(date) => this.dateChange(date, "ToDate")}
+                                // closeOnSelect={true}
                                 renderInput={(params) => (
-                                  <TextField {...params} fullWidth />
+                                  <TextField 
+                                  disabled={this.state.pickupDisable}
+                                  {...params} fullWidth />
                                 )}
                               />
                             </FormControl>
