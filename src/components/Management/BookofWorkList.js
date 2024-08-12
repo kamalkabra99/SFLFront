@@ -466,7 +466,7 @@ class BookofWorkList extends Component {
               >
                 <i className="fas fa-edit"></i>
               </Button>
-              <Tooltip title={base64_decode(record.original.Description)} arrow>
+              <Tooltip title={(record.original.Description=="" || record.original.Description==null)?"":base64_decode(record.original.Description)} arrow>
                 <Button
                   className="Plus-btn info-icon"
                   justIcon
