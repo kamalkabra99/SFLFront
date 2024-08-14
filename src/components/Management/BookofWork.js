@@ -1871,6 +1871,8 @@ class Step1 extends React.Component {
             UpdatedBy: CommonConfig.loggedInUserData().PersonID,
             notes: FinalNotes,
             UserId: CommonConfig.loggedInUserData().PersonID,
+            OriginalDescription: this.state.Description,
+
           };
         } else
           data = {
@@ -1893,6 +1895,7 @@ class Step1 extends React.Component {
             CreatedBy: CommonConfig.loggedInUserData().PersonID,
             notes: FinalNotes,
             UserId: CommonConfig.loggedInUserData().PersonID,
+            OriginalDescription: this.state.Description,
           };
         console.log("Book Of Work Data", data);
         var formData = new FormData();

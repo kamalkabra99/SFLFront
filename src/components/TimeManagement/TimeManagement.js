@@ -488,30 +488,109 @@ class TimeManagement extends React.Component {
       .toString(),
     };
 
+    // var differencetimeset = "";
+    const todates = new Date(this.state.ToDate);
+    const fromdates = new Date(this.state.FromDate);
+    var Difference_In_Time = todates.getTime() - fromdates.getTime();
+
+    
+    var Difference_In_Days = Math.round(Difference_In_Time / (1000 * 3600 * 24));
+    Difference_In_Days = Difference_In_Days + 1
+    console.log("Difference_In_Days = ",Difference_In_Days);
+
     console.log(pData)
     debugger
 
-    api.post("contactus/UserRequestTimeOFF", pData).then((res) => {
-      console.log("Res = ", res);
-      if (res.success) {
-        this.hideLoador();
-        this.setState({ Leaveopen: false });
-        cogoToast.success("Request TimeOff added successfully");
-        this.getTmsUserName(this.state.userTimeZone.value);
-      } else {
-        this.hideLoador();
-        cogoToast.error("Something went wrong. Please try again...");
+    if(Difference_In_Days == 1){
+
+      api.post("contactus/UserRequestTimeOFF", pData).then((res) => {
+        console.log("Res = ", res);
+        if (res.success) {
+          this.hideLoador();
+          this.setState({ Leaveopen: false });
+          cogoToast.success("Request TimeOff added successfully");
+          this.getTmsUserName(this.state.userTimeZone.value);
+        } else {
+          this.hideLoador();
+          cogoToast.error("Something went wrong. Please try again...");
+        }
+      });
+
+    }else{
+
+      var arrayPushdata = []
+      var j = 0;
+      for(var i = 0; i<Difference_In_Days;i++){
+        var testapi = ""
+
+        // console.log("pData = ",i,pData)
+          var date = new Date(this.state.FromDate);
+          date.setDate(date.getDate() + i);
+
+          date =  moment(date).format(CommonConfig.dateFormat.dbDateOnly).toString()
+         
+          var pDataTest = {
+            ManagedBy:this.state.ManagedBy.value,
+            FromDate: date,
+            ToDate : date,
+            TimeTypeValue: this.state.TimeTypeValue.value,
+            Reason: this.state.ReasonsValue.value,
+            ApplyName: CommonConfig.loggedInUserData().Name,
+            ApplyEmail: CommonConfig.loggedInUserData().Email,
+            ApplyDate: moment()
+            .format(CommonConfig.dateFormat.dbDateOnly)
+            .toString(),
+          };
+
+          arrayPushdata[j] = pDataTest;
+          j++;
+
+          
       }
-    });
+      
+      console.log("arrayPushdata = ",arrayPushdata)
+      this.UserRequestTimeOFFdata(arrayPushdata)
+      
+    }
+
+    
+
+  }
+
+  UserRequestTimeOFFdata = (pData) =>{
+    console.log("pData = ",pData)
+
+    for(var i = 0; i< pData.length;i++){
+
+      console.log("Welcome data = ",pData[i]);
+
+      api.post("contactus/UserRequestTimeOFF", pData[i]).then((res) => {
+        console.log("Res = ", res);
+        if (res.success) {
+          // if(i == Difference_In_Days){
+            this.hideLoador();
+            this.setState({ Leaveopen: false });
+            cogoToast.success("Request TimeOff added successfully");
+            this.getTmsUserName(this.state.userTimeZone.value);
+          // }
+        
+        } else {
+          // if(i == Difference_In_Days){
+            this.hideLoador();
+            cogoToast.error("Something went wrong. Please try again...");
+          // }
+        
+        }
+      });
+
+    }
+
+    
 
   }
 
   dateChange = (date, type) => {
-    if(type == "FromDate"){
-      this.setState({
-        ToDate: date,
-      });
-    }
+   
     this.setState({
       [type]: date,
     });
@@ -1004,14 +1083,14 @@ class TimeManagement extends React.Component {
                                 dateFormat={"MM/DD/YYYY"}
                                 timeFormat={false}
                                 value={ToDate}
-                                disabled={this.state.pickupDisable}
+                                // disabled={this.state.pickupDisable}
                                 // displayTimezone="utc"
                                 closeOnSelect={true}
                                 onChange={(date) => this.dateChange(date, "ToDate")}
                                 // closeOnSelect={true}
                                 renderInput={(params) => (
                                   <TextField 
-                                  disabled={this.state.pickupDisable}
+                                  // disabled={this.state.pickupDisable}
                                   {...params} fullWidth />
                                 )}
                               />

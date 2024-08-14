@@ -805,7 +805,7 @@ class Sidebar extends React.Component {
         );
       }
 
-      console.log("Props = ",prop)
+      // console.log("Props = ",prop)
 
       if (prop.name === "Call Back") {
         prop.infoIcon = true;

@@ -1603,8 +1603,10 @@ class ShipmentCustom extends React.Component {
             ? this.props.location.state.ShipppingID
             : null,
       };
+      this.showLoader()
       api.post("scheduleshipment/getShipmentInfo", data).then((res) => {
         if (res.success) {
+          this.state.NewviewAllClear=false;
           console.log("Ansdhu = ", res);
           var datatoaccess = 0 
           if(CommonConfig.getUserAccess("Shipment").AllAccess === 1){
@@ -1616,6 +1618,12 @@ class ShipmentCustom extends React.Component {
           }
 
           if(datatoaccess == 1){
+            console.log("res.data[0] = ",res.data[0])
+            if (res.data[0].AllClear === 1) {
+              this.setState({ viewAllClear: true });
+              this.setState({ NewviewAllClear: true });
+            }
+            console.log("NewviewAllClear = ",this.state.NewviewAllClear)
 
             console.log("Ansdhu = ", res);
             var shipmentType = {
@@ -1627,10 +1635,7 @@ class ShipmentCustom extends React.Component {
               label: res.data[0].ManagedByName,
             };
             this.setState({ previousAllClear: res.data[0].AllClear });
-            if (res.data[0].AllClear === 1) {
-              this.setState({ viewAllClear: true });
-              this.setState({ NewviewAllClear: true });
-            }
+            
             var allclearlist = {
               value:
                 res.data[0].AllClear === 3 // ? "Ready for Yes"
@@ -1731,8 +1736,10 @@ class ShipmentCustom extends React.Component {
 
             this.getServiceByShipmentType(shipmentType.value);
             this.getSubserviceName(serviceName.value, shipmentType.value);
+            this.hideLoader();
 
           }else{
+            this.hideLoader();
             cogoToast.error("You dont have access for this shipment");
             setTimeout(() => {
               this.props.history.push("/admin/Scheduleshipment");
@@ -1753,6 +1760,7 @@ class ShipmentCustom extends React.Component {
         }
       });
     } catch (error) {
+      this.hideLoader();
       console.log("error...", error);
     }
   }
@@ -6976,7 +6984,7 @@ class ShipmentCustom extends React.Component {
                   options={ServiceList}
                   value={ServiceDescription}
                   disabled={
-                    this.state.viewAllClear || this.state.hasInvoiceAccess
+                    this.state.NewviewAllClear || this.state.hasInvoiceAccess
                   }
                   getOptionLabel={(option) => option.label}
                   onChange={(event, value) =>
@@ -7002,7 +7010,7 @@ class ShipmentCustom extends React.Component {
                       ),
                     value: payment.Description,
                     disabled:
-                      this.state.viewAllClear || this.state.hasInvoiceAccess,
+                      this.state.NewviewAllClear || this.state.hasInvoiceAccess,
                   }}
                 />
               </div>
@@ -7021,7 +7029,7 @@ class ShipmentCustom extends React.Component {
                     ),
                   value: payment.Quantity,
                   disabled:
-                    this.state.viewAllClear || this.state.hasInvoiceAccess,
+                    this.state.NewviewAllClear || this.state.hasInvoiceAccess,
                 }}
               />
             </td>
@@ -7045,7 +7053,7 @@ class ShipmentCustom extends React.Component {
                     ),
                   value: payment.Amount,
                   disabled:
-                    this.state.viewAllClear || this.state.hasInvoiceAccess,
+                    this.state.NewviewAllClear || this.state.hasInvoiceAccess,
                 }}
               />
             </td>
@@ -7618,7 +7626,7 @@ class ShipmentCustom extends React.Component {
     const PaymentTypeList = this.state.PaymentTypeList.map((type) => {
       return { value: type.Description, label: type.Description };
     });
-    const { ReadOnly, viewAllClear } = this.state;
+    const { ReadOnly, viewAllClear,NewviewAllClear } = this.state;
     return this.state.paymentReceived
       .filter((x) => x.Status === "Active")
       .map((payment, idx) => {
@@ -7657,7 +7665,7 @@ class ShipmentCustom extends React.Component {
                     <TextField
                       {...params}
                       margin="normal"
-                      disabled={ReadOnly || viewAllClear}
+                      disabled={ReadOnly || NewviewAllClear}
                       fullWidth
                     />
                   )}
@@ -7677,7 +7685,7 @@ class ShipmentCustom extends React.Component {
                   id="package_number"
                   options={PaymentTypeList}
                   value={paymentType}
-                  disabled={ReadOnly || viewAllClear}
+                  disabled={ReadOnly || NewviewAllClear}
                   getOptionLabel={(option) => option.label}
                   onChange={(event, value) =>
                     this.selectChangeTab3(value, "PaymentType", payment.Index)
@@ -7696,7 +7704,7 @@ class ShipmentCustom extends React.Component {
                       payment.Index
                     ),
                   value: CardNumber,
-                  disabled: ReadOnly || viewAllClear,
+                  disabled: ReadOnly || NewviewAllClear,
                 }}
               />
             </td>
@@ -7710,7 +7718,7 @@ class ShipmentCustom extends React.Component {
                       payment.Index
                     ),
                   value: payment.ConfirmationNumber,
-                  disabled: ReadOnly || viewAllClear,
+                  disabled: ReadOnly || NewviewAllClear,
                 }}
               />
             </td>
@@ -7721,7 +7729,7 @@ class ShipmentCustom extends React.Component {
                 type="number"
                 inputProps={{
                   value: payment.Amount,
-                  disabled: ReadOnly || viewAllClear,
+                  disabled: ReadOnly || NewviewAllClear,
                   onChange: (event) =>
                     this.handleChangepaymentReceived(
                       event,
