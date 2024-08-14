@@ -52,6 +52,8 @@ import DialogContent from "@material-ui/core/DialogContent";
 import momentTimezone from "moment-timezone";
 import InfoIcon from "@material-ui/icons/PriorityHigh";
 import { decode as base64_decode, encode as base64_encode } from 'base-64';
+import utf8 from "utf8";
+
 const useStyles = makeStyles(styles);
 
 const classes = () => {
@@ -701,7 +703,7 @@ class Step1 extends React.Component {
             AssignedTo: selectedAssignedTo,
             DateCreated: WorkData.data.DateCreated,
             WorkName: WorkData.data.WorkName,
-            Description: base64_decode(WorkData.data.Description),
+            Description: base64_decode(utf8.decode(WorkData.data.Description)),
             Attachment: WorkData.data.AttachmentPath,
             Priority: selectedPriority,
             ETA: WorkData.data.ETA,
@@ -1859,7 +1861,7 @@ class Step1 extends React.Component {
               .format(CommonConfig.dateFormat.dbDateOnly)
               .toString(),
             WorkName: this.state.WorkName,
-            Description: base64_encode(this.state.Description),
+            Description: base64_encode(utf8.encode(this.state.Description)),
             Priority: this.state.Priority.value,
             ETA:
               this.state.ETA == null || this.state.ETA == ""
@@ -1883,7 +1885,7 @@ class Step1 extends React.Component {
               .format(CommonConfig.dateFormat.dbDateOnly)
               .toString(),
             WorkName: this.state.WorkName,
-            Description: base64_encode(this.state.Description),
+            Description: base64_encode(utf8.encode(this.state.Description)),
             Priority: this.state.Priority.value,
             ETA:
               this.state.ETA == null || this.state.ETA == ""
