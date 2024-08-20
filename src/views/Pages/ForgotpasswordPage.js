@@ -96,7 +96,7 @@ class ForgotpasswordPage extends Component {
             }
           } else {
             debugger;
-            cogoToast.error("Something Went Wrong");
+            cogoToast.error("User Not found with this email. Please create account");
             this.hideLoader();
           }
         })

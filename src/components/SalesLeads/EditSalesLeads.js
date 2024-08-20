@@ -1848,6 +1848,64 @@ if (res.success) {
             label: managedBY.Name,
           };
         }
+
+        debugger
+        if(CommonConfig.getUserAccess("Sales Lead").AllAccess == 0){
+
+          if(result.data.data.ManagedBy == 0){
+            this.state.managedbyDisabled = false
+          }else{
+            this.state.managedbyDisabled = true
+            if(result.data.data.ManagedBy == CommonConfig.loggedInUserData().PersonID){
+
+            }else{
+              cogoToast.error("You don't have access for this lead")
+              // if (redirect) {
+                localStorage.removeItem("SearchCount");
+
+                this.props.history.push({
+                  pathname: "/admin/SalesLeads",
+                  state: {
+                    filterlist:
+                      this.props.history.location.state &&
+                      this.props.history.location.state
+                        .filterlist
+                        ? this.props.history.location.state
+                            .filterlist
+                        : null,
+                    sortlist:
+                      this.props.history.location.state &&
+                      this.props.history.location.state
+                        .sortlist
+                        ? this.props.history.location.state
+                            .sortlist
+                        : null,
+                    packageValue:
+                      this.props.history.location.state &&
+                      this.props.history.location.state
+                        .packageValue
+                        ? this.props.history.location.state
+                            .packageValue
+                        : null,
+                    statusfilter:
+                      this.props.history.location.state &&
+                      this.props.history.location.state
+                        .statusfilter
+                        ? this.props.history.location.state
+                            .statusfilter
+                        : null,
+                  },
+                });
+              // }
+            }
+          }
+
+          
+
+        }else{
+            this.state.managedbyDisabled = false
+        }
+
         debugger;
         //jk
         if (
@@ -1885,6 +1943,13 @@ if (res.success) {
           };
           this.setState({ CancelationReason: sortedReason });
         }
+        // if(CommonConfig.getUserAccess("Sales Lead").AllAccess == 0){
+          
+        //   if((selectedManagedby.value == CommonConfig.loggedInUserData().PersonID)){
+            
+        //   }
+        // }
+        
         this.setState({
           newurl: result.data.data.newurl,
           ProposalType: result.data.data.SalesLeadsType,
