@@ -25,7 +25,7 @@ import Checkbox from "@material-ui/core/Checkbox";
 import InfoIcon from "@material-ui/icons/PriorityHigh";
 import Tooltip from "@material-ui/core/Tooltip";
 import { decode as base64_decode, encode as base64_encode } from 'base-64';
-import utf8 from "utf8";
+// import utf8 from "utf8";
 import AttachFileIcon from '@material-ui/icons/AttachFile';
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -467,7 +467,7 @@ class BookofWorkList extends Component {
               >
                 <i className="fas fa-edit"></i>
               </Button>
-              <Tooltip title={(record.original.bwDescription==null ||record.original.bwDescription=="") ?"":base64_decode(utf8.decode(record.original.bwDescription))} arrow>
+              <Tooltip title={(record.original.bwDescription==null ||record.original.bwDescription=="") ?"":base64_decode(record.original.bwDescription)} arrow>
                 <Button
                   className="Plus-btn info-icon"
                   justIcon

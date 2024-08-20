@@ -170,6 +170,7 @@ class EditSalesLeads extends Component {
       newurl: "",
       Managedby: "",
       managedbyErr: false,
+      managedbyDisabled: false,
       managedbyHelperText: "",
 
       ProposalType: 0,
@@ -1688,6 +1689,16 @@ if (res.success) {
     await this.managedBy();
     await this.GetCountryCode();
     if (this.props.history.location.state.id !== "") {
+      console.log("Welcome data = ",CommonConfig.getUserAccess("Sales Lead").AllAccess)
+      if(CommonConfig.getUserAccess("Sales Lead").AllAccess == 1){
+
+        console.log("Welcome data = ")
+
+        this.state.managedbyDisabled = false
+
+      }else{
+        this.state.managedbyDisabled = true
+      }
       await this.getCommunicationList();
     }
     this.getReferredSite();
@@ -5035,7 +5046,7 @@ if (res.success) {
           };
 
           if(this.state.ProposalStatus === "Cancelled"){
-            data.ManagedBy = 0;
+            data.ManagedBy = 18;
             data.SalesLeadFollowupDate = null;
           }
           if(this.state.ProposalStatus === "Closed"){
@@ -5087,7 +5098,7 @@ if (res.success) {
                           if (result.data.length > 0) {
                             data.ManagedBy = result.data[0].ManagedBy;
                             if(this.state.ProposalStatus === "Cancelled"){
-                              data.ManagedBy = 0;
+                              data.ManagedBy = 18;
                             }
                           }
                           var formData = new FormData();
@@ -5635,6 +5646,7 @@ if (res.success) {
       PhoneCount,
       CommuncationList,
       finalGetResults,
+      managedbyDisabled,
     } = this.state;
     const cancelationReasonList = this.state.cancelationReasonList.map(
       (type) => {
@@ -5981,11 +5993,13 @@ if (res.success) {
                     onChange={(event, value) =>
                       this.requestChange(event, value, "managedby")
                     }
+                    disabled={this.state.managedbyDisabled}
                     autoComplete= "off" 
                     inputProps={{ autoComplete: "none" }}
                     renderInput={(params) => (
                       <TextField
                         {...params}
+                        disabled={this.state.managedbyDisabled}
                         error={this.state.managedbyErr}
                         helperText={this.state.managedbyHelperText}
                         label="Managed By"
