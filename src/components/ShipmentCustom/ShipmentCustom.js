@@ -10246,8 +10246,10 @@ class ShipmentCustom extends React.Component {
                     AbleToProvidePassport: "",
                     VisaValidDate: null,
                     VisaCategory: "",
-                    CustomClearanceDate:
-                       null,
+                    CustomClearanceDate:null,
+                    isBackIndia:"No",
+                    movingBackIndia:"No",
+                    AbleToProvidePassport:"No"
                   };
               }
               var todayDate = new Date();
