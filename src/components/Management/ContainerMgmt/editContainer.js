@@ -1051,6 +1051,7 @@ class editContainer extends Component {
               },
             });
           } else {
+            this.state.AttachmentList = []
             this.reCallApi();
           }
         } else {
