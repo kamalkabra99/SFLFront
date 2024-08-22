@@ -240,7 +240,7 @@ class BookofWorkList extends Component {
         id: BookofWorkID,
         filterlist: this.state.filterProps,
         sortlist: this.state.sortProps,
-        statusList: this.state.statusList,
+        WorkStatus: this.state.WorkStatus,
       },
     });
   }

@@ -1749,6 +1749,7 @@ class Step1 extends React.Component {
     this.setState({ deleteopen: true });
   };
   closeDeletework = () => {
+    
     this.setState({ deleteopen: false });
   };
 
@@ -1780,16 +1781,12 @@ class Step1 extends React.Component {
                   this.props.history.location.state.sortlist
                   ? this.props.history.location.state.sortlist
                   : null,
-              packageValue:
+              WorkStatus:
                 this.props.history.location.state &&
-                  this.props.history.location.state.packageValue
-                  ? this.props.history.location.state.packageValue
+                  this.props.history.location.state.WorkStatus
+                  ? this.props.history.location.state.WorkStatus
                   : null,
-              statusfilter:
-                this.props.history.location.state &&
-                  this.props.history.location.state.statusfilter
-                  ? this.props.history.location.state.statusfilter
-                  : null,
+             
             },
           });
         } else {
@@ -1923,8 +1920,22 @@ class Step1 extends React.Component {
                   this.props.history.push({
                     pathname: "/admin/BookofWorkList",
                     state: {
-                      filterlist: this.props.history.location.filterlist,
-                      sortlist: this.props.history.location.sortlist,
+                      filterlist:
+                        this.props.history.location.state &&
+                          this.props.history.location.state.filterlist
+                          ? this.props.history.location.state.filterlist
+                          : null,
+                      sortlist:
+                        this.props.history.location.state &&
+                          this.props.history.location.state.sortlist
+                          ? this.props.history.location.state.sortlist
+                          : null,
+                      WorkStatus:
+                        this.props.history.location.state &&
+                          this.props.history.location.state.WorkStatus
+                          ? this.props.history.location.state.WorkStatus
+                          : null,
+                     
                     },
                   });
                 } else {
@@ -1962,8 +1973,21 @@ class Step1 extends React.Component {
     this.props.history.push({
       pathname: "/admin/BookofWorkList",
       state: {
-        filterlist: this.props.history.location.filterlist,
-        sortlist: this.props.history.location.sortlist,
+        filterlist:
+          this.props.history.location.state &&
+            this.props.history.location.state.filterlist
+            ? this.props.history.location.state.filterlist
+            : null,
+        sortlist:
+          this.props.history.location.state &&
+            this.props.history.location.state.sortlist
+            ? this.props.history.location.state.sortlist
+            : null,
+        WorkStatus:
+          this.props.history.location.state &&
+            this.props.history.location.state.WorkStatus
+            ? this.props.history.location.state.WorkStatus
+            : null
       },
     });
   };
