@@ -52,6 +52,7 @@ class BookofWorkList extends Component {
     };
   }
   componentDidMount() {
+
     this.setState({
       AllAccess: CommonConfig.getUserAccess("Call Back").AllAccess,
     });
@@ -64,21 +65,28 @@ class BookofWorkList extends Component {
       this.setState({
         previousFilterList: this.props.history.location.state.filterlist,
         previousSortList: this.props.history.location.state.sortlist,
-        statusList:
-          this.props.history.location.state.statusList !== undefined
-            ? this.props.history.location.state.statusList
-            : this.state.statusList,
+        WorkStatus:
+          this.props.history.location.state.WorkStatus !== undefined
+            ? this.props.history.location.state.WorkStatus
+            : this.state.WorkStatus,
       });
-      debugger;
-      if (this.props.history.location.state.statusList !== undefined) {
+    
+     
+      if (this.props.history.location.state.WorkStatus !== undefined) {
         APIcheck = false;
-        //  this.filterMethod("", this.props.history.location.state.statusList);
-        if (this.props.history.location.state.statusList[0].label === "All") {
-          let newfilter = [{ label: "New", value: "New" }, { label: "Open", value: "Open" }];
-          this.filterMethod("", newfilter);
-        } else {
-          this.filterMethod("", this.props.history.location.state.statusList);
-        }
+       
+          this.filterMethod("", this.props.history.location.state.WorkStatus);
+         
+          
+          
+          this.state.WorkStatus =this.props.history.location.state.WorkStatus;
+  
+
+          this.setState({WorkStatus:this.props.history.location.state.WorkStatus});
+       
+        // this.props.history.location.state.WorkStatus.map((step, key) => { console.log("Status+Key","Status"+key);
+        //   console.log("document.getElementById(Status+key):-",document.getElementById("Status"+key));//.checked=step.IsSelected;
+        // });
       }
     } else {
       var finalStatus = {
@@ -94,12 +102,14 @@ class BookofWorkList extends Component {
         previousSortList: [finalSort],
       });
     }
-    debugger;
+
     if (APIcheck) {
       let newFilter = [{ label: "New", value: "New" }, { label: "Open", value: "Open" }];
       this.filterMethod("", newFilter);
+      this.getStatus();
     }
-    this.getStatus();
+    
+  
   }
 
   showLoador = () => {
@@ -292,7 +302,7 @@ class BookofWorkList extends Component {
       } else {
         this.setState({ BookofWorkData: [] });
       }
-      this.setState({ statusList: value });
+   //   this.setState({ statusList: value });
     }
   };
 
@@ -347,7 +357,14 @@ class BookofWorkList extends Component {
   };
 
   BookofWork = () => {
-    this.props.history.push("BookofWork/");
+    this.props.history.push({
+      pathname: "BookofWork/",
+      state: {
+        filterlist: this.state.filterProps,
+        sortlist: this.state.sortProps,
+        WorkStatus: this.state.WorkStatus,
+      },
+    });
   };
   setLength = (len) => {
     this.setState({ finalLength: len });
@@ -546,11 +563,15 @@ class BookofWorkList extends Component {
                     {this.state.IsDropDownShow === true ? (
                       <div className="cm-dropdown">
                         <div className="overflow-handle">
+                     
                           {this.state.WorkStatus.map((step, key) => {
+                         
+
                             return (
                               <li>
                                 <label>
                                   <input
+                                  id={"Status"+key}
                                     type="checkbox"
                                     checked={step.IsSelected}
                                     onChange={(e) =>

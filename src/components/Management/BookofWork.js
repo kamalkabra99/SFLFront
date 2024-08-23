@@ -389,7 +389,7 @@ class Step1 extends React.Component {
     }
 
     if (
-      this.props.history.location.state != undefined &&
+      this.props.history.location.state != undefined && this.props.history.location.state.id != undefined &&
       this.props.history.location.state.id != ""
     ) {
       this.state.DefectId = this.props.history.location.state.id;
@@ -1934,8 +1934,7 @@ class Step1 extends React.Component {
                         this.props.history.location.state &&
                           this.props.history.location.state.WorkStatus
                           ? this.props.history.location.state.WorkStatus
-                          : null,
-                     
+                          : null
                     },
                   });
                 } else {
