@@ -70,7 +70,7 @@ class BookofWorkList extends Component {
             ? this.props.history.location.state.WorkStatus
             : this.state.WorkStatus,
       });
-    
+    debugger
      
       if (this.props.history.location.state.WorkStatus !== undefined) {
         APIcheck = false;
@@ -104,7 +104,8 @@ class BookofWorkList extends Component {
     }
 
     if (APIcheck) {
-      let newFilter = [{ label: "New", value: "New" }, { label: "Open", value: "Open" }];
+      let newFilter = [{ label: "New", value: "New" , IsSelected: true}, { label: "Open", value: "Open" , IsSelected: true }];
+      this.state.checkdata = newFilter;
       this.filterMethod("", newFilter);
       this.getStatus();
     }
@@ -267,6 +268,7 @@ class BookofWorkList extends Component {
         );
         let query = "";
         let StatusQuery = "";
+        let q=0;
         let allFilter = value.findIndex((x) => x.value === "All");
         if (allFilter === 0) {
           value.splice(allFilter, 1);
@@ -274,30 +276,42 @@ class BookofWorkList extends Component {
         }
         if (allFilter === -1) {
           for (var j = 0; j < value.length; j++) {
-            if (j === 0) {
+            if(value[j].IsSelected === true){
+            if (q === 0) {
               if (value.length === 1) {
+               
                 StatusQuery =
                   ` AND ( bw.WorkStatus = "` + value[j].value + `")`;
               } else {
+                q++;
                 StatusQuery =
                   ` AND ( bw.WorkStatus = "` + value[j].value + `"`;
               }
-            } else if (j + 1 === value.length) {
+            } else if (j + 1 === value.length) 
+              {q--;
               StatusQuery = ` OR bw.WorkStatus = "` + value[j].value + `")`;
             } else {
+              
               StatusQuery = ` OR bw.WorkStatus = "` + value[j].value + `"`;
             }
+          }
+           
+
             query = query + StatusQuery;
+            StatusQuery = "";
           }
         } else {
           value = [{ label: "All", value: "All" }];
         }
         debugger
+        if(q != 0)
+          query = query+")";
         if (CommonConfig.getUserAccess("Book of Work").AllAccess != 1) {
 
           query = query + ` AND (bw.AssignedBy = "` + CommonConfig.loggedInUserData().PersonID + `" OR bw.AssignedTo = "` + CommonConfig.loggedInUserData().PersonID + `")`
 
         }
+        console.log("query",query);
         this.getBookofWorkData(query);
       } else {
         this.setState({ BookofWorkData: [] });
