@@ -1217,7 +1217,9 @@ class Step1 extends React.Component {
 
   handleChangeDes = (event) => {
     const { value } = event.target;
-
+    const  value1  = event.target.value;
+    console.log("value1",CommonConfig.RegExp.exceptCirilic.test(value1));
+    if(CommonConfig.RegExp.exceptCirilic.test(value1))
     this.setState({ Description: value });
   };
   handledInput = (e, id, MarkupType, Type) => {
