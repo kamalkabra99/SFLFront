@@ -564,20 +564,24 @@ class ViewFileAClaim extends Component {
 
   handleChangeNotes = (event, idx) => {
     const { value } = event.target;
+    const value1 = event.target.value;
     const notes = this.state.notes;
     var noteIndex = notes.findIndex((x) => x.Index === idx);
     if (noteIndex !== -1) {
-      notes[noteIndex]["NoteText"] = value;
-      if (
-        notes[noteIndex]["NoteText"] === null ||
-        notes[noteIndex]["NoteText"] === ""
-      ) {
-        this.setState({ noteErr: true });
-      } else {
-        this.setState({ noteErr: false });
-      }
-    }
-    this.setState({ notes: notes });
+      if(CommonConfig.RegExp.exceptCirilic.test(value1))
+        {
+            notes[noteIndex]["NoteText"] = value;
+            if (
+              notes[noteIndex]["NoteText"] === null ||
+              notes[noteIndex]["NoteText"] === ""
+            ) {
+              this.setState({ noteErr: true });
+            } else {
+              this.setState({ noteErr: false });
+            }
+          }
+        }
+        this.setState({ notes: notes });
   };
 
   handleNotesRemoveRow = (idx) => {

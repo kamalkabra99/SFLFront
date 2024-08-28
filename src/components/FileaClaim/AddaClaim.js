@@ -282,38 +282,45 @@ class AddaClaim extends Component {
         });
       }
     } else if (type === "comments") {
-      this.setState({ commentsCheck: true });
-      let commentsVal = event.target.value;
-      if (CommonConfig.isEmpty(commentsVal)) {
-        this.setState({
-          Comments: commentsVal,
-          commentsErr: true,
-          commentsHelperText: "Please e Commnets",
-        });
-      } else {
-        this.setState({
-          Comments: commentsVal,
-          commentsErr: false,
-          commentsHelperText: "",
-        });
-      }
+        if(CommonConfig.RegExp.exceptCirilic.test(event.target.value)){
+          this.setState({ commentsCheck: true });
+
+          let commentsVal = event.target.value;
+
+          if (CommonConfig.isEmpty(commentsVal)) {
+            this.setState({
+              Comments: commentsVal,
+              commentsErr: true,
+              commentsHelperText: "Please e Commnets",
+            });
+          } else {
+            this.setState({
+              Comments: commentsVal,
+              commentsErr: false,
+              commentsHelperText: "",
+            });
+
+          }
+        }
     } else if (type === "desiredresolution") {
-      this.setState({ desiredresolutionCheck: true });
-      let desiredresolutionVal = event.target.value;
-      if (CommonConfig.isEmpty(desiredresolutionVal)) {
-        this.setState({
-          Desiredresolution: desiredresolutionVal,
-          desiredresolutionErr: true,
-          desiredresolutionHelperText: "Please enter your Desired Resolution",
-        });
-      } else {
-        this.setState({
-          Desiredresolution: desiredresolutionVal,
-          desiredresolutionErr: false,
-          desiredresolutionHelperText: "",
-        });
+      if(CommonConfig.RegExp.exceptCirilic.test(event.target.value)){
+          this.setState({ desiredresolutionCheck: true });
+          let desiredresolutionVal = event.target.value;
+          if (CommonConfig.isEmpty(desiredresolutionVal)) {
+            this.setState({
+              Desiredresolution: desiredresolutionVal,
+              desiredresolutionErr: true,
+              desiredresolutionHelperText: "Please enter your Desired Resolution",
+            });
+          } else {
+            this.setState({
+              Desiredresolution: desiredresolutionVal,
+              desiredresolutionErr: false,
+              desiredresolutionHelperText: "",
+            });
+          }
+        }
       }
-    }
   };
 
   requestChange = (event) => {

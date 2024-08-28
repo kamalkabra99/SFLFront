@@ -293,9 +293,9 @@ export class CommonConfig {
     userNameSpecialCharacter: /[@._-]/g,
     NofirstInputSpecialCharacter: /[a-zA-Z0-9][@._-]/g,
     userErrorSpecial: /[!~`#$%^&*()+<>/:;"',|]/g,
-    exceptCirilic:/^[ A-Za-z0-9_@./#*&+-]*$/,
+    exceptCirilic:/^[ A-Za-z0-9_@.,/!$%^(){}|:;<>?#*&+-]*$/,
   };
-
+//~`@#$%^&*()_+=-{}|:"<>?,;'
   static zipCodeAPIKey = function(zipCode, countryName) {
     // return `https://maps.googleapis.com/maps/api/geocode/json?address="` + zipCode + `"&key=AIzaSyDIU6hx3WQi16Xd-5HlRgT6_QtLgpv1KKQ`
 
