@@ -2274,7 +2274,7 @@ class ShipmentCustom extends React.Component {
     const notes = [...this.state.notes];
     var noteIndex = notes.findIndex((x) => x.Index === idx);
     if (noteIndex !== -1) {
-      if(CommonConfig.regexp.exceptCirilic.test(value1)){
+      if(CommonConfig.RegExp.exceptCirilic.test(value1)){
       notes[noteIndex]["NoteText"] = value;
       if (
         notes[noteIndex]["NoteText"] === null ||
