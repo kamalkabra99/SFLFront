@@ -2270,9 +2270,11 @@ class ShipmentCustom extends React.Component {
 
   handleChangeNotes = (event, idx) => {
     const { value } = event.target;
+    const  value1 = event.target.value;
     const notes = [...this.state.notes];
     var noteIndex = notes.findIndex((x) => x.Index === idx);
     if (noteIndex !== -1) {
+      if(CommonConfig.regexp.exceptCirilic.test(value1)){
       notes[noteIndex]["NoteText"] = value;
       if (
         notes[noteIndex]["NoteText"] === null ||
@@ -2282,6 +2284,7 @@ class ShipmentCustom extends React.Component {
       } else {
         this.setState({ noteErr: false });
       }
+    }
     }
     this.setState({ notes: notes });
   };
@@ -11624,6 +11627,7 @@ class ShipmentCustom extends React.Component {
     } else if (value === "company") {
       this.setState({ company: event.target.value });
     } else if (value === "description") {
+      if(CommonConfig.regexp.exceptCirilic.test(event.target.value))
       this.setState({ description: event.target.value });
     } else if (value === "PackageNumber") {
       this.setState({ PackageNumber: event.target.value });
