@@ -133,6 +133,7 @@ class Step1 extends React.Component {
       userType: "",
       userTypeHelperText: "",
       userTypeErr: "",
+      IsSendEmail:"checked",
       UserTypeList: [
         {
           label: "Customer",
@@ -1879,7 +1880,7 @@ class Step1 extends React.Component {
             notes: FinalNotes,
             UserId: CommonConfig.loggedInUserData().PersonID,
             OriginalDescription: this.state.Description,
-
+            IsSendEmail:this.state.IsSendEmail,
           };
         } else
           data = {
@@ -1903,6 +1904,7 @@ class Step1 extends React.Component {
             notes: FinalNotes,
             UserId: CommonConfig.loggedInUserData().PersonID,
             OriginalDescription: this.state.Description,
+            IsSendEmail:this.state.IsSendEmail,
           };
         console.log("Book Of Work Data", data);
         var formData = new FormData();
@@ -3487,7 +3489,11 @@ class Step1 extends React.Component {
         );
       });
   };
-
+  changeSendMail = (e) => {
+    this.setState({
+      IsSendEmail: e.target.checked,
+    });
+  };
   render() {
     const {
       isNotesVisible,
@@ -3499,6 +3505,7 @@ class Step1 extends React.Component {
       Status,
       ETA,
       viewAllClear,
+      IsSendEmail,
       DefectId,
       AssignedBySelected,
     } = this.state;
@@ -3804,7 +3811,7 @@ class Step1 extends React.Component {
                     </GridItem>
                   </GridContainer>
                   <GridContainer>
-                    <GridItem xs={12} sm={12} md={12}>
+                    <GridItem xs={12} sm={12} md={9}>
                       <div className="material-textarea">
                         <label className="mui-custom-label">Description</label>
                         <textarea
@@ -3816,7 +3823,30 @@ class Step1 extends React.Component {
                           }
                         ></textarea>
                       </div>
+                      
                     </GridItem>
+                    <GridItem xs={12} sm={12} md={3}>
+                    <div className="file-upload-input">
+                    <Checkbox
+                                        disabled={false}
+                                        onChange={(e) =>
+                                          this.changeSendMail(e)
+                                        }
+                                        checked={IsSendEmail}
+                                      />
+                                      <label
+                                        style={{
+                                          "margin-top": "5px",
+                                          display: "inline-block",
+                                        }}
+                                        className="margin-right-auto text-color-black do-not-show-MyShipment"
+                                      >
+                                        <span className="spanShipment">
+                                          Send Email
+                                        </span>
+                                      </label>
+                                      </div>
+                                      </GridItem>
                   </GridContainer>
                 </Cardbody>
               </Card>
