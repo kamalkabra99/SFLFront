@@ -3540,19 +3540,29 @@ class Step1 extends React.Component {
                     <Adduser />
                   </CardIcon>
                   <h4 className="margin-right-auto text-color-black header-width">
-                    Book of Work
+                    Book of Work - {this.state.BookofWorkID}
                   </h4>
 
                   {this.state.DefectId != "" ? (
-                    <div className="mg-info">
-                      <br />
-                      <p className="text-color-black">
-                        BOW ID:
-                        <TextField
-                          disabled={true}
-                          value={this.state.BookofWorkID}
-                        />
-                      </p>
+                    <div className="send-email-info">
+                    <Checkbox
+                                        disabled={false}
+                                        onChange={(e) =>
+                                          this.changeSendMail(e)
+                                        }
+                                        checked={IsSendEmail}
+                                      />
+                                      <label
+                                        style={{
+                                          "margin-top": "5px",
+                                          display: "inline-block",
+                                        }}
+                                        className="margin-right-auto text-color-black send-email"
+                                      >
+                                        <span className="spanShipment">
+                                          Send Email
+                                        </span>
+                                      </label>
                     </div>
                   ) : null}
                 </CardHeader>
@@ -3811,7 +3821,7 @@ class Step1 extends React.Component {
                     </GridItem>
                   </GridContainer>
                   <GridContainer>
-                    <GridItem xs={12} sm={12} md={9}>
+                    <GridItem xs={12} sm={12} md={12}>
                       <div className="material-textarea">
                         <label className="mui-custom-label">Description</label>
                         <textarea
@@ -3827,24 +3837,7 @@ class Step1 extends React.Component {
                     </GridItem>
                     <GridItem xs={12} sm={12} md={3}>
                     <div className="file-upload-input">
-                    <Checkbox
-                                        disabled={false}
-                                        onChange={(e) =>
-                                          this.changeSendMail(e)
-                                        }
-                                        checked={IsSendEmail}
-                                      />
-                                      <label
-                                        style={{
-                                          "margin-top": "5px",
-                                          display: "inline-block",
-                                        }}
-                                        className="margin-right-auto text-color-black do-not-show-MyShipment"
-                                      >
-                                        <span className="spanShipment">
-                                          Send Email
-                                        </span>
-                                      </label>
+                    
                                       </div>
                                       </GridItem>
                   </GridContainer>

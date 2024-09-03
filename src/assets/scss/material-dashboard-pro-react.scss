@@ -6767,3 +6767,33 @@ button.file-doc {
   width: 100%;
   padding-top: 28px;
 }
+.send-email {
+  margin-top: 18px;
+  min-width: 50px;
+}
+.send-email spanShipment {
+  margin-left: 4px;
+  position: relative;
+  bottom: -1px;
+  font-weight: 500;
+  font-size: 12px;
+}
+.send-email-info {
+  display: flex;
+  align-items: center;
+  text-align: right;
+}
+
+.send-email-info p {
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+
+.send-email-info p input.MuiInputBase-input {
+  width: 45px;
+}
+
+.send-email-info p .MuiFormControl-root {
+  margin-left: 10px;
+}
