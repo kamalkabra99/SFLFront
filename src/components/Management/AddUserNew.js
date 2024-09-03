@@ -1883,15 +1883,19 @@ class Step1 extends React.Component {
     ) {
       IsFormValid = false;
     }
-    if (this.state.StartTime === "" || this.state.StartTime === null || this.state.starttimeErr === true) {
-      IsFormValid = false;
-      this.setState({ starttimeErr: true, starttimeHelperText: "Start Time is Mandatory" });
+    if(this.state.userType.value === "Employee"){
+      if (this.state.StartTime === "" || this.state.StartTime === null || this.state.starttimeErr === true) {
+        IsFormValid = false;
+        this.setState({ starttimeErr: true, starttimeHelperText: "Start Time is Mandatory" });
+      }
+      else
+      if (this.state.EndTime === "" ||this.state.EndTime === null || this.state.endtimeErr === true) {
+        IsFormValid = false;
+        this.setState({ endtimeErr: true, endtimeHelperText: "End Time is Mandatory" });
+      }
+
     }
-    else
-    if (this.state.EndTime === "" ||this.state.EndTime === null || this.state.endtimeErr === true) {
-      IsFormValid = false;
-      this.setState({ endtimeErr: true, endtimeHelperText: "End Time is Mandatory" });
-    }
+    
 
     if (this.state.userType === null || this.state.userType === "") {
       IsFormValid = false;

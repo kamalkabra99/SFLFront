@@ -161,6 +161,7 @@ class Sidebar extends React.Component {
     this.state.id = window.setInterval(() => {
       this.setState({ digit: this.state.digit + 1 });
       this.keepAlive();
+      this.traceBreak();
     }, 5000);
 
     await this.checkLoginStatus();
@@ -208,6 +209,31 @@ class Sidebar extends React.Component {
       });
     }
   };
+
+  traceBreak = () =>{
+
+    var pData = {
+      UserID: CommonConfig.loggedInUserData().PersonID,
+      userTimeZonedata: CommonConfig.loggedInUserData().userTimeZone,
+    };
+    api.post("contactus/CheckUserLoginBreak", pData).then((res) => {
+      console.log("Res = ",res)
+      console.log("Res = ", localStorage.getItem("UserBreakData"));
+
+      if(localStorage.getItem("UserBreakData") == 1 && res.Data[0][0].BreakCount == 0){
+        localStorage.setItem("UserBreakData", 0);
+      }
+      if(localStorage.getItem("UserBreakData") == 0){
+        if(res.Data[0][0].BreakCount > 0){
+          localStorage.clear();
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
+        }
+      }
+    });
+
+  }
 
   keepAlive = () => {
     var data = {
