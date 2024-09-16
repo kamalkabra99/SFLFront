@@ -121,6 +121,7 @@ import TodayIcon from "@material-ui/icons/Today";
 import MapVendor from "components/Management/Vendor/MapVendor";
 import OceanAutoTracking from "components/Management/OceanAutoTrackingList";
 import AddUpdateBombinoRates from "components/Management/AddUpdateBombinoRates";
+import AddUpdateBombino from "components/Management/AddUpdateBombino";
 import AddUpdateSFLfetcherRates from "components/Management/AddUpdateSFLfetcherRates";
 import VendorListIcon from "@material-ui/icons/FormatListBulleted";
 import ReferredBy from "components/Management/ReferredBy";
@@ -790,6 +791,14 @@ var dashRoutes = [
         name: "Bombino Rates Management",
         icon: EditSalesLeadIcon,
         component: AddUpdateBombinoRates,
+        layout: "/admin",
+        invisible: false,
+      },
+      {
+        path: "/AddUpdateBombino",
+        name: "Bombino Rates Management UStoIN",
+        icon: EditSalesLeadIcon,
+        component: AddUpdateBombino,
         layout: "/admin",
         invisible: false,
       },

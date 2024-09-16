@@ -121,6 +121,14 @@ export class ManagementNavigation extends Component {
           classname: "inactive",
         },
         {
+          stepName: "Bombino Rates(US to IN)",
+          stepId: "Bombino Rates Management UStoIN",
+          IsAccess: 0,
+          path: "AddUpdateBombino",
+          Icon: AttachMoney,
+          classname: "inactive",
+        },
+        {
           stepName: "Fetcher Rates",
           stepId: "Fetcher Management",
           IsAccess: 0,
@@ -176,7 +184,7 @@ export class ManagementNavigation extends Component {
     });
   }
 
-  accountReportList = () => {
+  accountReportList = () => {debugger
     console.log("ACCOUNTTTT", this.state.AccountSteps);
     return this.state.AccountSteps.map((step) => {
       return step.IsAccess === 1 ? (
