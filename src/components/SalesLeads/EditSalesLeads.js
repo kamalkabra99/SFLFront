@@ -57,6 +57,10 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import { getOriginalNode } from "typescript";
 const axios = require("axios").default;
+const formatter = new Intl.NumberFormat('en-IN', {
+  style: 'currency',
+  currency: 'INR',
+});
 
 const styles = {
   cardIconTitle: {
@@ -121,6 +125,8 @@ class EditSalesLeads extends Component {
       errorMessage1: "",
       PickupOpenPopup: false,
       pickUpValue: "",
+      setCurrencyIcon:"",
+      setCurrencyIconLabel:"",
       PickUpType: [
         { value: "FEDEX", label: "FedEx" },
         { value: "Non FEDEX", label: "Non FedEx" },
@@ -690,6 +696,19 @@ class EditSalesLeads extends Component {
 
     FinalGetRate.UpsData = UpsData;
 
+    console.log("FinalGetRate.UpsData = ",fromCountryObj[0].CountryID)
+
+    if(fromCountryObj[0].CountryID == "89"){
+      this.state.setCurrencyIcon = "₹ "
+      this.state.setCurrencyIconLabel = "INR "
+    }else if(fromCountryObj[0].CountryID == "37"){
+      this.state.setCurrencyIcon = "$c "
+      this.state.setCurrencyIconLabel = "CAD "
+    }else{
+      this.state.setCurrencyIcon = "$ "
+      this.state.setCurrencyIconLabel = "USD "
+    }
+
     var PackageNumber = [];
     var Weight = [];
     var DimeL = [];
@@ -987,7 +1006,7 @@ class EditSalesLeads extends Component {
         this.state.finalGetResults.map((OBJ) => {
           var totalValue = ((OBJ.BaseP - OBJ.Rates) / OBJ.BaseP) * 100;
           totalValue = totalValue.toFixed(2);
-          totalValue = Math.round(totalValue);
+          totalValue = Math.ceil(totalValue);
 
           OBJ.discountPercentage = totalValue;
           OBJ.IsSelected = false;
@@ -5618,6 +5637,7 @@ if (res.success) {
                 this.state.DeliveryType === "Commercial" ? false : true,
               RateType: "Hub",
               ToEmail: this.state.NewEmailAddress,
+              currencyType:this.state.setCurrencyIcon
             };
 
             api
@@ -7172,7 +7192,7 @@ if (res.success) {
                                 <td>{data.Delivery_Date}</td>
                                 <td className="tbl-align-right">
                                   {data.Rates != 0
-                                    ? "$ " + data.Rates.toFixed(2)
+                                    ? this.state.setCurrencyIconLabel + new Intl.NumberFormat().format(Math.ceil(data.Rates))
                                     : "Call for Rates"}
                                 </td>
                               </tr>

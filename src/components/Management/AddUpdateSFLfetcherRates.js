@@ -382,8 +382,8 @@ class AddUpdateSFLfetcherRates extends React.Component {
                   <tr>
                     <th>KG Start</th>
                     <th>KG End</th>
-                    <th>Purchase USD</th>
-                    <th>Sell USD</th>
+                    <th>Purchase INR</th>
+                    <th>Sell INR</th>
                     <th>Action</th>
                   </tr>
                 </thead>

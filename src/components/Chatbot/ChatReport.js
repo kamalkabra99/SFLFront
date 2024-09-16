@@ -1535,6 +1535,7 @@ class ChatReport extends React.Component {
       if (res.success) {
         if (res.Data[0].length > 0) {
           if (pData.cusid == 0) {
+
             if (CommonConfig.loggedInUserData().IsAllChatAccess == 1) {
               if (this.state.statusList.length == 0) {
                 this.state.statusList.push(this.state.requestStatus[0]);
@@ -1542,6 +1543,7 @@ class ChatReport extends React.Component {
               } else {
                 this.filterMethod("", this.state.statusList);
               }
+              // console.log()
             } else {
               res.Data[0].map((value) => {
                 if (value.AgentId == CommonConfig.loggedInUserData().PersonID) {

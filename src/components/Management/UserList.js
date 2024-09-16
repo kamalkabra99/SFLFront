@@ -13,6 +13,22 @@ import Card from "components/Card/Card.js";
 import CardBody from "components/Card/CardBody.js";
 import CardIcon from "components/Card/CardIcon.js";
 import CardHeader from "components/Card/CardHeader.js";
+import zipcelx from "zipcelx";
+var fileNameSet = "";
+
+setInterval(() => {
+  var currdate = new Date();
+  fileNameSet =
+    "User-" +
+    currdate.getFullYear() +
+    (currdate.getMonth() + 1) +
+    currdate.getDate() +
+    "-" +
+    currdate.getHours() +
+    currdate.getMinutes() +
+    currdate.getSeconds();
+  // console.log("FileName = ",fileNameSet)
+}, 1000);
 
 class UserLists extends Component {
   constructor(props) {
@@ -20,6 +36,7 @@ class UserLists extends Component {
 
     this.state = {
       Loading: false,
+      fileSetName: "",
       userList: [],
       filterProps: [],
       sortProps: [],
@@ -56,11 +73,13 @@ class UserLists extends Component {
           if (res.success) {
 
             if(CommonConfig.getUserAccess("User Management").AllAccess === 1){
+              this.setState({ fileSetName: fileNameSet });
               this.setState({ userList: res.data, Loading: false });
             }else{
               let proposalData = res.data.filter(
                 (x) => x.PersonID === CommonConfig.loggedInUserData().PersonID
               );
+              this.setState({ fileSetName: fileNameSet });
               this.setState({ userList: proposalData, Loading: false });
 
             }
@@ -132,7 +151,28 @@ class UserLists extends Component {
   };
 
   render() {
-    const { userList } = this.state;
+    const { userList,fileSetName } = this.state;
+    const handelExportToExcel = (evt) => {
+      const headData = Object.keys(userList[0]).map((col) => ({
+        value: col,
+        type: "string",
+      }));
+      const bodyData = userList.map((item) =>
+        Object.values(item).map((value) => ({
+          value,
+          type: typeof value,
+        }))
+      );
+      const config = {
+        filename: fileSetName,
+        sheet: {
+          data: [headData, ...bodyData],
+          columns: headData.map((col) => ({ wch: 2000 })),
+        },
+      };
+      console.log("hello = ", config);
+      zipcelx(config);
+    };
 
     const columns = [
       {
@@ -146,15 +186,16 @@ class UserLists extends Component {
         maxWidth: 110,
       },
       {
+        Header: "User Type",
+        accessor: "UserType",
+        width: 100,
+      },
+      {
         Header: "Email",
         accessor: "Email",
         width: 200,
       },
-      {
-        Header: "Mobile",
-        accessor: "PhoneNum",
-        width: 100,
-      },
+      
       {
         id: "CreatedOn",
         Header: "Created On",
@@ -246,6 +287,15 @@ class UserLists extends Component {
                 <UserList />
               </CardIcon>
               <h4 className="margin-right-auto text-color-black">User List</h4>
+              
+              <Button
+                justIcon
+                color="danger"
+                onClick={handelExportToExcel}
+              >
+                <i class="fas fa-download"></i>
+              </Button>
+              
               <Button
                 color="primary"
                 className=""

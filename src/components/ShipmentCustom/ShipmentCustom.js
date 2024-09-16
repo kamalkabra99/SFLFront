@@ -190,7 +190,7 @@ class ShipmentCustom extends React.Component {
       AllClearYes: false,
       MailOpenPopup: false,
       MailDelivered: false,
-
+      userLockinAllAccess:0,
       FromAddress: {},
       FromCompanyName: "",
       FromContactName: "",
@@ -608,6 +608,7 @@ class ShipmentCustom extends React.Component {
   }
 
   async componentDidMount() {
+    this.state.userLockinAllAccess = CommonConfig.getUserAccess("Locked Shipment Report").AllAccess
     this.showHide();
     this.showLoader();
     // await this.getPackageDetail();
@@ -6300,7 +6301,7 @@ class ShipmentCustom extends React.Component {
                 <i className={"fas fa-minus"} />
               </Button>
 
-              <Tooltip title={commercial.ipLocation} arrow>
+              <Tooltip title={commercial.Name} arrow>
                 <Button className="Plus-btn info-icon" justIcon color="twitter">
                   <InfoIcon />
                 </Button>
@@ -8046,9 +8047,7 @@ class ShipmentCustom extends React.Component {
                   dateFormat={"MM/DD/YYYY"}
                   timeFormat={false}
                   // value={moment(trackingManual.PickupDate)}
-                  value={moment(trackingManual.PickupDate).format(
-                    CommonConfig.dateFormat.dateOnly
-                  )}
+                  value={trackingManual.PickupDate}
                   onChange={(date) =>
                     this.dateChange(date, "PickupDate", trackingManual.Index)
                   }
@@ -10618,6 +10617,31 @@ class ShipmentCustom extends React.Component {
     }
     // }
   };
+
+  releaseLockIndividual = () =>{
+
+    let data = {
+      ShippingID:
+        this.props.location.state && this.props.location.state.ShipppingID
+          ? this.props.location.state.ShipppingID
+          : null,
+      UserID: CommonConfig.loggedInUserData().PersonID,
+      ReleaseAll: 0,
+    };
+    api
+      .post("scheduleshipment/releaseShipmentLockByIDIndividuals", data)
+      .then((res) => {
+        if (res.success) {
+
+          // window.location.reload();
+        } else {
+        }
+      })
+      .catch((err) => {
+        console.log("setLock err", err);
+      });
+
+  }
 
   async releaseLock() {
     let data = {
@@ -17018,6 +17042,18 @@ class ShipmentCustom extends React.Component {
             >
               Duplicate
             </Button>
+            {/* {this.state.isLock == true ?(
+                this.state.userLockinAllAccess == 1 || this.state.ManagedBy.value == CommonConfig.loggedInUserData().PersonID ?(
+                  <Button
+                    justify="center"
+                    color="primary"
+                    onClick={() => this.releaseLockIndividual()}
+                  >
+                    Release
+                  </Button>
+                ):null
+                
+            ):null} */}
           </div>
           <div className="center">
             {this.props.history.location.state &&

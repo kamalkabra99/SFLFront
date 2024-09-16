@@ -130,9 +130,9 @@ class SalesTeamProductivity extends Component {
                     : "$ " + 0,
                   AllClear: objFrom4 ? "$ " + objFrom4.AllClear : "$ " + 0,
                   Conversion:
-                    parseFloat(
+                  objFrom2 ? parseFloat(
                       (objFrom2.Shipments / obj.SalesLeads) * 100
-                    ).toFixed(2) + " %",
+                    ).toFixed(2) + " %":0,
                 };
               });
 

@@ -78,6 +78,7 @@ class Step1 extends React.Component {
       dialogPhoneErr: false,
       dialogNameErr: false,
       dialogEmailErr: false,
+      setCurrencyIcon:"",
 
       disableBtn: 1,
       StartDate: moment().toDate(),
@@ -2615,6 +2616,16 @@ class Step1 extends React.Component {
     FinalGetRate.PackageDetailsCount = TotalPackageNumber;
     FinalGetRate.PackageDetailsText = TotalPackageNumber.toString();
 
+    
+
+    if(this.state.GetRate.FromCountry.CountryID == "89"){
+      this.state.setCurrencyIcon = "₹ "
+    }else if(this.state.GetRate.FromCountry.CountryID == "37"){
+      this.state.setCurrencyIcon = "$c "
+    }else{
+      this.state.setCurrencyIcon = "$ "
+    }
+
     if (this.state.GetRate.TotalWeight) {
       FinalGetRate.EnvelopeWeightLBSText = this.state.GetRate.TotalChargableWeight;
     }
@@ -3095,6 +3106,7 @@ class Step1 extends React.Component {
                                 RateData: arr,
                                 IsResidential: this.state.IsResidential,
                                 RateType: "Hub",
+                                currencyType:this.state.setCurrencyIcon
                               };
                               ;
                               api

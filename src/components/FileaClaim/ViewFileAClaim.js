@@ -359,6 +359,7 @@ class ViewFileAClaim extends Component {
                   },
                 });
               } else {
+                this.state.this.state.attachmentArray = []
                 this.GetClaimDetailsById();
               }
             } else {
@@ -368,7 +369,7 @@ class ViewFileAClaim extends Component {
           })
           .catch((err) => {
             this.setState({ Loading: false });
-            cogoToast.error("Something went wrong 2");
+            // cogoToast.error("Something went wrong 2");
           });
       } catch (err) {
         this.setState({ Loading: false });

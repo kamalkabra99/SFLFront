@@ -83,12 +83,12 @@ class Step1 extends React.Component {
       Status: "",
       UserStatusList: [
         {
-          label: "Active",
-          value: "Active",
+          label: "Enable",
+          value: "Enable",
         },
         {
-          label: "Inactive",
-          value: "Inactive",
+          label: "Disable",
+          value: "Disable",
         },
       ],
       userTimeZone: "",

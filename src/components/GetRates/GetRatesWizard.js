@@ -15,6 +15,10 @@ import { CommonConfig } from "utils/constant";
 
 let getRateSteps = [];
 
+const formatter = new Intl.NumberFormat('en-IN', {
+  style: 'currency',
+  currency: 'INR',
+});
 class GetRatesWizard extends React.Component {
   constructor(props) {
     super(props);
@@ -57,6 +61,8 @@ class GetRatesWizard extends React.Component {
       DallasCostToal: 0,
       SecaucusCostTotal: 0,
       HaywardCostTotal: 0,
+      setCurrencyIcon:"",
+      setCurrencyIconLabel:"",
       props: this.props,
     };
     this.navigationStepChange = this.navigationStepChange.bind(this);
@@ -105,6 +111,23 @@ class GetRatesWizard extends React.Component {
         let data = await this[
           this.props.steps[this.state.currentStep].stepId
         ].GetRateData();
+
+        var datasset = this[this.props.steps[this.state.currentStep].stepId].state.FinalGetRate
+        datasset = JSON.parse(datasset.UpsData.FromCountry)
+        console.log("Datas = ",datasset)
+        console.log("Datas = ",datasset.CountryID)
+
+        if(datasset.CountryID == "89"){
+          this.state.setCurrencyIcon = "₹ "
+          this.state.setCurrencyIconLabel = "INR "
+          
+        }else if(datasset.CountryID == "37"){
+          this.state.setCurrencyIcon = "$c "
+          this.state.setCurrencyIconLabel = "CAD "
+        }else{
+          this.state.setCurrencyIcon = "$ "
+          this.state.setCurrencyIconLabel = "USD "
+        }
 
         this.setState({ finalGetResults: data });
       }
@@ -401,7 +424,7 @@ class GetRatesWizard extends React.Component {
                               <td>{data.Delivery_Date}</td>
                               <td className="tbl-align-right">
                                 {data.Rates != 0
-                                  ? "$ " + data.Rates.toFixed(2)
+                                  ? this.state.setCurrencyIconLabel + new Intl.NumberFormat().format(Math.ceil(data.Rates))
                                   : "Call for Rates"}
                               </td>
                               <td>
