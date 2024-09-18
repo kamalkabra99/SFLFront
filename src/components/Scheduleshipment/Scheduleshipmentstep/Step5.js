@@ -1834,7 +1834,7 @@ class Scheduleshipment extends React.Component {
                   </p>
                   <p className="last">
                     <span>Amount: </span>
-                    <b> $ {this.state.getratedomain}</b> | Shipment Type:{" "}
+                    <b> USD {this.state.getratedomain}</b> | Shipment Type:{" "}
                     {info_servicename}, {info_Subservicename}{" "}
                   </p>
                 </div>

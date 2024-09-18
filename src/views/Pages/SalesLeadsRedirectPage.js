@@ -38,6 +38,7 @@ class SalesLeadsRedirectPage extends Component {
     var Reqid = this.props.match.params ? this.props.match.params.id : "";
 
     var data = window.atob(Reqid);
+    console.log("Data = ",data);
     var insertdata = data.split("/");
 
     localStorage.setItem("sealsleadid", salesleadId);

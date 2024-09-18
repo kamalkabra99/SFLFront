@@ -8,8 +8,7 @@ import CardHeader from "components/Card/CardHeader.js";
 import CardIcon from "components/Card/CardIcon.js";
 import Adduser from "@material-ui/icons/AttachMoney";
 import Button from "components/CustomButtons/Button.js";
-import Step1 from "./AddupdateBombinosteps/Step1";
-import Step2 from "./AddupdateBombinosteps/Step2";
+
 import api from "../../utils/apiClient";
 import CardBody from "components/Card/CardBody.js";
 import cogoToast from "cogo-toast";
@@ -284,42 +283,14 @@ class AddupdateBombino extends Component {
               if (val === "0" || val === "") {
                 ZoneData[i].Zone8BuyErrorText = "please fill the details";
               } 
-            }   else if (Type === "Zone2Sell") {
-                if (val === "0" || val === "") {
-                  ZoneData[i].Zone2SellErrorText = "please fill the details";
-                } 
-              }     else if (Type === "Zone3Sell") {
-                    if (val === "0" || val === "") {
-                      ZoneData[i].Zone3SellErrorText = "please fill the details";
-                    } 
-                  }     else if (Type === "Zone4Sell") {
-                      if (val === "0" || val === "") {
-                        ZoneData[i].Zone4SellErrorText = "please fill the details";
-                      } 
-                    }   else if (Type === "Zone5Sell") {
-                        if (val === "0" || val === "") {
-                          ZoneData[i].Zone5SellErrorText = "please fill the details";
-                        } 
-                      }   else if (Type === "Zone6Sell") {
-                          if (val === "0" || val === "") {
-                            ZoneData[i].Zone6SellErrorText = "please fill the details";
-                          } 
-                        }   else if (Type === "Zone7Sell") {
-                            if (val === "0" || val === "") {
-                              ZoneData[i].Zone7SellErrorText = "please fill the details";
-                            } 
-                          }   else if (Type === "Zone8Sell") {
-                              if (val === "0" || val === "") {
-                                ZoneData[i].Zone8SellErrorText = "please fill the details";
-                              } 
-                            }
-                          else {
-                                let checkZoneData = this.state.GetZoneRates;
-                                console.log("check....", checkZoneData);
+            }
+              else {
+                    let checkZoneData = this.state.GetZoneRates;
+                    console.log("check....", checkZoneData);
 
-                                // var Country = checkMarkupData.filter((x) => {
-                                //   console.log("xxxxxx", x);
-                                // });                  
+                    // var Country = checkMarkupData.filter((x) => {
+                    //   console.log("xxxxxx", x);
+                    // });                  
     } 
  
     this.setState({ GetZoneList: ZoneData });
@@ -715,7 +686,7 @@ class AddupdateBombino extends Component {
               {Zone2BuyErrorText}
             </span>
           </td>
-          <td>
+          {/* <td>
             <input
               type="number"
               name="Zone2Sell"
@@ -730,7 +701,7 @@ class AddupdateBombino extends Component {
             <span id="Zone2SellErr" style={{ color: "red", fontSize: "12px" }}>
               {Zone2SellErrorText}
             </span>
-          </td>
+          </td> */}
           <td>
             <input
               type="number"
@@ -747,7 +718,7 @@ class AddupdateBombino extends Component {
               {Zone3BuyErrorText}
             </span>
           </td>
-          <td>
+          {/* <td>
             <input
               type="number"
               name="Zone3Sell"
@@ -762,7 +733,7 @@ class AddupdateBombino extends Component {
             <span id="Zone3SellErr" style={{ color: "red", fontSize: "12px" }}>
               {Zone3SellErrorText}
             </span>
-          </td>
+          </td> */}
           <td>
             <input
               type="number"
@@ -779,7 +750,7 @@ class AddupdateBombino extends Component {
               {Zone4BuyErrorText}
             </span>
           </td>
-          <td>
+          {/* <td>
             <input
               type="number"
               name="Zone4Sell"
@@ -794,7 +765,7 @@ class AddupdateBombino extends Component {
             <span id="Zone4SellErr" style={{ color: "red", fontSize: "12px" }}>
               {Zone4SellErrorText}
             </span>
-          </td>
+          </td> */}
           <td>
             <input
               type="number"
@@ -811,7 +782,7 @@ class AddupdateBombino extends Component {
               {Zone5BuyErrorText}
             </span>
           </td>
-          <td>
+          {/* <td>
             <input
               type="number"
               name="Zone5Sell"
@@ -826,7 +797,7 @@ class AddupdateBombino extends Component {
             <span id="Zone5SellErr" style={{ color: "red", fontSize: "12px" }}>
               {Zone5SellErrorText}
             </span>
-          </td>
+          </td> */}
           <td>
             <input
               type="number"
@@ -843,7 +814,7 @@ class AddupdateBombino extends Component {
               {Zone6BuyErrorText}
             </span>
           </td>
-          <td>
+          {/* <td>
             <input
               type="number"
               name="Zone6Sell"
@@ -858,7 +829,7 @@ class AddupdateBombino extends Component {
             <span id="Zone6SellErr" style={{ color: "red", fontSize: "12px" }}>
               {Zone6SellErrorText}
             </span>
-          </td>
+          </td> */}
           <td>
             <input
               type="number"
@@ -875,7 +846,7 @@ class AddupdateBombino extends Component {
               {Zone7BuyErrorText}
             </span>
           </td>
-          <td>
+          {/* <td>
             <input
               type="number"
               name="Zone7Sell"
@@ -890,7 +861,7 @@ class AddupdateBombino extends Component {
             <span id="Zone7SellErr" style={{ color: "red", fontSize: "12px" }}>
               {Zone7SellErrorText}
             </span>
-          </td>
+          </td> */}
           <td>
             <input
               type="number"
@@ -907,7 +878,7 @@ class AddupdateBombino extends Component {
               {Zone8BuyErrorText}
             </span>
           </td>
-          <td>
+          {/* <td>
             <input
               type="number"
               name="Zone8Sell"
@@ -922,7 +893,7 @@ class AddupdateBombino extends Component {
             <span id="Zone8SellErr" style={{ color: "red", fontSize: "12px" }}>
               {Zone8SellErrorText}
             </span>
-          </td>
+          </td> */}
         
           <td className="wd-100 nowrap">
             <Button
@@ -1058,19 +1029,19 @@ class AddupdateBombino extends Component {
                             <th>Weight Start</th>
                             <th>Weight End</th>
                             <th>Zone2 Buy</th>
-                            <th>Zone2 Sell</th>
+                            {/* <th>Zone2 Sell</th> */}
                             <th>Zone3 Buy</th>
-                            <th>Zone3 Sell</th>
+                            {/* <th>Zone3 Sell</th> */}
                             <th>Zone4 Buy</th>
-                            <th>Zone4 Sell</th>
+                            {/* <th>Zone4 Sell</th> */}
                             <th>Zone5 Buy</th>
-                            <th>Zone5 Sell</th> 
+                            {/* <th>Zone5 Sell</th>  */}
                             <th>Zone6 Buy</th>
-                            <th>Zone6 Sell</th> 
+                            {/* <th>Zone6 Sell</th>  */}
                             <th>Zone7 Buy</th>
-                            <th>Zone7 Sell</th> 
+                            {/* <th>Zone7 Sell</th>  */}
                             <th>Zone8 Buy</th>
-                            <th>Zone8 Sell</th>                            
+                            {/* <th>Zone8 Sell</th>                             */}
                             <th>Action</th>
                           </tr>
                         </thead>
