@@ -1031,6 +1031,7 @@ class ShipmentNavigation extends Component {
       ptype: this.state.searchType,
       ShipmentStatus: CommonConfig.isEmpty(Query) ? "" : Query,
     };
+    console.log("lokeeeeeeeeee",data);
     this.setState({ Loading: true });
     api
       .post("reports/getSearchShipment", data)
@@ -1080,7 +1081,10 @@ class ShipmentNavigation extends Component {
       if (this.samefilter()) {
         var filterList = this.state.filtered.map((filter) => {
           var obj = {};
-          obj.columnname = filter.field.value;
+          if(filter.filterValue.value !="IS NULL")
+          obj.columnname = 'IFNULL('+filter.field.value+',"")';
+        else
+        obj.columnname = filter.field.value;
           obj.condition = filter.filter.label;
           obj.conditionoperator = filter.filter.value;
           debugger;
@@ -2695,6 +2699,7 @@ class ShipmentNavigation extends Component {
     );
     this.setState({ filtered: filterlist });
   };
+  
   filterRow = () => {
     return this.state.filtered.map((selectfield, idx) => {
       const allClear = this.state.allClearlist.map((check) => {
