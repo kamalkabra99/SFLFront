@@ -435,17 +435,17 @@ class ShipmentCustom extends React.Component {
           DocumentCreatedBy: "Auto",
         },
 
-        {
-          Index: 5,
-          FileName: "",
-          DocumentType: "HHN",
-          isGenerated: false,
-          Status: "Active",
-          AttachmentName: "HHN",
-          TrackingNumber: "5",
-          DocumentCreatedOn: moment().format(CommonConfig.dateFormat.dateOnly),
-          DocumentCreatedBy: "Auto",
-        },
+        // {
+        //   Index: 5,
+        //   FileName: "",
+        //   DocumentType: "HHN",
+        //   isGenerated: false,
+        //   Status: "Active",
+        //   AttachmentName: "HHN",
+        //   TrackingNumber: "5",
+        //   DocumentCreatedOn: moment().format(CommonConfig.dateFormat.dateOnly),
+        //   DocumentCreatedBy: "Auto",
+        // },
 
         // {
         //   Index: 5,
@@ -2099,19 +2099,19 @@ class ShipmentCustom extends React.Component {
               ),
               DocumentCreatedBy: "Auto",
             },
-            this.state.ShipmentType.value == "Ocean" ?
-            {
-              Index: 5,
-              FileName: "",
-              DocumentType: "HHN",
-              Status: "Active",
-              AttachmentName: "HHN",
-              TrackingNumber: "5",
-              DocumentCreatedOn: moment().format(
-                CommonConfig.dateFormat.dateOnly
-              ),
-              DocumentCreatedBy: "Auto",
-            }:{},
+            // this.state.ShipmentType.value == "Ocean" ?
+            // {
+            //   Index: 5,
+            //   FileName: "",
+            //   DocumentType: "HHN",
+            //   Status: "Active",
+            //   AttachmentName: "HHN",
+            //   TrackingNumber: "5",
+            //   DocumentCreatedOn: moment().format(
+            //     CommonConfig.dateFormat.dateOnly
+            //   ),
+            //   DocumentCreatedBy: "Auto",
+            // }:{},
 
             // (CommonConfig.loggedInUserData().PersonID == 1 ||
             //   CommonConfig.loggedInUserData().PersonID == 18) &&
