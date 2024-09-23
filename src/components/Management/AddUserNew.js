@@ -754,7 +754,7 @@ class Step1 extends React.Component {
             console.log(this.state.ShipmentCount);
             if (userData.UserData) {
 
-              if (userData.UserData[0].UserType == "Employee") {
+              if (userData.UserData[0].UserType == "Employee" || userData.UserData[0].UserType == "Contractor") {
                 if (userData.EmployeeData.length > 0) {
                   this.setState({
                     EmployeementID: !CommonConfig.isEmpty(this.props.location.state)
@@ -873,7 +873,7 @@ class Step1 extends React.Component {
               }
             }
             debugger
-            if (userData.UserData[0].UserType == "Employee") {
+            if (userData.UserData[0].UserType == "Employee"  || userData.UserData[0].UserType == "Contractor") {
               let emp = { "label": userData.UserData[0].UserType, "value": userData.UserData[0].UserType }
 
               this.setState({ userType: emp });
@@ -1883,7 +1883,7 @@ class Step1 extends React.Component {
     ) {
       IsFormValid = false;
     }
-    if(this.state.userType.value === "Employee"){
+    if(this.state.userType.value === "Employee" || this.state.userType.value === "Contractor"){
       if (this.state.StartTime === "" || this.state.StartTime === null || this.state.starttimeErr === true) {
         IsFormValid = false;
         this.setState({ starttimeErr: true, starttimeHelperText: "Start Time is Mandatory" });
@@ -1902,7 +1902,7 @@ class Step1 extends React.Component {
       this.setState({ userTypeErr: true, userTypeHelperText: "Mandatory Field" });
     }
     else
-      if (this.state.userType != null && this.state.userType.value === "Employee") {
+      if (this.state.userType != null && (this.state.userType.value === "Employee" || this.state.userType.value ==="Contractor")) {
         this.setState({ userTypeErr: false, userTypeHelperText: "" });
         if (this.state.usertypeTimeZone === null || this.state.usertypeTimeZone === "") {
           IsFormValid = false;
@@ -4942,7 +4942,7 @@ class Step1 extends React.Component {
                     </Cardbody>
                   </Card>
                    
-                  {(this.state.userType !== null && this.state.userType.value === "Employee") ? (
+                  {(this.state.userType !== null && (this.state.userType.value === "Employee" || this.state.userType.value === "Contractor")) ? (
                     <Card >
                       <CardHeader className="btn-right-outer" color="primary" icon>
                         <CardIcon color="primary">
@@ -5762,7 +5762,7 @@ class Step1 extends React.Component {
                     
                                   
                   ) : ""}
-                  {(this.state.userType !== null && this.state.userType.value === "Employee") ? (
+                  {(this.state.userType !== null && (this.state.userType.value === "Employee" || this.state.userType.value ==="Contractor")) ? (
                   <Card>
                     <CardHeader className="btn-right-outer" color="primary" icon>
                       <CardIcon color="primary">

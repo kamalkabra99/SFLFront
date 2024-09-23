@@ -1078,11 +1078,17 @@ class ShipmentNavigation extends Component {
 
   search = () => {
     if (this.validatenewSearcch()) {
+      debugger
       if (this.samefilter()) {
         var filterList = this.state.filtered.map((filter) => {
           var obj = {};
-          if(filter.filterValue.value !="IS NULL")
-          obj.columnname = 'IFNULL('+filter.field.value+',"")';
+          if( filter.field.value == "sm.AllClear"){
+            if(filter.filterValue.value !="IS NULL"){
+              obj.columnname = 'IFNULL('+filter.field.value+',"")';
+            }
+          }
+          
+          
         else
         obj.columnname = filter.field.value;
           obj.condition = filter.filter.label;
@@ -1098,6 +1104,7 @@ class ShipmentNavigation extends Component {
         });
 
         this.setState({ SearchFinalFilter: filterList });
+        console.log("filterList= ",filterList)
         var FinalStr = "";
         var operator = "AND";
         for (var i = 0; i < filterList.length; i++) {
@@ -1108,6 +1115,7 @@ class ShipmentNavigation extends Component {
                 filterList[i]["condition"] === "Ends With")
             )
           ) {
+            debugger
             if (filterList[i]["condition"] === "Start With") {
               if (i === 0) {
                 if (filterList[i]["columnname"] === "sm.ShipmentDate") {
@@ -1143,6 +1151,7 @@ class ShipmentNavigation extends Component {
                 } else if (
                   filterList[i]["columnname"] === "std.TrackingNumber"
                 ) {
+                  debugger
                   FinalStr =
                     FinalStr +
                     "(" +

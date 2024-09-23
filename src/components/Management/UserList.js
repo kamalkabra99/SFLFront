@@ -38,6 +38,7 @@ class UserLists extends Component {
       Loading: false,
       fileSetName: "",
       userList: [],
+      userListSal:[],
       filterProps: [],
       sortProps: [],
       previousFilterList: [],
@@ -80,9 +81,39 @@ class UserLists extends Component {
                 (x) => x.PersonID === CommonConfig.loggedInUserData().PersonID
               );
               this.setState({ fileSetName: fileNameSet });
+              
               this.setState({ userList: proposalData, Loading: false });
+             
 
             }
+
+            api
+            .get("userManagement/getUserSalary")
+            .then((resSal) => {
+              if (resSal.success) {
+
+                if(CommonConfig.getUserAccess("User Management").AllAccess === 1){
+                  // this.setState({ fileSetName: fileNameSet });
+                  this.setState({ userListSal: resSal.data, Loading: false });
+                  console.log("resSal.data = ",resSal.data)
+                }else{
+                  let proposalDataSal = resSal.data.filter(
+                    (x) => x.PersonID === CommonConfig.loggedInUserData().PersonID
+                  );
+                  // this.setState({ fileSetName: fileNameSet });
+                  
+                  this.setState({ userListSal: proposalDataSal, Loading: false });
+
+                }
+
+                
+              } else {
+                cogoToast.error("Something Went Wrong");
+              }
+            })
+            .catch((err) => {
+              cogoToast.error("Something Went Wrong");
+            });
 
             
           } else {
@@ -151,7 +182,7 @@ class UserLists extends Component {
   };
 
   render() {
-    const { userList,fileSetName } = this.state;
+    const { userList,fileSetName,userListSal } = this.state;
     const handelExportToExcel = (evt) => {
       const headData = Object.keys(userList[0]).map((col) => ({
         value: col,
@@ -163,12 +194,30 @@ class UserLists extends Component {
           type: typeof value,
         }))
       );
+
+      console.log("userListSal = ",userListSal)
+
+      const headDataSal = Object.keys(userListSal[0]).map((col) => ({
+        value: col,
+        type: "string",
+      }));
+      const bodyDataSal = userListSal.map((item) =>
+        Object.values(item).map((value) => ({
+          value,
+          type: typeof value,
+        }))
+      );
+
       const config = {
         filename: fileSetName,
         sheet: {
           data: [headData, ...bodyData],
           columns: headData.map((col) => ({ wch: 2000 })),
         },
+        // sheet: {
+        //   data: [headDataSal, ...bodyDataSal],
+        //   columns: headDataSal.map((col) => ({ wch: 2000 })),
+        // },
       };
       console.log("hello = ", config);
       zipcelx(config);

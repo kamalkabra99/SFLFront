@@ -137,6 +137,11 @@ class ShipmentCustom extends React.Component {
       SubServiceType: "",
       CreatedBy: "",
       CreatedByName: "",
+      CommercialPopup:false,
+      ComUpdatedDate:"",
+      ComUpdatedName:"",
+      ComCreatedDate:"",
+      ComCreatedName:"",
       ipAddress: "",
       ipLocation: "",
       PickupDateChange: 0,
@@ -182,6 +187,8 @@ class ShipmentCustom extends React.Component {
       NotesforPickupHelperText: "",
       deleteopen: false,
       createopen: false,
+      deletedocument:false,
+      deletedocsdata:[],
       setDupLicate: false,
       dupTracking: "",
       successOpened: false,
@@ -427,6 +434,30 @@ class ShipmentCustom extends React.Component {
           DocumentCreatedOn: moment().format(CommonConfig.dateFormat.dateOnly),
           DocumentCreatedBy: "Auto",
         },
+
+        {
+          Index: 5,
+          FileName: "",
+          DocumentType: "HHN",
+          isGenerated: false,
+          Status: "Active",
+          AttachmentName: "HHN",
+          TrackingNumber: "5",
+          DocumentCreatedOn: moment().format(CommonConfig.dateFormat.dateOnly),
+          DocumentCreatedBy: "Auto",
+        },
+
+        // {
+        //   Index: 5,
+        //   FileName: "",
+        //   DocumentType: "HHN",
+        //   isGenerated: false,
+        //   Status: "Active",
+        //   AttachmentName: "",
+        //   TrackingNumber: "4",
+        //   DocumentCreatedOn: moment().format(CommonConfig.dateFormat.dateOnly),
+        //   DocumentCreatedBy: "Auto",
+        // },
       ],
       Loading: false,
       objAttachment: {
@@ -2068,6 +2099,20 @@ class ShipmentCustom extends React.Component {
               ),
               DocumentCreatedBy: "Auto",
             },
+            this.state.ShipmentType.value == "Ocean" ?
+            {
+              Index: 5,
+              FileName: "",
+              DocumentType: "HHN",
+              Status: "Active",
+              AttachmentName: "HHN",
+              TrackingNumber: "5",
+              DocumentCreatedOn: moment().format(
+                CommonConfig.dateFormat.dateOnly
+              ),
+              DocumentCreatedBy: "Auto",
+            }:{},
+
             // (CommonConfig.loggedInUserData().PersonID == 1 ||
             //   CommonConfig.loggedInUserData().PersonID == 18) &&
             !CommonConfig.isEmpty(this.state.ContainerName.value) ||
@@ -5254,6 +5299,17 @@ class ShipmentCustom extends React.Component {
     // }
   };
 
+  openTooltipPopup = (Commercial) =>{
+    console.log("openTooltipPopup = ",Commercial)
+    
+    this.state.ComUpdatedDate = Commercial.UpdatedDate
+    this.state.ComUpdatedName = Commercial.UpdatedByUser
+    this.state.ComCreatedDate = Commercial.CreatedDate
+    this.state.ComCreatedName = Commercial.CreatedByName
+
+    this.setState({CommercialPopup:true})
+  }
+
   PackageTtypeOnBlur = (event, type, index) => {
     const PackageList = this.state.PackageList;
     var selectedSequence = event.target.value;
@@ -6192,7 +6248,7 @@ class ShipmentCustom extends React.Component {
                       this.handleCommercialInvoiceChange(
                         event,
                         "PackageNumber",
-                        commercial.Index
+                        commercial.Index,commercial.ShippingCommercialInvoiceID
                       )
                     }
                   >
@@ -6209,7 +6265,7 @@ class ShipmentCustom extends React.Component {
                     this.handleCommercialInvoiceChange(
                       event,
                       "ContentDescription",
-                      commercial.Index
+                      commercial.Index,commercial.ShippingCommercialInvoiceID
                     )
                   }
                   inputProps={{}}
@@ -6228,7 +6284,7 @@ class ShipmentCustom extends React.Component {
                       this.handleCommercialInvoiceChange(
                         event,
                         "Quantity",
-                        commercial.Index
+                        commercial.Index,commercial.ShippingCommercialInvoiceID
                       )
                     }
                     inputProps={{
@@ -6246,7 +6302,7 @@ class ShipmentCustom extends React.Component {
                       this.handleCommercialInvoiceChange(
                         event,
                         "ValuePerQuantity",
-                        commercial.Index
+                        commercial.Index,commercial.ShippingCommercialInvoiceID
                       )
                     }
                     onBlur={(event) =>
@@ -6275,7 +6331,7 @@ class ShipmentCustom extends React.Component {
                   this.handleCommercialInvoiceChange(
                     event,
                     "TotalValue",
-                    commercial.Index
+                    commercial.Index,commercial.ShippingCommercialInvoiceID
                   )
                 }
                 disabled={
@@ -6300,12 +6356,23 @@ class ShipmentCustom extends React.Component {
               >
                 <i className={"fas fa-minus"} />
               </Button>
+              {commercial.UpdatedBy > 0 ? (
+                
+                  // <div>
 
-              <Tooltip title={commercial.Name} arrow>
+                  <Button onClick = {() => this.openTooltipPopup(commercial)} className="Plus-btn info-icon" justIcon color="twitter">
+                    <InfoIcon />
+                  </Button>
+                // </div>
+              
+              ):
+              <Tooltip title={commercial.CreatedByName} arrow>
                 <Button className="Plus-btn info-icon" justIcon color="twitter">
                   <InfoIcon />
                 </Button>
               </Tooltip>
+              }
+              
               {/* ) : null} */}
 
               {this.state.commercialList.filter((x) => x.Status === "Active")
@@ -6326,10 +6393,15 @@ class ShipmentCustom extends React.Component {
       });
   };
 
-  handleCommercialInvoiceChange = (event, type, index) => {
+  handleCommercialInvoiceChange = (event, type, index,ComId) => {
+    console.log("ComId = ",ComId,this.state.commercialList);
     let idx = this.state.commercialList.findIndex((x) => x.Index === index);
     if (type === "PackageNumber") {
+      
       let commercialList = this.state.commercialList;
+      if(ComId !=null){
+        commercialList[idx]["NewUpdateBy"] = CommonConfig.loggedInUserData().PersonID
+      }
       commercialList[idx][type] = event.target.value;
       this.setState({ commercialList: commercialList });
     } else if (type === "ContentDescription") {
@@ -6340,12 +6412,18 @@ class ShipmentCustom extends React.Component {
       ) {
         var datatarget = event.target.value.replace(/[^\w\s]/gi, "");
         let commercialList = this.state.commercialList;
+        if(ComId !=null){
+          commercialList[idx]["NewUpdateBy"] = CommonConfig.loggedInUserData().PersonID
+        }
         commercialList[idx][type] = datatarget;
         this.setState({ commercialList: commercialList });
       }
     } else if (type === "Quantity") {
       let commercialList = this.state.commercialList;
       commercialList[idx][type] = event.target.value.replace(/\D/g, "");
+      if(ComId !=null){
+        commercialList[idx]["NewUpdateBy"] = CommonConfig.loggedInUserData().PersonID
+      }
       commercialList[idx]["TotalValue"] =
         commercialList[idx][type] * commercialList[idx]["ValuePerQuantity"];
       this.setState({ commercialList: commercialList });
@@ -6357,6 +6435,9 @@ class ShipmentCustom extends React.Component {
         event.target.value === ""
       ) {
         commercialList[idx][type] = event.target.value;
+        if(ComId !=null){
+          commercialList[idx]["NewUpdateBy"] = CommonConfig.loggedInUserData().PersonID
+        }
         this.setState({ commercialList: commercialList });
         this.CostCalculator("Commercial", true);
       }
@@ -6367,6 +6448,9 @@ class ShipmentCustom extends React.Component {
         event.target.value === ""
       ) {
         commercialList[idx][type] = event.target.value;
+        if(ComId !=null){
+          commercialList[idx]["NewUpdateBy"] = CommonConfig.loggedInUserData().PersonID
+        }
         commercialList[idx]["TotalValue"] =
           commercialList[idx][type] * commercialList[idx]["Quantity"];
         this.setState({ commercialList: commercialList });
@@ -8979,7 +9063,18 @@ class ShipmentCustom extends React.Component {
     }
   };
 
-  handleDocumentDelete = (e, record) => {
+  handleDocumentDeletePopup = (e,record) => {
+
+    console.log("Here")
+    this.state.deletedocsdata = record
+    this.setState({ deletedocument: true });
+    // this.state. = true
+
+
+
+  }
+
+  handleDocumentDelete = (record) => {
     delete record.TrackingNumber;
     var AttachmentList = this.state.Attachments;
     var Index = AttachmentList.indexOf(record);
@@ -8997,6 +9092,8 @@ class ShipmentCustom extends React.Component {
       .then((res) => {
         if (res.success) {
           this.hideLoader();
+          // this.state.deletedocument = false
+          this.setState({ deletedocument: false });
         }
       })
       .catch((err) => {
@@ -9629,996 +9726,1062 @@ class ShipmentCustom extends React.Component {
     this.handleSave(false);
   };
 
+
   handleSave = (redirect) => {
     // console.log("this.package = ",packobj)
 
-    var countsec = 0;
+    var comFlag = 0
 
-    console.log(
-      "this.state.commercialList.length = ",
-      this.state.commercialList
-    );
+    if(this.state.ShipmentStatus == "Cancelled"){
+      if(this.state.AllClearYes == false){
+        cogoToast.error("Please open accounts tab to move to cancel");
+        comFlag = 1
+      }else{
+          if(this.state.TotalCostInvoice !=
+            this.state.TotalCostReceived.toFixed(2)){
 
-    if (
-      this.state.PackageType === "Package" &&
-      this.state.ShipmentType.value == "Ocean"
-    ) {
-      debugger;
-      for (let index = 0; index < this.state.commercialList.length; index++) {
-        if (this.state.commercialList[index].Status == "Active") {
-          const elementsecond = this.state.commercialList[index].PackageNumber;
-          for (
-            let indexsecond = index + 1;
-            indexsecond < this.state.commercialList.length;
-            indexsecond++
+              cogoToast.error("Invoice and Payment Received does not match");
+              comFlag = 1
+            }else{
+              comFlag = 0
+
+            }
+
+      }
+    }else{
+      comFlag = 0
+    }
+
+    if(comFlag == 0){
+          var countsec = 0;
+
+          console.log(
+            "this.state.commercialList.length = ",
+            this.state.commercialList
+          );
+      
+          if (
+            this.state.PackageType === "Package" &&
+            this.state.ShipmentType.value == "Ocean"
           ) {
+            debugger;
+            for (let index = 0; index < this.state.commercialList.length; index++) {
+              if (this.state.commercialList[index].Status == "Active") {
+                const elementsecond = this.state.commercialList[index].PackageNumber;
+                for (
+                  let indexsecond = index + 1;
+                  indexsecond < this.state.commercialList.length;
+                  indexsecond++
+                ) {
+                  if (
+                    this.state.commercialList[indexsecond].PackageNumber ==
+                      elementsecond &&
+                    this.state.commercialList[indexsecond].Status == "Active"
+                  ) {
+                    countsec = 1;
+                    break;
+                  }
+                }
+              }
+            }
+          }
+      
+          // if (this.props.history.location.state.createDup == "1") {
+          //   cogoToast.error(
+          //     "Please re-open the shipment to Save. It was duplicated created"
+          //   );
+          // } else {
+          console.log("commercialList = ", this.state.commercialList);
+          let count = 0;
+          // if (this.state.PackageType === "Package") {
+          for (let index = 0; index < this.state.commercialList.length; index++) {
+            const element = this.state.commercialList[index].PackageNumber;
             if (
-              this.state.commercialList[indexsecond].PackageNumber ==
-                elementsecond &&
-              this.state.commercialList[indexsecond].Status == "Active"
+              element > this.state.TotalPackages &&
+              this.state.commercialList[index].Status == "Active"
             ) {
-              countsec = 1;
+              count = 1;
               break;
             }
           }
-        }
-      }
-    }
-
-    // if (this.props.history.location.state.createDup == "1") {
-    //   cogoToast.error(
-    //     "Please re-open the shipment to Save. It was duplicated created"
-    //   );
-    // } else {
-    console.log("commercialList = ", this.state.commercialList);
-    let count = 0;
-    // if (this.state.PackageType === "Package") {
-    for (let index = 0; index < this.state.commercialList.length; index++) {
-      const element = this.state.commercialList[index].PackageNumber;
-      if (
-        element > this.state.TotalPackages &&
-        this.state.commercialList[index].Status == "Active"
-      ) {
-        count = 1;
-        break;
-      }
-    }
-    // }
-    if (count == 1) {
-      console.log("In IF");
-      cogoToast.error(
-        "Please enter valid package number for commercial invoice"
-      );
-    } else if (countsec == 1) {
-      console.log("In IF");
-      cogoToast.error(
-        "Please enter unique package number for commercial invoice"
-      );
-    } else {
-      if (
-        this.state.Moveupdatetozip === true &&
-        this.state.Moveupdatefromzip === true
-      ) {
-        if (this.validate()) {
-          if (this.formValid()) {
-            let packobj = this.state.PackageList.filter(
-              (x) =>
-                (x.Status === "Inactive" &&
-                  x.ShippingPackageDetailID !== null) ||
-                ((x) => x.Status === "Active")
+          // }
+          if (count == 1) {
+            console.log("In IF");
+            cogoToast.error(
+              "Please enter valid package number for commercial invoice"
             );
-            let scheduleobj = this.state.ShipmentType.value;
-            let senderobj = this.state.FromAddress;
-            let recipientobj = this.state.ToAddress;
-            let commercialData = this.state.commercialList;
-            let comList1 = [];
-
-            for (let index = 0; index < commercialData.length; index++) {
-              const element = commercialData[index];
-              if (
-                commercialData[index].Status == "Inactive" &&
-                commercialData[index].ShippingCommercialInvoiceID == null
-              ) {
-              } else {
-                comList1.push(commercialData[index]);
-              }
-            }
-            commercialData = comList1;
-            console.log("commercialListin Loop = ", commercialData);
-
-            console.log(
-              "This.state.this.state.commercialList = ",
-              this.state.commercialList
+          } else if (countsec == 1) {
+            console.log("In IF");
+            cogoToast.error(
+              "Please enter unique package number for commercial invoice"
             );
-            let paymentInvoiceData = this.state.PaymentList.filter(
-              (x) =>
-                (x.Status === "Inactive" && x.ShippingInvoiceID !== null) ||
-                (x.Status === "Active" && x.ServiceDescription !== "")
-            );
-            let TrackingData = this.state.trackingNumberList.filter(
-              (x) =>
-                (x.Status === "Inactive" && x.ShippingTrackingID !== null) ||
-                (x.Status === "Active" && x.TrackingID !== "")
-            );
-            let ManualTrackingData = this.state.trackingManualList.filter(
-              (x) =>
-                (x.Status === "Inactive" &&
-                  x.ShippingManualTrackingID !== null) ||
-                (x.Status === "Active" && x.Updates !== "")
-            );
-            let paymentReceivedData = this.state.paymentReceived.filter(
-              (x) =>
-                (x.Status === "Inactive" &&
-                  x.ShippingPaymentReceivedID !== null) ||
-                (x.Status === "Active" && x.PaymentType !== "")
-            );
-            let paymentIssued = this.state.paymentIssued.filter(
-              (x) =>
-                (x.Status === "Inactive" &&
-                  x.ShippingPaymentIssuedID !== null) ||
-                (x.Status === "Active" && x.VendorName !== "")
-            );
-            let creditCardObj = this.state.creditCardList.filter(
-              (x) =>
-                (x.Status === "Inactive" && x.PaymentID !== null) ||
-                (x.Status === "Active" && x.CardName !== "")
-            );
-            let bankObj = this.state.bankList.filter(
-              (x) =>
-                (x.Status === "Inactive" && x.PaymentID !== null) ||
-                (x.Status === "Active" && x.NameonAccount !== "")
-            );
-            let packages_data = [];
-            let com_data = [];
-            var paymentdata = [];
-            if (scheduleobj === "Air" || scheduleobj === "Ground") {
-              if (this.state.PackageType === "Package") {
-                for (var i = 0; i < packobj.length; i++) {
-                  let package_details = {};
-                  package_details = {
-                    shipments_tracking_number: "",
-                    PackageNumber: packobj[i].PackageNumber,
-                    package_number: packobj[i].Sequence,
-                    weight: packobj[i].EstimetedWeight,
-                    unit_of_weight: "LBS",
-                    length: packobj[i].Length,
-                    width: packobj[i].Width,
-                    height: packobj[i].Height,
-                    chargable_weight: packobj[i].ChargableWeight,
-                    insured_value: packobj[i].InsuredValue,
-                    Sequence: packobj[i].Sequence,
-                    PackageContent: packobj[i].PackageContent,
-                    PackedType: packobj[i].PackedType,
-                    Status: packobj[i].Status,
-                    TV: false,
-                    Stretch: false,
-                    Repack: false,
-                    Crating: false,
-                    PackageID: packobj[i].ShippingPackageDetailID,
-                  };
-                  packages_data.push(package_details);
-                }
-              } else if (this.state.PackageType === "Envelop") {
-                if (packobj.length > 1) {
-                  for (var j = 1; j < packobj.length; j++) {
-                    if (packobj[j].Status === "Inactive") {
+          } else {
+            if (
+              this.state.Moveupdatetozip === true &&
+              this.state.Moveupdatefromzip === true
+            ) {
+              if (this.validate()) {
+                if (this.formValid()) {
+                  let packobj = this.state.PackageList.filter(
+                    (x) =>
+                      (x.Status === "Inactive" &&
+                        x.ShippingPackageDetailID !== null) ||
+                      ((x) => x.Status === "Active")
+                  );
+                  let scheduleobj = this.state.ShipmentType.value;
+                  let senderobj = this.state.FromAddress;
+                  let recipientobj = this.state.ToAddress;
+                  let commercialData = this.state.commercialList;
+                  let comList1 = [];
+      
+                  for (let index = 0; index < commercialData.length; index++) {
+                    const element = commercialData[index];
+                    if (
+                      commercialData[index].Status == "Inactive" &&
+                      commercialData[index].ShippingCommercialInvoiceID == null
+                    ) {
+                    } else {
+                      comList1.push(commercialData[index]);
+                    }
+                  }
+                  commercialData = comList1;
+                  console.log("commercialListin Loop = ", commercialData);
+      
+                  console.log(
+                    "This.state.this.state.commercialList = ",
+                    this.state.commercialList
+                  );
+                  let paymentInvoiceData = this.state.PaymentList.filter(
+                    (x) =>
+                      (x.Status === "Inactive" && x.ShippingInvoiceID !== null) ||
+                      (x.Status === "Active" && x.ServiceDescription !== "")
+                  );
+                  let TrackingData = this.state.trackingNumberList.filter(
+                    (x) =>
+                      (x.Status === "Inactive" && x.ShippingTrackingID !== null) ||
+                      (x.Status === "Active" && x.TrackingID !== "")
+                  );
+                  let ManualTrackingData = this.state.trackingManualList.filter(
+                    (x) =>
+                      (x.Status === "Inactive" &&
+                        x.ShippingManualTrackingID !== null) ||
+                      (x.Status === "Active" && x.Updates !== "")
+                  );
+                  let paymentReceivedData = this.state.paymentReceived.filter(
+                    (x) =>
+                      (x.Status === "Inactive" &&
+                        x.ShippingPaymentReceivedID !== null) ||
+                      (x.Status === "Active" && x.PaymentType !== "")
+                  );
+                  let paymentIssued = this.state.paymentIssued.filter(
+                    (x) =>
+                      (x.Status === "Inactive" &&
+                        x.ShippingPaymentIssuedID !== null) ||
+                      (x.Status === "Active" && x.VendorName !== "")
+                  );
+                  let creditCardObj = this.state.creditCardList.filter(
+                    (x) =>
+                      (x.Status === "Inactive" && x.PaymentID !== null) ||
+                      (x.Status === "Active" && x.CardName !== "")
+                  );
+                  let bankObj = this.state.bankList.filter(
+                    (x) =>
+                      (x.Status === "Inactive" && x.PaymentID !== null) ||
+                      (x.Status === "Active" && x.NameonAccount !== "")
+                  );
+                  let packages_data = [];
+                  let com_data = [];
+                  var paymentdata = [];
+                  if (scheduleobj === "Air" || scheduleobj === "Ground") {
+                    if (this.state.PackageType === "Package") {
+                      for (var i = 0; i < packobj.length; i++) {
+                        let package_details = {};
+                        package_details = {
+                          shipments_tracking_number: "",
+                          PackageNumber: packobj[i].PackageNumber,
+                          package_number: packobj[i].Sequence,
+                          weight: packobj[i].EstimetedWeight,
+                          unit_of_weight: "LBS",
+                          length: packobj[i].Length,
+                          width: packobj[i].Width,
+                          height: packobj[i].Height,
+                          chargable_weight: packobj[i].ChargableWeight,
+                          insured_value: packobj[i].InsuredValue,
+                          Sequence: packobj[i].Sequence,
+                          PackageContent: packobj[i].PackageContent,
+                          PackedType: packobj[i].PackedType,
+                          Status: packobj[i].Status,
+                          TV: false,
+                          Stretch: false,
+                          Repack: false,
+                          Crating: false,
+                          PackageID: packobj[i].ShippingPackageDetailID,
+                        };
+                        packages_data.push(package_details);
+                      }
+                    } else if (this.state.PackageType === "Envelop") {
+                      if (packobj.length > 1) {
+                        for (var j = 1; j < packobj.length; j++) {
+                          if (packobj[j].Status === "Inactive") {
+                            let package_details = {};
+                            package_details = {
+                              shipments_tracking_number: "",
+                              PackageNumber: packobj[j].PackageNumber,
+                              package_number: packobj[j].Sequence,
+                              weight: packobj[j].EstimetedWeight,
+                              unit_of_weight: "LBS",
+                              length: packobj[j].Length,
+                              width: packobj[j].Width,
+                              height: packobj[j].Height,
+                              chargable_weight: packobj[j].ChargableWeight,
+                              insured_value: packobj[j].InsuredValue,
+                              Sequence: packobj[j].Sequence,
+                              PackedType: packobj[j].PackedType,
+                              Status: packobj[j].Status,
+                              PackageContent: packobj[j].PackageContent,
+                              TV: false,
+                              Stretch: false,
+                              Repack: false,
+                              Crating: false,
+                              PackageID: packobj[j].ShippingPackageDetailID,
+                            };
+      
+                            packages_data.push(package_details);
+                          }
+                        }
+                      }
                       let package_details = {};
                       package_details = {
                         shipments_tracking_number: "",
-                        PackageNumber: packobj[j].PackageNumber,
-                        package_number: packobj[j].Sequence,
-                        weight: packobj[j].EstimetedWeight,
+                        PackageNumber: packobj[0].PackageNumber,
+                        package_number: packobj[0].Sequence,
+                        weight: packobj[0].EstimetedWeight,
                         unit_of_weight: "LBS",
-                        length: packobj[j].Length,
-                        width: packobj[j].Width,
-                        height: packobj[j].Height,
-                        chargable_weight: packobj[j].ChargableWeight,
-                        insured_value: packobj[j].InsuredValue,
-                        Sequence: packobj[j].Sequence,
-                        PackedType: packobj[j].PackedType,
-                        Status: packobj[j].Status,
-                        PackageContent: packobj[j].PackageContent,
+                        length: packobj[0].Length,
+                        width: packobj[0].Width,
+                        height: packobj[0].Height,
+                        chargable_weight: packobj[0].ChargableWeight,
+                        insured_value: packobj[0].InsuredValue,
+                        Sequence: packobj[0].Sequence,
+                        PackedType: packobj[0].PackedType,
+                        Status: packobj[0].Status,
+                        PackageContent: packobj[0].PackageContent,
                         TV: false,
                         Stretch: false,
                         Repack: false,
                         Crating: false,
-                        PackageID: packobj[j].ShippingPackageDetailID,
+                        PackageID: packobj[0].ShippingPackageDetailID,
                       };
-
+      
+                      packages_data.push(package_details);
+                    }
+                  } else if (scheduleobj === "Ocean") {
+                    if (this.state.PackageType === "Package") {
+                      for (var i = 0; i < packobj.length; i++) {
+                        let package_details = {};
+                        package_details = {
+                          shipments_tracking_number: "",
+                          PackageNumber: packobj[i].PackageNumber,
+                          package_number: packobj[i].Sequence,
+                          weight: packobj[i].EstimetedWeight,
+                          unit_of_weight: "LBS",
+                          length: packobj[i].Length,
+                          width: packobj[i].Width,
+                          height: packobj[i].Height,
+                          chargable_weight: packobj[i].ChargableWeight,
+                          insured_value: packobj[i].InsuredValue,
+                          Sequence: packobj[i].Sequence,
+                          Status: packobj[i].Status,
+                          TV: false,
+                          Stretch: false,
+                          Repack: false,
+                          Crating: false,
+                          PackageContent: packobj[i].PackageContent,
+                          PackedType: packobj[i].PackedType,
+                          CFT: packobj[i].CFT,
+                          PackageID: packobj[i].ShippingPackageDetailID,
+                        };
+                        packages_data.push(package_details);
+                      }
+                    } else if (this.state.PackageType === "Envelop") {
+                      let package_details = {};
+                      package_details = {
+                        shipments_tracking_number: "",
+                        PackageNumber: packobj[0].PackageNumber,
+                        package_number: packobj[0].Sequence,
+                        weight: packobj[0].EstimetedWeight,
+                        unit_of_weight: "LBS",
+                        length: packobj[0].Length,
+                        width: packobj[0].Width,
+                        height: packobj[0].Height,
+                        chargable_weight: packobj[0].ChargableWeight,
+                        insured_value: parseFloat(packobj[0].InsuredValue).toFixed(2),
+                        Sequence: packobj[0].Sequence,
+                        Status: packobj[0].Status,
+                        TV: false,
+                        Stretch: false,
+                        Repack: false,
+                        Crating: false,
+                        PackageContent: packobj[0].PackageContent,
+                        PackedType: packobj[0].PackedType,
+                        CFT: parseFloat(packobj[0].CFT).toFixed(2),
+                        PackageID: packobj[0].ShippingPackageDetailID,
+                      };
+      
                       packages_data.push(package_details);
                     }
                   }
-                }
-                let package_details = {};
-                package_details = {
-                  shipments_tracking_number: "",
-                  PackageNumber: packobj[0].PackageNumber,
-                  package_number: packobj[0].Sequence,
-                  weight: packobj[0].EstimetedWeight,
-                  unit_of_weight: "LBS",
-                  length: packobj[0].Length,
-                  width: packobj[0].Width,
-                  height: packobj[0].Height,
-                  chargable_weight: packobj[0].ChargableWeight,
-                  insured_value: packobj[0].InsuredValue,
-                  Sequence: packobj[0].Sequence,
-                  PackedType: packobj[0].PackedType,
-                  Status: packobj[0].Status,
-                  PackageContent: packobj[0].PackageContent,
-                  TV: false,
-                  Stretch: false,
-                  Repack: false,
-                  Crating: false,
-                  PackageID: packobj[0].ShippingPackageDetailID,
-                };
+      
+                  var packages = packages_data;
+                  for (var i = 0; i < commercialData.length; i++) {
+                    let commercail_details = {};
 
-                packages_data.push(package_details);
-              }
-            } else if (scheduleobj === "Ocean") {
-              if (this.state.PackageType === "Package") {
-                for (var i = 0; i < packobj.length; i++) {
-                  let package_details = {};
-                  package_details = {
-                    shipments_tracking_number: "",
-                    PackageNumber: packobj[i].PackageNumber,
-                    package_number: packobj[i].Sequence,
-                    weight: packobj[i].EstimetedWeight,
-                    unit_of_weight: "LBS",
-                    length: packobj[i].Length,
-                    width: packobj[i].Width,
-                    height: packobj[i].Height,
-                    chargable_weight: packobj[i].ChargableWeight,
-                    insured_value: packobj[i].InsuredValue,
-                    Sequence: packobj[i].Sequence,
-                    Status: packobj[i].Status,
-                    TV: false,
-                    Stretch: false,
-                    Repack: false,
-                    Crating: false,
-                    PackageContent: packobj[i].PackageContent,
-                    PackedType: packobj[i].PackedType,
-                    CFT: packobj[i].CFT,
-                    PackageID: packobj[i].ShippingPackageDetailID,
-                  };
-                  packages_data.push(package_details);
-                }
-              } else if (this.state.PackageType === "Envelop") {
-                let package_details = {};
-                package_details = {
-                  shipments_tracking_number: "",
-                  PackageNumber: packobj[0].PackageNumber,
-                  package_number: packobj[0].Sequence,
-                  weight: packobj[0].EstimetedWeight,
-                  unit_of_weight: "LBS",
-                  length: packobj[0].Length,
-                  width: packobj[0].Width,
-                  height: packobj[0].Height,
-                  chargable_weight: packobj[0].ChargableWeight,
-                  insured_value: parseFloat(packobj[0].InsuredValue).toFixed(2),
-                  Sequence: packobj[0].Sequence,
-                  Status: packobj[0].Status,
-                  TV: false,
-                  Stretch: false,
-                  Repack: false,
-                  Crating: false,
-                  PackageContent: packobj[0].PackageContent,
-                  PackedType: packobj[0].PackedType,
-                  CFT: parseFloat(packobj[0].CFT).toFixed(2),
-                  PackageID: packobj[0].ShippingPackageDetailID,
-                };
-
-                packages_data.push(package_details);
-              }
-            }
-
-            var packages = packages_data;
-            for (var i = 0; i < commercialData.length; i++) {
-              let commercail_details = {};
-              commercail_details = {
-                shipments_tracking_number: "",
-                package_number: commercialData[i].PackageNumber,
-                content_description: commercialData[i].ContentDescription,
-                // newipLocation: commercialData[i].ipLocation,
-                quantity: commercialData[i].Quantity,
-                value_per_qty: commercialData[i].ValuePerQuantity,
-                total_value: commercialData[i].TotalValue,
-                Status: commercialData[i].Status,
-                CommercialInvoiceID:
-                  commercialData[i].ShippingCommercialInvoiceID,
-              };
-              com_data.push(commercail_details);
-            }
-            var commercial = com_data;
-            var shipments = {
-              tracking_number: "",
-              shipment_type: scheduleobj,
-              location_type: this.state.LocationType,
-              is_pickup: !CommonConfig.isEmpty(this.state.IsPickup.data)
-                ? this.state.IsPickup.data[0] === 0
-                  ? false
-                  : true
-                : this.state.IsPickup,
-              ShipmentStatus: this.state.ShipmentStatus,
-              pickup_date:
-                CommonConfig.isEmpty(this.state.PickupDate) != true
-                  ? // ? momentTimezone(this.state.PickupDate)
-                    //     .tz(CommonConfig.UStimezone)
-                    //     .format("YYYY-MM-DD HH:mm:ss")
-                    //     .toString()
-                    moment(this.state.PickupDate)
-                      .format("YYYY-MM-DD HH:mm:ss")
-                      .toString()
-                  : null,
-              ReadyTime: this.state.ReadyTime,
-              AvailableTime: this.state.AvailableTime,
-              SpecialInstucation: this.state.NotesforPickup,
-              pickupProvider: !CommonConfig.isEmpty(
-                this.state.PickupVendorName.value
-              )
-                ? this.state.PickupVendorName.value
-                : null,
-              package_type: !CommonConfig.isEmpty(packobj)
-                ? this.state.PackageType
-                : "",
-              total_packages: packobj.filter((x) => x.Status === "Active")
-                .length,
-              ContainerID: !CommonConfig.isEmpty(this.state.ContainerName.value)
-                ? this.state.ContainerName.value
-                : null,
-              promo_code: "",
-              is_agree: "",
-              total_weight: !CommonConfig.isEmpty(senderobj)
-                ? senderobj.TotalWeight
-                : 0,
-              total_chargable_weight: !CommonConfig.isEmpty(
-                this.state.totalChargableWeight
-              )
-                ? this.state.totalChargableWeight
-                : 0.0,
-              total_insured_value: !CommonConfig.isEmpty(
-                this.state.totalInsuredValue
-              )
-                ? this.state.totalInsuredValue
-                : 0.0,
-              duties_paid_by: this.state.DutiesPaidBy,
-              total_declared_value: !CommonConfig.isEmpty(senderobj)
-                ? senderobj.TotalDeclaredValue
-                : 0,
-              userName: CommonConfig.loggedInUserData().LoginID,
-              InvoiceDueDate:
-                CommonConfig.isEmpty(this.state.InvoiceDueDate) != true
-                  ? moment(this.state.InvoiceDueDate)
-                      .format("YYYY-MM-DD HH:mm:ss")
-                      .toString()
-                  : null,
-              managed_by: this.state.ManagedBy.value,
-              ServiceName: this.state.ServiceName
-                ? this.state.ServiceName.value
-                : "",
-              SubServiceName: this.state.SubServiceName
-                ? this.state.SubServiceName.value
-                : "",
-              PersonID: this.state.PersonID,
-              IsPackageAccess: this.state.IsPackageAccess,
-              ShippingID:
-                this.props.location.state &&
-                this.props.location.state.ShipppingID
-                  ? this.props.location.state.ShipppingID
-                  : null,
-            };
-
-            var from_address = {
-              AddressID: senderobj.FromAddressID,
-              country_id: this.state.selectedFromCountry.value,
-              country_name: this.state.selectedFromCountry.label,
-              company_name: this.state.FromCompanyName,
-              contact_name: this.state.FromContactName,
-              address_1: this.state.FromAddressLine1,
-              address_2: this.state.FromAddressLine2,
-              address_3: this.state.FromAddressLine3,
-              MovingBack: CommonConfig.isEmpty(this.state.FromMovingBack.value)
-                ? this.state.FromMovingBack
-                : this.state.FromMovingBack.value,
-              OriginalPassportAvailable: CommonConfig.isEmpty(
-                this.state.FromOriginalPassortAvailable.value
-              )
-                ? this.state.FromOriginalPassortAvailable
-                : this.state.FromOriginalPassortAvailable.value,
-              EligibleForTR: CommonConfig.isEmpty(
-                this.state.FromEligibleForTR.value
-              )
-                ? this.state.FromEligibleForTR
-                : this.state.FromEligibleForTR.value,
-              city_id: 1,
-              city_name: CommonConfig.isEmpty(this.state.fromCity.value)
-                ? this.state.fromCity
-                : this.state.fromCity.value,
-              state_id: 1,
-              fedex_city: senderobj.FedexCity,
-              //state_name: this.state.FromAddressObj.AddressDetail.State,
-              state_name: this.state.fromState.value
-                ? this.state.fromState.value
-                : this.state.fromState.label == ""
-                ? ""
-                : this.state.fromState,
-              zip_code: this.state.FromZipCode,
-              phone1: this.state.FromPhone1,
-              phone2: this.state.FromPhone2,
-              email: this.state.FromEmail,
-            };
-            var to_address = {
-              AddressID: recipientobj.ToAddressID,
-              country_id: this.state.selectedToCountry.value,
-              country_name: this.state.selectedToCountry.label,
-              company_name: this.state.ToCompanyName,
-              contact_name: this.state.ToContactName,
-              address_1: this.state.ToAddressLine1,
-              address_2: this.state.ToAddressLine2,
-              address_3: this.state.ToAddressLine3,
-              city_id: 2,
-              city_name: CommonConfig.isEmpty(this.state.toCity.value)
-                ? this.state.toCity
-                : this.state.toCity.value,
-              state_id: 1,
-              fedex_city: recipientobj.FedexCity,
-              // state_name: this.state.ToAddressObj.AddressDetail.State,
-              state_name: this.state.toState.value
-                ? this.state.toState.value
-                : this.state.toState.value == ""
-                ? ""
-                : this.state.toState,
-              zip_code: this.state.ToZipCode,
-              phone1: this.state.ToPhone1,
-              phone2: this.state.ToPhone2,
-              email: this.state.ToEmail,
-            };
-            for (var j = 0; j < bankObj.length; j++) {
-              let paymentData = {};
-              paymentData = {
-                PaymentID: bankObj[j]["PaymentID"],
-                PaymentType: bankObj[j]["PaymentType"],
-                name_on_card: bankObj[j]["CardName"],
-                card_number: bankObj[j]["CardNumber"],
-                card_type: bankObj[j]["CardType"],
-                expiration_month: bankObj[j]["CardExpiryMonth"],
-                expiration_year: bankObj[j]["CardExpiryYear"],
-                cvv_code: bankObj[j]["CardCVV"],
-                zip_code: bankObj[j]["CardZipCode"],
-                PaymentStatus: bankObj[j]["PaymentStatus"],
-                name_on_bank_account: bankObj[j]["NameonAccount"],
-                bank_name: bankObj[j]["BankName"],
-                account_number: bankObj[j]["AccountNumber"],
-                routing_number: bankObj[j]["RoutingNumber"],
-                Status: bankObj[j]["Status"],
-                InvoiceAmount: bankObj[j]["InvoiceAmount"],
-                DatePaid: bankObj[j]["PaidDate"],
-              };
-
-              paymentdata.push(paymentData);
-            }
-            console.log("pppppp", this.state.paymentIssued);
-            for (var j = 0; j < creditCardObj.length; j++) {
-              let paymentData = {};
-              paymentData = {
-                PaymentID: creditCardObj[j]["PaymentID"],
-                PaymentType: creditCardObj[j]["PaymentType"],
-                name_on_card: creditCardObj[j]["CardName"],
-                card_number: creditCardObj[j]["CardNumber"],
-                card_type: creditCardObj[j]["CardType"],
-                expiration_month: creditCardObj[j]["CardExpiryMonth"],
-                expiration_year: creditCardObj[j]["CardExpiryYear"],
-                cvv_code: creditCardObj[j]["CardCVV"],
-                PaymentStatus: creditCardObj[j]["PaymentStatus"],
-                zip_code: creditCardObj[j]["CardZipCode"],
-                name_on_bank_account: creditCardObj[j]["NameonAccount"],
-                bank_name: creditCardObj[j]["BankName"],
-                account_number: creditCardObj[j]["AccountNumber"],
-                routing_number: creditCardObj[j]["RoutingNumber"],
-                Status: creditCardObj[j]["Status"],
-                InvoiceAmount: creditCardObj[j]["InvoiceAmount"],
-                DatePaid: creditCardObj[j]["PaidDate"],
-              };
-
-              paymentdata.push(paymentData);
-            }
-
-            var FinalNotes = this.state.notes.filter(
-              (x) => x.NoteText !== "" && x.NoteText !== null
-            );
-            var finalAttachment = [];
-
-            for (var i = 0; i < this.state.Attachments.length; i++) {
-              if (!this.state.Attachments[i].hasOwnProperty("TrackingNumber")) {
-                if (
-                  this.state.Attachments[i].hasOwnProperty("AttachmentName")
-                ) {
-                  finalAttachment.push(this.state.Attachments[i]);
-                }
-              }
-            }
-
-            var objdata = {};
-            if (this.state.IsChanged) {
-              objdata = {
-                UserID: CommonConfig.loggedInUserData().PersonID,
-                TrackingNumber: this.state.TrackingNumber,
-                shipments: shipments,
-                MovingBackToIndia: this.state.movingBackIndia,
-                trackingData: TrackingData,
-                from_address: from_address,
-                to_address: to_address,
-                PaymentData: paymentdata,
-                manualTrackingData: ManualTrackingData,
-                packages: packages,
-                commercial: commercial,
-                Notes: FinalNotes,
-                invoiceData: paymentInvoiceData,
-                paymentReceivedData: paymentReceivedData,
-                paymentIssued: paymentIssued,
-                TotalCommercialvalue: "",
-                DocumentList: finalAttachment,
-                previousAllClear: this.state.previousAllClear,
-                AllClear:
-                  this.state.AllClear.value === "Not Ready"
-                    ? null
-                    : this.state.AllClear.value === "Ready for Yes"
-                    ? 3
-                    : this.state.AllClear.value === "Collections" // ? "Ready for Yes"
-                    ? 4
-                    : this.state.AllClear.value === "No"
-                    ? 0
-                    : 1,
-                Amount: this.state.TotalCostReceived,
-              };
-              if (
-                objdata.AllClear === "Yes" &&
-                this.state.useraccess.userModuleAccess[15].ModuleID === 18 &&
-                this.state.useraccess.userModuleAccess[15].WriteAccess === 1 &&
-                this.state.useraccess.userModuleAccess[15].DeleteAccess === 1
-              ) {
-                this.setState({ IsChanged: false });
-              }
-            } else {
-              objdata = {
-                UserID: CommonConfig.loggedInUserData().PersonID,
-                TrackingNumber: this.state.TrackingNumber,
-                shipments: shipments,
-                trackingData: TrackingData,
-                MovingBackToIndia: this.state.movingBackIndia,
-                from_address: from_address,
-                to_address: to_address,
-                PaymentData: paymentdata,
-                manualTrackingData: ManualTrackingData,
-                packages: packages,
-                commercial: commercial,
-                Notes: FinalNotes,
-                invoiceData: paymentInvoiceData,
-                paymentReceivedData: paymentReceivedData,
-                paymentIssued: paymentIssued,
-                TotalCommercialvalue: "",
-                DocumentList: finalAttachment,
-              };
-            }
-
-            debugger;
-            if (
-              this.state.isBackIndia ||
-              this.state.CustomClearanceDate !== "" ||
-              this.state.UserAdditionalDetailsID > 0
-            ) {
-              objdata.UserAdditionalData = {
-                NameAsPerPassport: this.state.NameAsPerPassport,
-                PassportNumber: this.state.PassportNumber,
-                YearsOutsideIndia: this.state.YearsOutsideIndia,
-                UserAdditionalDetailsID: this.state.UserAdditionalDetailsID,
-                StayInIndia: this.state.StayInIndia,
-                LatestArrivalDate: this.state.LatestArrivalDate
-                  ? moment(this.state.LatestArrivalDate)
-                      .format(CommonConfig.dateFormat.dbDateTime)
-                      .toString()
-                  : null,
-                AppliedForTR: this.state.AppliedForTR,
-                AbleToProvidePassport: this.state.AbleToProvidePassport,
-                VisaValidDate: this.state.VisaValidDate
-                  ? moment(this.state.VisaValidDate)
-                      .format(CommonConfig.dateFormat.dbDateTime)
-                      .toString()
-                  : null,
-                VisaCategory: this.state.VisaCategory,
-                CustomClearanceDate:
-                  CommonConfig.isEmpty(this.state.CustomClearanceDate) != true
-                    ? moment(this.state.CustomClearanceDate)
-                        .format("YYYY-MM-DD HH:mm:ss")
-                        .toString()
-                    : null,
-              };
-            }
-
-            console.log("pppppp111", objdata.manualTrackingData);
-            if (this.state.createDuplicate == "1") {
-              if (objdata.shipments.shipment_type == "Ocean") {
-                  objdata.UserAdditionalData = {
-                    NameAsPerPassport: "",
-                    PassportNumber: "",
-                    YearsOutsideIndia: "",
-                    UserAdditionalDetailsID: null,
-                    StayInIndia: "",
-                    LatestArrivalDate: null,
-                    AppliedForTR: "",
-                    AbleToProvidePassport: "",
-                    VisaValidDate: null,
-                    VisaCategory: "",
-                    CustomClearanceDate:null,
-                    isBackIndia:"No",
-                    movingBackIndia:"No",
-                    AbleToProvidePassport:"No"
-                  };
-              }
-              var todayDate = new Date();
-              const note1 = {
-                NoteText:
-                  "Shipment is duplicate created by Tracking No: " +
-                  objdata.TrackingNumber,
-                NoteType: null,
-                NoteTitle: null,
-                Status: "Active",
-                AttachmentID: null,
-                AttachmentType: null,
-                AttachmentName: null,
-                CreatedOn: moment(todayDate).format(
-                  CommonConfig.dateFormat.dateTime
-                ),
-                disabled: false,
-                closebutton: true,
-                CreatedBy: CommonConfig.loggedInUserData().PersonID,
-                NoteID: null,
-                CreatedByNote: CommonConfig.loggedInUserData().Name,
-                AddedBy: CommonConfig.loggedInUserData().Name,
-                Index: 1,
-              };
-              let NoteDate = [];
-              NoteDate.push(note1);
-              objdata.Notes = NoteDate;
-              objdata.TrackingNumber = null;
-              objdata.shipments.ShippingID = null;
-              objdata.from_address.AddressID = null;
-              objdata.to_address.AddressID = null;
-              objdata.shipments.ServiceName = "";
-              objdata.shipments.SubServiceName = "";
-              objdata.manualTrackingData = [];
-              objdata.trackingData = [];
-              delete objdata.shipments.ShipmentStatus;
-              delete objdata.shipments.ContainerID;
-              delete objdata.shipments.pickupProvider;
-              // objdata.UserAdditionalData = [];
-
-              debugger;
-
-              if (this.state.PackageType === "Package") {
-                objdata.commercial = [];
-              } else {
-                for (var i = 0; i < commercial.length; i++) {
-                  delete commercial[i].CommercialInvoiceID;
-                }
-                objdata.commercial = commercial;
-              }
-              // objdata.Notes = []
-              objdata.invoiceData = [];
-              objdata.paymentReceivedData = [];
-              objdata.paymentIssued = [];
-              objdata.TotalCommercialvalue = "";
-              objdata.DocumentList = [];
-
-              console.log(objdata.PaymentData);
-              if (objdata.PaymentData.length == 0) {
-                var payment_online1 = {
-                  PaymentID: null,
-                  name_on_card: "",
-                  card_number: "",
-                  card_type: "",
-                  expiration_month: "",
-                  expiration_year: "",
-                  cvv_code: "",
-                  zip_code: "",
-                  name_on_bank_account: "",
-                  bank_name: "",
-                  account_number: "",
-                  routing_number: "",
-                  InvoiceAmount: 0.0,
-                };
-
-                let Paymentdata = [];
-                Paymentdata.push(payment_online1);
-                objdata.PaymentData = Paymentdata;
-              } else {
-                for (
-                  let index = 0;
-                  index < objdata.PaymentData.length;
-                  index++
-                ) {
-                  objdata.PaymentData[index].PaymentID = null;
-                }
-              }
-              console.log(objdata.PaymentData);
-              if (objdata.shipments.shipment_type == "Ocean") {
-                objdata.packages = [];
-              } else {
-                if (objdata.packages.length > 0) {
-                  for (
-                    let index = 0;
-                    index < objdata.packages.length;
-                    index++
-                  ) {
-                    objdata.packages[index].PackageID = null;
-                  }
-                }
-              }
-            }
-            var bankCount = 0
-            debugger
-            if(objdata.PaymentData){
-              for(i = 0 ; i < objdata.PaymentData.length ; i++){
-                if(objdata.PaymentData[i].Status == "Active"){
-                  if(objdata.PaymentData[i].card_number != ""){
-                    let letter = objdata.PaymentData[i].card_number.charAt(0);
-
-                    var Cardlengths = 0
-                    if(letter == "2" || letter == "5" || letter == "4"){
-                      Cardlengths = 16
-                    }
-                    if(letter == "3"){
-                      Cardlengths = 15
-                    }
-                    if(objdata.PaymentData[i].card_number.length < Cardlengths){
-                      bankCount = 1
-                      cogoToast.error(
-                        "Please enter valid credit card number"
-                      );
-                      return;   
-                    }
-                  }
-                }
-              }
-            }
-
-            
-
-            console.log("objdata = ", objdata);
-            var formData = new FormData();
-            formData.append("data", JSON.stringify(objdata));
-            if (this.state.AttachmentList.length > 0) {
-              this.state.AttachmentList.forEach((file) => {
-                formData.append("Attachments", file);
-              });
-            }
-            
-            this.showLoader();
-            try {
-              api
-                .post("scheduleshipment/addshipments", formData)
-                .then((res) => {
-                  this.hideLoader();
-                  if (res.success) {
-                    if (res.data.success === true) {
-                      if (this.state.createDuplicate == "1") {
-                        if (objdata.shipments.shipment_type == "Ocean") {
-                          var data = {
-                            ShippingID: res.data.ShippingID,
-                            Mode: "I",
-                            shipStatus: "",
-                            pickupDate: "",
-                          };
-
-                          api
-                            .post("scheduleshipment/autoOceanTracking", data)
-                            .then((res) => {
-                              console.log(res);
-                            });
-                        }
-
-                        this.state.createDuplicate = "0";
-                        this.state.createopen = false;
-                        this.state.dupTracking = res.data.data;
-                        if (this.state.setDupLicate == true) {
-                          const { history } = this.props;
-
-                          debugger;
-                          var sortPropsdata = [
-                            {
-                              desc: true,
-                              id: "ShipmentDate",
-                            },
-                          ];
-                          var filterlistdata = [];
-
-                          var shipmentstatusListData = [
-                            {
-                              label: "New Request",
-                              value: "New Request",
-                            },
-                          ];
-
-                          console.log("this.state.sortProps = ", sortPropsdata);
-                          console.log(
-                            "this.state.shipmentstatusList = ",
-                            shipmentstatusListData
-                          );
-
-                          history.push({
-                            pathname: "ShipmentNew",
-                            state: {
-                              ShipppingID: res.data.ShippingID,
-                              filterlist: filterlistdata,
-                              type: "Shipment",
-                              createDup: "1",
-                              shipmentstatusList: shipmentstatusListData,
-                              sortlist: sortPropsdata,
-                            },
-                          });
-                          // window.location.reload();
-                        } else {
-                          this.state.successOpened = true;
-                        }
-
-                        // cogoToast.success("Duplicated created Successfully. Tracking Number : " + res.data.data);
-                      } else {
-                        cogoToast.success("Updated Successfully");
-                      }
-                      if (this.state.MailDelivered === true) {
-                        this.setState({ MailOpenPopup: true });
-                      } else {
-                        this.setState({ MailOpenPopup: false });
-                      }
-                      if (objdata.shipments.ShippingID < 13071) {
-                        if (objdata.shipments.shipment_type == "Ocean") {
-                          var data = {
-                            ShippingID: objdata.shipments.ShippingID,
-                            Mode: "U",
-                            shipStatus: objdata.shipments.ShipmentStatus,
-                            pickupDate:
-                              CommonConfig.isEmpty(this.state.PickupDate) !=
-                              true
-                                ? moment(this.state.PickupDate)
-                                    .format("YYYY-MM-DD")
-                                    .toString()
-                                : null,
-                            containerID: objdata.shipments.ContainerID,
-                          };
-
-                          api
-                            .post(
-                              "scheduleshipment/tempautoOceanTracking",
-                              data
-                            )
-                            .then((res) => {});
-                        }
-                      } else {
-                        if (objdata.shipments.shipment_type == "Ocean") {
-                          var data = {
-                            ShippingID: objdata.shipments.ShippingID,
-                            Mode: "U",
-                            shipStatus: objdata.shipments.ShipmentStatus,
-                            pickupDate:
-                              CommonConfig.isEmpty(this.state.PickupDate) !=
-                              true
-                                ? moment(this.state.PickupDate)
-                                    .format("YYYY-MM-DD")
-                                    .toString()
-                                : null,
-                          };
-
-                          api
-                            .post("scheduleshipment/autoOceanTracking", data)
-                            .then((res) => {});
-                        }
-                      }
-
-                      if (redirect) {
-                        this.setState({ redirect: true });
-                        if (this.state.MailDelivered == false) {
-                          if (this.state.isLock === false) {
-                            console.log("1.......");
-                            this.releaseLock();
-                          }
-                          this.props.history.push({
-                            pathname: "/admin/ShipmentList",
-                            state: {
-                              filterlist:
-                                this.props.history.location.state &&
-                                this.props.history.location.state.filterlist !==
-                                  undefined
-                                  ? this.props.history.location.state.filterlist
-                                  : null,
-                              shipmentstatusList:
-                                this.props.history.location.state &&
-                                this.props.history.location.state
-                                  .shipmentstatusList !== undefined
-                                  ? this.props.history.location.state
-                                      .shipmentstatusList
-                                  : [],
-                              sortlist:
-                                this.props.history.location.state &&
-                                this.props.history.location.state.sortlist !==
-                                  undefined
-                                  ? this.props.history.location.state.sortlist
-                                  : null,
-                              type:
-                                this.props.history.location.state &&
-                                this.props.history.location.state.type !==
-                                  undefined
-                                  ? this.props.history.location.state.type
-                                  : "Shipment",
-                            },
-                          });
-                        }
-                      } else {
-                        this.setState(
-                          {
-                            Attachments: this.state.Attachments.filter(
-                              (x) => x.TrackingNumber
-                            ),
-                            AttachmentList: [],
-                          },
-                          function() {
-                            this.reCallApi();
-                          }
-                        );
-                      }
-                    } else {
-                      const options = {
-                        hideAfter: 5,
+                    if(commercialData[i].ShippingCommercialInvoiceID == null){
+                      commercail_details = {
+                        shipments_tracking_number: "",
+                        package_number: commercialData[i].PackageNumber,
+                        content_description: commercialData[i].ContentDescription,
+                        // newipLocation: commercialData[i].ipLocation,
+                        quantity: commercialData[i].Quantity,
+                        value_per_qty: commercialData[i].ValuePerQuantity,
+                        total_value: commercialData[i].TotalValue,
+                        Status: commercialData[i].Status,
+                        NewUpdatedBy:commercialData[i].NewUpdateBy,
+                        CommercialInvoiceID:
+                          commercialData[i].ShippingCommercialInvoiceID,
                       };
-
-                      this.setState({
-                        isLock: true,
-                        lockMsg: res.data.message,
-                      });
-
-                      if (
-                        res.data.message === "sequence number already in use"
-                      ) {
-                        cogoToast.error("Sequence number is already assigned");
-                        this.setState({
-                          isLock: false,
-                          lockMsg: res.data.message,
-                        });
-                        //this.reCallApi();
-                      } else {
-                        cogoToast.error(res.data.message, options);
+                    }else{
+                      if(commercialData[i].NewUpdateBy > 0){
+                        commercail_details = {
+                          shipments_tracking_number: "",
+                          package_number: commercialData[i].PackageNumber,
+                          content_description: commercialData[i].ContentDescription,
+                          // newipLocation: commercialData[i].ipLocation,
+                          quantity: commercialData[i].Quantity,
+                          value_per_qty: commercialData[i].ValuePerQuantity,
+                          total_value: commercialData[i].TotalValue,
+                          Status: commercialData[i].Status,
+                          NewUpdatedBy:commercialData[i].NewUpdateBy,
+                          CommercialInvoiceID:
+                            commercialData[i].ShippingCommercialInvoiceID,
+                        };
+                      }else{
+                        commercail_details = {
+                          shipments_tracking_number: "",
+                          package_number: commercialData[i].PackageNumber,
+                          content_description: commercialData[i].ContentDescription,
+                          // newipLocation: commercialData[i].ipLocation,
+                          quantity: commercialData[i].Quantity,
+                          value_per_qty: commercialData[i].ValuePerQuantity,
+                          total_value: commercialData[i].TotalValue,
+                          Status: commercialData[i].Status,
+                          NewUpdatedBy:commercialData[i].UpdatedBy,
+                          CommercialInvoiceID:
+                            commercialData[i].ShippingCommercialInvoiceID,
+                        };
                       }
+                      
+                    }
+
+                    
+                    com_data.push(commercail_details);
+                  }
+                  var commercial = com_data;
+                  var shipments = {
+                    tracking_number: "",
+                    shipment_type: scheduleobj,
+                    location_type: this.state.LocationType,
+                    is_pickup: !CommonConfig.isEmpty(this.state.IsPickup.data)
+                      ? this.state.IsPickup.data[0] === 0
+                        ? false
+                        : true
+                      : this.state.IsPickup,
+                    ShipmentStatus: this.state.ShipmentStatus,
+                    pickup_date:
+                      CommonConfig.isEmpty(this.state.PickupDate) != true
+                        ? // ? momentTimezone(this.state.PickupDate)
+                          //     .tz(CommonConfig.UStimezone)
+                          //     .format("YYYY-MM-DD HH:mm:ss")
+                          //     .toString()
+                          moment(this.state.PickupDate)
+                            .format("YYYY-MM-DD HH:mm:ss")
+                            .toString()
+                        : null,
+                    ReadyTime: this.state.ReadyTime,
+                    AvailableTime: this.state.AvailableTime,
+                    SpecialInstucation: this.state.NotesforPickup,
+                    pickupProvider: !CommonConfig.isEmpty(
+                      this.state.PickupVendorName.value
+                    )
+                      ? this.state.PickupVendorName.value
+                      : null,
+                    package_type: !CommonConfig.isEmpty(packobj)
+                      ? this.state.PackageType
+                      : "",
+                    total_packages: packobj.filter((x) => x.Status === "Active")
+                      .length,
+                    ContainerID: !CommonConfig.isEmpty(this.state.ContainerName.value)
+                      ? this.state.ContainerName.value
+                      : null,
+                    promo_code: "",
+                    is_agree: "",
+                    total_weight: !CommonConfig.isEmpty(senderobj)
+                      ? senderobj.TotalWeight
+                      : 0,
+                    total_chargable_weight: !CommonConfig.isEmpty(
+                      this.state.totalChargableWeight
+                    )
+                      ? this.state.totalChargableWeight
+                      : 0.0,
+                    total_insured_value: !CommonConfig.isEmpty(
+                      this.state.totalInsuredValue
+                    )
+                      ? this.state.totalInsuredValue
+                      : 0.0,
+                    duties_paid_by: this.state.DutiesPaidBy,
+                    total_declared_value: !CommonConfig.isEmpty(senderobj)
+                      ? senderobj.TotalDeclaredValue
+                      : 0,
+                    userName: CommonConfig.loggedInUserData().LoginID,
+                    InvoiceDueDate:
+                      CommonConfig.isEmpty(this.state.InvoiceDueDate) != true
+                        ? moment(this.state.InvoiceDueDate)
+                            .format("YYYY-MM-DD HH:mm:ss")
+                            .toString()
+                        : null,
+                    managed_by: this.state.ManagedBy.value,
+                    ServiceName: this.state.ServiceName
+                      ? this.state.ServiceName.value
+                      : "",
+                    SubServiceName: this.state.SubServiceName
+                      ? this.state.SubServiceName.value
+                      : "",
+                    PersonID: this.state.PersonID,
+                    IsPackageAccess: this.state.IsPackageAccess,
+                    ShippingID:
+                      this.props.location.state &&
+                      this.props.location.state.ShipppingID
+                        ? this.props.location.state.ShipppingID
+                        : null,
+                  };
+      
+                  var from_address = {
+                    AddressID: senderobj.FromAddressID,
+                    country_id: this.state.selectedFromCountry.value,
+                    country_name: this.state.selectedFromCountry.label,
+                    company_name: this.state.FromCompanyName,
+                    contact_name: this.state.FromContactName,
+                    address_1: this.state.FromAddressLine1,
+                    address_2: this.state.FromAddressLine2,
+                    address_3: this.state.FromAddressLine3,
+                    MovingBack: CommonConfig.isEmpty(this.state.FromMovingBack.value)
+                      ? this.state.FromMovingBack
+                      : this.state.FromMovingBack.value,
+                    OriginalPassportAvailable: CommonConfig.isEmpty(
+                      this.state.FromOriginalPassortAvailable.value
+                    )
+                      ? this.state.FromOriginalPassortAvailable
+                      : this.state.FromOriginalPassortAvailable.value,
+                    EligibleForTR: CommonConfig.isEmpty(
+                      this.state.FromEligibleForTR.value
+                    )
+                      ? this.state.FromEligibleForTR
+                      : this.state.FromEligibleForTR.value,
+                    city_id: 1,
+                    city_name: CommonConfig.isEmpty(this.state.fromCity.value)
+                      ? this.state.fromCity
+                      : this.state.fromCity.value,
+                    state_id: 1,
+                    fedex_city: senderobj.FedexCity,
+                    //state_name: this.state.FromAddressObj.AddressDetail.State,
+                    state_name: this.state.fromState.value
+                      ? this.state.fromState.value
+                      : this.state.fromState.label == ""
+                      ? ""
+                      : this.state.fromState,
+                    zip_code: this.state.FromZipCode,
+                    phone1: this.state.FromPhone1,
+                    phone2: this.state.FromPhone2,
+                    email: this.state.FromEmail,
+                  };
+                  var to_address = {
+                    AddressID: recipientobj.ToAddressID,
+                    country_id: this.state.selectedToCountry.value,
+                    country_name: this.state.selectedToCountry.label,
+                    company_name: this.state.ToCompanyName,
+                    contact_name: this.state.ToContactName,
+                    address_1: this.state.ToAddressLine1,
+                    address_2: this.state.ToAddressLine2,
+                    address_3: this.state.ToAddressLine3,
+                    city_id: 2,
+                    city_name: CommonConfig.isEmpty(this.state.toCity.value)
+                      ? this.state.toCity
+                      : this.state.toCity.value,
+                    state_id: 1,
+                    fedex_city: recipientobj.FedexCity,
+                    // state_name: this.state.ToAddressObj.AddressDetail.State,
+                    state_name: this.state.toState.value
+                      ? this.state.toState.value
+                      : this.state.toState.value == ""
+                      ? ""
+                      : this.state.toState,
+                    zip_code: this.state.ToZipCode,
+                    phone1: this.state.ToPhone1,
+                    phone2: this.state.ToPhone2,
+                    email: this.state.ToEmail,
+                  };
+                  for (var j = 0; j < bankObj.length; j++) {
+                    let paymentData = {};
+                    paymentData = {
+                      PaymentID: bankObj[j]["PaymentID"],
+                      PaymentType: bankObj[j]["PaymentType"],
+                      name_on_card: bankObj[j]["CardName"],
+                      card_number: bankObj[j]["CardNumber"],
+                      card_type: bankObj[j]["CardType"],
+                      expiration_month: bankObj[j]["CardExpiryMonth"],
+                      expiration_year: bankObj[j]["CardExpiryYear"],
+                      cvv_code: bankObj[j]["CardCVV"],
+                      zip_code: bankObj[j]["CardZipCode"],
+                      PaymentStatus: bankObj[j]["PaymentStatus"],
+                      name_on_bank_account: bankObj[j]["NameonAccount"],
+                      bank_name: bankObj[j]["BankName"],
+                      account_number: bankObj[j]["AccountNumber"],
+                      routing_number: bankObj[j]["RoutingNumber"],
+                      Status: bankObj[j]["Status"],
+                      InvoiceAmount: bankObj[j]["InvoiceAmount"],
+                      DatePaid: bankObj[j]["PaidDate"],
+                    };
+      
+                    paymentdata.push(paymentData);
+                  }
+                  console.log("pppppp", this.state.paymentIssued);
+                  for (var j = 0; j < creditCardObj.length; j++) {
+                    let paymentData = {};
+                    paymentData = {
+                      PaymentID: creditCardObj[j]["PaymentID"],
+                      PaymentType: creditCardObj[j]["PaymentType"],
+                      name_on_card: creditCardObj[j]["CardName"],
+                      card_number: creditCardObj[j]["CardNumber"],
+                      card_type: creditCardObj[j]["CardType"],
+                      expiration_month: creditCardObj[j]["CardExpiryMonth"],
+                      expiration_year: creditCardObj[j]["CardExpiryYear"],
+                      cvv_code: creditCardObj[j]["CardCVV"],
+                      PaymentStatus: creditCardObj[j]["PaymentStatus"],
+                      zip_code: creditCardObj[j]["CardZipCode"],
+                      name_on_bank_account: creditCardObj[j]["NameonAccount"],
+                      bank_name: creditCardObj[j]["BankName"],
+                      account_number: creditCardObj[j]["AccountNumber"],
+                      routing_number: creditCardObj[j]["RoutingNumber"],
+                      Status: creditCardObj[j]["Status"],
+                      InvoiceAmount: creditCardObj[j]["InvoiceAmount"],
+                      DatePaid: creditCardObj[j]["PaidDate"],
+                    };
+      
+                    paymentdata.push(paymentData);
+                  }
+      
+                  var FinalNotes = this.state.notes.filter(
+                    (x) => x.NoteText !== "" && x.NoteText !== null
+                  );
+                  var finalAttachment = [];
+      
+                  for (var i = 0; i < this.state.Attachments.length; i++) {
+                    if (!this.state.Attachments[i].hasOwnProperty("TrackingNumber")) {
+                      if (
+                        this.state.Attachments[i].hasOwnProperty("AttachmentName")
+                      ) {
+                        finalAttachment.push(this.state.Attachments[i]);
+                      }
+                    }
+                  }
+      
+                  var objdata = {};
+                  if (this.state.IsChanged) {
+                    objdata = {
+                      UserID: CommonConfig.loggedInUserData().PersonID,
+                      TrackingNumber: this.state.TrackingNumber,
+                      shipments: shipments,
+                      MovingBackToIndia: this.state.movingBackIndia,
+                      trackingData: TrackingData,
+                      from_address: from_address,
+                      to_address: to_address,
+                      PaymentData: paymentdata,
+                      manualTrackingData: ManualTrackingData,
+                      packages: packages,
+                      commercial: commercial,
+                      Notes: FinalNotes,
+                      invoiceData: paymentInvoiceData,
+                      paymentReceivedData: paymentReceivedData,
+                      paymentIssued: paymentIssued,
+                      TotalCommercialvalue: "",
+                      DocumentList: finalAttachment,
+                      previousAllClear: this.state.previousAllClear,
+                      AllClear:
+                        this.state.AllClear.value === "Not Ready"
+                          ? null
+                          : this.state.AllClear.value === "Ready for Yes"
+                          ? 3
+                          : this.state.AllClear.value === "Collections" // ? "Ready for Yes"
+                          ? 4
+                          : this.state.AllClear.value === "No"
+                          ? 0
+                          : 1,
+                      Amount: this.state.TotalCostReceived,
+                    };
+                    if (
+                      objdata.AllClear === "Yes" &&
+                      this.state.useraccess.userModuleAccess[15].ModuleID === 18 &&
+                      this.state.useraccess.userModuleAccess[15].WriteAccess === 1 &&
+                      this.state.useraccess.userModuleAccess[15].DeleteAccess === 1
+                    ) {
+                      this.setState({ IsChanged: false });
                     }
                   } else {
-                    console.log("Schedule Shipment is Not Created in else");
-
-                    cogoToast.error(res.data.message);
+                    objdata = {
+                      UserID: CommonConfig.loggedInUserData().PersonID,
+                      TrackingNumber: this.state.TrackingNumber,
+                      shipments: shipments,
+                      trackingData: TrackingData,
+                      MovingBackToIndia: this.state.movingBackIndia,
+                      from_address: from_address,
+                      to_address: to_address,
+                      PaymentData: paymentdata,
+                      manualTrackingData: ManualTrackingData,
+                      packages: packages,
+                      commercial: commercial,
+                      Notes: FinalNotes,
+                      invoiceData: paymentInvoiceData,
+                      paymentReceivedData: paymentReceivedData,
+                      paymentIssued: paymentIssued,
+                      TotalCommercialvalue: "",
+                      DocumentList: finalAttachment,
+                    };
                   }
-                })
-                .catch((err) => {
-                  console.log("error...", err);
-                });
-            } catch (err) {
-              console.log("error..", err);
+      
+                  debugger;
+                  if (
+                    this.state.isBackIndia ||
+                    this.state.CustomClearanceDate !== "" ||
+                    this.state.UserAdditionalDetailsID > 0
+                  ) {
+                    objdata.UserAdditionalData = {
+                      NameAsPerPassport: this.state.NameAsPerPassport,
+                      PassportNumber: this.state.PassportNumber,
+                      YearsOutsideIndia: this.state.YearsOutsideIndia,
+                      UserAdditionalDetailsID: this.state.UserAdditionalDetailsID,
+                      StayInIndia: this.state.StayInIndia,
+                      LatestArrivalDate: this.state.LatestArrivalDate
+                        ? moment(this.state.LatestArrivalDate)
+                            .format(CommonConfig.dateFormat.dbDateTime)
+                            .toString()
+                        : null,
+                      AppliedForTR: this.state.AppliedForTR,
+                      AbleToProvidePassport: this.state.AbleToProvidePassport,
+                      VisaValidDate: this.state.VisaValidDate
+                        ? moment(this.state.VisaValidDate)
+                            .format(CommonConfig.dateFormat.dbDateTime)
+                            .toString()
+                        : null,
+                      VisaCategory: this.state.VisaCategory,
+                      CustomClearanceDate:
+                        CommonConfig.isEmpty(this.state.CustomClearanceDate) != true
+                          ? moment(this.state.CustomClearanceDate)
+                              .format("YYYY-MM-DD HH:mm:ss")
+                              .toString()
+                          : null,
+                    };
+                  }
+      
+                  console.log("pppppp111", objdata.manualTrackingData);
+                  if (this.state.createDuplicate == "1") {
+                    if (objdata.shipments.shipment_type == "Ocean") {
+                        objdata.UserAdditionalData = {
+                          NameAsPerPassport: "",
+                          PassportNumber: "",
+                          YearsOutsideIndia: "",
+                          UserAdditionalDetailsID: null,
+                          StayInIndia: "",
+                          LatestArrivalDate: null,
+                          AppliedForTR: "",
+                          AbleToProvidePassport: "",
+                          VisaValidDate: null,
+                          VisaCategory: "",
+                          CustomClearanceDate:null,
+                          isBackIndia:"No",
+                          movingBackIndia:"No",
+                          AbleToProvidePassport:"No"
+                        };
+                    }
+                    var todayDate = new Date();
+                    const note1 = {
+                      NoteText:
+                        "Shipment is duplicate created by Tracking No: " +
+                        objdata.TrackingNumber,
+                      NoteType: null,
+                      NoteTitle: null,
+                      Status: "Active",
+                      AttachmentID: null,
+                      AttachmentType: null,
+                      AttachmentName: null,
+                      CreatedOn: moment(todayDate).format(
+                        CommonConfig.dateFormat.dateTime
+                      ),
+                      disabled: false,
+                      closebutton: true,
+                      CreatedBy: CommonConfig.loggedInUserData().PersonID,
+                      NoteID: null,
+                      CreatedByNote: CommonConfig.loggedInUserData().Name,
+                      AddedBy: CommonConfig.loggedInUserData().Name,
+                      Index: 1,
+                    };
+                    let NoteDate = [];
+                    NoteDate.push(note1);
+                    objdata.Notes = NoteDate;
+                    objdata.TrackingNumber = null;
+                    objdata.shipments.ShippingID = null;
+                    objdata.from_address.AddressID = null;
+                    objdata.to_address.AddressID = null;
+                    objdata.shipments.ServiceName = "";
+                    objdata.shipments.SubServiceName = "";
+                    objdata.manualTrackingData = [];
+                    objdata.trackingData = [];
+                    delete objdata.shipments.ShipmentStatus;
+                    delete objdata.shipments.ContainerID;
+                    delete objdata.shipments.pickupProvider;
+                    // objdata.UserAdditionalData = [];
+      
+                    debugger;
+      
+                    if (this.state.PackageType === "Package") {
+                      objdata.commercial = [];
+                    } else {
+                      for (var i = 0; i < commercial.length; i++) {
+                        delete commercial[i].CommercialInvoiceID;
+                      }
+                      objdata.commercial = commercial;
+                    }
+                    // objdata.Notes = []
+                    objdata.invoiceData = [];
+                    objdata.paymentReceivedData = [];
+                    objdata.paymentIssued = [];
+                    objdata.TotalCommercialvalue = "";
+                    objdata.DocumentList = [];
+      
+                    console.log(objdata.PaymentData);
+                    if (objdata.PaymentData.length == 0) {
+                      var payment_online1 = {
+                        PaymentID: null,
+                        name_on_card: "",
+                        card_number: "",
+                        card_type: "",
+                        expiration_month: "",
+                        expiration_year: "",
+                        cvv_code: "",
+                        zip_code: "",
+                        name_on_bank_account: "",
+                        bank_name: "",
+                        account_number: "",
+                        routing_number: "",
+                        InvoiceAmount: 0.0,
+                      };
+      
+                      let Paymentdata = [];
+                      Paymentdata.push(payment_online1);
+                      objdata.PaymentData = Paymentdata;
+                    } else {
+                      for (
+                        let index = 0;
+                        index < objdata.PaymentData.length;
+                        index++
+                      ) {
+                        objdata.PaymentData[index].PaymentID = null;
+                      }
+                    }
+                    console.log(objdata.PaymentData);
+                    if (objdata.shipments.shipment_type == "Ocean") {
+                      objdata.packages = [];
+                    } else {
+                      if (objdata.packages.length > 0) {
+                        for (
+                          let index = 0;
+                          index < objdata.packages.length;
+                          index++
+                        ) {
+                          objdata.packages[index].PackageID = null;
+                        }
+                      }
+                    }
+                  }
+                  var bankCount = 0
+                  debugger
+                  if(objdata.PaymentData){
+                    for(i = 0 ; i < objdata.PaymentData.length ; i++){
+                      if(objdata.PaymentData[i].Status == "Active"){
+                        if(objdata.PaymentData[i].card_number != ""){
+                          let letter = objdata.PaymentData[i].card_number.charAt(0);
+      
+                          var Cardlengths = 0
+                          if(letter == "2" || letter == "5" || letter == "4"){
+                            Cardlengths = 16
+                          }
+                          if(letter == "3"){
+                            Cardlengths = 15
+                          }
+                          if(objdata.PaymentData[i].card_number.length < Cardlengths){
+                            bankCount = 1
+                            cogoToast.error(
+                              "Please enter valid credit card number"
+                            );
+                            return;   
+                          }
+                        }
+                      }
+                    }
+                  }
+      
+                  
+      
+                  console.log("objdata = ", objdata);
+                  var formData = new FormData();
+                  formData.append("data", JSON.stringify(objdata));
+                  if (this.state.AttachmentList.length > 0) {
+                    this.state.AttachmentList.forEach((file) => {
+                      formData.append("Attachments", file);
+                    });
+                  }
+                  
+                  this.showLoader();
+                  try {
+                    api
+                      .post("scheduleshipment/addshipments", formData)
+                      .then((res) => {
+                        this.hideLoader();
+                        if (res.success) {
+                          if (res.data.success === true) {
+                            if (this.state.createDuplicate == "1") {
+                              if (objdata.shipments.shipment_type == "Ocean") {
+                                var data = {
+                                  ShippingID: res.data.ShippingID,
+                                  Mode: "I",
+                                  shipStatus: "",
+                                  pickupDate: "",
+                                };
+      
+                                api
+                                  .post("scheduleshipment/autoOceanTracking", data)
+                                  .then((res) => {
+                                    console.log(res);
+                                  });
+                              }
+      
+                              this.state.createDuplicate = "0";
+                              this.state.createopen = false;
+                              this.state.dupTracking = res.data.data;
+                              if (this.state.setDupLicate == true) {
+                                const { history } = this.props;
+      
+                                debugger;
+                                var sortPropsdata = [
+                                  {
+                                    desc: true,
+                                    id: "ShipmentDate",
+                                  },
+                                ];
+                                var filterlistdata = [];
+      
+                                var shipmentstatusListData = [
+                                  {
+                                    label: "New Request",
+                                    value: "New Request",
+                                  },
+                                ];
+      
+                                console.log("this.state.sortProps = ", sortPropsdata);
+                                console.log(
+                                  "this.state.shipmentstatusList = ",
+                                  shipmentstatusListData
+                                );
+      
+                                history.push({
+                                  pathname: "ShipmentNew",
+                                  state: {
+                                    ShipppingID: res.data.ShippingID,
+                                    filterlist: filterlistdata,
+                                    type: "Shipment",
+                                    createDup: "1",
+                                    shipmentstatusList: shipmentstatusListData,
+                                    sortlist: sortPropsdata,
+                                  },
+                                });
+                                // window.location.reload();
+                              } else {
+                                this.state.successOpened = true;
+                              }
+      
+                              // cogoToast.success("Duplicated created Successfully. Tracking Number : " + res.data.data);
+                            } else {
+                              cogoToast.success("Updated Successfully");
+                            }
+                            if (this.state.MailDelivered === true) {
+                              this.setState({ MailOpenPopup: true });
+                            } else {
+                              this.setState({ MailOpenPopup: false });
+                            }
+                            if (objdata.shipments.ShippingID < 13071) {
+                              if (objdata.shipments.shipment_type == "Ocean") {
+                                var data = {
+                                  ShippingID: objdata.shipments.ShippingID,
+                                  Mode: "U",
+                                  shipStatus: objdata.shipments.ShipmentStatus,
+                                  pickupDate:
+                                    CommonConfig.isEmpty(this.state.PickupDate) !=
+                                    true
+                                      ? moment(this.state.PickupDate)
+                                          .format("YYYY-MM-DD")
+                                          .toString()
+                                      : null,
+                                  containerID: objdata.shipments.ContainerID,
+                                };
+      
+                                api
+                                  .post(
+                                    "scheduleshipment/tempautoOceanTracking",
+                                    data
+                                  )
+                                  .then((res) => {});
+                              }
+                            } else {
+                              if (objdata.shipments.shipment_type == "Ocean") {
+                                var data = {
+                                  ShippingID: objdata.shipments.ShippingID,
+                                  Mode: "U",
+                                  shipStatus: objdata.shipments.ShipmentStatus,
+                                  pickupDate:
+                                    CommonConfig.isEmpty(this.state.PickupDate) !=
+                                    true
+                                      ? moment(this.state.PickupDate)
+                                          .format("YYYY-MM-DD")
+                                          .toString()
+                                      : null,
+                                };
+      
+                                api
+                                  .post("scheduleshipment/autoOceanTracking", data)
+                                  .then((res) => {});
+                              }
+                            }
+      
+                            if (redirect) {
+                              this.setState({ redirect: true });
+                              if (this.state.MailDelivered == false) {
+                                if (this.state.isLock === false) {
+                                  console.log("1.......");
+                                  this.releaseLock();
+                                }
+                                this.props.history.push({
+                                  pathname: "/admin/ShipmentList",
+                                  state: {
+                                    filterlist:
+                                      this.props.history.location.state &&
+                                      this.props.history.location.state.filterlist !==
+                                        undefined
+                                        ? this.props.history.location.state.filterlist
+                                        : null,
+                                    shipmentstatusList:
+                                      this.props.history.location.state &&
+                                      this.props.history.location.state
+                                        .shipmentstatusList !== undefined
+                                        ? this.props.history.location.state
+                                            .shipmentstatusList
+                                        : [],
+                                    sortlist:
+                                      this.props.history.location.state &&
+                                      this.props.history.location.state.sortlist !==
+                                        undefined
+                                        ? this.props.history.location.state.sortlist
+                                        : null,
+                                    type:
+                                      this.props.history.location.state &&
+                                      this.props.history.location.state.type !==
+                                        undefined
+                                        ? this.props.history.location.state.type
+                                        : "Shipment",
+                                  },
+                                });
+                              }
+                            } else {
+                              this.setState(
+                                {
+                                  Attachments: this.state.Attachments.filter(
+                                    (x) => x.TrackingNumber
+                                  ),
+                                  AttachmentList: [],
+                                },
+                                function() {
+                                  this.reCallApi();
+                                }
+                              );
+                            }
+                          } else {
+                            const options = {
+                              hideAfter: 5,
+                            };
+      
+                            this.setState({
+                              isLock: true,
+                              lockMsg: res.data.message,
+                            });
+      
+                            if (
+                              res.data.message === "sequence number already in use"
+                            ) {
+                              cogoToast.error("Sequence number is already assigned");
+                              this.setState({
+                                isLock: false,
+                                lockMsg: res.data.message,
+                              });
+                              //this.reCallApi();
+                            } else {
+                              cogoToast.error(res.data.message, options);
+                            }
+                          }
+                        } else {
+                          console.log("Schedule Shipment is Not Created in else");
+      
+                          cogoToast.error(res.data.message);
+                        }
+                      })
+                      .catch((err) => {
+                        console.log("error...", err);
+                      });
+                  } catch (err) {
+                    console.log("error..", err);
+                  }
+                } else {
+                  this.setState({ redirect: false });
+                  cogoToast.error(`Please enter valid details`);
+                  cogoToast.error("Please correct error and resubmit the form.");
+                }
+              } else {
+                let saveClicked = this.state.saveClicked;
+                saveClicked.saveClick = true;
+                //  saveClicked.redirect = redirect;
+                this.setState({ IsAESOpen: true, saveClicked: saveClicked });
+              }
+            } else {
+              this.setState({ redirect: false });
+              cogoToast.error(`Please enter valid details`);
             }
-          } else {
-            this.setState({ redirect: false });
-            cogoToast.error(`Please enter valid details`);
-            cogoToast.error("Please correct error and resubmit the form.");
-          }
-        } else {
-          let saveClicked = this.state.saveClicked;
-          saveClicked.saveClick = true;
-          //  saveClicked.redirect = redirect;
-          this.setState({ IsAESOpen: true, saveClicked: saveClicked });
-        }
-      } else {
-        this.setState({ redirect: false });
-        cogoToast.error(`Please enter valid details`);
-      }
+          }      
     }
+
+
     // }
   };
 
+ 
   releaseLockIndividual = () =>{
+    this.showLoader();
 
     let data = {
       ShippingID:
@@ -10629,15 +10792,18 @@ class ShipmentCustom extends React.Component {
       ReleaseAll: 0,
     };
     api
-      .post("scheduleshipment/releaseShipmentLockByIDIndividuals", data)
+      .post("contactus/releaseShipmentLockByIDIndividualsData", data)
       .then((res) => {
         if (res.success) {
+          this.hideLoader();
 
-          // window.location.reload();
+          window.location.reload();
         } else {
+          this.hideLoader();
         }
       })
       .catch((err) => {
+        this.hideLoader();
         console.log("setLock err", err);
       });
 
@@ -10702,12 +10868,34 @@ class ShipmentCustom extends React.Component {
     } else if (type === "DutiesPaidBy") {
       this.setState({ DutiesPaidBy: event.target.value });
     } else if (type === "ShipmentStatus") {
-      if (event.target.value === "Delivered") {
-        this.setState({ MailDelivered: true });
-      } else {
-        this.setState({ MailDelivered: false });
+
+      if(event.target.value == "Cancelled"){
+        if(this.state.AllClearYes == false){
+          cogoToast.error("Please open accounts tab to move to cancel");
+        }else{
+            if(this.state.TotalCostInvoice !=
+              this.state.TotalCostReceived.toFixed(2)){
+
+                cogoToast.error("Invoice and Payment Received does not match");
+              }else{
+                this.setState({ ShipmentStatus: event.target.value });
+
+              }
+
+        }
+
+      }else{
+
+        if (event.target.value === "Delivered") {
+          this.setState({ MailDelivered: true });
+        } else {
+          this.setState({ MailDelivered: false });
+        }
+        this.setState({ ShipmentStatus: event.target.value });
+
       }
-      this.setState({ ShipmentStatus: event.target.value });
+
+      
     }
   };
 
@@ -12171,7 +12359,22 @@ class ShipmentCustom extends React.Component {
                 >
                   Generate
                 </Button>
-              ) : record.original.TrackingNumber &&
+              ) 
+
+            : record.original.TrackingNumber &&
+                record.original.Index !== 5 ? (
+                <Button
+                  className="normal-btn sm-orange"
+                  onClick={() =>
+                    this.viewShipmentCommercial(record.original.DocumentType)
+                  }
+                >
+                  View File
+                </Button>
+              )
+              
+              
+              : record.original.TrackingNumber &&
                 record.original.Index !== 3 ? (
                 <Button
                   className="normal-btn sm-orange"
@@ -12345,7 +12548,7 @@ class ShipmentCustom extends React.Component {
                   justIcon
                   color="danger"
                   className="Plus-btn"
-                  onClick={(e) => this.handleDocumentDelete(e, record.original)}
+                  onClick={(e) => this.handleDocumentDeletePopup(e, record.original)}
                 >
                   <i className={"fas fa-minus"} />
                 </Button>
@@ -15688,6 +15891,49 @@ class ShipmentCustom extends React.Component {
           </Dialog>
         </div>
 
+        
+        {/* Delete Popup for attachment */}
+
+          
+        <div>
+          <Dialog
+            open={this.state.deletedocument}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <DialogTitle id="alert-dialog-title">Delete Document</DialogTitle>
+            <DialogContent>
+              <DialogContentText id="alert-dialog-description">
+                Are you sure want to delete document?
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button
+                onClick={() => this.setState({ deletedocument: false })}
+                color="secondary"
+              >
+                Cancel
+              </Button>
+              {/* {this.state.Access.DeleteAccess === 1 ? */}
+
+              <Button
+                onClick={() => this.handleDocumentDelete(this.state.deletedocsdata)}
+                color="primary"
+                autoFocus
+              >
+                Delete
+              </Button>
+
+              
+
+              {/* :null} */}
+            </DialogActions>
+          </Dialog>
+        </div>
+
+        {/* End */}
+
+
         {/* Diplicate Popup */}
 
         <div>
@@ -16397,6 +16643,74 @@ class ShipmentCustom extends React.Component {
             </DialogActions>
           </Dialog>
         </div>
+
+        <div>
+          <Dialog
+            open={this.state.CommercialPopup}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <DialogTitle id="alert-dialog-title">
+              Commercial Invoice Information
+            </DialogTitle>
+            <DialogContent>
+              <DialogContentText id="alert-dialog-description">
+                
+              <div className="package-table">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Type</th>
+                          <th>Name</th>
+                          <th>Date</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                      <tr>
+                    <td>
+                        Created By
+                    </td>
+                    <td>
+                        <span id = "CreatedName">{this.state.ComCreatedName}</span>
+                    </td>
+                    <td>
+                        <span id = "CreatedDate">{this.state.ComCreatedDate}</span>
+                    </td>
+                    
+                  </tr>
+
+                  <tr>
+                    <td>
+                        Last Updated By
+                    </td>
+                    <td>
+                    <span id = "UpdatedName">{this.state.ComUpdatedName}</span>
+                    </td>
+                    <td>
+                      <span id = "UpdatedDate">{this.state.ComUpdatedDate}</span>
+                    </td>
+                  </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                
+               
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button
+                onClick={() =>
+                  this.setState({ CommercialPopup: false })
+                }
+                color="secondary"
+              >
+                Cancel
+              </Button>
+             
+            </DialogActions>
+          </Dialog>
+        </div>
         {/* {Doc Dialog} */}
         <div>
           <Dialog
@@ -17042,7 +17356,7 @@ class ShipmentCustom extends React.Component {
             >
               Duplicate
             </Button>
-            {/* {this.state.isLock == true ?(
+            {this.state.isLock == true ?(
                 this.state.userLockinAllAccess == 1 || this.state.ManagedBy.value == CommonConfig.loggedInUserData().PersonID ?(
                   <Button
                     justify="center"
@@ -17053,7 +17367,7 @@ class ShipmentCustom extends React.Component {
                   </Button>
                 ):null
                 
-            ):null} */}
+            ):null} 
           </div>
           <div className="center">
             {this.props.history.location.state &&

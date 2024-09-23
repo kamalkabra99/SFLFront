@@ -1314,7 +1314,8 @@ if (res.success) {
     } else if (type === "pickupstate") {
       this.setState({ PickupState: value });
     } else if (type === "referredby") {
-      this.setState({ ReferredBy: value.props.value });
+      debugger
+      this.setState({ ReferredBy: value });
     } else if (type === "CancelationReason") {
       this.setState({
         CancelationReason: value,
@@ -6526,9 +6527,9 @@ if (res.success) {
                   </FormControl>
                 </GridItem>
                 <GridItem xs={12} sm={12} md={3}>
-                  <div className="select-spl">
+                  
                     <FormControl fullWidth>
-                      {/* <Autocomplete
+                      <Autocomplete
                       {...referredby}
                       id="referredby"
                       value={this.state.ReferredBy}
@@ -6538,14 +6539,36 @@ if (res.success) {
                       renderInput={(params) => (
                         <TextField {...params} label="Referred by" fullWidth />
                       )}
-                    /> */}
-                      <InputLabel
+                    />
+                      {/* <InputLabel
                         htmlFor="package_number"
                         className={classes.selectLabel}
                       >
                         Referred by
-                      </InputLabel>
-                      <Select
+                      </InputLabel> */}
+
+                      {/* <Autocomplete
+                      {...deliverytype}
+                      id="referredby"
+                      value={ReferredBy}
+                      onChange={(event, value) =>
+                        this.requestChange(event, value, "referredby")
+                      }
+                      onFocus={() =>
+                        this.setState({
+                          Referrederr: false,
+                          Referrederror: "",
+                        })
+                      }
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Referred by"
+                          fullWidth
+                        />
+                      )}
+                    /> */}
+                      {/* <Select
                         fullWidth={true}
                         // id="package_number"
                         name="referredby"
@@ -6561,7 +6584,7 @@ if (res.success) {
                         }
                       >
                         {this.ReferredbyOption()}
-                      </Select>
+                      </Select> */}
 
                       <span
                         id="referrederror"
@@ -6570,7 +6593,7 @@ if (res.success) {
                         {this.state.Referrederror}
                       </span>
                     </FormControl>
-                  </div>
+                  {/* </div> */}
                 </GridItem>
               </GridContainer>
               <GridContainer justify="center">
