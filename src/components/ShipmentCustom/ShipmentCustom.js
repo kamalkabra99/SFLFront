@@ -434,30 +434,6 @@ class ShipmentCustom extends React.Component {
           DocumentCreatedOn: moment().format(CommonConfig.dateFormat.dateOnly),
           DocumentCreatedBy: "Auto",
         },
-
-        // {
-        //   Index: 5,
-        //   FileName: "",
-        //   DocumentType: "HHN",
-        //   isGenerated: false,
-        //   Status: "Active",
-        //   AttachmentName: "HHN",
-        //   TrackingNumber: "5",
-        //   DocumentCreatedOn: moment().format(CommonConfig.dateFormat.dateOnly),
-        //   DocumentCreatedBy: "Auto",
-        // },
-
-        // {
-        //   Index: 5,
-        //   FileName: "",
-        //   DocumentType: "HHN",
-        //   isGenerated: false,
-        //   Status: "Active",
-        //   AttachmentName: "",
-        //   TrackingNumber: "4",
-        //   DocumentCreatedOn: moment().format(CommonConfig.dateFormat.dateOnly),
-        //   DocumentCreatedBy: "Auto",
-        // },
       ],
       Loading: false,
       objAttachment: {
@@ -2099,20 +2075,6 @@ class ShipmentCustom extends React.Component {
               ),
               DocumentCreatedBy: "Auto",
             },
-            // this.state.ShipmentType.value == "Ocean" ?
-            // {
-            //   Index: 5,
-            //   FileName: "",
-            //   DocumentType: "HHN",
-            //   Status: "Active",
-            //   AttachmentName: "HHN",
-            //   TrackingNumber: "5",
-            //   DocumentCreatedOn: moment().format(
-            //     CommonConfig.dateFormat.dateOnly
-            //   ),
-            //   DocumentCreatedBy: "Auto",
-            // }:{},
-
             // (CommonConfig.loggedInUserData().PersonID == 1 ||
             //   CommonConfig.loggedInUserData().PersonID == 18) &&
             !CommonConfig.isEmpty(this.state.ContainerName.value) ||
@@ -12271,6 +12233,7 @@ class ShipmentCustom extends React.Component {
       return { value: city.CityCode, label: city.CityName };
     });
 
+   
     const columns = [
       {
         Header: "Document Type",
@@ -12359,22 +12322,7 @@ class ShipmentCustom extends React.Component {
                 >
                   Generate
                 </Button>
-              ) 
-
-            : record.original.TrackingNumber &&
-                record.original.Index !== 5 ? (
-                <Button
-                  className="normal-btn sm-orange"
-                  onClick={() =>
-                    this.viewShipmentCommercial(record.original.DocumentType)
-                  }
-                >
-                  View File
-                </Button>
-              )
-              
-              
-              : record.original.TrackingNumber &&
+              ) : record.original.TrackingNumber &&
                 record.original.Index !== 3 ? (
                 <Button
                   className="normal-btn sm-orange"
@@ -12548,7 +12496,7 @@ class ShipmentCustom extends React.Component {
                   justIcon
                   color="danger"
                   className="Plus-btn"
-                  onClick={(e) => this.handleDocumentDeletePopup(e, record.original)}
+                  onClick={(e) => this.handleDocumentDelete(e, record.original)}
                 >
                   <i className={"fas fa-minus"} />
                 </Button>
