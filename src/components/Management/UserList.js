@@ -14,6 +14,7 @@ import CardBody from "components/Card/CardBody.js";
 import CardIcon from "components/Card/CardIcon.js";
 import CardHeader from "components/Card/CardHeader.js";
 import zipcelx from "zipcelx";
+import * as XLSX from "xlsx";
 var fileNameSet = "";
 
 setInterval(() => {
@@ -64,6 +65,155 @@ class UserLists extends Component {
       this.setState({ previousSortList: [defaultSort] });
     }
   }
+  doExcel1 = (tableId1, tableId2, tableId3) => {
+    debugger;
+    let targetTableElm1 = document.getElementById(tableId1);
+    let targetTableElm2 = document.getElementById(tableId2);
+    // let targetTableElm3 = document.getElementById(tableId3);
+
+    const wb = { SheetNames: [], Sheets: {} };
+    var ws1 = XLSX.utils.table_to_book(targetTableElm1, { raw: true }).Sheets
+      .Sheet1;
+    wb.SheetNames.push("User Detail");
+    wb.Sheets["User Detail"] = ws1;
+
+    var ws2 = XLSX.utils.table_to_book(targetTableElm2, { raw: true }).Sheets
+      .Sheet1;
+    wb.SheetNames.push("Account Details");
+    wb.Sheets["Account Details"] = ws2;
+
+
+    const blob = new Blob(
+      [this.s2ab(XLSX.write(wb, { bookType: "xlsx", type: "binary" }))],
+      {
+        type: "application/octet-stream",
+      }
+    );
+
+    const link = document.createElement("a");
+    link.href = window.URL.createObjectURL(blob);
+    link.download = "UserDetails.xlsx";
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    this.setState({ Dialogopen: false });
+  };
+
+  s2ab = (s) => {
+    const buf = new ArrayBuffer(s.length);
+    const view = new Uint8Array(buf);
+    for (var i = 0; i != s.length; ++i) view[i] = s.charCodeAt(i) & 0xff;
+    return buf;
+  };
+
+
+  renderShipmentData = () => {
+    return this.state.userList.map((service) => {
+      const {
+        PersonID,
+        UserType,
+        Name,
+        LoginID, 
+        Email,
+        PhoneNum, 
+        AccountNumber,
+        ManagedByName, 
+        Status,
+        TimeZone,
+        StartTime,
+        EndTime,
+        Birthdate,
+        Joiningdate,
+        empAddressLine1,
+        empAddressLine2,
+        empZipcode,
+        empCity,
+        empState,
+        empPhone,
+        empEmail,
+        Salary,
+        Currency,
+        Department,
+        EmployeeID,
+        AddressLine1,
+        AddressLine2,
+        AddressLine3,
+        City,
+        CompanyName,
+        State,
+        ZipCode
+
+      } = service;
+      return (
+        <tr>
+          <td>{PersonID}</td>
+          <td>{UserType}</td>
+          <td>{Name}</td>
+          <td>{LoginID}</td>
+          <td>{CompanyName}</td>
+          <td>{Email}</td>
+          <td>{PhoneNum}</td>
+          <td>{AddressLine1}</td>
+          <td>{AddressLine2}</td>
+          <td>{AddressLine3}</td>
+          <td>{City}</td>
+          <td>{State}</td>
+          <td>{ZipCode}</td>
+          <td>{AccountNumber}</td>
+          <td>{ManagedByName}</td>
+          <td>{Status}</td>
+          <td>{TimeZone}</td>
+          <td>{StartTime}</td>
+          <td>{EndTime}</td>
+          <td>{Birthdate}</td>
+          <td>{Joiningdate}</td>
+          <td>{empPhone}</td>
+          <td>{empEmail}</td>
+
+          <td>{empAddressLine1}</td>
+          <td>{empAddressLine2}</td>
+          <td>{empCity}</td>
+          <td>{empState}</td>
+          <td>{empZipcode}</td>
+          <td>{Salary}</td>
+          <td>{Currency}</td>
+          <td>{Department}</td>
+          <td>{EmployeeID}</td>
+        </tr>
+      );
+    });
+  };
+
+
+  renderTrackingData = () => {
+    return this.state.userListSal.map((service) => {
+      const {
+        LoginID,
+        Name,
+        AccountType,
+        AccountName,
+        AccountNumber,
+        NameOnAccount,
+        RoutingCode
+      } = service;
+      return (
+        <tr>
+          <td>{LoginID}</td>
+
+          <td>{Name}</td>
+          <td>{AccountType}</td>
+          <td>{AccountName}</td>
+          <td>{AccountNumber}</td>
+          <td>{NameOnAccount}</td>
+          <td>{RoutingCode}</td>
+          
+        </tr>
+      );
+    });
+  };
+
 
   getUserList() {
     try {
@@ -340,7 +490,13 @@ class UserLists extends Component {
               <Button
                 justIcon
                 color="danger"
-                onClick={handelExportToExcel}
+                // onClick={handelExportToExcel}
+                onClick={() =>
+                  this.doExcel1(
+                    "table-to-xls1",
+                    "table-to-xls2",
+                  )
+                }
               >
                 <i class="fas fa-download"></i>
               </Button>
@@ -370,6 +526,172 @@ class UserLists extends Component {
               />
             </CardBody>
           </Card>
+
+          <div className="d-none">
+          <table id="table-to-xls1" cellSpacing="10" cellPadding="10">
+            <thead>
+              <tr>
+                <th>
+                  <font size="+0">Person Id</font>
+                </th>
+                <th>
+                  <font size="+0">User Type</font>
+                </th>
+
+                <th>
+                  <font size="+0">Name</font>
+                </th>
+
+                <th>
+                  <font size="+0">Login Id</font>
+                </th>
+
+                <th>
+                  <font size="+0">Company Name</font>
+                </th>
+
+                <th>
+                  <font size="+0">Office Email</font>
+                </th>
+                
+                <th>
+                  <font size="+0">Office Phone</font>
+                </th>
+
+                <th>
+                  <font size="+0">Office AddressLine 1</font>
+                </th>
+
+                <th>
+                  <font size="+0">Office AddressLine 2</font>
+                </th>
+
+                <th>
+                  <font size="+0">Office AddressLine 3</font>
+                </th>
+
+                <th>
+                  <font size="+0">Office City</font>
+                </th>
+
+                <th>
+                  <font size="+0">Office State</font>
+                </th>
+
+                <th>
+                  <font size="+0">Office Postal Code</font>
+                </th>
+
+                <th>
+                  <font size="+0">Account Number</font>
+                </th>
+
+                <th>
+                  <font size="+0">Managed By</font>
+                </th>
+
+                <th>
+                  <font size="+0">Status</font>
+                </th>
+
+                <th>
+                  <font size="+0">Time Zone</font>
+                </th>
+
+                <th>
+                  <font size="+0">Start Time</font>
+                </th>
+
+                <th>
+                  <font size="+0">End Time</font>
+                </th>
+                <th>
+                  <font size="+0">Date of Birth</font>
+                </th>
+                <th>
+                  <font size="+0">Date of Joining</font>
+                </th>
+                
+                <th>
+                  <font size="+0">Employee Phone</font>
+                </th>
+
+                <th>
+                  <font size="+0">Employee Email</font>
+                </th>
+
+                <th>
+                  <font size="+0">Employee AddressLine 1</font>
+                </th>
+
+                <th>
+                  <font size="+0">Employee AddressLine 2</font>
+                </th>
+
+                <th>
+                  <font size="+0">Employee City</font>
+                </th>
+
+                <th>
+                  <font size="+0">Employee State</font>
+                </th>
+
+                <th>
+                  <font size="+0">Employee Postal Code</font>
+                </th>
+
+                <th>
+                  <font size="+0">Salary</font>
+                </th>
+
+                <th>
+                  <font size="+0">Currency</font>
+                </th>
+
+                <th>
+                  <font size="+0">Department</font>
+                </th>
+
+                <th>
+                  <font size="+0">Employee ID</font>
+                </th>
+
+              </tr>
+            </thead>
+            <tbody>{this.renderShipmentData()}</tbody>
+          </table>
+        </div>
+
+        <div className="d-none">
+          <table id="table-to-xls2" cellSpacing="10" cellPadding="10">
+            <thead>
+              <tr>
+                <th align="left" bgcolor="#D9D9D9">
+                  <font size="+0">Login ID</font>
+                </th>
+                <th align="left" bgcolor="#D9D9D9">
+                  <font size="+0">Name</font>
+                </th>
+                <th align="left" bgcolor="#D9D9D9">
+                  <font size="+0">Account Type</font>
+                </th>
+                <th align="left" bgcolor="#D9D9D9">
+                  <font size="+0">Account Name</font>
+                </th>
+                <th align="left" bgcolor="#D9D9D9">
+                  <font size="+0">Account Number</font>
+                </th>
+                <th align="left" bgcolor="#D9D9D9">
+                  <font size="+0">Name on Account</font>
+                </th>
+                <th align="left" bgcolor="#D9D9D9">
+                  <font size="+0">Routing Code</font>
+                </th>
+              </tr>
+            </thead>
+            <tbody>{this.renderTrackingData()}</tbody>
+          </table>
+        </div>
         </GridItem>
       </GridContainer>
     );
