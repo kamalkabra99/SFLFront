@@ -818,122 +818,122 @@ class TimeManagement extends React.Component {
         <GridItem xs={12}>
           <Card>
             <CardHeader className="btn-right-outer" color="primary" icon>
-              <CardIcon color="primary">
-                <HeadsetMic />
-              </CardIcon>
-              
-              <GridContainer>
-              <GridItem xs={12} sm={12} md={4}>
+                <CardIcon color="primary">
+                  <HeadsetMic />
+                </CardIcon>
                   
-              <h4 className="margin-right-auto text-color-black">
-                Time Booking ({this.state.curDate})
-              </h4>
-                </GridItem>
+                  <GridContainer>
+                    <GridItem xs={12} sm={12} md={4}>
+                        
+                        <h4 className="margin-right-auto text-color-black">
+                          Time Booking ({this.state.curDate})
+                        </h4>
+                    </GridItem>
 
-                <GridItem xs={12} sm={12} md={3}>
+                    <GridItem xs={12} sm={12} md={3}>
 
-                  <Autocomplete
-                    id="combo-box-demo"
-                    options={userTimeZone}
-                    value={this.state.userTimeZone}
-                    onChange={(event, value) => this.setUserTimeZone(value)}
-                    getOptionLabel={(option) => option.label}
-                    renderInput={(params) => (
-                      <TextField {...params} label="Time Zone" />
-                    )}
-                  />
-                </GridItem>
-              </GridContainer>
-
-              <div className="buttonW">
-                <Button color="primary" onClick={() => this.handleLeave()}>
-                  Request Time Off
-                </Button>
-              </div>
-              {this.state.loggedUser === 0 &&
-              CommonConfig.getUserAccess("Time Booking").WriteAccess == 1 ? (
-                <div className="buttonW">
-                  <Button
-                    color="primary"
-                    onClick={() => this.handleLogincheck()}
-                  >
-                    Login
-                  </Button>
-                </div>
-              ) : this.state.loggedUserBreak === 1 &&
-                CommonConfig.getUserAccess("Time Booking").WriteAccess == 1 ? (
-                <div className="buttonW">
-                  <Button
-                    color="danger"
-                    onClick={() => this.handleBreakResume()}
-                  >
-                    Resume
-                  </Button>
-                </div>
-              ) : CommonConfig.getUserAccess("Time Booking").WriteAccess ==
-                1 ? (
-                <div className="d-flex">
-                  <div className="filter-wrap">
-                    <div
-                      className="filter-top-right"
-                      onMouseLeave={() =>
-                        this.setState({ IsDropDownShow: false })
-                      }
-                      onMouseOver={() =>
-                        this.setState({ IsDropDownShow: true })
-                      }
-                    >
-                      <Button className="cm-toggle" color="rose">
-                        Break Slab <ExpandMoreIcon />
-                      </Button>
-                      {this.state.IsDropDownShow === true ? (
-                        <div className="cm-dropdown">
-                          <div className="overflow-handle">
-                            {this.state.requestStatus.map((step, key) => {
-                              return (
-                                <li>
-                                  <label>
-                                    <input
-                                      type="radio"
-                                      checked={step.IsSelected}
-                                      onChange={(e) =>
-                                        this.handleCheckboxChange(
-                                          e,
-                                          step,
-                                          step.value
-                                        )
-                                      }
-                                    />{" "}
-                                    {step.label}
-                                  </label>
-                                </li>
-                              );
-                            })}
-                          </div>
-                          <div className="cms-wrap">
-                            <Button
-                              className="cm-search-btn"
-                              color="rose"
-                              onClick={() => this.handleBreak()}
-                            >
-                              Add Break
-                            </Button>
-                          </div>
-                        </div>
-                      ) : null}
-                    </div>
-                  </div>
+                      <Autocomplete
+                        id="combo-box-demo"
+                        options={userTimeZone}
+                        value={this.state.userTimeZone}
+                        onChange={(event, value) => this.setUserTimeZone(value)}
+                        getOptionLabel={(option) => option.label}
+                        renderInput={(params) => (
+                          <TextField {...params} label="Time Zone" />
+                        )}
+                      />
+                    </GridItem>
+                  </GridContainer>
 
                   <div className="buttonW">
-                    <Button
-                      color="danger"
-                      onClick={() => this.handleClickOpen()}
-                    >
-                      Logout
+                    <Button color="primary" onClick={() => this.handleLeave()}>
+                      Request Time Off
                     </Button>
                   </div>
-                </div>
-              ) : null}
+                  {this.state.loggedUser === 0 &&
+                  CommonConfig.getUserAccess("Time Booking").WriteAccess == 1 ? (
+                    <div className="buttonW">
+                      <Button
+                        color="primary"
+                        onClick={() => this.handleLogincheck()}
+                      >
+                        Login
+                      </Button>
+                    </div>
+                  ) : this.state.loggedUserBreak === 1 &&
+                    CommonConfig.getUserAccess("Time Booking").WriteAccess == 1 ? (
+                    <div className="buttonW">
+                      <Button
+                        color="danger"
+                        onClick={() => this.handleBreakResume()}
+                      >
+                        Resume
+                      </Button>
+                    </div>
+                  ) : CommonConfig.getUserAccess("Time Booking").WriteAccess ==
+                    1 ? (
+                    <div className="d-flex">
+                      <div className="filter-wrap">
+                        <div
+                          className="filter-top-right"
+                          onMouseLeave={() =>
+                            this.setState({ IsDropDownShow: false })
+                          }
+                          onMouseOver={() =>
+                            this.setState({ IsDropDownShow: true })
+                          }
+                        >
+                          <Button className="cm-toggle" color="rose">
+                            Break Slab <ExpandMoreIcon />
+                          </Button>
+                          {this.state.IsDropDownShow === true ? (
+                            <div className="cm-dropdown">
+                              <div className="overflow-handle">
+                                {this.state.requestStatus.map((step, key) => {
+                                  return (
+                                    <li>
+                                      <label>
+                                        <input
+                                          type="radio"
+                                          checked={step.IsSelected}
+                                          onChange={(e) =>
+                                            this.handleCheckboxChange(
+                                              e,
+                                              step,
+                                              step.value
+                                            )
+                                          }
+                                        />{" "}
+                                        {step.label}
+                                      </label>
+                                    </li>
+                                  );
+                                })}
+                              </div>
+                              <div className="cms-wrap">
+                                <Button
+                                  className="cm-search-btn"
+                                  color="rose"
+                                  onClick={() => this.handleBreak()}
+                                >
+                                  Add Break
+                                </Button>
+                              </div>
+                            </div>
+                          ) : null}
+                        </div>
+                      </div>
+
+                      <div className="buttonW">
+                        <Button
+                          color="danger"
+                          onClick={() => this.handleClickOpen()}
+                        >
+                          Logout
+                        </Button>
+                      </div>
+                    </div>
+                  ) : null}
             </CardHeader>
             <CardBody>
               <div className="shipment-pane" id="keywordnotfound">

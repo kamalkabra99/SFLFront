@@ -695,9 +695,13 @@ class TMSReport extends Component {
 
   handleClickUpdateUpload = () => {
     this.showLoador();
+    console.log("this.state.updateLogout = ",this.state.updateLogout)
     this.set24hoursformat(this.state.updateLogin, "login");
-    this.set24hoursformat(this.state.updateLogout, "logout");
+    if(this.state.updateLogout != null){
+      this.set24hoursformat(this.state.updateLogout, "logout");
+    }
 
+    
     setTimeout(() => {
       var data = {
         dataupdateType: this.state.updateType,

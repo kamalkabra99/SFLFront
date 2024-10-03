@@ -426,10 +426,10 @@ class ShipmentCustom extends React.Component {
         {
           Index: 4,
           FileName: "",
-          DocumentType: "HBL",
-          isGenerated: false,
+          DocumentType: "HHG Inventory",
+          // isGenerated: false,
           Status: "Active",
-          AttachmentName: "",
+          AttachmentName: "HHG Inventory",
           TrackingNumber: "4",
           DocumentCreatedOn: moment().format(CommonConfig.dateFormat.dateOnly),
           DocumentCreatedBy: "Auto",
@@ -2077,12 +2077,11 @@ class ShipmentCustom extends React.Component {
             },
             // (CommonConfig.loggedInUserData().PersonID == 1 ||
             //   CommonConfig.loggedInUserData().PersonID == 18) &&
-            !CommonConfig.isEmpty(this.state.ContainerName.value) ||
-            this.state.ContainerName == ""
+            this.state.ShipmentType.value === "Ocean"
               ? {
                   Index: 4,
                   FileName: "",
-                  DocumentType: "HBL",
+                  DocumentType: "HHG Inventory",
                   isGenerated: false,
                   Status: "Active",
                   AttachmentName: "",
@@ -2661,15 +2660,18 @@ class ShipmentCustom extends React.Component {
             <td className="pck-action-column">
               <div className="pck-subbtn">
                 {/* {this.state.DeleteAccess === 1? */}
-                <Button
-                  justIcon
-                  color="danger"
-                  className="Plus-btn "
-                  onClick={() => this.handleNotesRemoveRow(notes.Index)}
-                  disabled={this.state.notesDisabled}
-                >
-                  <i className={"fas fa-minus"} />
-                </Button>
+                {CommonConfig.getUserAccess("Shipment").DeleteAccess === 1?(
+                  <Button
+                    justIcon
+                    color="danger"
+                    className="Plus-btn "
+                    onClick={() => this.handleNotesRemoveRow(notes.Index)}
+                    disabled={this.state.notesDisabled}
+                  >
+                    <i className={"fas fa-minus"} />
+                  </Button>
+                ):null}
+                
                 {this.state.notes.filter((x) => x.Status === "Active")
                   .length ===
                 idx + 1 ? (
@@ -2743,6 +2745,11 @@ class ShipmentCustom extends React.Component {
       }
 
       if (name == "Documentation" && this.state.DocumentationCount == 0) {
+        if (this.state.PackageCount == 0) {
+          this.getPackageDetail();
+        }
+        this.getCommercialInvoiceDetail();
+      
         this.state.DocumentationCount = 1;
         // Accounting
         this.getAccountDetail();
@@ -6318,25 +6325,12 @@ class ShipmentCustom extends React.Component {
               >
                 <i className={"fas fa-minus"} />
               </Button>
-              {commercial.UpdatedBy > 0 ? (
-                
-                  // <div>
-
+              
                   <Button onClick = {() => this.openTooltipPopup(commercial)} className="Plus-btn info-icon" justIcon color="twitter">
                     <InfoIcon />
                   </Button>
-                // </div>
               
-              ):
-              <Tooltip title={commercial.CreatedByName} arrow>
-                <Button className="Plus-btn info-icon" justIcon color="twitter">
-                  <InfoIcon />
-                </Button>
-              </Tooltip>
-              }
-              
-              {/* ) : null} */}
-
+             
               {this.state.commercialList.filter((x) => x.Status === "Active")
                 .length ===
               idx + 1 ? (
@@ -9037,9 +9031,14 @@ class ShipmentCustom extends React.Component {
   }
 
   handleDocumentDelete = (record) => {
+    debugger
     delete record.TrackingNumber;
+
+    console.log("record = ",record)
     var AttachmentList = this.state.Attachments;
+    console.log("Attachmentlist = ",AttachmentList)
     var Index = AttachmentList.indexOf(record);
+    console.log("Attachmentlist = ",Index)
     AttachmentList[Index]["Status"] = "Delete";
     if (AttachmentList.filter((x) => x.Status === "Active").length === 0) {
       AttachmentList.push(this.state.objAttachment);
@@ -10322,8 +10321,6 @@ class ShipmentCustom extends React.Component {
       
                   debugger;
                   if (
-                    this.state.isBackIndia ||
-                    this.state.CustomClearanceDate !== "" ||
                     this.state.UserAdditionalDetailsID > 0
                   ) {
                     objdata.UserAdditionalData = {
@@ -11695,34 +11692,70 @@ class ShipmentCustom extends React.Component {
   };
 
   GenrateHBL = () => {
-    // window.open(
-    //   "https://hub.sflworldwide.com/auth/HBL/" + this.state.TrackingNumber,
-    //   "_blank"
-    // );
-    debugger;
-    this.setState({ HBLdocOpen: true });
-    this.showLoader();
-    this.GetHBLdetails(this.state.TrackingNumber);
-    this.setState({
-      ConsigneeDetails:
-        this.state.company +
-        "\n" +
-        this.state.Addressline1 +
-        "\n" +
-        this.state.Addressline2 +
-        "\n" +
-        this.state.STREET +
-        "," +
-        this.state.CITY +
-        "," +
-        this.state.COUNTRY +
-        "\n" +
-        this.state.PHONE +
-        "-" +
-        this.state.EMAIL +
-        " GST:" +
-        this.state.GST,
-    });
+    localStorage.setItem("CustomerName",this.state.FromContactName)
+    localStorage.setItem("TrackingNumber",this.state.TrackingNumber)
+
+    var TOadd1 = this.state.ToAddressLine1;
+    var TOadd2 = this.state.ToAddressLine2;
+    var TOadd3 = this.state.ToAddressLine3;
+
+    var TOAddress = "";
+    if (TOadd1 != "") {
+      TOAddress = TOAddress + TOadd1;
+    }
+    if (TOadd2 != "") {
+      TOAddress = TOAddress + ", " + TOadd2;
+    }
+    if (TOadd3 != "") {
+      TOAddress = TOAddress + ", " + TOadd3;
+    }
+    TOAddress = TOAddress + ", " + this.state.toCity+ ", " + this.state.toState.label + " - " + this.state.ToZipCode
+
+    console.log("TOAddress= ",TOAddress)
+
+    var fromadd1 = this.state.FromAddressLine1;
+    var fromadd2 = this.state.FromAddressLine2;
+    var fromadd3 = this.state.FromAddressLine3;
+
+    var FromAddress = "";
+    if (fromadd1 != "") {
+      FromAddress = FromAddress + fromadd1;
+    }
+    if (fromadd2 != "") {
+      FromAddress = FromAddress + ", " + fromadd2;
+    }
+    if (fromadd3 != "") {
+      FromAddress = FromAddress + ", " + fromadd3;
+    }
+    FromAddress = FromAddress + ", " + this.state.fromCity+ ", " + this.state.fromState.label + " - " + this.state.FromZipCode
+    console.log(FromAddress)
+
+    localStorage.setItem("FromAddress",FromAddress)
+    localStorage.setItem("TOAddress",TOAddress)
+
+
+
+    console.log("this.state.",this.state.commercialList);
+    console.log("this.state.",this.state.PackageList);
+    var newcom = this.state.commercialList
+
+    for(var i = 0; i < this.state.PackageList.length; i++){
+      for (let index = 0; index < newcom.length; index++) {
+        if(this.state.PackageList[i].PackageNumber == newcom[index].PackageNumber){
+          newcom[index].packedType = this.state.PackageList[i].PackedType
+        }
+        
+      }
+    }
+    console.log("newcom = ",newcom)
+
+
+    localStorage.setItem("TableData",JSON.stringify(newcom))
+
+    window.open(
+      window.location.origin + "/auth/HHNInvoice",
+      "_blank"
+    );
   };
   HselectChange = (event, value) => {
     if (value === "BookingNumber") {
@@ -12305,22 +12338,16 @@ class ShipmentCustom extends React.Component {
                     </a>
                   </div>
                 )
-              ) : record.original.DocumentType === "HBL" &&
+              ) : record.original.DocumentType === "HHG Inventory" &&
                 // (CommonConfig.loggedInUserData().PersonID == 1 ||
                 //   CommonConfig.loggedInUserData().PersonID == 18) &&
-                (this.state.ContainerName.value !== "" ||
-                  this.state.ContainerName.value !== null) ? (
+                (this.state.ShipmentType.value === "Ocean") ? (
                 <Button
-                  disabled={
-                    record.original.DocumentType === "HBL" &&
-                    this.state.ShipmentType.value === "Ocean"
-                      ? false
-                      : true
-                  }
+                  
                   className="normal-btn sm-orange"
                   onClick={() => this.GenrateHBL()}
                 >
-                  Generate
+                  View File
                 </Button>
               ) : record.original.TrackingNumber &&
                 record.original.Index !== 3 ? (
@@ -12496,7 +12523,7 @@ class ShipmentCustom extends React.Component {
                   justIcon
                   color="danger"
                   className="Plus-btn"
-                  onClick={(e) => this.handleDocumentDelete(e, record.original)}
+                  onClick={(e) => this.handleDocumentDeletePopup(e, record.original)}
                 >
                   <i className={"fas fa-minus"} />
                 </Button>
