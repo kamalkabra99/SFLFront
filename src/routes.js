@@ -13,6 +13,18 @@ import UserList from "components/Management/UserList";
 import AddUserNew from "components/Management/AddUserNew";
 import BookofWork from "components/Management/BookofWork";
 import BookofWorkList from "components/Management/BookofWorkList";
+import TimeAllocation from "components/ProjectManagement/TimeAllocation";
+import ProjectManagement from "components/ProjectManagement/ProjectManagementNavigation";
+import AddProject from "components/ProjectManagement/AddProject";
+import AddServices from "components/ProjectManagement/AddServices";
+import ProjectList from "components/ProjectManagement/ProjectList";
+import ServiceAllocationList from "components/ProjectManagement/ServiceAllocationList";
+import ResourceAllocationList from "components/ProjectManagement/ResourceAllocationList";
+import AddServicesToProject from "components/ProjectManagement/AddServicesToProject";
+import AddResourceToService from "components/ProjectManagement/AddResourceToService";
+import AddTimeAllocation from "components/ProjectManagement/AddTimeAllocation";
+
+import ServiceList from "components/ProjectManagement/ServiceList";
 //import VendorSearch from "components/Management/VendorSearch";
 import Vendor from "components/Management/Vendor/Vendor";
 //import EditVendor from "components/Management/EditVendor";
@@ -66,6 +78,8 @@ import BulkShipmentImport from "components/Reports/BulkShipmentImport";
 import UserLoginReport from "components/Reports/UserLoginReport";
 import TMSReport from "components/Reports/TMSReport";
 import ConsoleSplitInvoice from "components/Reports/ConsoleSplitInvoice";
+import HHNInvoice from "components/ShipmentDocumentation/HHN";
+//import CommercialInvoice from "components/ShipmentDocumentation/CommercialInvoice";
 import InvoiceUpload from "components/Reports/InvoiceUpload";
 import zebraPrint from "components/Reports/zebraPrint";
 import zebraPrintOutput from "./components/Reports/zebraPrintOutput";
@@ -229,7 +243,6 @@ var dashRoutes = [
     layout: "/admin",
     invisible: true,
   },
-
   // {
   //   path: "/ShowChat",
   //   name: "Show Chat",
@@ -237,6 +250,24 @@ var dashRoutes = [
   //   component: Chatbot,
   //   layout: "/admin",
   //   invisible: false,
+  // },
+
+  {
+    path: "/HHNInvoice",
+    name: "HHNInvoice",
+    icon: ScheduleShipmentIcon,
+    component: HHNInvoice,
+    layout: "/auth",
+    invisible: false,
+  },
+
+  // {
+  //   path: "/CommercialInvoice",
+  //   name: "CommercialInvoice",
+  //   icon: ScheduleShipmentIcon,
+  //   component: CommercialInvoice,
+  //   layout: "/admin",
+  //   invisible: true,
   // },
   {
     path: "/PrintCommercialInvoice",
@@ -841,6 +872,94 @@ var dashRoutes = [
     name: "Book Of Wor",
     icon: EditSalesLeadIcon,
     component: BookofWork,
+    layout: "/admin",
+    invisible: false,
+  },
+  {
+    path: "/ProjectManagement",
+    name: "Project tManagement",
+    icon: EditSalesLeadIcon,
+    component: ProjectManagement,
+    layout: "/admin",
+    invisible: false,
+  },
+  {
+    path: "/TimeAllocation",
+    name: "Time Allocation",
+    icon: EditSalesLeadIcon,
+    component: TimeAllocation,
+    layout: "/admin",
+    invisible: false,
+  },
+  {
+    path: "/AddProject",
+    name: "Add Project",
+    icon: EditSalesLeadIcon,
+    component: AddProject,
+    layout: "/admin",
+    invisible: false,
+  },
+  {
+    path: "/AddServices",
+    name: "Add Services",
+    icon: EditSalesLeadIcon,
+    component:  AddServices,
+    layout: "/admin",
+    invisible: false,
+  },
+  {
+    path: "/ServiceList",
+    name: "Service List",
+    icon: EditSalesLeadIcon,
+    component: ServiceList,
+    layout: "/admin",
+    invisible: false,
+  },
+  {
+    path: "/ProjectList",
+    name: "Project List",
+    icon: EditSalesLeadIcon,
+    component: ProjectList,
+    layout: "/admin",
+    invisible: false,
+  },
+  {
+    path: "/AddServicesToProject",
+    name: "Add Services To Project",
+    icon: EditSalesLeadIcon,
+    component: AddServicesToProject,
+    layout: "/admin",
+    invisible: false,
+  },
+  {
+    path: "/AddResourceToService",
+    name: "Add Resource To Service",
+    icon: EditSalesLeadIcon,
+    component: AddResourceToService,
+    layout: "/admin",
+    invisible: false,
+  },
+  {
+    path: "/AddTimeAllocation",
+    name: "Add Time Allocation",
+    icon: EditSalesLeadIcon,
+    component: AddTimeAllocation,
+    layout: "/admin",
+    invisible: false,
+  },
+  {
+    path: "/ServiceAllocationList",
+    name: "Service Allocation List",
+    icon: EditSalesLeadIcon,
+    component: ServiceAllocationList,
+    layout: "/admin",
+    invisible: false,
+  },
+  {
+    path: "/ResourceAllocationList",
+    name: "Resource Allocation List",
+    icon: EditSalesLeadIcon,
+    component: ResourceAllocationList,
     layout: "/admin",
     invisible: false,
   },

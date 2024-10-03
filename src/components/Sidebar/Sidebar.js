@@ -143,6 +143,7 @@ class Sidebar extends React.Component {
       salesLeadList: [],
       shipmentLength: 0,
       bookOfWorkLengthRec:0,
+      timeAllocationLengthRec:0,
       shipmentList: [],
       chatCount: 0,
       chatList: [],
@@ -664,7 +665,50 @@ class Sidebar extends React.Component {
     }
   }
 
-   
+  async getTimeAllocation() {debugger
+    let whereClause = ' AND ( bw.WorkStatus = "New" OR bw.WorkStatus = "Open") AND (bw.AssignedBy = '+CommonConfig.loggedInUserData().PersonID+' OR bw.AssignedTo = '+CommonConfig.loggedInUserData().PersonID+')'
+    if (whereClause !== "") {
+      console.log("whereclause", whereClause);
+      let data = {};
+      if (!CommonConfig.isEmpty(whereClause)) {
+        data.StatusQuery = whereClause;
+      }
+      try {
+        // this.showLoador();
+        api
+          .post("contactUs/getTimeAllocation", data)
+          .then((result) => {
+            if (result.success) {
+              // this.hideLoador();
+
+
+              if(CommonConfig.getUserAccess("Book of Work").AllAccess == 1){
+                this.state.timeAllocationLengthRec = result.Data.length
+              }
+              else {
+                let finalData = result.Data.filter(
+                  (x) => x.AssignedBy === CommonConfig.loggedInUserData().PersonID || x.AssignedTo === CommonConfig.loggedInUserData().PersonID
+                );
+                this.state.timeAllocationLengthRec = finalData.length
+                // this.setState({ BookofWorkData: finalData });
+              }
+            } else {
+              // this.hideLoador();
+              cogoToast.error("Something went wrong1");
+            }
+          })
+          .catch((err) => {
+            // this.hideLoador();
+            cogoToast.error("Something went wrong2");
+          });
+      } catch (err) {
+        // this.hideLoador();
+        cogoToast.error("Something Went Wrong3");
+      }
+    } else {
+      // this.setState({ BookofWorkData: [] });
+    }
+  }
 
   async getShipmentList() {
     try {
@@ -863,6 +907,10 @@ class Sidebar extends React.Component {
         prop.length = this.state.bookOfWorkLengthRec;
       }
 
+      if (prop.name == "Time Allocation") {
+        prop.infoIcon = true;
+        prop.length = this.state.timeAllocationLengthRec;
+      }
       const innerNavLinkClasses =
         classes.collapseItemLink +
         " " +
