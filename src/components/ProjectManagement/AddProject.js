@@ -173,7 +173,7 @@ class AddProject extends Component {
             this.setState({ loading: true });
             cogoToast.success("Update Sucessfully");
             if (redirect) {
-              this.props.history.push("/admin/ProjectList");
+              this.props.history.push("/admin/ManageProjects");
             } else {
               window.location.reload();
             }
@@ -189,7 +189,7 @@ class AddProject extends Component {
   };
 
   cancel = () => {
-    this.props.history.push("/admin/ProjectList");
+    this.props.history.push("/admin/ManageProjects");
   };
 
   requestChange(event, value, type) {

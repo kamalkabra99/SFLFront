@@ -146,7 +146,7 @@ class AddServices extends Component {
             this.setState({ loading: true });
             cogoToast.success("Update Sucessfully");
             if (redirect) {
-              this.props.history.push("/admin/ServiceList");
+              this.props.history.push("/admin/ManageProjects");
             } else {
               window.location.reload();
             }
@@ -162,7 +162,7 @@ class AddServices extends Component {
   };
 
   cancel = () => {
-    this.props.history.push("/admin/ServiceList");
+    this.props.history.push("/admin/ManageProjects");
   };
 
 

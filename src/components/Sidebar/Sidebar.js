@@ -176,7 +176,7 @@ class Sidebar extends React.Component {
     let shipmentLength = await this.getShipmentList();
     let bookOfWorkLength = await this.getBookofWorkData();
 
-    console.log("Welcome =- ",CommonConfig.loggedInUserData().PersonID)
+    // console.log("Welcome =- ",CommonConfig.loggedInUserData().PersonID)
 
     this.setState({
       callbackLength: resLength,
@@ -218,8 +218,8 @@ class Sidebar extends React.Component {
       userTimeZonedata: CommonConfig.loggedInUserData().userTimeZone,
     };
     api.post("contactus/CheckUserLoginBreak", pData).then((res) => {
-      console.log("Res = ",res)
-      console.log("Res = ", localStorage.getItem("UserBreakData"));
+      // console.log("Res = ",res)
+      // console.log("Res = ", localStorage.getItem("UserBreakData"));
 
       if(localStorage.getItem("UserBreakData") == 1 && res.Data[0][0].BreakCount == 0){
         localStorage.setItem("UserBreakData", 0);
@@ -259,7 +259,7 @@ class Sidebar extends React.Component {
             a.OrderId > b.OrderId ? 1 : b.OrderId > a.OrderId ? -1 : 0
           );
 
-          console.log("routesdata = ", routesdata);
+        //  console.log("routesdata = ", routesdata);
           let shipmentIndex = res.Data.findIndex(
             (x) => x.MenuID === 18 && x.MenuKey === "Shipment"
           );
@@ -315,7 +315,7 @@ class Sidebar extends React.Component {
             obj2.push(parentObj);
           }
 
-          console.log("dynamic = ", obj2);
+          // console.log("dynamic = ", obj2);
           this.setState({ dynamicRoutes: obj2 });
         } else {
         }
@@ -495,7 +495,7 @@ class Sidebar extends React.Component {
             await api
               .get("customerChat/getChatCustomerRequest", {})
               .then((res) => {
-                console.log("sidebar...");
+                // console.log("sidebar...");
                 if (res.success) {
                   let requestData = res.Data[0];
 
@@ -620,10 +620,10 @@ class Sidebar extends React.Component {
     }
   }
 
-  async getBookofWorkData() {debugger
+  async getBookofWorkData() {
     let whereClause = ' AND ( bw.WorkStatus = "New" OR bw.WorkStatus = "Open") AND (bw.AssignedBy = '+CommonConfig.loggedInUserData().PersonID+' OR bw.AssignedTo = '+CommonConfig.loggedInUserData().PersonID+')'
     if (whereClause !== "") {
-      console.log("whereclause", whereClause);
+      // console.log("whereclause", whereClause);
       let data = {};
       if (!CommonConfig.isEmpty(whereClause)) {
         data.StatusQuery = whereClause;
@@ -665,10 +665,10 @@ class Sidebar extends React.Component {
     }
   }
 
-  async getTimeAllocation() {debugger
+  async getTimeAllocation() {
     let whereClause = ' AND ( bw.WorkStatus = "New" OR bw.WorkStatus = "Open") AND (bw.AssignedBy = '+CommonConfig.loggedInUserData().PersonID+' OR bw.AssignedTo = '+CommonConfig.loggedInUserData().PersonID+')'
     if (whereClause !== "") {
-      console.log("whereclause", whereClause);
+      // console.log("whereclause", whereClause);
       let data = {};
       if (!CommonConfig.isEmpty(whereClause)) {
         data.StatusQuery = whereClause;

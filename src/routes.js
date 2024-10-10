@@ -13,11 +13,11 @@ import UserList from "components/Management/UserList";
 import AddUserNew from "components/Management/AddUserNew";
 import BookofWork from "components/Management/BookofWork";
 import BookofWorkList from "components/Management/BookofWorkList";
-import TimeAllocation from "components/ProjectManagement/TimeAllocation";
+import ProjectAllocation from "components/ProjectManagement/ProjectAllocation";
 import ProjectManagement from "components/ProjectManagement/ProjectManagementNavigation";
 import AddProject from "components/ProjectManagement/AddProject";
 import AddServices from "components/ProjectManagement/AddServices";
-import ProjectList from "components/ProjectManagement/ProjectList";
+import ManageProjects from "components/ProjectManagement/ManageProjects";
 import ServiceAllocationList from "components/ProjectManagement/ServiceAllocationList";
 import ResourceAllocationList from "components/ProjectManagement/ResourceAllocationList";
 import AddServicesToProject from "components/ProjectManagement/AddServicesToProject";
@@ -79,7 +79,7 @@ import UserLoginReport from "components/Reports/UserLoginReport";
 import TMSReport from "components/Reports/TMSReport";
 import ConsoleSplitInvoice from "components/Reports/ConsoleSplitInvoice";
 import HHNInvoice from "components/ShipmentDocumentation/HHN";
-//import CommercialInvoice from "components/ShipmentDocumentation/CommercialInvoice";
+import CommercialInvoice from "components/ShipmentDocumentation/CommercialInvoice";
 import InvoiceUpload from "components/Reports/InvoiceUpload";
 import zebraPrint from "components/Reports/zebraPrint";
 import zebraPrintOutput from "./components/Reports/zebraPrintOutput";
@@ -261,14 +261,14 @@ var dashRoutes = [
     invisible: false,
   },
 
-  // {
-  //   path: "/CommercialInvoice",
-  //   name: "CommercialInvoice",
-  //   icon: ScheduleShipmentIcon,
-  //   component: CommercialInvoice,
-  //   layout: "/admin",
-  //   invisible: true,
-  // },
+  {
+    path: "/CommercialInvoice",
+    name: "CommercialInvoice",
+    icon: ScheduleShipmentIcon,
+    component: CommercialInvoice,
+    layout: "/auth",
+    invisible: true,
+  },
   {
     path: "/PrintCommercialInvoice",
     name: "PrintCommercialInvoice",
@@ -879,15 +879,15 @@ var dashRoutes = [
     path: "/ProjectManagement",
     name: "Project tManagement",
     icon: EditSalesLeadIcon,
-    component: ProjectManagement,
+    component: ManageProjects,
     layout: "/admin",
     invisible: false,
   },
   {
-    path: "/TimeAllocation",
-    name: "Time Allocation",
+    path: "/ProjectAllocation",
+    name: "Project Allocation",
     icon: EditSalesLeadIcon,
-    component: TimeAllocation,
+    component: ProjectAllocation,
     layout: "/admin",
     invisible: false,
   },
@@ -916,10 +916,10 @@ var dashRoutes = [
     invisible: false,
   },
   {
-    path: "/ProjectList",
-    name: "Project List",
+    path: "/ManageProjects",
+    name: "Manage Projects",
     icon: EditSalesLeadIcon,
-    component: ProjectList,
+    component: ManageProjects,
     layout: "/admin",
     invisible: false,
   },
