@@ -128,6 +128,7 @@ class ShipmentCustom extends React.Component {
       isNotesVisible: true,
       IsTransactionValid: false,
       TransactionMessage: "",
+      EncShippingID:"",
       //-----------------------------  Tab 1 and Common Tab Data -------------------------------------------//
       shipmentTypeList: [],
       ManagedBy: "",
@@ -144,6 +145,7 @@ class ShipmentCustom extends React.Component {
       ComCreatedName:"",
       ipAddress: "",
       ipLocation: "",
+      encOpen:false,
       PickupDateChange: 0,
       userdetailsTooltip: "",
       PersonID: "",
@@ -641,6 +643,15 @@ class ShipmentCustom extends React.Component {
           : true,
     });
     this.checkTransaction();
+    var sID = this.props.location.state.ShipppingID
+    // console.log("SID = ",sID)
+    // var  enc = this.encrypt(sID, "Passphrase");
+    let encoded = window.btoa(sID);
+// let decoded = window.atob(encoded);
+    // console.log("Enc = ",enc)
+    this.state.EncShippingID = encoded
+    console.log("SID = ",this.state.EncShippingID)
+
 
     //----------------------------------------- Customer Details  -----------------------------------------------------------//
 
@@ -845,6 +856,11 @@ class ShipmentCustom extends React.Component {
         ? (document.getElementById(step.stepId).style.display = "block")
         : (document.getElementById(step.stepId).style.display = "none");
     });
+  }
+
+  showDivUrl = () =>{
+    console.log(this.state.EncShippingID)
+    this.setState({encOpen:true})
   }
 
   showDiv = (type, packageType) => {
@@ -1611,6 +1627,7 @@ class ShipmentCustom extends React.Component {
             ? this.props.location.state.ShipppingID
             : null,
       };
+
       this.showLoader()
       api.post("scheduleshipment/getShipmentInfo", data).then((res) => {
         if (res.success) {
@@ -5087,6 +5104,14 @@ class ShipmentCustom extends React.Component {
       // this.addAESFillingInvoice();
     }
   };
+
+  encrypt(text, key){
+      return [...text].map((x, i) => 
+      (x.codePointAt() ^ key.charCodeAt(i % key.length) % 255)
+      .toString(16)
+      .padStart(2,"0")
+    ).join('')
+  }
 
   handleChangepaymentReceived = (event, type, index) => {
     const { value } = event.target;
@@ -15078,6 +15103,25 @@ class ShipmentCustom extends React.Component {
                           Open
                         </Button>
                       ) : null}
+
+                   
+                    </div>
+
+                    <div style={{ textAlign: "right", marginTop: "12px" }}>
+
+                      {this.state.ShipmentType.value == "Ocean" ?(
+
+                            <Button
+                            onClick={() =>
+                              this.showDivUrl()
+                            }
+                            style={{ width: "70px", height: "20px" }}
+                            color="primary"
+                            >
+                            Send Url
+                            </Button>
+
+                      ):null}
                     </div>
                   </CardHeader>
                   <CardBody className="shipment-cardbody">
@@ -16582,6 +16626,32 @@ class ShipmentCustom extends React.Component {
               >
                 Cancel Label
               </Button>
+            </DialogActions>
+          </Dialog>
+        </div>
+
+        <div>
+          <Dialog
+            open={this.state.encOpen}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <DialogTitle id="alert-dialog-title">
+              {"Generate URL"}
+            </DialogTitle>
+            <DialogContent>
+              <DialogContentText id="alert-dialog-description">
+                Commercial Invoice URL for Users
+                <p>https://hub.sflworldwide.com/auth/CommercialInvoice/{this.state.EncShippingID}</p>
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button  onClick={() =>
+                  this.setState({ encOpen: false })
+                } color="primary">
+                Close
+              </Button>
+             
             </DialogActions>
           </Dialog>
         </div>

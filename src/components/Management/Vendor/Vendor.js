@@ -494,6 +494,7 @@ class Vendor extends Component {
         Country,
         CreatedBy,
         CreatedOn,
+        Status,
       } = service;
       return (
         <tr>
@@ -513,6 +514,7 @@ class Vendor extends Component {
           <td>{Country}</td>
           <td>{CreatedBy}</td>
           <td>{CreatedOn}</td>
+          <td>{Status}</td>
         </tr>
       );
     });
@@ -936,6 +938,9 @@ class Vendor extends Component {
                 </th>
                 <th>
                   <font size="+0">CreatedOn</font>
+                </th>
+                <th>
+                  <font size="+0">Status</font>
                 </th>
               </tr>
             </thead>

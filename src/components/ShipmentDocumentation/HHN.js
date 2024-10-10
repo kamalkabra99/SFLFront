@@ -193,19 +193,21 @@ class HHNInvoice extends Component {
 					<td>R-GOUGED</td>
 					<td>M-MILDEW</td>
 					<td>RU-RUSTED</td>
-					<td>SO-SOLED</td>
-					<td></td>
+					
+					<td colSpan={2}>PBO-PACKED BY OWNER</td>
+					
 					<td>3) CORNER</td>
 					<td>7) REAR</td>
 					<td>11) VENEER</td>
 				</tr>
 				<tr>
 					<td>MO-MOTH EATEN</td>
-					<td>CU-CONTENTS & CONDITION UNKNOWN</td>
-					<td>PBM-PACKED BY MOVERS</td>
-					<td>PBO-PACKED BY OWNER</td>
 					<td>T-TORN</td>
-					<td></td>
+					<td>SO-SOLED</td>
+					<td>PBM-PACKED BY MOVERS</td>
+					
+					<td colSpan={2}>CU-CONTENTS & CONDITION UNKNOWN</td>
+					
 					<td>4) FRONT</td>
 					<td>8) RIGHT</td>
 					<td></td>
@@ -374,7 +376,7 @@ class HHNInvoice extends Component {
 					<td>OTH – OTHERS</td>
 				</tr>
 				<tr>
-					<td colspan="4">“We have checked all the items listed and numbered I to <input type="text" /> inclusive and acknowledge that is a true and complete list of goods tendered and of the state of goods received”</td>
+					<td colspan="4">“We have checked all the items listed and numbered 1 to {this.state.htmlData.length}  inclusive and acknowledge that is a true and complete list of goods tendered and of the state of goods received”</td>
 				</tr>
 			</table>
 			<table className="common-table bordered-table mt-20 font-13">
