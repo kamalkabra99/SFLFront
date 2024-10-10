@@ -557,13 +557,13 @@ let x;
                     ) : null}
 
                   </Button> */}
-                  <Button
+                  {/* <Button
                     color="primary"
                     className="wd-auto"
                     onClick={() => this.AddTimeAllocation()}
                   >
                     Add Time Allocation
-                  </Button>
+                  </Button> */}
                 </div>
               </div>
             </CardHeader>
