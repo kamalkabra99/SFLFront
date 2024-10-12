@@ -28,6 +28,8 @@ import { decode as base64_decode, encode as base64_encode } from 'base-64';
 // import utf8 from "utf8";
 import AttachFileIcon from '@material-ui/icons/AttachFile';
 //import DatePicker from "react-datepicker";
+import Datetime from "react-datetime";
+import FormControl from "@material-ui/core/FormControl";
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
@@ -51,7 +53,15 @@ class ProjectAllocation extends Component {
       previousSortList: [],
       requestStatus: [],
       StartDate:moment().format("YYYY/MM/DD"),
-
+      projectServiceList:[],
+      WeekDate:moment().format(CommonConfig.dateFormat.dbDateOnly).toString(),
+      WeekDate1:moment(moment().format(CommonConfig.dateFormat.dbDateOnly).toString()).startOf('isoWeek').toDate(),
+      WeekDateErr:"",
+      WeekDateHelperText:"",
+      WeekDayFirst:"1",
+      WeekDayLast:"7",
+      WeekDateFirst:"",
+      ResourceID:CommonConfig.loggedInUserData().PersonID,
     };
   }
   componentDidMount() {
@@ -110,13 +120,27 @@ class ProjectAllocation extends Component {
       let newFilter = [{ label: "New", value: "New" , IsSelected: true}, { label: "Open", value: "Open" , IsSelected: true }];
       this.state.checkdata = newFilter;
      // this.filterMethod("", newFilter);
-      this.getStatus();
-      this.getTimeAllocationList();
+      //this.getStatus();
+
     }
     this.setState({WeekDayFirst:1,WeekDayLast:7,WeekDateFirst:"2024/10/10"})
   this.getProjectServiceByResourceID();
+  this.getTimeAllocationList(this.state.ResourceID,this.state.WeekDate);
   }
 
+  handledInput= (e, ServiceID, ProjectID, type)=>{debugger
+          let value = e.target.value;
+          console.log(this.state.TimeAllocationList);
+          var data= this.state.TimeAllocationList;
+          let index = data.findIndex(function(c) { 
+            return c.ProjectID === ProjectID && c.ServiceID === ServiceID ; 
+        });
+        data[index][type] = value;
+
+          this.setState({
+            TimeAllocationList: data
+          });
+  }
   showLoador = () => {
     this.setState({ Loading: true });
   };
@@ -205,10 +229,12 @@ class ProjectAllocation extends Component {
       cogoToast.error("Something went wrong 3");
     }
   };
-  getTimeAllocationList() {
+  getTimeAllocationList(rec,Date) {
     debugger
    
-      let data = {};
+      let data = {"ResourceID" :rec,
+        "Date":Date,
+      };
 
         //data.StatusQuery = whereClause;
 
@@ -253,7 +279,59 @@ class ProjectAllocation extends Component {
     },
     });
   }
+  saveData =  (redirect) => {debugger
+    var newData=[];
+    var finalAllocationlist = {};
+    var data= this.state.TimeAllocationList;
+    for(let i=0;i<data.length;i++)
+    {   for(let j=1,x=0;j<7;j++,x++){
+    //  if(data[i]["Day"+j] !=0){
+          finalAllocationlist={
+            "ServiceResourceID":data[i]["ServiceResourceID"],
+            "ProjectID":data[i]["ProjectID"],
+            "ServiceID":data[i]["ServiceID"],
+            "Date":moment(moment(this.state.WeekDate1).add(x,"d"))
+            .format(CommonConfig.dateFormat.dbDateOnly)
+            .toString(),
+            "Hours":data[i]["Day"+j],
+            "ServiceResourceID":data[i]["ServiceResourceID"],
+            Status:"Actual",
+            UserId:this.state.ResourceID,
+          }
+          newData.push(finalAllocationlist);
+      //  }
+        
+        }
+         
+    }
+    console.log(newData);
 
+
+      // let data = {"TimeAllocationList":this.state.TimeAllocationList,
+      //             "ResourceID":this.state.ResourceID,
+      //             "WeekDate":this.state.WeekDate
+      //           };
+
+
+      try {
+               
+      api.post("scheduleshipment/addUpdateProjectAllocation", newData).then( (result) => {
+          if (result.success) {
+            this.setState({ loading: true });
+            cogoToast.success("Save Sucessfully");
+          
+            this.getTimeAllocationList(this.state.ResourceID,this.state.WeekDate);
+            
+          } else {
+            this.setState({ loading: false });
+            cogoToast.error("Something went wrong");
+          }
+        });
+      } catch (err) {
+        console.log("error", err);
+      }
+    
+  };
 
 
   filterMethod = (event, value) => {
@@ -328,8 +406,8 @@ class ProjectAllocation extends Component {
       api
         .post("ProjectManagement/getProjectServiceByResourceID", data)
         .then((result) => {
-          console.log(result);
-
+          //console.log("xyzxyzxyzxyz",result.data[0]);
+          this.setState({projectServiceList:result.data[0]})
         })
         .catch((err) => {
           console.log(err);
@@ -338,6 +416,28 @@ class ProjectAllocation extends Component {
       console.log("error", err);
     }
   }
+
+  getProjectAllocationByResourceID() {
+    debugger
+    try {
+      let data = {
+        ResourceID: CommonConfig.loggedInUserData().PersonID,
+      };
+
+      api
+        .post("ProjectManagement/getProjectServiceByResourceID", data)
+        .then((result) => {
+          //console.log("xyzxyzxyzxyz",result.data[0]);
+          this.setState({projectServiceList:result.data[0]})
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (err) {
+      console.log("error", err);
+    }
+  }
+
 
   setFilterProps = (filterValue) => {
     this.setState({
@@ -394,12 +494,19 @@ class ProjectAllocation extends Component {
       return false;
     }
   };
-getColumns= (WeekDayFirst,WeekDayLast,WeekDateFirst) => {
+getColumns= () => {debugger
   var column =[];
 let x;
-  for(let i= WeekDayFirst-2;i<=WeekDayLast;i++)
+
+let WeekDateFirst = this.state.WeekDate1;
+//const dateTo = moment(WeekDateFirst).endOf('isoWeek').toDate();  
+
+
+//console.log("dateFromdateFromdateFromdateFrom",dateFrom);
+//console.log("dateTodateTodateTodateTodateTodateTo",dateTo);
+  for(let i= -1;i<=7;i++)
   {
-    if(i == WeekDayFirst-2){
+    if(i == -1){
       column.push({
         Header: "Project Name",
         accessor: "ProjectName",
@@ -408,9 +515,9 @@ let x;
         sortable: true,
         maxWidth: 150,
       }) ;
-      x=moment(WeekDateFirst).format("MM/DD/YYYY");}
+      x=moment(WeekDateFirst).format("MM/DD/YYYY")+" ("+moment(WeekDateFirst).format('ddd')+")";}
     else
-    if(i == WeekDayFirst-1)
+    if(i == 0)
       column.push({
         Header: "Service Name",
         accessor: "ServiceName",
@@ -420,10 +527,10 @@ let x;
         maxWidth: 150,
       }) ;
     else{
-      
+  
     column.push({
       Header: x,
-      accessor: x,
+      accessor: "Day"+i,
       filterable: true,
       sortable: true,
       width: 100,
@@ -434,13 +541,12 @@ let x;
             <input
               size={10}
               type="text"
-              name={"WeekDay" +WeekDayFirst+record.original.ProjectID+record.original.ServiceID }
-              id={"WeekDay" + +WeekDayFirst+record.original.ProjectID+record.original.ServiceID}
+              name={"Day"+record.original.ProjectID+record.original.ServiceID+i}
               className="form-control"
-              value={this.state.weekday}
-              // onChange={(event) =>
-              //   this.handledInput(event, record.original.ServiceID, record.original.MarkupType, "Markup")
-              // }
+              value={i==1?record.original.Day1:i==2?record.original.Day2:i==3?record.original.Day3:i==4?record.original.Day4:i==5?record.original.Day5:i==6?record.original.Day6:i==7?record.original.Day7:0}
+              onChange={(event) =>
+                this.handledInput(event, record.original.ServiceID, record.original.ProjectID, "Day"+i)
+              }
               // onBlur={(e) =>
               //   this.handleBlur(e, record.original.ServiceID, record.original.MarkupType, "Markup")
               // }
@@ -450,7 +556,7 @@ let x;
       },
     }) ;
     WeekDateFirst =moment(WeekDateFirst).add(1,"d");
-    x=moment(WeekDateFirst).format("MM/DD/YYYY");
+    x=moment(WeekDateFirst).format("MM/DD/YYYY")+" ("+moment(WeekDateFirst).format('ddd')+")";
   }
   }
 
@@ -458,9 +564,24 @@ let x;
     return(column);
   
 }
+handleDateChange = (date, type) => {
+  debugger;
+
+  if (type === "Date") {
+    this.setState({
+      WeekDate: date,
+      WeekDateErr: false,
+      WeekDateHelperText: "",
+      WeekDate1:moment(date).startOf('isoWeek').toDate()
+    });
+    this.getTimeAllocationList(this.state.ResourceID,moment(date)
+    .format(CommonConfig.dateFormat.dbDateOnly)
+    .toString());
+  }
+};
   render() {
     const { TimeAllocationList } = this.state;
-    const column =  this.getColumns(this.state.WeekDayFirst,this.state.WeekDayLast,this.state.WeekDateFirst);
+    const column =  this.getColumns();
     
     return (
       <GridContainer className="UserList-outer">
@@ -475,7 +596,7 @@ let x;
               <CardIcon color="primary">
                 <PhoneCallback />
               </CardIcon>
-              <h4 className="margin-right-auto text-color-black">Time Allocation List</h4>
+              <h4 className="margin-right-auto text-color-black">Poject Allocation </h4>
 
               {/* <div className="filter-top-right">
                 <div className="autocomplete-fs-small">
@@ -507,10 +628,35 @@ let x;
                 </div>
               </div> */}
               <div className="filter-wrap">
-                <div
-                  className="filter-top-right"
-
-                >
+              
+                  <div className="date-spl">
+              <FormControl fullWidth>
+                <Datetime
+                  dateFormat={"MM/DD/YYYY"}
+                  timeFormat={false}
+                  value={this.state.WeekDate}
+                  onChange={(date) =>
+                    this.handleDateChange(date, "Date")
+                  }
+                  
+                  closeOnSelect={true}
+                  renderInput={(params) => (
+                    <TextField
+                      style={{ marginTop: "-15px" }}
+                      error={this.state.EndDateErr}
+                      helperText={this.state.EndDateHelperText}
+                      inputProps={{
+                        min: moment().format("YYYY-MM-DD"),
+                      }}
+                      {...params}
+                      label="Date*"
+                      margin="normal"
+                    
+                    />
+                  )}
+                />
+              </FormControl>
+            </div>
                   {/* <Button className="cm-toggle" color="rose"
                     onMouseLeave={() => this.setState({ IsDropDownShow: false })}
                     onMouseOver={() => this.setState({ IsDropDownShow: true })}>
@@ -564,7 +710,7 @@ let x;
                   >
                     Add Time Allocation
                   </Button> */}
-                </div>
+             
               </div>
             </CardHeader>
             <CardBody>
@@ -584,6 +730,14 @@ let x;
                 className="-striped -highlight"
               />
             </CardBody>
+            <div className="shipment-submit">
+            <div className="right">
+              
+                <Button color="rose" onClick={() => this.saveData(false)}>
+                  Save
+                </Button>
+              </div>
+              </div>
           </Card>
         </GridItem>
       </GridContainer>

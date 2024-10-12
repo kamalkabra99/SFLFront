@@ -111,6 +111,7 @@ class ManageProjects extends Component {
       ServiceNameHelperText:"",
       ServiceType: "",
       ServiceId: "",
+      ServiceID: "",
       ProjectServiceList: [],
       ProjectServiceResourceList: [],
       ProjectID: "",
