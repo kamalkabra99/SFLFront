@@ -618,7 +618,7 @@ class ManageProjects extends Component {
       //Attachment: Attachment,
     };
 
-    if (CommonConfig.getUserAccess("Service Allocation List").AllAccess === 1) {
+    if (CommonConfig.getUserAccess("Project Management").AllAccess === 1) {
       api.post("projectManagement/deleteServiceAllocation", data).then((res) => {
         console.log(res);
         if (res.message[0][0].DeleteRes == 0)
@@ -633,17 +633,16 @@ class ManageProjects extends Component {
     }
 
     if (
-      CommonConfig.getUserAccess("Service Allocation List").AllAccess === 0 &&
-      CommonConfig.getUserAccess("Service Allocation List").ReadAccess === 1
+      CommonConfig.getUserAccess("Project Management").AllAccess === 0 &&
+      CommonConfig.getUserAccess("Project Management").ReadAccess === 1
     ) {
       cogoToast.error("Sorry you don't have access to delete this");
     }
   }
   else
   {
-    var newArray = this.state.FinalServiceList.filter((index) => index.ServiceID !== "");
-    this.setState({FinalServiceList:newArray});
-
+   // var newArray = this.state.FinalServiceList.filter((index) => index.ServiceID !== "");
+   // this.setState({FinalServiceList:newArray});
     this.closedeletemodalKeyword();
   }
   };
@@ -655,7 +654,7 @@ class ManageProjects extends Component {
       //Attachment: Attachment,
     };
 
-    if (CommonConfig.getUserAccess("Resource Allocation List").AllAccess === 1) {
+    if (CommonConfig.getUserAccess("Project Management").AllAccess === 1) {
       api.post("projectManagement/deleteResourceAllocation", data).then((res) => {
         console.log(res);
         if (res.message.data[0][0].DeleteRes == 0)
@@ -670,8 +669,8 @@ class ManageProjects extends Component {
     }
 
     if (
-      CommonConfig.getUserAccess("Service Allocation List").AllAccess === 0 &&
-      CommonConfig.getUserAccess("Service Allocation List").ReadAccess === 1
+      CommonConfig.getUserAccess("Project Management").AllAccess === 0 &&
+      CommonConfig.getUserAccess("Project Management").ReadAccess === 1
     ) {
       cogoToast.error("Sorry you don't have access to delete this");
     }
@@ -772,16 +771,19 @@ class ManageProjects extends Component {
       this.setState({ ResourceProjectNameCheck: true });
 
       //   let Val = value.label;
-      if (value != null || value != "") {
+      if (value == null || value == "") {
         console.log("value = ", value)
-        if (value.label === "" && value.label === null) {
+       // if (value.label === "" && value.label === null) {
           this.setState({
             ResourceProjectName: [],
             ResourceProjectID: "",
             ResourceProjectNameErr: true,
             ResourceProjectNameHelperText: "Please Select Project Name",
           });
-        } else {
+          this.setState({ ProjectServiceList: [] });
+          this.setState({ ProjectServiceResourceList: []});
+      // } 
+      }else {
           var selectData = {
             label: value.label,
             value: value.value
@@ -797,15 +799,15 @@ class ManageProjects extends Component {
           this.getServicesByProject(value.value);
         this.getResourceByProject(value.value, "");
         }
-      }
+      
     }
     else if (type === "ResourceName") {
       this.setState({ ResourceNameCheck: true });
 
       //   let Val = value.label;
-      if (value != null || value != "") {
+      if (value == null || value == "") {
         console.log("value = ", value)
-        if (value.label === "" && value.label === null) {
+      
           this.setState({
             ResourceName: [],
             ResourceID: "",
@@ -827,7 +829,7 @@ class ManageProjects extends Component {
           console.log("ResourceName = ", this.state.ResourceName);
           //this.getServicesByProject(value.value);
         }
-      }
+      
     }
   };
   handleChange = (event,value, type) => {debugger
@@ -914,7 +916,8 @@ class ManageProjects extends Component {
               this.setState({ ProjectServiceList: result.Data.ProjectService });
             else {
               this.setState({ ProjectServiceList: [] });
-              cogoToast.error("No Service Record Available for this Project");
+              this.setState({ NewServiceName: "",NewServiceID: "",NewServiceNameErr: false });
+              cogoToast.error("No Service Available for this Project");
             }
           } else {
             this.hideLoador();
@@ -943,12 +946,13 @@ class ManageProjects extends Component {
         .then((result) => {
           if (result.success) {
             this.hideLoador();
+            var newArray = []
             if (result.Data.ProjectService.length != 0) {
 
               this.setState({ ProjectServiceList: result.Data.ProjectService });
               var finalServicelist = {}
               var finalServicelistselect = {}
-              var newArray = []
+           
               var newArraySelect = []
               let check = 0;
               console.log("this.state.ServiceList.length", this.state.ServiceList.length);
@@ -993,8 +997,16 @@ class ManageProjects extends Component {
           //    }
             }
             else
-              this.setState({ FinalServiceList: []});
-
+            {     finalServicelist = {
+                  "ServiceID": "",
+                  "ServiceName": "",
+                  "ServiceType": "",
+                  "AlreadySelected": true,
+                  }
+                  newArray.push(finalServicelist)
+                  this.setState({ FinalServiceList: newArray});
+                  this.setState({ FinalServiceListSelect: this.state.ServiceList })
+            }
 
             if(Add == 1 && result.Data.ProjectService.length != this.state.ServiceList.length)
               this.AddNewRowData();
@@ -1176,7 +1188,7 @@ class ManageProjects extends Component {
       (CommonConfig.isEmpty(this.state.NewServiceID) &&
       CommonConfig.isEmpty(this.state.ResourceName) && CommonConfig.isEmpty(this.state.StartDate) &&
       CommonConfig.isEmpty(this.state.EndDate) ||
-      (this.state.ResourceServiceNameErr === true ||
+      (this.state.NewServiceNameErr === true ||
         this.state.ResourceNameErr === true ||
         this.state.StartDateErr === true ||
         this.state.EndDateErr === true )
@@ -1303,8 +1315,25 @@ class ManageProjects extends Component {
               if(result.Data.ProjectService.length !=0)
                 this.setState({ ProjectServiceResourceList: result.Data.ProjectService });
              else
-             {this.setState({ ProjectServiceResourceList: []});
-             cogoToast.error("No Service Record Available for this Project");
+             {
+              this.setState({ ProjectServiceResourceList: []});
+              if(this.state.ServiceList.length==0 || result.Data.ProjectService.length ==0)
+              this.AddNewRowDataResource();
+              // var objAttachment = {
+              //   ResourceID:"",
+              //   ResourceName: "",
+              //   ServiceType: "",
+              //   EndDate:"",
+              //   ProjectServiceID: "",
+              //   ServiceName:"",
+              //   ServiceResourceID:"",
+              //   StartDate:""
+              // };
+              // var newArray = [];
+              // newArray.push(objAttachment);
+              // this.setState({ ProjectServiceResourceList: newArray});
+             // this.setState({ ProjectServiceResourceList: []});
+             //cogoToast.error("No Service Record Available for this Project");
              }
             } else {
               this.hideLoador();
@@ -1652,7 +1681,7 @@ class ManageProjects extends Component {
           return (
             <div>
               <div className="align-right">
-                {CommonConfig.getUserAccess("Resource Allocation List").DeleteAccess ===
+                {CommonConfig.getUserAccess("Project Management").DeleteAccess ===
                 1 ? (
                   <DeleteIcon
                     onClick={(e) => this.openDeleteRequestModalKeyword(e,record.original.ServiceResourceID,"ResourceAllocation")}
@@ -1712,7 +1741,7 @@ class ManageProjects extends Component {
               >
                 <i className="fas fa-add"></i>
               </Button>
-              {CommonConfig.getUserAccess("Service Allocation List").DeleteAccess ===
+              {CommonConfig.getUserAccess("Project Management").DeleteAccess ===
                 1 ? (
                 <Button
                   justIcon
@@ -1845,7 +1874,7 @@ class ManageProjects extends Component {
       },
     ];
 
-    const columns4 = [
+    const column4 = [
       {
         Header: "Service Name",
         accessor: "ServiceName",
@@ -2129,7 +2158,7 @@ class ManageProjects extends Component {
                           defaultSorted={this.state.previousSortList}
                           defaultFiltered={this.state.previousFilterList}
                           resizable={false}
-                          columns={columns4}
+                          columns={column4}
                           getTheadFilterProps={(e) => this.filterProps(e)}
                           pageText={"Total rows : " + this.state.finalLength}
                           defaultFilterMethod={CommonConfig.filterCaseInsensitive}
@@ -2305,7 +2334,7 @@ class ManageProjects extends Component {
                             this.handleDeleteResource(this.state.DeleteRequestIdKeyword)
                           }
                           color="primary"
-                          autoFocus
+                         // autoFocus
                         >
                           Delete
                         </Button>
