@@ -5,7 +5,8 @@ import ReactTable from "react-table";
 import PhoneCallback from "@material-ui/icons/PhoneCallback";
 // core components
 import DeleteIcon from "@material-ui/icons/Delete";
-import save from "@material-ui/icons/Save";
+import SaveIcon from '@material-ui/icons/Save';
+import AddIcon from '@material-ui/icons/Add';
 import Icon from "@material-ui/core/Icon";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import GridContainer from "components/Grid/GridContainer.js";
@@ -1475,7 +1476,7 @@ class ManageProjects extends Component {
             <div>
               {record.original.ResourceName != "" && record.original.ResourceName != null && record.original.ResourceName != undefined ? (
                 <div>
-                  <p>{record.original.ServiceName}</p>
+                  {record.original.ServiceName}
                 </div>
               ) : (
                 <div>
@@ -1526,7 +1527,7 @@ class ManageProjects extends Component {
             <div>
               {record.original.ResourceName != "" && record.original.ResourceName != null && record.original.ResourceName != undefined ? (
                 <div>
-                  <p>{record.original.ResourceName}</p>
+                  {record.original.ResourceName}
                 </div>
               ) : (
                 <div>
@@ -1578,10 +1579,10 @@ class ManageProjects extends Component {
             <div>
               {record.original.StartDate != "" && record.original.StartDate != null && record.original.StartDate != undefined ? (
                 <div>
-                  <p>{record.original.StartDate}</p>
+                  {record.original.StartDate}
                 </div>
               ) : (
-                <div >
+                <div className="tbl-datepicker">
                   <Datetime
                     dateFormat={"MM/DD/YYYY"}
                     timeFormat={false}
@@ -1611,7 +1612,7 @@ class ManageProjects extends Component {
                       />
                     )}
                   />
-                  <Icon className="date-icon tp-slam">date_range</Icon>
+                 
               </div>
               )}
             </div>
@@ -1631,12 +1632,12 @@ class ManageProjects extends Component {
             <div>
               {record.original.EndDate != "" && record.original.EndDate != null && record.original.EndDate != undefined ? (
                 <div>
-                  <p>{record.original.EndDate}</p>
+                {record.original.EndDate}
                 </div>
               ) : (
                 
-              <div className="date-spl">
-              <FormControl fullWidth>
+              <div className="tbl-datepicker">
+    
                 <Datetime
                   dateFormat={"MM/DD/YYYY"}
                   timeFormat={false}
@@ -1663,7 +1664,7 @@ class ManageProjects extends Component {
                     />
                   )}
                 />
-              </FormControl>
+
             </div>
               )}
             </div>
@@ -1679,25 +1680,44 @@ class ManageProjects extends Component {
         filterable: false,
         Cell: (record) => {
           return (
-            <div>
-              <div className="align-right">
+            <div className="table-common-btn">
+             
                 {CommonConfig.getUserAccess("Project Management").DeleteAccess ===
                 1 ? (
-                  <DeleteIcon
-                    onClick={(e) => this.openDeleteRequestModalKeyword(e,record.original.ServiceResourceID,"ResourceAllocation")}
-                  />
+                  <Button   justIcon   color="danger" >
+                     <DeleteIcon
+                        onClick={(e) => this.openDeleteRequestModalKeyword(e,record.original.ServiceResourceID,"ResourceAllocation")}
+                      />
+                  </Button>
+                 
                 ) : null}
-              </div>
+             
                 {this.state.ProjectServiceResourceList.length == record.index+1?(
-                <div className="align-right">
-                  {record.original.ResourceID !="" ?(
-                  <Icon color="secondary" onClick={() => this.AddNewRowDataResource()}>
-                    add_circle
-                  </Icon>):
-                  (<Icon color="secondary" onClick={() => this.saveResourceData()}>
-                    save
-                  </Icon>)}
-                </div>):null
+             
+                  record.original.ResourceID !="" ?(
+                  
+                    <Button
+                    justIcon
+                    color="info"
+                  >
+                  <AddIcon onClick={() => this.AddNewRowDataResource()}/>
+                    
+                  
+                    
+                  </Button>
+                  ):
+                  (
+                    <Button
+                    justIcon
+                    color="info"
+                  >
+                  
+                  <SaveIcon onClick={() => this.saveResourceData()}/>
+                    
+                 
+                  </Button>
+                 )
+                ):null
         }
             </div>
           )
@@ -1885,7 +1905,7 @@ class ManageProjects extends Component {
             <div>
               {record.original.AlreadySelected && record.original.ServiceName != "" && record.original.ServiceName != null && record.original.ServiceName != undefined ? (
                 <div>
-                  <p>{record.original.ServiceName}</p>
+                  {record.original.ServiceName}
                 </div>
               ) : (
                 <div>
@@ -1931,30 +1951,51 @@ class ManageProjects extends Component {
         Header: "Actions",
         Cell: (record) => {
           return (
-            <div>
-              <div className="align-right">
+            <div className="table-common-btn">
+             
                 {this.state.Access.DeleteAccess === 1 ? (
-                  <DeleteIcon
-                    onClick={(e) => this.openDeleteRequestModalKeyword(e,record.original.ServiceID,"Service")}
-                  />
+                  <Button   justIcon   color="danger" >
+                    <DeleteIcon
+                      onClick={(e) => this.openDeleteRequestModalKeyword(e,record.original.ServiceID,"Service")}
+                    />
+                  </Button>
                 ) : null}
-              </div>
+             
               {this.state.FinalServiceList.filter((x) => x.AlreadySelected === true).length === record.index + 1 ? (
-                <div className="align-right">
-                  {record.original.ServiceID !="" && this.state.FinalServiceList.length != this.state.ServiceList.length?(
-                  <Icon color="secondary" onClick={() => this.AddNewRowData()}>
-                    add_circle
-                  </Icon>):this.state.ProjectServiceList.length != this.state.ServiceList.length?(
-                  (<Icon color="secondary" onClick={() => this.saveData()}>
-                    save
-                  </Icon>)):null}
-                </div>) : null
+                
+                  record.original.ServiceID !="" && this.state.FinalServiceList.length != this.state.ServiceList.length?(
+                    <Button
+                    justIcon
+                    color="info"
+                  >
+                  <AddIcon onClick={() => this.AddNewRowData()}/>
+                    
+                  
+                    
+                  </Button>
+                    
+                  ):this.state.ProjectServiceList.length != this.state.ServiceList.length?(
+                  (
+                    <Button
+                    justIcon
+                    color="info"
+                  >
+                  
+                  <SaveIcon onClick={() => this.saveData()}/>
+                    
+                 
+                  </Button>
+                
+                )):null
+                ) : null
               }
             </div>
           )
         },
       },
     ];
+
+
     return (
       <div>
         <GridContainer className="MuiGrid-justify-xs-center">
@@ -2104,37 +2145,34 @@ class ManageProjects extends Component {
                         </CardIcon>
                         <h4 className="margin-right-auto text-color-black">Service Allocation List</h4>
 
-                        <div className="shipment-content mt-20">
-                          <div className="shipment-pane " id="clearsales">
+                        
+                          
 
 
-                            <div className="autocomplete-fs-small">
-                              <GridItem xs={12} sm={12} md={3}>
-                                <FormControl fullWidth className="mt-2">
-                                  <Autocomplete
-                                    id="combo-box-demo"
-                                    options={projectList}
-                                    value={this.state.ProjectName}
-                                    onChange={(event, value) =>
-                                      this.selectChange(event, value, "ProjectName")
-                                    }
-                                    getOptionLabel={(option) => option.label}
-                                    renderInput={(params) => (
-                                      <TextField {...params} label="ProjectName" />
-                                    )}
-                                  />
-                                </FormControl>
-                              </GridItem>
-                            </div>
+                            
 
-                          </div>
+                          
 
                           <div className="filter-wrap">
-                            <div
-                              className="filter-top-right"
-
-                            >
-
+                            <div className="autocomplete-right">
+                              <div className="autocomplete-fs-small">
+                                
+                                  <FormControl fullWidth className="mt-2">
+                                    <Autocomplete
+                                      id="combo-box-demo"
+                                      options={projectList}
+                                      value={this.state.ProjectName}
+                                      onChange={(event, value) =>
+                                        this.selectChange(event, value, "ProjectName")
+                                      }
+                                      getOptionLabel={(option) => option.label}
+                                      renderInput={(params) => (
+                                        <TextField {...params} label="ProjectName" />
+                                      )}
+                                    />
+                                  </FormControl>
+                                
+                              </div>
                               {/* <Button
                           color="primary"
                           className="wd-auto"
@@ -2145,7 +2183,7 @@ class ManageProjects extends Component {
 
                             </div>
                           </div>
-                        </div>
+                        
                       </CardHeader>
                       <CardBody>
                         <ReactTable
@@ -2187,13 +2225,10 @@ class ManageProjects extends Component {
                         </CardIcon>
                         <h4 className="margin-right-auto text-color-black">Resource Allocation List</h4>
 
-                        <div className="shipment-content mt-20">
-                          <div className="shipment-pane " id="clearsales">
-
-
-
-                            <GridItem xs={12} sm={12} md={3}>
-                              <FormControl fullWidth className="mt-2">
+                        <div className="right-dropdown">
+                          <GridContainer>
+                            <GridItem xs={12} sm={12} md={6}>
+                              <FormControl fullWidth className="">
                                 <Autocomplete
                                   id="combo-box-demo"
                                   options={projectList}
@@ -2208,9 +2243,7 @@ class ManageProjects extends Component {
                                 />
                               </FormControl>
                             </GridItem>
-
-
-                            <GridItem xs={12} sm={12} md={3}>
+                            <GridItem xs={12} sm={12} md={6}>
                               <FormControl fullWidth>
                               <Autocomplete
                                   options={projectServiceList}
@@ -2256,33 +2289,12 @@ class ManageProjects extends Component {
                                   )}
                                 /> */}
                               </FormControl>
-
-
-
-
-
-
                             </GridItem>
-
-                          </div>
-
-                          <div className="filter-wrap">
-                            <div
-                              className="filter-top-right"
-
-                            >
-
-                              {/* <Button
-                                color="primary"
-                                className="wd-auto"
-                                onClick={() => this.AddResourceToService()}
-                              >
-                                Add Resource To Service
-                              </Button> */}
-
-                            </div>
-                          </div>
+                          </GridContainer>
                         </div>
+
+                          
+                        
                       </CardHeader>
                       <CardBody>
                         <ReactTable

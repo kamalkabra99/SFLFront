@@ -6864,3 +6864,43 @@ button.file-doc {
       height: 300px !important;
 
     }
+
+    .autocomplete-right {
+        width: 200px;
+    }
+
+    .right-dropdown {
+        width: 700px;
+    }
+
+    .tbl-datepicker {
+        width: 100%;
+        position: relative;
+        color: rgba(0, 0, 0, 0.87);
+    }
+
+    .right-dropdown .MuiAutocomplete-endAdornment {
+        top: calc(50% - 25px);
+    }
+
+    .filter-datepicker {
+        width: 260px;
+    }
+
+    .tbl-datepicker .MuiFormControl-root {
+        width: 100%;
+    }
+
+    .default-input {
+        width: 100%;
+        padding: 5px 0;
+    }
+    
+    .default-input input {
+        width: 100%;
+        border: 1px solid rgba(0,0,0,0.3);
+        padding: 5px 5px;
+        border-radius: 4px;
+    }
+
+    .th-slam {padding-right: 12px;white-space: normal;text-align: center;}

@@ -537,13 +537,11 @@ let WeekDateFirst = this.state.WeekDate1;
       maxWidth: 150,
       Cell: (record) => {
         return (
-          <div className="table-common-btn">
+          <div className="default-input">
             <input
-              size={10}
               type="text"
               name={"Day"+record.original.ProjectID+record.original.ServiceID+i}
-              className="form-control"
-              value={i==1?record.original.Day1:i==2?record.original.Day2:i==3?record.original.Day3:i==4?record.original.Day4:i==5?record.original.Day5:i==6?record.original.Day6:i==7?record.original.Day7:0}
+              value={record.original.Day1!="" && i==1?record.original.Day1:record.original.Day2!="" && i==2?record.original.Day2:record.original.Day3!="" && i==3?record.original.Day3:record.original.Day4!="" && i==4?record.original.Day4:record.original.Day5!="" && i==5?record.original.Day5:record.original.Day6!="" && i==6?record.original.Day6:record.original.Day7!="" && i==7?record.original.Day7:0}
               onChange={(event) =>
                 this.handledInput(event, record.original.ServiceID, record.original.ProjectID, "Day"+i)
               }
@@ -598,51 +596,20 @@ handleDateChange = (date, type) => {
               </CardIcon>
               <h4 className="margin-right-auto text-color-black">Poject Allocation </h4>
 
-              {/* <div className="filter-top-right">
-                <div className="autocomplete-fs-small">
-                  <Autocomplete
-                    multiple
-                    size="small"
-                    id="filtercheckbox"
-                    options={this.state.requestStatus}
-                    getOptionLabel={(option) => option.label}
-                    onChange={(e, value) => this.filterMethod(e, value)}
-                    getOptionSelected={(option, value) =>
-                      this.optionProps(option, value)
-                    }
-                    style={{ width: "100%" }}
-                    renderOption={(option, { selected }) => (
-                      <React.Fragment>
-                        <Checkbox
-                          icon={icon}
-                          checkedIcon={checkedIcon}
-                          style={{ marginRight: 8 }}
-                          checked={selected}
-                        />
-                        {option.label}
-                      </React.Fragment>
-                    )}
-                    renderInput={(params) => this.renderInputMethod(params)}
-                    value={this.state.statusList}
-                  />
-                </div>
-              </div> */}
-              <div className="filter-wrap">
               
-                  <div className="date-spl">
-              <FormControl fullWidth>
+              <div className="filter-datepicker">
+              
+              <div className="tbl-datepicker">
+
                 <Datetime
                   dateFormat={"MM/DD/YYYY"}
                   timeFormat={false}
                   value={this.state.WeekDate}
-                  onChange={(date) =>
-                    this.handleDateChange(date, "Date")
-                  }
-                  
+                  onChange={(date) =>this.handleDateChange(date, "Date")}
+                  fullWidth
                   closeOnSelect={true}
                   renderInput={(params) => (
                     <TextField
-                      style={{ marginTop: "-15px" }}
                       error={this.state.EndDateErr}
                       helperText={this.state.EndDateHelperText}
                       inputProps={{
@@ -655,62 +622,7 @@ handleDateChange = (date, type) => {
                     />
                   )}
                 />
-              </FormControl>
-            </div>
-                  {/* <Button className="cm-toggle" color="rose"
-                    onMouseLeave={() => this.setState({ IsDropDownShow: false })}
-                    onMouseOver={() => this.setState({ IsDropDownShow: true })}>
-                   Time Status<ExpandMoreIcon />
-
-                    {this.state.IsDropDownShow === true ? (
-                      <div className="cm-dropdown">
-                        <div className="overflow-handle">
-                     
-                          {this.state.WorkStatus.map((step, key) => {
-                         
-
-                            return (
-                              <li>
-                                <label>
-                                  <input
-                                  id={"Status"+key}
-                                    type="checkbox"
-                                    checked={step.IsSelected}
-                                    onChange={(e) =>
-                                      this.handleCheckboxChange(
-                                        e,
-                                        step,
-                                        step.value
-                                      )
-                                    }
-                                  />{" "}
-                                  {step.value}
-                                </label>
-                              </li>
-                            );
-                          })}
-                        </div>
-                        <div className="cms-wrap">
-                          <Button
-                            className="cm-search-btn"
-                            color="rose"
-                            onClick={() => this.searchfilter()}
-                          >
-                            Search
-                          </Button>
-                        </div>
-                      </div>
-                    ) : null}
-
-                  </Button> */}
-                  {/* <Button
-                    color="primary"
-                    className="wd-auto"
-                    onClick={() => this.AddTimeAllocation()}
-                  >
-                    Add Time Allocation
-                  </Button> */}
-             
+              </div>             
               </div>
             </CardHeader>
             <CardBody>
