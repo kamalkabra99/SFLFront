@@ -121,7 +121,7 @@ export class ManagementNavigation extends Component {
           classname: "inactive",
         },
         {
-          stepName: "Bombino Rates(US to IN)",
+          stepName: "Bombino Rates(IN to USA)",
           stepId: "Bombino Rates Management UStoIN",
           IsAccess: 0,
           path: "AddUpdateBombino",

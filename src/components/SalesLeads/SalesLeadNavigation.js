@@ -176,6 +176,7 @@ class SalesLeadNavigation extends Component {
     await this.getCountry();
     await this.managedby();
     await this.getFilterlist();
+    // console.log("this.props.history.location.state.statusList = ",this.props.history.location.state.statusList)
     if (localStorage.getItem("SearchCount")) {
       var params = JSON.parse(localStorage.getItem("SearchCount"));
 
@@ -470,6 +471,7 @@ class SalesLeadNavigation extends Component {
   }
 
   handleEdit = (record) => {
+    console.log("this.state.statusList",this.state.statusList)
     this.props.history.push({
       pathname: "/admin/EditSalesLeads",
       state: {

@@ -122,6 +122,7 @@ export default function HeaderLinks(props) {
           <SimpleBackdrop />
         </div>
       ) : null}
+      
       {CommonConfig.getUserAccess("Basic Search").ReadAccess ? (
         <div className="header-search">
           <input

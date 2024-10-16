@@ -36,6 +36,7 @@ class CommercialInvoice extends Component {
       useraccess: JSON.parse(localStorage.getItem("loggedInUserData")),
       updatedipAddress: "",
       createDuplicate: "0",
+      newbal:0,
       updatedipLocation: "",
       isNotesVisible: true,
       IsTransactionValid: false,
@@ -53,11 +54,13 @@ class CommercialInvoice extends Component {
       CommercialPopup: false,
       ComUpdatedDate: "",
       ComUpdatedName: "",
+      newbalarray:[],
       ComCreatedDate: "",
       ComCreatedName: "",
       ipAddress: "",
       ipLocation: "",
       PickupDateChange: 0,
+      datasetsOrigin:1,
       userdetailsTooltip: "",
       PersonID: "",
       fromCountryCode: "",
@@ -322,6 +325,24 @@ class CommercialInvoice extends Component {
               ShipmentStatus: res.data[0].ShipmentStatus,
             });
 
+            var datasets = 0
+            var shipStatus = this.state.ShipmentStatus
+            shipStatus = shipStatus.trim();
+            
+            if(shipStatus == "Pickup Scheduled"){
+              datasets = 1
+            }else if(shipStatus == "In Consolidation"){
+              datasets = 1
+            }else if(shipStatus == "New Request"){
+              datasets = 1
+            }else{
+              datasets = 0
+            }
+
+            this.setState({datasetsOrigin:datasets})
+
+
+            console.log("1",shipStatus)
             // this.getServiceByShipmentType(shipmentType.value);
             // this.getSubserviceName(serviceName.value, shipmentType.value);
             this.hideLoader();
@@ -405,6 +426,10 @@ class CommercialInvoice extends Component {
                     for (let indexpack = 0; indexpack < this.state.PackageList.length; indexpack++) {
                       if(this.state.commercialList[index].PackageNumber == this.state.PackageList[indexpack].PackageNumber){
                         this.state.commercialList[index].PackageContent = this.state.PackageList[indexpack].PackageContent
+                        var data = {
+                          value: this.state.PackageList[indexpack].PackedType, label: this.state.PackageList[indexpack].PackedType 
+                        }
+                        this.state.commercialList[index].PackedType = data
                       
                       } 
                     }
@@ -928,6 +953,32 @@ class CommercialInvoice extends Component {
     this.props.history.push("/auth/login-page");
   };
   viewCommercialInvoice = () => {
+
+
+    if(this.state.commercialList.length > 0){
+      this.state.newbalarray = []
+
+      var datalength = this.state.commercialList.length
+      console.log("commercialList = ",this.state.commercialList)
+      
+      if(datalength > 15){
+        this.state.newbal = 0
+      }else{
+      console.log("datalength = ",datalength)
+        this.state.newbal = 15 - datalength
+        console.log("this.state.newbal",this.state.newbal)
+        for (let index = 1; index <= this.state.newbal; index++) {
+  
+          var data = datalength+index
+          console.log("this.state",data)
+          var newarrayobj = {
+            indexdata: data
+          }
+          this.state.newbalarray.push(newarrayobj)
+          
+        }
+      }
+
     return this.state.commercialList
       .filter((x) => x.Status === "Active")
       .map((commercial, idx) => {
@@ -1056,7 +1107,7 @@ class CommercialInvoice extends Component {
                       <Select
                         id="package_number"
                         name="package_number"
-                        value={commercial.PackedType}
+                        value={commercial.PackedType ? commercial.PackedType.value:""}
                         className="form-control"
                         onChange={(event) =>
                           this.handleCommercialInvoiceChange(
@@ -1077,7 +1128,122 @@ class CommercialInvoice extends Component {
           </tr>
         );
       });
+    }
   };
+  renderCommercialExtra = () =>{
+    console.log("Welcome data")
+
+    return this.state.newbalarray.map((commercial, idx) => {
+      return (
+        <tr>
+        <td className="wd-130">
+          
+        </td>
+        <td>{commercial.PackageContent}</td>
+        <td className="">
+          <div className="width-full">
+            <TextField
+              value={
+                ""
+              }
+              
+              disabled={
+                true
+              }
+              inputProps={{}}
+              InputProps={{
+                disableUnderline: true,
+              }}
+            />
+          </div>
+        </td>
+        {this.state.ShipmentType !== "Ocean" ? (
+          <>
+            <td className="wd-num right">
+              <TextField
+                value={
+                  ""
+                }
+                
+                disabled={
+                  true
+                }
+                inputProps={{
+                  maxLength: 3,
+                }}
+                InputProps={{
+                  disableUnderline: true,
+                }}
+              />
+            </td>
+            <td className="wd-num right">
+              <TextField
+                
+                value={
+                  ""
+                }
+                
+                disabled={
+                  true
+                }
+                
+                inputProps={{}}
+                InputProps={{
+                  disableUnderline: true,
+                }}
+              />
+            </td>
+          </>
+        ) : null}
+        <td className="wd-num right">
+          <TextField
+            value={
+              ""
+            }
+            
+            disabled={
+              true
+            }
+            
+            inputProps={{}}
+            InputProps={{
+              disableUnderline: true,
+            }}
+          />
+        </td>
+
+        <td style={{ width: "104px" }}>
+              <div className="package-select">
+                <FormControl className={classes.formControl} fullWidth>
+                  <Select
+                    id="package_number"
+                    name="package_number"
+                    value={commercial.PackedType}
+                    className="form-control"
+                    onChange={(event) =>
+                      this.handleCommercialInvoiceChange(
+                        event,
+                        "PackedType",
+                        commercial.Index,
+                        commercial.ShippingCommercialInvoiceID
+                      )
+                    }
+                    
+                  >
+                    {this.packedBy()}
+                  </Select>
+                </FormControl>
+              </div>
+            </td>
+        
+      </tr>
+        
+      );
+    });
+    
+  
+    }
+  
 
   CostCalculator = (type, IsFalse) => {
     if (type === "Commercial") {
@@ -1260,21 +1426,30 @@ class CommercialInvoice extends Component {
                               <th className="right nowrap">Value Per Qty</th>
                             </>
                           ) : null}
-                          <th className="right">Total Value</th>
+                          <th className="right">Value (USD)</th>
                           <th className="right">Packed By</th>
                           
                         </tr>
                       </thead>
                       <tbody>
                         {this.viewCommercialInvoice()}
+                        </tbody>
+                        {this.state.newbal >0 ?(
+                          <tbody>
+                            {this.renderCommercialExtra()}
+
+                          </tbody>
+
+                        ):null}
+                        <tbody>
                         <tr>
                           {this.state.ShipmentType !== "Ocean" ? (
                             <td className="text-align-right" colSpan="4">
                               <b>Total Cost:</b>
                             </td>
                           ) : (
-                            <td className="text-align-right" colSpan="4">
-                              <b>Total Cost:</b>
+                            <td className="text-align-right" colSpan="3">
+                              <b>Total Value (USD):</b>
                             </td>
                           )}
                           <td className="right">
@@ -1287,6 +1462,7 @@ class CommercialInvoice extends Component {
                               }}
                             />
                           </td>
+                          <td></td>
                          
                         </tr>
                       </tbody>
@@ -1298,16 +1474,16 @@ class CommercialInvoice extends Component {
 
             <div className="shipment-submit">
               <div className="right">
-				{this.state.commercialList.length > 0 && (this.state.ShipmentStatus == "Pickup Scheduled" || this.state.ShipmentStatus == "In Consolidation" ||  this.state.ShipmentStatus == "New Request" )?(
-					<Button
-					justify="center"
-					color="primary"
-					  onClick={() => this.handleSave(true)}
-				  >
-					Save & Exit
-				  </Button>
+            { this.state.datasetsOrigin == 1 ? (
+              <Button
+              justify="center"
+              color="primary"
+                onClick={() => this.handleSave(true)}
+              >
+              Save & Exit
+              </Button>
 
-				):null}
+            ):null}
                 
 
                 <Button

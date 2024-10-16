@@ -1698,6 +1698,7 @@ if (res.success) {
   };
 
   async componentDidMount() {
+   // console.log("this.props.history.location.state.statusList = ",this.props.history.location.state.statusList)
     this.setState({
       fromEmailAddress: CommonConfig.loggedInUserData().Email,
       ReadAccess: CommonConfig.getUserAccess("Sales Lead").ReadAccess,
