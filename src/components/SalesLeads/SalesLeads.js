@@ -96,7 +96,7 @@ class ReactTables extends React.Component {
     };
   }
 
-  componentDidMount() {
+  componentDidMount() {debugger
     this.setState({
       AllAccess: CommonConfig.getUserAccess("Sales Lead").AllAccess,
       searchAllAccess: CommonConfig.getUserAccess("Search Sales Lead"),

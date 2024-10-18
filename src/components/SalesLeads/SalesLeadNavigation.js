@@ -164,7 +164,7 @@ class SalesLeadNavigation extends Component {
     };
   }
 
-  async componentDidMount() {
+  async componentDidMount() {debugger
     this.setState({
       AllAccess: CommonConfig.getUserAccess("Sales Lead").AllAccess,
       searchAllAccess: CommonConfig.getUserAccess("Search Sales Lead"),
@@ -260,7 +260,19 @@ class SalesLeadNavigation extends Component {
       ) {
         APIcheck = false;
         this.filterMethod("", this.props.history.location.state.statusList);
+        this.setState({statusList:this.props.history.location.state.statusList});
+        this.setState({checkdata:this.props.history.location.state.statusList});
+        console.log("lok",this.state.checkdata);
+        let index="";
+        for(let i=0;i<this.state.checkdata.length;i++)
+        { let xy= this.state.checkdata[i].value;
+             index = this.state.requestStatus.findIndex(
+              (x) => x.value === xy 
+            );
+            this.state.requestStatus[index].IsSelected = true;
+          }
       }
+      console.log("this.state.requestStatus",this.state.requestStatus);
     } else {
       var finalStatus = [
         {
@@ -282,9 +294,14 @@ class SalesLeadNavigation extends Component {
     this.setState({ Loading: true });
     if (APIcheck) {
       let newFilter = [{ label: "New", value: "New" },{ value: "Auto Quote", label: "Auto Quote" }];
+      this.state.checkdata= newFilter;
       this.filterMethod("", newFilter);
     }
   }
+
+
+
+
   hideLoader() {
     this.setState({ Loading: false });
   }
@@ -394,7 +411,7 @@ class SalesLeadNavigation extends Component {
     });
   };
 
-  getFilterlist = () => {
+  getFilterlist = () => {debugger
     let data = { stringMapType: "SEARCHSALESLEADFILTER" };
     api
       .post("stringMap/getstringMap", data)
@@ -470,7 +487,7 @@ class SalesLeadNavigation extends Component {
     }
   }
 
-  handleEdit = (record) => {
+  handleEdit = (record) => {debugger
     console.log("this.state.statusList",this.state.statusList)
     this.props.history.push({
       pathname: "/admin/EditSalesLeads",
@@ -2196,7 +2213,7 @@ class SalesLeadNavigation extends Component {
       return false;
     }
   };
-  handleCheckboxChange = (e, record, type) => {
+  handleCheckboxChange = (e, record, type) => {debugger
     let checkedArr = this.state.requestStatus;
     if (type !== "All") {
       checkedArr
@@ -2211,7 +2228,7 @@ class SalesLeadNavigation extends Component {
         //StatusList[0].IsSelected:true
       });
       let previousList = checkedArr.filter((x) => x.IsSelected === true);
-      this.setState({ checkdata: previousList });
+      this.setState({ checkdata: previousList,statusList:previousList });
     } else {
       checkedArr.map((OBJ) => {
         OBJ.IsSelected = e.target.checked;
@@ -2233,7 +2250,7 @@ class SalesLeadNavigation extends Component {
       });
     }
   };
-  searchfilter = () => {
+  searchfilter = () => {debugger
     this.setState({ IsDropDownShow: false });
     try {
       let Query = "";
