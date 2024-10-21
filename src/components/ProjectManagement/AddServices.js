@@ -146,7 +146,31 @@ class AddServices extends Component {
             this.setState({ loading: true });
             cogoToast.success("Update Sucessfully");
             if (redirect) {
-              this.props.history.push("/admin/ManageProjects");
+              this.props.history.push({
+
+                pathname: "/admin/ManageProjects",
+                state: {
+                  filterlist:
+                    this.props.history.location.state &&
+                      this.props.history.location.state.filterlist
+                      ? this.props.history.location.state.filterlist
+                      : null,
+                  sortlist:
+                    this.props.history.location.state &&
+                      this.props.history.location.state.sortlist
+                      ? this.props.history.location.state.sortlist
+                      : null,
+                  tabKey:
+                    this.props.history.location.state &&
+                      this.props.history.location.state.tabKey
+                      ? this.props.history.location.state.tabKey
+                      : null
+                },
+
+
+
+
+              });
             } else {
               window.location.reload();
             }
@@ -162,7 +186,31 @@ class AddServices extends Component {
   };
 
   cancel = () => {
-    this.props.history.push("/admin/ManageProjects");
+    this.props.history.push({
+      pathname: "/admin/ManageProjects",
+      state: {
+        filterlist:
+          this.props.history.location.state &&
+            this.props.history.location.state.filterlist
+            ? this.props.history.location.state.filterlist
+            : null,
+        sortlist:
+          this.props.history.location.state &&
+            this.props.history.location.state.sortlist
+            ? this.props.history.location.state.sortlist
+            : null,
+        tabKey:
+          this.props.history.location.state &&
+            this.props.history.location.state.tabKey
+            ? this.props.history.location.state.tabKey
+            : null
+      },
+
+
+
+    }
+
+    );
   };
 
 

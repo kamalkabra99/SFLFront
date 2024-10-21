@@ -54,14 +54,21 @@ class ProjectAllocation extends Component {
       requestStatus: [],
       StartDate:moment().format("YYYY/MM/DD"),
       projectServiceList:[],
-      WeekDate:moment().format(CommonConfig.dateFormat.dbDateOnly).toString(),
-      WeekDate1:moment(moment().format(CommonConfig.dateFormat.dbDateOnly).toString()).startOf('isoWeek').toDate(),
+      WeekDate:moment().format(CommonConfig.dateFormat.dateOnly).toString(),
+      WeekDate1:moment(moment().format(CommonConfig.dateFormat.dateOnly).toString()).startOf('Week').toDate(),
       WeekDateErr:"",
       WeekDateHelperText:"",
       WeekDayFirst:"1",
       WeekDayLast:"7",
       WeekDateFirst:"",
       ResourceID:CommonConfig.loggedInUserData().PersonID,
+      TotalDay1:0,
+      TotalDay2:0,
+      TotalDay3:0,
+      TotalDay4:0,
+      TotalDay5:0,
+      TotalDay6:0,
+      TotalDay7:0,
     };
   }
   componentDidMount() {
@@ -140,6 +147,7 @@ class ProjectAllocation extends Component {
           this.setState({
             TimeAllocationList: data
           });
+          
   }
   showLoador = () => {
     this.setState({ Loading: true });
@@ -233,7 +241,7 @@ class ProjectAllocation extends Component {
     debugger
    
       let data = {"ResourceID" :rec,
-        "Date":Date,
+        "Date":moment(Date).format(CommonConfig.dateFormat.dbDateOnly).toString(),
       };
 
         //data.StatusQuery = whereClause;
@@ -515,7 +523,7 @@ let WeekDateFirst = this.state.WeekDate1;
         sortable: true,
         maxWidth: 150,
       }) ;
-      x=moment(WeekDateFirst).format("MM/DD/YYYY")+" ("+moment(WeekDateFirst).format('ddd')+")";}
+      x=moment(WeekDateFirst).format("MM/DD/YY")+" ("+moment(WeekDateFirst).format('ddd')+")";}
     else
     if(i == 0)
       column.push({
@@ -538,6 +546,7 @@ let WeekDateFirst = this.state.WeekDate1;
       Cell: (record) => {
         return (
           <div className="default-input">
+            {record.original.ProjectName !="Total"?
             <input
               type="text"
               name={"Day"+record.original.ProjectID+record.original.ServiceID+i}
@@ -548,13 +557,14 @@ let WeekDateFirst = this.state.WeekDate1;
               // onBlur={(e) =>
               //   this.handleBlur(e, record.original.ServiceID, record.original.MarkupType, "Markup")
               // }
-            />
+            />:<p class="total-hours">{record.original.Day1!="" && i==1?record.original.Day1:record.original.Day2!="" && i==2?record.original.Day2:record.original.Day3!="" && i==3?record.original.Day3:record.original.Day4!="" && i==4?record.original.Day4:record.original.Day5!="" && i==5?record.original.Day5:record.original.Day6!="" && i==6?record.original.Day6:record.original.Day7!="" && i==7?record.original.Day7:0}</p>}
           </div>
         );
       },
     }) ;
+
     WeekDateFirst =moment(WeekDateFirst).add(1,"d");
-    x=moment(WeekDateFirst).format("MM/DD/YYYY")+" ("+moment(WeekDateFirst).format('ddd')+")";
+    x=moment(WeekDateFirst).format("MM/DD/YY")+" ("+moment(WeekDateFirst).format('ddd')+")";
   }
   }
 
@@ -594,12 +604,12 @@ handleDateChange = (date, type) => {
               <CardIcon color="primary">
                 <PhoneCallback />
               </CardIcon>
-              <h4 className="margin-right-auto text-color-black">Poject Allocation </h4>
+              <h4 className="margin-right-auto text-color-black">Project Allocation </h4>
 
               
               <div className="filter-datepicker">
               
-              <div className="tbl-datepicker">
+              <div className="tbl-datepicker1">
 
                 <Datetime
                   dateFormat={"MM/DD/YYYY"}
@@ -629,15 +639,10 @@ handleDateChange = (date, type) => {
               <ReactTable
                 data={TimeAllocationList}
                 defaultPageSize={10}
-                minRows={2}
-                defaultSorted={this.state.previousSortList}
-                defaultFiltered={this.state.previousFilterList}
+                minRows={0}
                 resizable={false}
                 columns={column}
-                getTheadFilterProps={(e) => this.filterProps(e)}
-                pageText={"Total rows : " + this.state.finalLength}
-                getPaginationProps={(e) => this.checkProps(e)}
-                defaultFilterMethod={CommonConfig.filterCaseInsensitive}
+             //   pageText={"Total rows : " + this.state.finalLength}
                 showPaginationBottom={true}
                 className="-striped -highlight"
               />

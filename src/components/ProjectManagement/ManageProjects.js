@@ -132,6 +132,7 @@ class ManageProjects extends Component {
       NewServiceType: "",
       ResourceID:"",
       DeleteOption:"",
+      tabKey:0,
     };
   }
   async componentDidMount() {
@@ -145,6 +146,8 @@ class ManageProjects extends Component {
       AllAccess: CommonConfig.getUserAccess("Call Back").AllAccess,
     });
     this.setState({ loggedUser: CommonConfig.loggedInUserData().PersonID });
+
+    debugger
     let APIcheck = true;
     if (
       this.props.history.location.state !== undefined &&
@@ -153,13 +156,10 @@ class ManageProjects extends Component {
       this.setState({
         previousFilterList: this.props.history.location.state.filterlist,
         previousSortList: this.props.history.location.state.sortlist,
-        WorkStatus:
-          this.props.history.location.state.WorkStatus !== undefined
-            ? this.props.history.location.state.WorkStatus
-            : this.state.WorkStatus,
+        tabKey:this.props.history.location.state.tabKey,
       });
       debugger
-
+      
       if (this.props.history.location.state.WorkStatus !== undefined) {
         APIcheck = false;
 
@@ -167,13 +167,14 @@ class ManageProjects extends Component {
         this.state.WorkStatus = this.props.history.location.state.WorkStatus;
         this.setState({ WorkStatus: this.props.history.location.state.WorkStatus });
       }
+      await this.navigateChange(this.state.tabKey);
     } else {
       var finalStatus = {
-        id: "WorkStatus",
+        id: "ServiceName",
         value: "",
       };
       var finalSort = {
-        id: "DateCreated",
+        id: "ServiceName",
         desc: true,
       };
       this.setState({
@@ -186,6 +187,7 @@ class ManageProjects extends Component {
       let newFilter = [{ label: "New", value: "New", IsSelected: true }, { label: "Open", value: "Open", IsSelected: true }];
       this.state.checkdata = newFilter;
     }
+    
   }
 
   getProjectListForResource = () => {
@@ -226,6 +228,7 @@ class ManageProjects extends Component {
       state: {
         filterlist: this.state.filterProps,
         sortlist: this.state.sortProps,
+        tabKey:this.state.tabKey,
         // WorkStatus: this.state.WorkStatus,
       },
     });
@@ -270,6 +273,7 @@ class ManageProjects extends Component {
         id: ServiceId,
         filterlist: this.state.filterProps,
         sortlist: this.state.sortProps,
+        tabKey:this.state.tabKey,
       },
     });
   }
@@ -296,6 +300,7 @@ class ManageProjects extends Component {
       state: {
         filterlist: this.state.filterProps,
         sortlist: this.state.sortProps,
+        tabKey:this.state.tabKey,
         // WorkStatus: this.state.WorkStatus,
       },
     });
@@ -421,6 +426,7 @@ class ManageProjects extends Component {
         id: ProjectId,
         filterlist: this.state.filterProps,
         sortlist: this.state.sortProps,
+        tabKey:this.state.tabKey,
         //WorkStatus: this.state.WorkStatus,
       },
     });
@@ -499,7 +505,7 @@ class ManageProjects extends Component {
     });
   };
 
-  filterProps = (e) => {
+  filterProps = (e) => {debugger
     console.log("e = ", e)
     console.log("this.state.filterProps = ", this.state.filterProps, this.state.sortProps)
     if (this.state.filterProps !== e.filtered) {
@@ -517,6 +523,7 @@ class ManageProjects extends Component {
       state: {
         filterlist: this.state.filterProps,
         sortlist: this.state.sortProps,
+        tabKey:this.state.tabKey,
         // WorkStatus: this.state.WorkStatus,
       },
     });
@@ -547,17 +554,27 @@ class ManageProjects extends Component {
       return false;
     }
   };
-  navigateChange = (key) => {
+  navigateChange = (key) => {debugger
+    if(key != undefined){
     let stepsList = this.state.Steps;
     let activeIndex = stepsList.findIndex((x) => x.classname === "active");
     if (key !== activeIndex) {
       stepsList[key]["classname"] = "active";
       stepsList[activeIndex]["classname"] = "inactive";
-      this.setState({ Steps: stepsList });
+      this.setState({ Steps: stepsList, tabKey:key });
       let divID = stepsList[key]["stepId"];
       let activeDiv = stepsList[activeIndex]["stepId"];
       document.getElementById(divID).style.display = "block";
       document.getElementById(activeDiv).style.display = "none";
+      this.props.history.push({
+        state: {
+          filterlist: this.state.filterProps,
+          sortlist: this.state.sortProps,
+          tabKey:this.state.key,
+          //WorkStatus: this.state.WorkStatus,
+        },
+      });
+    }
     }
   };
   showHide() {
@@ -606,20 +623,77 @@ class ManageProjects extends Component {
       state: {
         filterlist: this.state.filterProps,
         sortlist: this.state.sortProps,
+        tabKey:this.state.tabKey,
         // WorkStatus: this.state.WorkStatus,
       },
     });
   };
-  handleDelete = (record) => {
-    if(record!=""){
-    console.log(record);
-    var data = {
-      ProjectID: this.state.ProjectID,
-      ServiceID: record,
-      //Attachment: Attachment,
-    };
-
-    if (CommonConfig.getUserAccess("Project Management").AllAccess === 1) {
+  handleDelete = (recordType,record) => {
+    if(recordType =="Project"){
+      if(record!=""){
+        console.log(record);
+        var data = {
+          ProjectID: record,
+        };
+        if (CommonConfig.getUserAccess("Project Management").AllAccess === 1) {
+          api.post("projectManagement/deleteProject", data).then((res) => {
+            console.log(res);
+            if (res.message[0][0].DeleteRes == 0)
+              cogoToast.error("This Project is used somewhere");
+            else
+            this.getProjectList();
+            this.closedeletemodalKeyword();
+    
+    
+          });
+        }
+    
+        if (
+          CommonConfig.getUserAccess("Project Management").AllAccess === 0 &&
+          CommonConfig.getUserAccess("Project Management").ReadAccess === 1
+        ) {
+          cogoToast.error("Sorry you don't have access to delete this");
+        }
+      }
+    }
+    else
+    if(recordType =="Service"){
+      if(record!=""){
+        console.log(record);
+        var data = {
+          ServiceID: record,
+        };
+        if (CommonConfig.getUserAccess("Project Management").AllAccess === 1) {
+          api.post("projectManagement/deleteService", data).then((res) => {
+            console.log(res);
+            if (res.message[0][0].DeleteRes == 0)
+              cogoToast.error("This Service is used somewhere");
+            else
+             this.getServiceList();
+            this.closedeletemodalKeyword();
+    
+    
+          });
+        }
+    
+        if (
+          CommonConfig.getUserAccess("Project Management").AllAccess === 0 &&
+          CommonConfig.getUserAccess("Project Management").ReadAccess === 1
+        ) {
+          cogoToast.error("Sorry you don't have access to delete this");
+        }
+      }
+    }
+    else
+    if(recordType =="ServiceAllocation")
+    {
+      if(record!=""){
+        console.log(record);
+        var data = {
+          ProjectID: this.state.ProjectID,
+          ServiceID: record,
+        };
+      if (CommonConfig.getUserAccess("Project Management").AllAccess === 1) {
       api.post("projectManagement/deleteServiceAllocation", data).then((res) => {
         console.log(res);
         if (res.message[0][0].DeleteRes == 0)
@@ -640,6 +714,7 @@ class ManageProjects extends Component {
       cogoToast.error("Sorry you don't have access to delete this");
     }
   }
+}
   else
   {
    // var newArray = this.state.FinalServiceList.filter((index) => index.ServiceID !== "");
@@ -1655,7 +1730,7 @@ class ManageProjects extends Component {
                       error={this.state.EndDateErr}
                       helperText={this.state.EndDateHelperText}
                       inputProps={{
-                        min: moment().format("YYYY-MM-DD"),
+                        min: moment().format("MM-DD-YYYY"),
                       }}
                       {...params}
                       label="End Date*"
@@ -1725,92 +1800,39 @@ class ManageProjects extends Component {
         sortable: false,
       },
     ];
-    const column2 = [
-      {
-        Header: "Service Name",
-        accessor: "ServiceName",
-        width: 150,
-        filterable: true,
-        sortable: true,
-        maxWidth: 150,
-        // Cell:this.renderServiceName(serviceList),
-      },
-      {
-        Header: "Service Type",
-        accessor: "ServiceType",
-        filterable: true,
-        sortable: true,
-        width: 100,
-        maxWidth: 150,
-      },
-      {
-        Header: "Actions",
-        accessor: "Actions",
-        align: "left",
-        width: 80,
-        maxWidth: 80,
-        filterable: false,
-        Cell: (record) => {
-          return (
-            // ): null}
-            <div className="table-common-btn">
-              <Button
-                justIcon
-                color="info"
-                onClick={() => this.handleAddService(record)}
-              >
-                <i className="fas fa-add"></i>
-              </Button>
-              {CommonConfig.getUserAccess("Project Management").DeleteAccess ===
-                1 ? (
-                <Button
-                  justIcon
-                  color="danger"
-                  onClick={(e) =>
-                    this.openDeleteRequestModalKeyword(e,record.original.ServiceID,"ServiceAllocation")
-                  }
-                >
-                  <i class="fas fa-trash"></i>
-                </Button>
-              ) : null}
-            </div>
-          );
-        },
-        sortable: false,
-      },
-    ];
+
     const column1 = [
 
 
       {
         Header: "Service Name",
         accessor: "ServiceName",
-        width: 150,
+        width: 300,
         filterable: true,
         sortable: true,
-        maxWidth: 150,
+        maxWidth: 300,
       },
       {
         Header: "Service Type",
         accessor: "ServiceType",
         filterable: true,
         sortable: true,
-        width: 100,
-        maxWidth: 150,
+        width: 300,
+        maxWidth: 300,
       },
       {
         Header: "Status",
         accessor: "Status",
         filterable: true,
         sortable: true,
-        width: 150,
-        maxWidth: 250,
+        width: 300,
+        maxWidth: 300,
       },
       {
         Header: "Actions",
         accessor: "actions",
         sortable: false,
-        width: 100,
+        width: 150,
         maxWidth: 150,
         Cell: (record) => {
           return (
@@ -1822,7 +1844,13 @@ class ManageProjects extends Component {
               >
                 <i className="fas fa-edit"></i>
               </Button>
-
+              {this.state.Access.DeleteAccess === 1 ? (
+                  <Button   justIcon   color="danger" >
+                    <DeleteIcon
+                      onClick={(e) => this.openDeleteRequestModalKeyword(e,record.original.ServiceID,"Service")}
+                    />
+                  </Button>
+                ) : null}
             </div>
           );
         },
@@ -1833,52 +1861,54 @@ class ManageProjects extends Component {
       {
         Header: "Project Id",
         accessor: "ProjectID",
-        width: 150,
+        width: 100,
         filterable: true,
         sortable: true,
-        maxWidth: 150,
+        maxWidth: 100,
       },
       {
         Header: "Date Created",
         accessor: "CreatedOn",
-        width: 150,
+        width: 200,
         filterable: true,
         sortable: true,
-        maxWidth: 150,
+        maxWidth: 200,
       },
       {
         Header: "Project Name",
         accessor: "ProjectName",
-        width: 150,
+        width: 200,
         filterable: true,
         sortable: true,
-        maxWidth: 150,
+        maxWidth: 200,
       },
       {
         Header: "Client Name",
         accessor: "ClientName",
         filterable: true,
         sortable: true,
-        width: 100,
-        maxWidth: 150,
+        width: 200,
+        maxWidth: 200,
       },
       {
         Header: "Status",
         accessor: "Status",
         filterable: true,
         sortable: true,
-        width: 150,
-        maxWidth: 250,
+        width: 200,
+        maxWidth: 200,
       },
       {
         Header: "Actions",
         accessor: "actions",
         sortable: false,
-        width: 100,
-        maxWidth: 150,
+        width: 200,
+        maxWidth: 200,
         Cell: (record) => {
           return (
+            
             <div className="table-common-btn">
+                 
               <Button
                 justIcon
                 color="info"
@@ -1886,7 +1916,13 @@ class ManageProjects extends Component {
               >
                 <i className="fas fa-edit"></i>
               </Button>
-
+              {console.log("record.original.ProjectID",record.original.ProjectID)}{ this.state.Access.DeleteAccess === 1 ? (
+                  <Button   justIcon   color="danger" >
+                    <DeleteIcon
+                      onClick={(e) => this.openDeleteRequestModalKeyword(e,record.original.ProjectID,"Project")}
+                    />
+                  </Button>
+                ) : null}
             </div>
           );
         },
@@ -1898,8 +1934,8 @@ class ManageProjects extends Component {
       {
         Header: "Service Name",
         accessor: "ServiceName",
-        width: 220,
-        maxWidth: 220,
+        width: 300,
+        maxWidth: 300,
         Cell: (record) => {
           return (
             <div>
@@ -1945,7 +1981,7 @@ class ManageProjects extends Component {
       },
  
       {
-        width: 100,
+        width: 200,
         filterable: false,
         sortable: false,
         Header: "Actions",
@@ -1956,7 +1992,7 @@ class ManageProjects extends Component {
                 {this.state.Access.DeleteAccess === 1 ? (
                   <Button   justIcon   color="danger" >
                     <DeleteIcon
-                      onClick={(e) => this.openDeleteRequestModalKeyword(e,record.original.ServiceID,"Service")}
+                      onClick={(e) => this.openDeleteRequestModalKeyword(e,record.original.ServiceID,"ServiceAllocation")}
                     />
                   </Button>
                 ) : null}
@@ -2091,39 +2127,27 @@ class ManageProjects extends Component {
                           <PhoneCallback />
                         </CardIcon>
                         <h4 className="margin-right-auto text-color-black">Service List</h4>
-
-
                         <div className="filter-wrap">
-                          <div
-                            className="filter-top-right"
-
-                          >
-
-                            <Button
-                              color="primary"
-                              className="wd-auto"
-                              onClick={() => this.AddService()}
-                            >
+                          <div className="filter-top-right">
+                            <Button color="primary" className="wd-auto" onClick={() => this.AddService()}>
                               Add Service
                             </Button>
                           </div>
                         </div>
                       </CardHeader>
                       <CardBody>
-
                         <ReactTable
                           data={this.state.ServicesList}
                           //   defaultPageSize={10}
-                          minRows={2}
-                          defaultSorted={this.state.previousSortList}
-                          defaultFiltered={this.state.previousFilterList}
+                          minRows={0}
                           resizable={false}
                           columns={column1}
-                          getTheadFilterProps={(e) => this.filterProps(e)}
-                          pageText={"Total rows : " + this.state.finalLength}
                           defaultFilterMethod={CommonConfig.filterCaseInsensitive}
                           showPaginationBottom={true}
                           className="-striped -highlight"
+                          filterable
+                          textAlign={"left"}
+                          defaultPageSize={10}
                         />
                       </CardBody>
                     </Card>
@@ -2190,15 +2214,13 @@ class ManageProjects extends Component {
                           data={this.state.FinalServiceList.filter(
                             (x) => x.AlreadySelected === true
                           )}
-                         // data={this.state.FinalServiceList}
                           defaultPageSize={10}
-                          minRows={2}
+                          minRows={0}
                           defaultSorted={this.state.previousSortList}
                           defaultFiltered={this.state.previousFilterList}
                           resizable={false}
                           columns={column4}
-                          getTheadFilterProps={(e) => this.filterProps(e)}
-                          pageText={"Total rows : " + this.state.finalLength}
+
                           defaultFilterMethod={CommonConfig.filterCaseInsensitive}
                           showPaginationBottom={true}
                           className="-striped -highlight"
@@ -2300,17 +2322,12 @@ class ManageProjects extends Component {
                         <ReactTable
                 data={this.state.ProjectServiceResourceList}
                 defaultPageSize={10}
-                minRows={2}
-                defaultSorted={this.state.previousSortList}
-                defaultFiltered={this.state.previousFilterList}
+                minRows={0}
                 resizable={false}
                 columns={column3}
-                getTheadFilterProps={(e) => this.filterProps(e)}
-                pageText={"Total rows : " + this.state.finalLength}
-                //getPaginationProps={(e) => this.checkProps(e)}
                 defaultFilterMethod={CommonConfig.filterCaseInsensitive}
                 showPaginationBottom={true}
-                className="-striped -highlight table-height"
+                className="-striped -highlight "
 
               />
                       </CardBody>
@@ -2342,8 +2359,8 @@ class ManageProjects extends Component {
                         </Button>
                         <Button
                           onClick={() =>
-                            this.state.DeleteOption==="Service" || this.state.DeleteOption==="ServiceAllocation" ?this.handleDelete(this.state.DeleteRequestIdKeyword):
-                            this.handleDeleteResource(this.state.DeleteRequestIdKeyword)
+                           this.state.DeleteOption==="ServiceAllocation"?
+                            this.handleDeleteResource(this.state.DeleteRequestIdKeyword):this.handleDelete(this.state.DeleteOption,this.state.DeleteRequestIdKeyword)
                           }
                           color="primary"
                          // autoFocus
