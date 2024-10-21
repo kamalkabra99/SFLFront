@@ -580,7 +580,7 @@ handleDateChange = (date, type) => {
       WeekDate: date,
       WeekDateErr: false,
       WeekDateHelperText: "",
-      WeekDate1:moment(date).startOf('isoWeek').toDate()
+      WeekDate1:moment(date).startOf('Week').toDate()
     });
     this.getTimeAllocationList(this.state.ResourceID,moment(date)
     .format(CommonConfig.dateFormat.dbDateOnly)
