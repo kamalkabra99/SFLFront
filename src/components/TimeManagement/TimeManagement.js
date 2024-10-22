@@ -447,7 +447,7 @@ class TimeManagement extends React.Component {
     var pData = {
       UserID: CommonConfig.loggedInUserData().PersonID,
       BreakDur: localStorage.getItem("breakType"),
-      userTimeZonedata: this.state.userTimeZone.value,
+      userTimeZonedata: CommonConfig.loggedInUserData().userTimeZone,
     };
     api.post("contactus/UserBreak", pData).then((res) => {
       console.log("Res = ", res);

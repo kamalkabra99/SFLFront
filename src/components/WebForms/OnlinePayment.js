@@ -33,6 +33,7 @@ class OnlinePayment extends Component {
     this.state = {
       PaymentData: [],
       AllAccess: 0,
+      WriteAccess:0,
       loggedUser: 0,
       finalLength: 0,
       filterProps: [],
@@ -61,6 +62,7 @@ class OnlinePayment extends Component {
   componentDidMount() {
     this.setState({
       AllAccess: CommonConfig.getUserAccess("Online Payment").AllAccess,
+      WriteAccess: CommonConfig.getUserAccess("Online Payment").WriteAccess,
     });
     this.setState({ loggedUser: CommonConfig.loggedInUserData().PersonID });
     let APIcheck = true;
@@ -117,7 +119,7 @@ class OnlinePayment extends Component {
             console.log("list...", result);
             if (result.success) {
               this.hideLoador();
-              if (this.state.AllAccess === 1) {
+              if (this.state.WriteAccess === 1) {
                 this.setState({ PaymentData: result.data });
               } else {
               }

@@ -125,10 +125,13 @@ class ShipmentCustom extends React.Component {
       updatedipAddress: "",
       createDuplicate: "0",
       updatedipLocation: "",
+      showallCleardatachange: false,
+      allCleardatachange: [],
       isNotesVisible: true,
       IsTransactionValid: false,
       TransactionMessage: "",
-      EncShippingID:"",
+      isallclearopen: false,
+      EncShippingID: "",
       //-----------------------------  Tab 1 and Common Tab Data -------------------------------------------//
       shipmentTypeList: [],
       ManagedBy: "",
@@ -138,14 +141,14 @@ class ShipmentCustom extends React.Component {
       SubServiceType: "",
       CreatedBy: "",
       CreatedByName: "",
-      CommercialPopup:false,
-      ComUpdatedDate:"",
-      ComUpdatedName:"",
-      ComCreatedDate:"",
-      ComCreatedName:"",
+      CommercialPopup: false,
+      ComUpdatedDate: "",
+      ComUpdatedName: "",
+      ComCreatedDate: "",
+      ComCreatedName: "",
       ipAddress: "",
       ipLocation: "",
-      encOpen:false,
+      encOpen: false,
       PickupDateChange: 0,
       userdetailsTooltip: "",
       PersonID: "",
@@ -189,8 +192,8 @@ class ShipmentCustom extends React.Component {
       NotesforPickupHelperText: "",
       deleteopen: false,
       createopen: false,
-      deletedocument:false,
-      deletedocsdata:[],
+      deletedocument: false,
+      deletedocsdata: [],
       setDupLicate: false,
       dupTracking: "",
       successOpened: false,
@@ -199,7 +202,7 @@ class ShipmentCustom extends React.Component {
       AllClearYes: false,
       MailOpenPopup: false,
       MailDelivered: false,
-      userLockinAllAccess:0,
+      userLockinAllAccess: 0,
       FromAddress: {},
       FromCompanyName: "",
       FromContactName: "",
@@ -210,6 +213,7 @@ class ShipmentCustom extends React.Component {
       FromPhone1: "",
       FromPhone2: "",
       FromEmail: "",
+      setPreviousAllClear: "",
       previousAllClear: "",
       disableFromZip: false,
       disableFromState: false,
@@ -346,7 +350,6 @@ class ShipmentCustom extends React.Component {
       ],
 
       Year: [
-        
         { value: "2024", label: "2024" },
         { value: "2025", label: "2025" },
         { value: "2026", label: "2026" },
@@ -359,7 +362,6 @@ class ShipmentCustom extends React.Component {
         { value: "2033", label: "2033" },
         { value: "2034", label: "2034" },
         { value: "2035", label: "2035" },
-        
       ],
       documentTypeErr: false,
       documentTypeHelperText: "",
@@ -468,7 +470,7 @@ class ShipmentCustom extends React.Component {
       VendorAccessForInvoice: 0,
       AllClear: "",
       viewAllClear: false,
-      NewviewAllClear:false,
+      NewviewAllClear: false,
       IsChanged: false,
       confirmAllClear: false,
       PaymentShowData: {},
@@ -617,7 +619,9 @@ class ShipmentCustom extends React.Component {
   }
 
   async componentDidMount() {
-    this.state.userLockinAllAccess = CommonConfig.getUserAccess("Locked Shipment Report").AllAccess
+    this.state.userLockinAllAccess = CommonConfig.getUserAccess(
+      "Locked Shipment Report"
+    ).AllAccess;
     this.showHide();
     this.showLoader();
     // await this.getPackageDetail();
@@ -643,15 +647,14 @@ class ShipmentCustom extends React.Component {
           : true,
     });
     this.checkTransaction();
-    var sID = this.props.location.state.ShipppingID
+    var sID = this.props.location.state.ShipppingID;
     // console.log("SID = ",sID)
     // var  enc = this.encrypt(sID, "Passphrase");
     let encoded = window.btoa(sID);
-// let decoded = window.atob(encoded);
+    // let decoded = window.atob(encoded);
     // console.log("Enc = ",enc)
-    this.state.EncShippingID = encoded
-    console.log("SID = ",this.state.EncShippingID)
-
+    this.state.EncShippingID = encoded;
+    console.log("SID = ", this.state.EncShippingID);
 
     //----------------------------------------- Customer Details  -----------------------------------------------------------//
 
@@ -663,6 +666,7 @@ class ShipmentCustom extends React.Component {
 
     await this.getAdditionalDetails();
     await this.getContainerName();
+    await this.getAllcleardata();
     this.getPackageContent();
     this.getPackageDetail();
     // await this.getPickupVendorName();
@@ -858,10 +862,10 @@ class ShipmentCustom extends React.Component {
     });
   }
 
-  showDivUrl = () =>{
-    console.log(this.state.EncShippingID)
-    this.setState({encOpen:true})
-  }
+  showDivUrl = () => {
+    console.log(this.state.EncShippingID);
+    this.setState({ encOpen: true });
+  };
 
   showDiv = (type, packageType) => {
     this.setState({
@@ -1628,27 +1632,29 @@ class ShipmentCustom extends React.Component {
             : null,
       };
 
-      this.showLoader()
+      this.showLoader();
       api.post("scheduleshipment/getShipmentInfo", data).then((res) => {
         if (res.success) {
-          this.state.NewviewAllClear=false;
+          this.state.NewviewAllClear = false;
           console.log("Ansdhu = ", res);
-          var datatoaccess = 0 
-          if(CommonConfig.getUserAccess("Shipment").AllAccess === 1){
-            datatoaccess = 1
-          }else{
-            if(CommonConfig.loggedInUserData().PersonID == res.data[0].ManagedBy){
-              datatoaccess = 1
+          var datatoaccess = 0;
+          if (CommonConfig.getUserAccess("Shipment").AllAccess === 1) {
+            datatoaccess = 1;
+          } else {
+            if (
+              CommonConfig.loggedInUserData().PersonID == res.data[0].ManagedBy
+            ) {
+              datatoaccess = 1;
             }
           }
 
-          if(datatoaccess == 1){
-            console.log("res.data[0] = ",res.data[0])
+          if (datatoaccess == 1) {
+            console.log("res.data[0] = ", res.data[0]);
             if (res.data[0].AllClear === 1) {
               this.setState({ viewAllClear: true });
               this.setState({ NewviewAllClear: true });
             }
-            console.log("NewviewAllClear = ",this.state.NewviewAllClear)
+            console.log("NewviewAllClear = ", this.state.NewviewAllClear);
 
             console.log("Ansdhu = ", res);
             var shipmentType = {
@@ -1660,7 +1666,7 @@ class ShipmentCustom extends React.Component {
               label: res.data[0].ManagedByName,
             };
             this.setState({ previousAllClear: res.data[0].AllClear });
-            
+
             var allclearlist = {
               value:
                 res.data[0].AllClear === 3 // ? "Ready for Yes"
@@ -1735,7 +1741,9 @@ class ShipmentCustom extends React.Component {
 
               ShipmentStatus: res.data[0].ShipmentStatus,
               ContainerName: containerName,
+              setPreviousAllClear: allclearlist,
               AllClear: allclearlist,
+
               // res.data[0].AllClear === 3 // ? "Ready for Yes"
               //   ? "Ready for Yes"
               //   : !CommonConfig.isEmpty(res.data[0].AllClear)
@@ -1752,7 +1760,9 @@ class ShipmentCustom extends React.Component {
                     ? false
                     : true
                   : false,
-              IsPackageAccess: !CommonConfig.isEmpty(res.data[0].IsPackageAccess)
+              IsPackageAccess: !CommonConfig.isEmpty(
+                res.data[0].IsPackageAccess
+              )
                 ? res.data[0].IsPackageAccess.data[0] === 0
                   ? true
                   : false
@@ -1762,16 +1772,13 @@ class ShipmentCustom extends React.Component {
             this.getServiceByShipmentType(shipmentType.value);
             this.getSubserviceName(serviceName.value, shipmentType.value);
             this.hideLoader();
-
-          }else{
+          } else {
             this.hideLoader();
             cogoToast.error("You dont have access for this shipment");
             setTimeout(() => {
               this.props.history.push("/admin/Scheduleshipment");
             }, 2000);
           }
-
-          
         }
 
         if (
@@ -1786,6 +1793,39 @@ class ShipmentCustom extends React.Component {
       });
     } catch (error) {
       this.hideLoader();
+      console.log("error...", error);
+    }
+  }
+
+  getAllcleardata() {
+    try {
+      let data = {
+        ShippingID:
+          this.props.location.state && this.props.location.state.ShipppingID
+            ? this.props.location.state.ShipppingID
+            : null,
+      };
+      api.post("scheduleshipment/getAllcleardata", data).then((res) => {
+        if (res.success) {
+          this.setState({
+            allCleardatachange: [],
+          });
+          if (res.data.length > 0) {
+            console.log("res datat = ", res.data);
+
+            this.setState({
+              showallCleardatachange: true,
+              allCleardatachange: res.data,
+            });
+          } else {
+            this.setState({
+              showallCleardatachange: false,
+              allCleardatachange: [],
+            });
+          }
+        }
+      });
+    } catch (error) {
       console.log("error...", error);
     }
   }
@@ -2294,21 +2334,21 @@ class ShipmentCustom extends React.Component {
 
   handleChangeNotes = (event, idx) => {
     const { value } = event.target;
-    const  value1 = event.target.value;
+    const value1 = event.target.value;
     const notes = [...this.state.notes];
     var noteIndex = notes.findIndex((x) => x.Index === idx);
     if (noteIndex !== -1) {
-      if(CommonConfig.RegExp.exceptCirilic.test(value1)){
-      notes[noteIndex]["NoteText"] = value;
-      if (
-        notes[noteIndex]["NoteText"] === null ||
-        notes[noteIndex]["NoteText"] === ""
-      ) {
-        this.setState({ noteErr: true });
-      } else {
-        this.setState({ noteErr: false });
+      if (CommonConfig.RegExp.exceptCirilic.test(value1)) {
+        notes[noteIndex]["NoteText"] = value;
+        if (
+          notes[noteIndex]["NoteText"] === null ||
+          notes[noteIndex]["NoteText"] === ""
+        ) {
+          this.setState({ noteErr: true });
+        } else {
+          this.setState({ noteErr: false });
+        }
       }
-    }
     }
     this.setState({ notes: notes });
   };
@@ -2677,7 +2717,7 @@ class ShipmentCustom extends React.Component {
             <td className="pck-action-column">
               <div className="pck-subbtn">
                 {/* {this.state.DeleteAccess === 1? */}
-                {CommonConfig.getUserAccess("Shipment").DeleteAccess === 1?(
+                {CommonConfig.getUserAccess("Shipment").DeleteAccess === 1 ? (
                   <Button
                     justIcon
                     color="danger"
@@ -2687,8 +2727,8 @@ class ShipmentCustom extends React.Component {
                   >
                     <i className={"fas fa-minus"} />
                   </Button>
-                ):null}
-                
+                ) : null}
+
                 {this.state.notes.filter((x) => x.Status === "Active")
                   .length ===
                 idx + 1 ? (
@@ -2766,7 +2806,7 @@ class ShipmentCustom extends React.Component {
           this.getPackageDetail();
         }
         this.getCommercialInvoiceDetail();
-      
+
         this.state.DocumentationCount = 1;
         // Accounting
         this.getAccountDetail();
@@ -3817,955 +3857,993 @@ class ShipmentCustom extends React.Component {
   };
 
   senderZipChange = (zip) => {
-
     let countryName = this.state.selectedFromCountry
       ? this.state.selectedFromCountry.label
       : "";
     let countryValue = this.state.selectedFromCountry
-    ? this.state.selectedFromCountry.value
-    : "";
+      ? this.state.selectedFromCountry.value
+      : "";
 
     var Zipcode = zip;
     var FinalCity = [];
-  
 
-    let citydata={
-      "PostalCode" : Zipcode,
-      "CountryID": countryValue
-    }
+    let citydata = {
+      PostalCode: Zipcode,
+      CountryID: countryValue,
+    };
     api
-    .post(
-      "https://hubapi.sflworldwide.com/contactus/SflPostalCode",
-      citydata
-    )
-    .then((res) => {
-      if (res.success) {
-        
-        if (res.success === true) {
-          var IsValidCountry = false;
-         let data = res.Data.data;
-         // this.hideLoador();
-        //  this.CloseDialog();
-        //  this.getReferredSite();
-        let RecCount = data.length;
-        if(RecCount !=0)
-          {
-         var countryShortName = data[0].Country
-         if (this.state.selectedToCountry.label === countryShortName) {
-                   IsValidCountry = true;
-                 }
-                 if (IsValidCountry) 
-                  {
+      .post("https://hubapi.sflworldwide.com/contactus/SflPostalCode", citydata)
+      .then((res) => {
+        if (res.success) {
+          if (res.success === true) {
+            var IsValidCountry = false;
+            let data = res.Data.data;
+            // this.hideLoador();
+            //  this.CloseDialog();
+            //  this.getReferredSite();
+            let RecCount = data.length;
+            if (RecCount != 0) {
+              var countryShortName = data[0].Country;
+              if (this.state.selectedToCountry.label === countryShortName) {
+                IsValidCountry = true;
+              }
+              if (IsValidCountry) {
+                for (let i = 0; i < RecCount; i++)
+                  FinalCity.push({
+                    City_code: data[i].City,
+                    CityName: data[i].City,
+                  });
+                var SelectedCity = {
+                  value: FinalCity[0].City_code,
+                  label: FinalCity[0].CityName,
+                };
 
-                  
-                 
-                        for(let i=0;i<RecCount;i++)
+                var state = data[0].State;
+                var SelectedState = {
+                  value: data[0].State,
+                  label: data[0].State,
+                };
+
+                if (
+                  FinalCity[0].CityName === "" ||
+                  FinalCity[0].CityName === null ||
+                  FinalCity[0].CityName === undefined
+                ) {
+                  this.setState({
+                    fromCityAutoComplete: false,
+                    fromStateAutoComplete: this.state.fromStateList.length
+                      ? true
+                      : false,
+                    fromGoogleAPICityList: [],
+                    fromState: "",
+                    fromCity: "",
+                  });
+                } else {
+                  this.setState({
+                    fromCityAutoComplete: FinalCity.length ? true : false,
+                    fromStateAutoComplete: this.state.fromStateList.length
+                      ? true
+                      : false,
+                    fromGoogleAPICityList: FinalCity,
+                    fromState: this.state.fromStateList.length
+                      ? SelectedState
+                      : state,
+                    fromCity:
+                      SelectedCity != undefined
+                        ? SelectedCity
+                        : this.state.tempFromCity,
+                  });
+                }
+
+                this.setState({ Moveupdatetozip: true });
+              }
+            } else {
+              if (zip.length) {
+                fetch(CommonConfig.zipCodeAPIKey(zip, countryName))
+                  .then((result) => result.json())
+                  .then((data) => {
+                    if (data["status"] === "OK") {
+                      if (
+                        data["results"][0] &&
+                        data["results"][0].hasOwnProperty("postcode_localities")
+                      ) {
+                        var FinalCity = [];
+
+                        var countryShortName = "";
+
+                        countryShortName = _.filter(
+                          data["results"][0]["address_components"],
+                          function(data) {
+                            return data.types[0] === "country";
+                          }
+                        )[0].long_name;
+
+                        // var CityData = data["results"][0]["postcode_localities"];
+                        // _.forEach(CityData, function(value, key) {
+                        // FinalCity.push({
+                        //   City_code: value,
+                        //   Name: value,
+                        // });
+                        // });
+
+                        // var CityData = _.filter(
+                        //   data["results"][0]["address_components"],
+                        //   function(data) {
+                        //     return data.types[0] === "locality";
+                        //   }
+                        // )[0].long_name;
+
+                        // FinalCity.push({
+                        //   City_code: CityData,
+                        //   Name: CityData,
+                        // });
+
+                        var CityData = _.filter(
+                          data["results"][0]["address_components"],
+                          function(data) {
+                            if (data.types[0] == "locality") {
+                              return data.types[0] === "locality";
+                            }
+                          }
+                        );
+
+                        var CityData2 = _.filter(
+                          data["results"][0]["address_components"],
+                          function(data) {
+                            if (data.types[0] == "neighborhood") {
+                              return data.types[0] === "neighborhood";
+                            }
+                          }
+                        );
+
+                        var CityData3 = _.filter(
+                          data["results"][0]["address_components"],
+                          function(data) {
+                            if (
+                              data.types[0] == "administrative_area_level_2"
+                            ) {
+                              return (
+                                data.types[0] === "administrative_area_level_2"
+                              );
+                            }
+                          }
+                        );
+
+                        if (CityData.length > 0) {
+                          CityData = CityData[0].long_name;
                           FinalCity.push({
-                          City_code: data[i].City,
-                          CityName: data[i].City,
-                        });
+                            City_code: CityData,
+                            Name: CityData,
+                          });
+                          var SelectedCity = {
+                            value: FinalCity[0].City_code,
+                            label: FinalCity[0].Name,
+                          };
+                        } else if (CityData2.length > 0) {
+                          CityData2 = CityData2[0].long_name;
+                          FinalCity.push({
+                            City_code: CityData2,
+                            Name: CityData2,
+                          });
+                          var SelectedCity = {
+                            value: FinalCity[0].City_code,
+                            label: FinalCity[0].Name,
+                          };
+                        } else if (CityData3.length > 0) {
+                          CityData3 = CityData3[0].long_name;
+                          FinalCity.push({
+                            City_code: CityData3,
+                            Name: CityData3,
+                          });
+                          var SelectedCity = {
+                            value: FinalCity[0].City_code,
+                            label: FinalCity[0].Name,
+                          };
+                        }
+
+                        var state1 = _.filter(
+                          data["results"][0]["address_components"],
+                          function(data) {
+                            return (
+                              data.types[0] === "administrative_area_level_1"
+                            );
+                          }
+                        );
+
+                        var state2 = _.filter(
+                          data["results"][0]["address_components"],
+                          function(data) {
+                            return (
+                              data.types[0] === "administrative_area_level_2"
+                            );
+                          }
+                        );
+
+                        if (state1.length > 0) {
+                          var state = state1[0].long_name;
+                        } else if (state2.length > 0) {
+                          var state = state2[0].long_name;
+                        }
+
+                        // console.log("States = 1" , state)
                         var SelectedCity = {
                           value: FinalCity[0].City_code,
-                          label: FinalCity[0].CityName,
+                          label: FinalCity[0].Name,
                         };
-          
-                        var state = data[0].State;
-                        var SelectedState = { value: data[0].State, label: data[0].State };   
-                        
-                        if (FinalCity[0].CityName === "" ||FinalCity[0].CityName === null || FinalCity[0].CityName === undefined )
-                          {
-                            this.setState({
-                              fromCityAutoComplete: false,
-                              fromStateAutoComplete: this.state.fromStateList.length
-                                ? true
-                                : false,
-                              fromGoogleAPICityList: [],
-                              fromState: "",
-                              fromCity: "",
-                            });
-                                         
-                          } else {
-                                  this.setState({
-                                      fromCityAutoComplete: FinalCity.length ? true : false,
-                                      fromStateAutoComplete: this.state.fromStateList.length
-                                        ? true
-                                        : false,
-                                      fromGoogleAPICityList: FinalCity,
-                                      fromState: this.state.fromStateList.length
-                                        ? SelectedState
-                                        : state,
-                                      fromCity:
-                                        SelectedCity != undefined
-                                          ? SelectedCity
-                                          : this.state.tempFromCity,
-                                });
+
+                        var SelectedState = { value: state, label: state };
+
+                        if (
+                          countryShortName ===
+                          this.state.selectedFromCountry.label
+                        ) {
+                          this.setState({
+                            fromCityAutoComplete: FinalCity.length
+                              ? true
+                              : false,
+                            fromStateAutoComplete: this.state.fromStateList
+                              .length
+                              ? true
+                              : false,
+                            fromGoogleAPICityList: FinalCity,
+                            fromState: this.state.fromStateList.length
+                              ? SelectedState
+                              : state,
+                            fromCity:
+                              SelectedCity != undefined
+                                ? SelectedCity
+                                : this.state.tempFromCity,
+                          });
+                        } else {
+                          this.setState({
+                            fromCityAutoComplete: false,
+                            fromStateAutoComplete: this.state.fromStateList
+                              .length
+                              ? true
+                              : false,
+                            fromGoogleAPICityList: [],
+                            fromState: "",
+                            fromCity: "",
+                          });
+                        }
+                      } else if (data["results"][0]) {
+                        var FinalCity = [];
+                        var city = "";
+                        var countryShortName = "";
+
+                        countryShortName = _.filter(
+                          data["results"][0]["address_components"],
+                          function(data) {
+                            return data.types[0] === "country";
+                          }
+                        )[0].long_name;
+
+                        if (
+                          city == "" &&
+                          _.filter(
+                            data["results"][0]["address_components"],
+                            function(data) {
+                              return data.types[0] === "locality";
                             }
-                                    
-                            this.setState({ Moveupdatetozip: true });    
+                          ).length > 0
+                        ) {
+                          city = _.filter(
+                            data["results"][0]["address_components"],
+                            function(data) {
+                              return data.types[0] === "locality";
+                            }
+                          )[0].short_name;
+                        } else if (
+                          city == "" &&
+                          _.filter(
+                            data["results"][0]["address_components"],
+                            function(data) {
+                              return (
+                                data.types[0] === "administrative_area_level_3"
+                              );
+                            }
+                          ).length > 0
+                        ) {
+                          city = _.filter(
+                            data["results"][0]["address_components"],
+                            function(data) {
+                              return (
+                                data.types[0] === "administrative_area_level_3"
+                              );
+                            }
+                          )[0].short_name;
+                        } else if (
+                          city == "" &&
+                          _.filter(
+                            data["results"][0]["address_components"],
+                            function(data) {
+                              return data.types[0] === "political";
+                            }
+                          ).length > 0
+                        ) {
+                          city = _.filter(
+                            data["results"][0]["address_components"],
+                            function(data) {
+                              return data.types[0] === "political";
+                            }
+                          )[0].short_name;
+                        } else if (
+                          city == "" &&
+                          _.filter(
+                            data["results"][0]["address_components"],
+                            function(data) {
+                              return data.types[0] === "neighborhood";
+                            }
+                          ).length > 0
+                        ) {
+                          city = _.filter(
+                            data["results"][0]["address_components"],
+                            function(data) {
+                              return data.types[0] === "neighborhood";
+                            }
+                          )[0].short_name;
+                        } else if (
+                          city == "" &&
+                          _.filter(
+                            data["results"][0]["address_components"],
+                            function(data) {
+                              return (
+                                data.types[0] === "administrative_area_level_2"
+                              );
+                            }
+                          ).length > 0
+                        ) {
+                          city = _.filter(
+                            data["results"][0]["address_components"],
+                            function(data) {
+                              return (
+                                data.types[0] === "administrative_area_level_2"
+                              );
+                            }
+                          )[0].long_name;
+                        } else if (
+                          city == "" &&
+                          _.filter(
+                            data["results"][0]["address_components"],
+                            function(data) {
+                              return (
+                                data.types[0] === "administrative_area_level_1"
+                              );
+                            }
+                          ).length > 0
+                        ) {
+                          city = _.filter(
+                            data["results"][0]["address_components"],
+                            function(data) {
+                              return (
+                                data.types[0] === "administrative_area_level_1"
+                              );
+                            }
+                          )[0].long_name;
+                        } else if (city == "") {
+                          city = "";
+                        }
 
-                  } 
-                                                            
+                        var state = _.filter(
+                          data["results"][0]["address_components"],
+                          function(data) {
+                            return (
+                              data.types[0] === "administrative_area_level_1"
+                            );
+                          }
+                        )[0].long_name;
 
+                        FinalCity.push({
+                          City_code: city,
+                          Name: city,
+                        });
 
-                                    }
-                                    else {
-                                      if (zip.length) {
-                                        fetch(CommonConfig.zipCodeAPIKey(zip, countryName))
-                                          .then((result) => result.json())
-                                          .then((data) => {
-                                            if (data["status"] === "OK") {
-                                              if (
-                                                data["results"][0] &&
-                                                data["results"][0].hasOwnProperty("postcode_localities")
-                                              ) {
-                                                var FinalCity = [];
-                                  
-                                                var countryShortName = "";
-                                  
-                                                countryShortName = _.filter(
-                                                  data["results"][0]["address_components"],
-                                                  function(data) {
-                                                    return data.types[0] === "country";
-                                                  }
-                                                )[0].long_name;
-                                  
-                                                // var CityData = data["results"][0]["postcode_localities"];
-                                                // _.forEach(CityData, function(value, key) {
-                                                // FinalCity.push({
-                                                //   City_code: value,
-                                                //   Name: value,
-                                                // });
-                                                // });
-                                  
-                                                // var CityData = _.filter(
-                                                //   data["results"][0]["address_components"],
-                                                //   function(data) {
-                                                //     return data.types[0] === "locality";
-                                                //   }
-                                                // )[0].long_name;
-                                  
-                                                // FinalCity.push({
-                                                //   City_code: CityData,
-                                                //   Name: CityData,
-                                                // });
-                                  
-                                                var CityData = _.filter(
-                                                  data["results"][0]["address_components"],
-                                                  function(data) {
-                                                    if (data.types[0] == "locality") {
-                                                      return data.types[0] === "locality";
-                                                    }
-                                                  }
-                                                );
-                                  
-                                                var CityData2 = _.filter(
-                                                  data["results"][0]["address_components"],
-                                                  function(data) {
-                                                    if (data.types[0] == "neighborhood") {
-                                                      return data.types[0] === "neighborhood";
-                                                    }
-                                                  }
-                                                );
-                                  
-                                                var CityData3 = _.filter(
-                                                  data["results"][0]["address_components"],
-                                                  function(data) {
-                                                    if (data.types[0] == "administrative_area_level_2") {
-                                                      return data.types[0] === "administrative_area_level_2";
-                                                    }
-                                                  }
-                                                );
-                                  
-                                                if (CityData.length > 0) {
-                                                  CityData = CityData[0].long_name;
-                                                  FinalCity.push({
-                                                    City_code: CityData,
-                                                    Name: CityData,
-                                                  });
-                                                  var SelectedCity = {
-                                                    value: FinalCity[0].City_code,
-                                                    label: FinalCity[0].Name,
-                                                  };
-                                                } else if (CityData2.length > 0) {
-                                                  CityData2 = CityData2[0].long_name;
-                                                  FinalCity.push({
-                                                    City_code: CityData2,
-                                                    Name: CityData2,
-                                                  });
-                                                  var SelectedCity = {
-                                                    value: FinalCity[0].City_code,
-                                                    label: FinalCity[0].Name,
-                                                  };
-                                                } else if (CityData3.length > 0) {
-                                                  CityData3 = CityData3[0].long_name;
-                                                  FinalCity.push({
-                                                    City_code: CityData3,
-                                                    Name: CityData3,
-                                                  });
-                                                  var SelectedCity = {
-                                                    value: FinalCity[0].City_code,
-                                                    label: FinalCity[0].Name,
-                                                  };
-                                                }
-                                  
-                                                var state1 = _.filter(
-                                                  data["results"][0]["address_components"],
-                                                  function(data) {
-                                                    return data.types[0] === "administrative_area_level_1";
-                                                  }
-                                                );
-                                  
-                                                var state2 = _.filter(
-                                                  data["results"][0]["address_components"],
-                                                  function(data) {
-                                                    return data.types[0] === "administrative_area_level_2";
-                                                  }
-                                                );
-                                  
-                                                if (state1.length > 0) {
-                                                  var state = state1[0].long_name;
-                                                } else if (state2.length > 0) {
-                                                  var state = state2[0].long_name;
-                                                }
-                                  
-                                                // console.log("States = 1" , state)
-                                                var SelectedCity = {
-                                                  value: FinalCity[0].City_code,
-                                                  label: FinalCity[0].Name,
-                                                };
-                                  
-                                                var SelectedState = { value: state, label: state };
-                                  
-                                                if (countryShortName === this.state.selectedFromCountry.label) {
-                                                  this.setState({
-                                                    fromCityAutoComplete: FinalCity.length ? true : false,
-                                                    fromStateAutoComplete: this.state.fromStateList.length
-                                                      ? true
-                                                      : false,
-                                                    fromGoogleAPICityList: FinalCity,
-                                                    fromState: this.state.fromStateList.length
-                                                      ? SelectedState
-                                                      : state,
-                                                    fromCity:
-                                                      SelectedCity != undefined
-                                                        ? SelectedCity
-                                                        : this.state.tempFromCity,
-                                                  });
-                                                } else {
-                                                  this.setState({
-                                                    fromCityAutoComplete: false,
-                                                    fromStateAutoComplete: this.state.fromStateList.length
-                                                      ? true
-                                                      : false,
-                                                    fromGoogleAPICityList: [],
-                                                    fromState: "",
-                                                    fromCity: "",
-                                                  });
-                                                }
-                                              } else if (data["results"][0]) {
-                                                var FinalCity = [];
-                                                var city = "";
-                                                var countryShortName = "";
-                                  
-                                                countryShortName = _.filter(
-                                                  data["results"][0]["address_components"],
-                                                  function(data) {
-                                                    return data.types[0] === "country";
-                                                  }
-                                                )[0].long_name;
-                                  
-                                                if (
-                                                  city == "" &&
-                                                  _.filter(data["results"][0]["address_components"], function(
-                                                    data
-                                                  ) {
-                                                    return data.types[0] === "locality";
-                                                  }).length > 0
-                                                ) {
-                                                  city = _.filter(
-                                                    data["results"][0]["address_components"],
-                                                    function(data) {
-                                                      return data.types[0] === "locality";
-                                                    }
-                                                  )[0].short_name;
-                                                } else if (
-                                                  city == "" &&
-                                                  _.filter(data["results"][0]["address_components"], function(
-                                                    data
-                                                  ) {
-                                                    return data.types[0] === "administrative_area_level_3";
-                                                  }).length > 0
-                                                ) {
-                                                  city = _.filter(
-                                                    data["results"][0]["address_components"],
-                                                    function(data) {
-                                                      return data.types[0] === "administrative_area_level_3";
-                                                    }
-                                                  )[0].short_name;
-                                                } else if (
-                                                  city == "" &&
-                                                  _.filter(data["results"][0]["address_components"], function(
-                                                    data
-                                                  ) {
-                                                    return data.types[0] === "political";
-                                                  }).length > 0
-                                                ) {
-                                                  city = _.filter(
-                                                    data["results"][0]["address_components"],
-                                                    function(data) {
-                                                      return data.types[0] === "political";
-                                                    }
-                                                  )[0].short_name;
-                                                } else if (
-                                                  city == "" &&
-                                                  _.filter(data["results"][0]["address_components"], function(
-                                                    data
-                                                  ) {
-                                                    return data.types[0] === "neighborhood";
-                                                  }).length > 0
-                                                ) {
-                                                  city = _.filter(
-                                                    data["results"][0]["address_components"],
-                                                    function(data) {
-                                                      return data.types[0] === "neighborhood";
-                                                    }
-                                                  )[0].short_name;
-                                                } else if (
-                                                  city == "" &&
-                                                  _.filter(data["results"][0]["address_components"], function(
-                                                    data
-                                                  ) {
-                                                    return data.types[0] === "administrative_area_level_2";
-                                                  }).length > 0
-                                                ) {
-                                                  city = _.filter(
-                                                    data["results"][0]["address_components"],
-                                                    function(data) {
-                                                      return data.types[0] === "administrative_area_level_2";
-                                                    }
-                                                  )[0].long_name;
-                                                } else if (
-                                                  city == "" &&
-                                                  _.filter(data["results"][0]["address_components"], function(
-                                                    data
-                                                  ) {
-                                                    return data.types[0] === "administrative_area_level_1";
-                                                  }).length > 0
-                                                ) {
-                                                  city = _.filter(
-                                                    data["results"][0]["address_components"],
-                                                    function(data) {
-                                                      return data.types[0] === "administrative_area_level_1";
-                                                    }
-                                                  )[0].long_name;
-                                                } else if (city == "") {
-                                                  city = "";
-                                                }
-                                  
-                                                var state = _.filter(
-                                                  data["results"][0]["address_components"],
-                                                  function(data) {
-                                                    return data.types[0] === "administrative_area_level_1";
-                                                  }
-                                                )[0].long_name;
-                                  
-                                                FinalCity.push({
-                                                  City_code: city,
-                                                  Name: city,
-                                                });
-                                  
-                                                var SelectedCity = {
-                                                  value: FinalCity[0].City_code,
-                                                  label: FinalCity[0].Name,
-                                                };
-                                  
-                                                var SelectedState = { value: state, label: state };
-                                  
-                                                if (countryShortName === this.state.selectedFromCountry.label) {
-                                                  this.setState({
-                                                    fromCityAutoComplete: FinalCity.length ? true : false,
-                                                    fromStateAutoComplete: this.state.fromStateList.length
-                                                      ? true
-                                                      : false,
-                                                    fromGoogleAPICityList: FinalCity,
-                                                    fromState: this.state.fromStateList.length
-                                                      ? SelectedState
-                                                      : state,
-                                                    fromCity: SelectedCity,
-                                                  });
-                                                } else {
-                                                  this.setState({
-                                                    fromCityAutoComplete: false,
-                                                    fromStateAutoComplete: this.state.fromStateList.length
-                                                      ? true
-                                                      : false,
-                                                    fromGoogleAPICityList: [],
-                                                    fromState: "",
-                                                    fromCity: "",
-                                                  });
-                                                }
-                                              }
-                                  
-                                              cogoToast.success("Zip code found");
-                                              this.setState({ Moveupdatetozip: true });
-                                              if(this.state.selectedToCountry.label == "United States" ||this.state.selectedToCountry.label == "India" ||this.state.selectedToCountry.label == "Canada"  )
-                                                {
-                                                  
-                                                  var newZipcodedata = {
-                                                  "Pincode" : zip,
-                                                  "PickupCityList": this.state.fromCity,
-                                                  "CountryID": countryValue,
-                                                  "CountryName": countryName,
-                                                  "StateName" : state,
-                                                  
-                                                };
-                                                console.log("newZipcodedata",newZipcodedata);
-                                                api
-                                                .post(
-                                                  "https://hubapi.sflworldwide.com/contactus/SflInsertPostalCode",
-                                                  newZipcodedata
-                                                )
-                                                .then((res) => {debugger
-                                                  if (res.success) {
-                                                    console.log("CheckRessData", res);
-                                                    if (res.success === true) {
-                                                     
-                                                      console.log("New Zipcode Enter Successfully");
-                                                    } else {
-                                                      console.log("Something Went Wrong");
-                                                    }
-                                                  }
-                                                })
-                                                .catch((err) => {
-                                                    console.log("err...", err);
-                                                   
-                                                  });
-                                              }
-                                            } else {
-                                              cogoToast.error("Zip code not found");
-                                              this.setState({
-                                                fromCityAutoComplete: false,
-                                                //Moveupdatefromzip: false,
-                                                fromStateAutoComplete: this.state.fromStateList.length
-                                                  ? true
-                                                  : false,
-                                                fromGoogleAPICityList: [],
-                                                // toState: "",
-                                                // toCity: "",
-                                              });
-                                              // this.setState({
-                                              //   fromCityAutoComplete: false,
-                                              // Moveupdatetozip: false,
-                                              // fromState: "",
-                                              // fromCity: "",
-                                              //   fromStateAutoComplete: this.state.fromStateList.length
-                                              //     ? true
-                                              //     : false,
-                                              //   fromGoogleAPICityList: [],
-                                              //   fromState: "",
-                                              //   fromCity: "",
-                                              // });
-                                            }
-                                          });
-                                      }  
-                                      
+                        var SelectedCity = {
+                          value: FinalCity[0].City_code,
+                          label: FinalCity[0].Name,
+                        };
 
-                                      
-                             }
-          
-          
-        } else {
-          cogoToast.error("Something went wrong");
+                        var SelectedState = { value: state, label: state };
+
+                        if (
+                          countryShortName ===
+                          this.state.selectedFromCountry.label
+                        ) {
+                          this.setState({
+                            fromCityAutoComplete: FinalCity.length
+                              ? true
+                              : false,
+                            fromStateAutoComplete: this.state.fromStateList
+                              .length
+                              ? true
+                              : false,
+                            fromGoogleAPICityList: FinalCity,
+                            fromState: this.state.fromStateList.length
+                              ? SelectedState
+                              : state,
+                            fromCity: SelectedCity,
+                          });
+                        } else {
+                          this.setState({
+                            fromCityAutoComplete: false,
+                            fromStateAutoComplete: this.state.fromStateList
+                              .length
+                              ? true
+                              : false,
+                            fromGoogleAPICityList: [],
+                            fromState: "",
+                            fromCity: "",
+                          });
+                        }
+                      }
+
+                      cogoToast.success("Zip code found");
+                      this.setState({ Moveupdatetozip: true });
+                      if (
+                        this.state.selectedToCountry.label == "United States" ||
+                        this.state.selectedToCountry.label == "India" ||
+                        this.state.selectedToCountry.label == "Canada"
+                      ) {
+                        var newZipcodedata = {
+                          Pincode: zip,
+                          PickupCityList: this.state.fromCity,
+                          CountryID: countryValue,
+                          CountryName: countryName,
+                          StateName: state,
+                        };
+                        console.log("newZipcodedata", newZipcodedata);
+                        api
+                          .post(
+                            "https://hubapi.sflworldwide.com/contactus/SflInsertPostalCode",
+                            newZipcodedata
+                          )
+                          .then((res) => {
+                            debugger;
+                            if (res.success) {
+                              console.log("CheckRessData", res);
+                              if (res.success === true) {
+                                console.log("New Zipcode Enter Successfully");
+                              } else {
+                                console.log("Something Went Wrong");
+                              }
+                            }
+                          })
+                          .catch((err) => {
+                            console.log("err...", err);
+                          });
+                      }
+                    } else {
+                      cogoToast.error("Zip code not found");
+                      this.setState({
+                        fromCityAutoComplete: false,
+                        //Moveupdatefromzip: false,
+                        fromStateAutoComplete: this.state.fromStateList.length
+                          ? true
+                          : false,
+                        fromGoogleAPICityList: [],
+                        // toState: "",
+                        // toCity: "",
+                      });
+                      // this.setState({
+                      //   fromCityAutoComplete: false,
+                      // Moveupdatetozip: false,
+                      // fromState: "",
+                      // fromCity: "",
+                      //   fromStateAutoComplete: this.state.fromStateList.length
+                      //     ? true
+                      //     : false,
+                      //   fromGoogleAPICityList: [],
+                      //   fromState: "",
+                      //   fromCity: "",
+                      // });
+                    }
+                  });
+              }
+            }
+          } else {
+            cogoToast.error("Something went wrong");
+          }
         }
-      }
-    })
-    .catch((err) => {
+      })
+      .catch((err) => {
         console.log("err...", err);
         cogoToast.error("Something Went Wrong");
       });
-
   };
 
   recipientZipChange = (zip) => {
     let countryName = this.state.selectedToCountry
-    ? this.state.selectedToCountry.label
-    : "";
+      ? this.state.selectedToCountry.label
+      : "";
     let countryValue = this.state.selectedToCountry
-    ? this.state.selectedToCountry.value
-    : "";
+      ? this.state.selectedToCountry.value
+      : "";
 
     var Zipcode = zip;
     var FinalCity = [];
-  
 
-    let citydata={
-      "PostalCode" : Zipcode,
-      "CountryID": countryValue
-    }
+    let citydata = {
+      PostalCode: Zipcode,
+      CountryID: countryValue,
+    };
     api
-    .post(
-      "https://hubapi.sflworldwide.com/contactus/SflPostalCode",
-      citydata
-    )
-    .then((res) => {
-      if (res.success) {
-        
-        if (res.success === true) {
-          var IsValidCountry = false;
-         let data = res.Data.data;
-         // this.hideLoador();
-        //  this.CloseDialog();
-        //  this.getReferredSite();
-        let RecCount = data.length;
-        if(RecCount !=0)
-          {
-         var countryShortName = data[0].Country
-         if (this.state.selectedToCountry.label === countryShortName) {
-                   IsValidCountry = true;
-                 }
-                 if (IsValidCountry) 
-                  {
+      .post("https://hubapi.sflworldwide.com/contactus/SflPostalCode", citydata)
+      .then((res) => {
+        if (res.success) {
+          if (res.success === true) {
+            var IsValidCountry = false;
+            let data = res.Data.data;
+            // this.hideLoador();
+            //  this.CloseDialog();
+            //  this.getReferredSite();
+            let RecCount = data.length;
+            if (RecCount != 0) {
+              var countryShortName = data[0].Country;
+              if (this.state.selectedToCountry.label === countryShortName) {
+                IsValidCountry = true;
+              }
+              if (IsValidCountry) {
+                for (let i = 0; i < RecCount; i++)
+                  FinalCity.push({
+                    City_code: data[i].City,
+                    CityName: data[i].City,
+                  });
+                var SelectedCity = {
+                  value: FinalCity[0].City_code,
+                  label: FinalCity[0].CityName,
+                };
 
-                  
-                 
-                        for(let i=0;i<RecCount;i++)
+                var state = data[0].State;
+                var SelectedState = {
+                  value: data[0].State,
+                  label: data[0].State,
+                };
+
+                if (
+                  FinalCity[0].CityName === "" ||
+                  FinalCity[0].CityName === null ||
+                  FinalCity[0].CityName === undefined
+                ) {
+                  this.setState({
+                    toCityAutoComplete: false,
+                    toStateAutoComplete: this.state.toStateList.length
+                      ? true
+                      : false,
+                    toGoogleAPICityList: [],
+                    toState: "",
+                    toCity: "",
+                  });
+                } else {
+                  this.setState({
+                    toCityAutoComplete: FinalCity.length ? true : false,
+                    toStateAutoComplete: this.state.toStateList.length
+                      ? true
+                      : false,
+                    toGoogleAPICityList: FinalCity,
+                    //toState: state,
+                    toState: this.state.toStateList.length
+                      ? SelectedState
+                      : state,
+                    toCity:
+                      SelectedCity != undefined
+                        ? SelectedCity
+                        : this.state.tempToCity,
+                  });
+                }
+
+                this.setState({ Moveupdatefromzip: true });
+              }
+            } else {
+              if (zip.length) {
+                fetch(CommonConfig.zipCodeAPIKey(zip, countryName))
+                  .then((result) => result.json())
+                  .then((data) => {
+                    console.log("data123 = ", data);
+                    if (data["status"] === "OK") {
+                      if (
+                        data["results"][0] &&
+                        data["results"][0].hasOwnProperty("postcode_localities")
+                      ) {
+                        var FinalCity = [];
+
+                        var countryShortName = "";
+
+                        countryShortName = _.filter(
+                          data["results"][0]["address_components"],
+                          function(data) {
+                            return data.types[0] === "country";
+                          }
+                        )[0].long_name;
+
+                        // var CityData = data["results"][0]["postcode_localities"];
+                        // _.forEach(CityData, function(value, key) {
+                        //   FinalCity.push({
+                        //     City_code: value,
+                        //     Name: value,
+                        //   });
+                        // });
+
+                        var CityData = _.filter(
+                          data["results"][0]["address_components"],
+                          function(data) {
+                            if (data.types[0] == "locality") {
+                              return data.types[0] === "locality";
+                            }
+                          }
+                        );
+
+                        var CityData2 = _.filter(
+                          data["results"][0]["address_components"],
+                          function(data) {
+                            if (data.types[0] == "neighborhood") {
+                              return data.types[0] === "neighborhood";
+                            }
+                          }
+                        );
+
+                        var CityData3 = _.filter(
+                          data["results"][0]["address_components"],
+                          function(data) {
+                            if (
+                              data.types[0] == "administrative_area_level_2"
+                            ) {
+                              return (
+                                data.types[0] === "administrative_area_level_2"
+                              );
+                            }
+                          }
+                        );
+
+                        if (CityData.length > 0) {
+                          CityData = CityData[0].long_name;
                           FinalCity.push({
-                          City_code: data[i].City,
-                          CityName: data[i].City,
+                            City_code: CityData,
+                            Name: CityData,
+                          });
+                          var SelectedCity = {
+                            value: FinalCity[0].City_code,
+                            label: FinalCity[0].Name,
+                          };
+                        } else if (CityData2.length > 0) {
+                          CityData2 = CityData2[0].long_name;
+                          FinalCity.push({
+                            City_code: CityData2,
+                            Name: CityData2,
+                          });
+                          var SelectedCity = {
+                            value: FinalCity[0].City_code,
+                            label: FinalCity[0].Name,
+                          };
+                        } else if (CityData3.length > 0) {
+                          CityData3 = CityData3[0].long_name;
+                          FinalCity.push({
+                            City_code: CityData3,
+                            Name: CityData3,
+                          });
+                          var SelectedCity = {
+                            value: FinalCity[0].City_code,
+                            label: FinalCity[0].Name,
+                          };
+                        }
+
+                        var state1 = _.filter(
+                          data["results"][0]["address_components"],
+                          function(data) {
+                            return (
+                              data.types[0] === "administrative_area_level_1"
+                            );
+                          }
+                        );
+
+                        // var state2 = _.filter(
+                        //   data["results"][0]["address_components"],
+                        //   function(data) {
+                        //     if (data.types[0] == "administrative_area_level_2") {
+                        //       return data.types[0] === "administrative_area_level_2";
+                        //     }
+                        //   }
+                        // );
+                        var state2 = _.filter(
+                          data["results"][0]["address_components"],
+                          function(data) {
+                            return (
+                              data.types[0] === "administrative_area_level_2"
+                            );
+                          }
+                        );
+
+                        // console.log("State 1 = " , state1 , "State 2 = ", state2, "||" , data.types ,data["results"])
+
+                        if (state1.length > 0) {
+                          var state = state1[0].long_name;
+                        } else if (state2.length > 0) {
+                          var state = state2[0].long_name;
+                        }
+                        console.log(
+                          "States = ",
+                          state1.length,
+                          "State2 = ",
+                          state2.length
+                        );
+                        if (state1.length == 0 && state2.length == 0) {
+                          if (
+                            this.state.toState.value != "" ||
+                            this.state.toState.value != undefined
+                          ) {
+                            var state = this.state.toState;
+                          } else {
+                            this.state.toStateAutoComplete = true;
+                          }
+                          // var state = ""
+                        }
+
+                        // var SelectedCity = {
+                        //   value: FinalCity[0].City_code,
+                        //   label: FinalCity[0].Name,
+                        // };
+
+                        var SelectedState = { value: state, label: state };
+
+                        console.log("SelectedState = ", SelectedState);
+
+                        if (
+                          countryShortName ===
+                          this.state.selectedToCountry.label
+                        ) {
+                          this.setState({
+                            toCityAutoComplete: FinalCity.length ? true : false,
+                            toStateAutoComplete: this.state.toStateList.length
+                              ? true
+                              : false,
+                            toGoogleAPICityList: FinalCity,
+                            //toState: state,
+                            toState: this.state.toStateList.length
+                              ? SelectedState
+                              : state,
+                            toCity:
+                              SelectedCity != undefined
+                                ? SelectedCity
+                                : this.state.tempToCity,
+                          });
+                        } else {
+                          this.setState({
+                            toCityAutoComplete: false,
+                            toStateAutoComplete: this.state.toStateList.length
+                              ? true
+                              : false,
+                            toGoogleAPICityList: [],
+                            toState: "",
+                            toCity: "",
+                          });
+                        }
+                      } else if (data["results"][0]) {
+                        var FinalCity = [];
+                        var city = "";
+                        var countryShortName = "";
+
+                        countryShortName = _.filter(
+                          data["results"][0]["address_components"],
+                          function(data) {
+                            return data.types[0] === "country";
+                          }
+                        )[0].long_name;
+
+                        if (
+                          city == "" &&
+                          _.filter(
+                            data["results"][0]["address_components"],
+                            function(data) {
+                              return data.types[0] === "locality";
+                            }
+                          ).length > 0
+                        ) {
+                          city = _.filter(
+                            data["results"][0]["address_components"],
+                            function(data) {
+                              return data.types[0] === "locality";
+                            }
+                          )[0].short_name;
+                        } else if (
+                          city == "" &&
+                          _.filter(
+                            data["results"][0]["address_components"],
+                            function(data) {
+                              return (
+                                data.types[0] === "administrative_area_level_3"
+                              );
+                            }
+                          ).length > 0
+                        ) {
+                          city = _.filter(
+                            data["results"][0]["address_components"],
+                            function(data) {
+                              return (
+                                data.types[0] === "administrative_area_level_3"
+                              );
+                            }
+                          )[0].short_name;
+                        } else if (
+                          city == "" &&
+                          _.filter(
+                            data["results"][0]["address_components"],
+                            function(data) {
+                              return data.types[0] === "political";
+                            }
+                          ).length > 0
+                        ) {
+                          city = _.filter(
+                            data["results"][0]["address_components"],
+                            function(data) {
+                              return data.types[0] === "political";
+                            }
+                          )[0].short_name;
+                        } else if (
+                          city == "" &&
+                          _.filter(
+                            data["results"][0]["address_components"],
+                            function(data) {
+                              return data.types[0] === "neighborhood";
+                            }
+                          ).length > 0
+                        ) {
+                          city = _.filter(
+                            data["results"][0]["address_components"],
+                            function(data) {
+                              return data.types[0] === "neighborhood";
+                            }
+                          )[0].short_name;
+                        } else if (
+                          city == "" &&
+                          _.filter(
+                            data["results"][0]["address_components"],
+                            function(data) {
+                              return (
+                                data.types[0] === "administrative_area_level_2"
+                              );
+                            }
+                          ).length > 0
+                        ) {
+                          city = _.filter(
+                            data["results"][0]["address_components"],
+                            function(data) {
+                              return (
+                                data.types[0] === "administrative_area_level_2"
+                              );
+                            }
+                          )[0].long_name;
+                        } else if (
+                          city == "" &&
+                          _.filter(
+                            data["results"][0]["address_components"],
+                            function(data) {
+                              return (
+                                data.types[0] === "administrative_area_level_1"
+                              );
+                            }
+                          ).length > 0
+                        ) {
+                          city = _.filter(
+                            data["results"][0]["address_components"],
+                            function(data) {
+                              return (
+                                data.types[0] === "administrative_area_level_1"
+                              );
+                            }
+                          )[0].long_name;
+                        } else if (city == "") {
+                          city = "";
+                        }
+
+                        var state = _.filter(
+                          data["results"][0]["address_components"],
+                          function(data) {
+                            return (
+                              data.types[0] === "administrative_area_level_1"
+                            );
+                          }
+                        )[0].long_name;
+                        FinalCity.push({
+                          City_code: city,
+                          Name: city,
                         });
+
                         var SelectedCity = {
                           value: FinalCity[0].City_code,
-                          label: FinalCity[0].CityName,
+                          label: FinalCity[0].Name,
                         };
-          
-                        var state = data[0].State;
-                        var SelectedState = { value: data[0].State, label: data[0].State };   
-                        
-                        if (FinalCity[0].CityName === "" ||FinalCity[0].CityName === null || FinalCity[0].CityName === undefined )
-                          {
-                            this.setState({
-                              toCityAutoComplete: false,
-                              toStateAutoComplete: this.state.toStateList.length
-                                ? true
-                                : false,
-                              toGoogleAPICityList: [],
-                              toState: "",
-                              toCity: "",
-                            });
-                                         
-                                    } else {
-                                      this.setState({
-                                        toCityAutoComplete: FinalCity.length ? true : false,
-                                        toStateAutoComplete: this.state.toStateList.length
-                                          ? true
-                                          : false,
-                                        toGoogleAPICityList: FinalCity,
-                                        //toState: state,
-                                        toState: this.state.toStateList.length
-                                          ? SelectedState
-                                          : state,
-                                        toCity:
-                                          SelectedCity != undefined
-                                            ? SelectedCity
-                                            : this.state.tempToCity,
-                                      });
-                                            }
-                                    
-                                            this.setState({ Moveupdatefromzip: true });        
 
-                  } 
-                                                            
+                        var SelectedState = { value: state, label: state };
+                        if (
+                          countryShortName ===
+                          this.state.selectedToCountry.label
+                        ) {
+                          this.setState({
+                            toCityAutoComplete: FinalCity.length ? true : false,
+                            toStateAutoComplete: this.state.toStateList.length
+                              ? true
+                              : false,
+                            toGoogleAPICityList: FinalCity,
+                            toState: this.state.toStateList.length
+                              ? SelectedState
+                              : state,
+                            toCity: SelectedCity.label
+                              ? SelectedCity.label
+                              : SelectedCity,
+                            ToFedExSelectedCity: SelectedCity,
+                          });
+                        } else {
+                          this.setState({
+                            toCityAutoComplete: false,
+                            toStateAutoComplete: this.state.toStateList.length
+                              ? true
+                              : false,
+                            toGoogleAPICityList: [],
+                            toState: "",
+                            toCity: "",
+                          });
+                        }
+                      }
+                      this.setState({ Moveupdatefromzip: true });
+                      cogoToast.success("Zip code found");
+                      if (
+                        this.state.selectedToCountry.label == "United States" ||
+                        this.state.selectedToCountry.label == "India" ||
+                        this.state.selectedToCountry.label == "Canada"
+                      ) {
+                        var newZipcodedata = {
+                          Pincode: zip,
+                          PickupCityList: this.state.toCity,
+                          CountryID: countryValue,
+                          CountryName: countryName,
+                          StateName: state,
+                        };
+                        console.log("newZipcodedata", newZipcodedata);
+                        api
+                          .post(
+                            "https://hubapi.sflworldwide.com/contactus/SflInsertPostalCode",
+                            newZipcodedata
+                          )
+                          .then((res) => {
+                            debugger;
+                            if (res.success) {
+                              console.log("CheckRessData", res);
+                              if (res.success === true) {
+                                console.log("New Zipcode Enter Successfully");
+                              } else {
+                                console.log("Something Went Wrong");
+                              }
+                            }
+                          })
+                          .catch((err) => {
+                            console.log("err...", err);
+                          });
+                      }
+                    } else {
+                      cogoToast.error("Zip code not found");
 
-
-                                    }
-                                    else {
-
-                                      if (zip.length) {
-                                        fetch(CommonConfig.zipCodeAPIKey(zip, countryName))
-                                          .then((result) => result.json())
-                                          .then((data) => {
-                                            console.log("data123 = ", data);
-                                            if (data["status"] === "OK") {
-                                              if (
-                                                data["results"][0] &&
-                                                data["results"][0].hasOwnProperty("postcode_localities")
-                                              ) {
-                                                var FinalCity = [];
-                                  
-                                                var countryShortName = "";
-                                  
-                                                countryShortName = _.filter(
-                                                  data["results"][0]["address_components"],
-                                                  function(data) {
-                                                    return data.types[0] === "country";
-                                                  }
-                                                )[0].long_name;
-                                  
-                                                // var CityData = data["results"][0]["postcode_localities"];
-                                                // _.forEach(CityData, function(value, key) {
-                                                //   FinalCity.push({
-                                                //     City_code: value,
-                                                //     Name: value,
-                                                //   });
-                                                // });
-                                  
-                                                var CityData = _.filter(
-                                                  data["results"][0]["address_components"],
-                                                  function(data) {
-                                                    if (data.types[0] == "locality") {
-                                                      return data.types[0] === "locality";
-                                                    }
-                                                  }
-                                                );
-                                  
-                                                var CityData2 = _.filter(
-                                                  data["results"][0]["address_components"],
-                                                  function(data) {
-                                                    if (data.types[0] == "neighborhood") {
-                                                      return data.types[0] === "neighborhood";
-                                                    }
-                                                  }
-                                                );
-                                  
-                                                var CityData3 = _.filter(
-                                                  data["results"][0]["address_components"],
-                                                  function(data) {
-                                                    if (data.types[0] == "administrative_area_level_2") {
-                                                      return data.types[0] === "administrative_area_level_2";
-                                                    }
-                                                  }
-                                                );
-                                  
-                                                if (CityData.length > 0) {
-                                                  CityData = CityData[0].long_name;
-                                                  FinalCity.push({
-                                                    City_code: CityData,
-                                                    Name: CityData,
-                                                  });
-                                                  var SelectedCity = {
-                                                    value: FinalCity[0].City_code,
-                                                    label: FinalCity[0].Name,
-                                                  };
-                                                } else if (CityData2.length > 0) {
-                                                  CityData2 = CityData2[0].long_name;
-                                                  FinalCity.push({
-                                                    City_code: CityData2,
-                                                    Name: CityData2,
-                                                  });
-                                                  var SelectedCity = {
-                                                    value: FinalCity[0].City_code,
-                                                    label: FinalCity[0].Name,
-                                                  };
-                                                } else if (CityData3.length > 0) {
-                                                  CityData3 = CityData3[0].long_name;
-                                                  FinalCity.push({
-                                                    City_code: CityData3,
-                                                    Name: CityData3,
-                                                  });
-                                                  var SelectedCity = {
-                                                    value: FinalCity[0].City_code,
-                                                    label: FinalCity[0].Name,
-                                                  };
-                                                }
-                                  
-                                                var state1 = _.filter(
-                                                  data["results"][0]["address_components"],
-                                                  function(data) {
-                                                    return data.types[0] === "administrative_area_level_1";
-                                                  }
-                                                );
-                                  
-                                                // var state2 = _.filter(
-                                                //   data["results"][0]["address_components"],
-                                                //   function(data) {
-                                                //     if (data.types[0] == "administrative_area_level_2") {
-                                                //       return data.types[0] === "administrative_area_level_2";
-                                                //     }
-                                                //   }
-                                                // );
-                                                var state2 = _.filter(
-                                                  data["results"][0]["address_components"],
-                                                  function(data) {
-                                                    return data.types[0] === "administrative_area_level_2";
-                                                  }
-                                                );
-                                  
-                                                // console.log("State 1 = " , state1 , "State 2 = ", state2, "||" , data.types ,data["results"])
-                                  
-                                                if (state1.length > 0) {
-                                                  var state = state1[0].long_name;
-                                                } else if (state2.length > 0) {
-                                                  var state = state2[0].long_name;
-                                                }
-                                                console.log(
-                                                  "States = ",
-                                                  state1.length,
-                                                  "State2 = ",
-                                                  state2.length
-                                                );
-                                                if (state1.length == 0 && state2.length == 0) {
-                                                  if (
-                                                    this.state.toState.value != "" ||
-                                                    this.state.toState.value != undefined
-                                                  ) {
-                                                    var state = this.state.toState;
-                                                  } else {
-                                                    this.state.toStateAutoComplete = true;
-                                                  }
-                                                  // var state = ""
-                                                }
-                                  
-                                                // var SelectedCity = {
-                                                //   value: FinalCity[0].City_code,
-                                                //   label: FinalCity[0].Name,
-                                                // };
-                                  
-                                                var SelectedState = { value: state, label: state };
-                                  
-                                                console.log("SelectedState = ", SelectedState);
-                                  
-                                                if (countryShortName === this.state.selectedToCountry.label) {
-                                                  this.setState({
-                                                    toCityAutoComplete: FinalCity.length ? true : false,
-                                                    toStateAutoComplete: this.state.toStateList.length
-                                                      ? true
-                                                      : false,
-                                                    toGoogleAPICityList: FinalCity,
-                                                    //toState: state,
-                                                    toState: this.state.toStateList.length
-                                                      ? SelectedState
-                                                      : state,
-                                                    toCity:
-                                                      SelectedCity != undefined
-                                                        ? SelectedCity
-                                                        : this.state.tempToCity,
-                                                  });
-                                                } else {
-                                                  this.setState({
-                                                    toCityAutoComplete: false,
-                                                    toStateAutoComplete: this.state.toStateList.length
-                                                      ? true
-                                                      : false,
-                                                    toGoogleAPICityList: [],
-                                                    toState: "",
-                                                    toCity: "",
-                                                  });
-                                                }
-                                              } else if (data["results"][0]) {
-                                                var FinalCity = [];
-                                                var city = "";
-                                                var countryShortName = "";
-                                  
-                                                countryShortName = _.filter(
-                                                  data["results"][0]["address_components"],
-                                                  function(data) {
-                                                    return data.types[0] === "country";
-                                                  }
-                                                )[0].long_name;
-                                  
-                                                if (
-                                                  city == "" &&
-                                                  _.filter(data["results"][0]["address_components"], function(
-                                                    data
-                                                  ) {
-                                                    return data.types[0] === "locality";
-                                                  }).length > 0
-                                                ) {
-                                                  city = _.filter(
-                                                    data["results"][0]["address_components"],
-                                                    function(data) {
-                                                      return data.types[0] === "locality";
-                                                    }
-                                                  )[0].short_name;
-                                                } else if (
-                                                  city == "" &&
-                                                  _.filter(data["results"][0]["address_components"], function(
-                                                    data
-                                                  ) {
-                                                    return data.types[0] === "administrative_area_level_3";
-                                                  }).length > 0
-                                                ) {
-                                                  city = _.filter(
-                                                    data["results"][0]["address_components"],
-                                                    function(data) {
-                                                      return data.types[0] === "administrative_area_level_3";
-                                                    }
-                                                  )[0].short_name;
-                                                } else if (
-                                                  city == "" &&
-                                                  _.filter(data["results"][0]["address_components"], function(
-                                                    data
-                                                  ) {
-                                                    return data.types[0] === "political";
-                                                  }).length > 0
-                                                ) {
-                                                  city = _.filter(
-                                                    data["results"][0]["address_components"],
-                                                    function(data) {
-                                                      return data.types[0] === "political";
-                                                    }
-                                                  )[0].short_name;
-                                                } else if (
-                                                  city == "" &&
-                                                  _.filter(data["results"][0]["address_components"], function(
-                                                    data
-                                                  ) {
-                                                    return data.types[0] === "neighborhood";
-                                                  }).length > 0
-                                                ) {
-                                                  city = _.filter(
-                                                    data["results"][0]["address_components"],
-                                                    function(data) {
-                                                      return data.types[0] === "neighborhood";
-                                                    }
-                                                  )[0].short_name;
-                                                } else if (
-                                                  city == "" &&
-                                                  _.filter(data["results"][0]["address_components"], function(
-                                                    data
-                                                  ) {
-                                                    return data.types[0] === "administrative_area_level_2";
-                                                  }).length > 0
-                                                ) {
-                                                  city = _.filter(
-                                                    data["results"][0]["address_components"],
-                                                    function(data) {
-                                                      return data.types[0] === "administrative_area_level_2";
-                                                    }
-                                                  )[0].long_name;
-                                                } else if (
-                                                  city == "" &&
-                                                  _.filter(data["results"][0]["address_components"], function(
-                                                    data
-                                                  ) {
-                                                    return data.types[0] === "administrative_area_level_1";
-                                                  }).length > 0
-                                                ) {
-                                                  city = _.filter(
-                                                    data["results"][0]["address_components"],
-                                                    function(data) {
-                                                      return data.types[0] === "administrative_area_level_1";
-                                                    }
-                                                  )[0].long_name;
-                                                } else if (city == "") {
-                                                  city = "";
-                                                }
-                                  
-                                                var state = _.filter(
-                                                  data["results"][0]["address_components"],
-                                                  function(data) {
-                                                    return data.types[0] === "administrative_area_level_1";
-                                                  }
-                                                )[0].long_name;
-                                                FinalCity.push({
-                                                  City_code: city,
-                                                  Name: city,
-                                                });
-                                  
-                                                var SelectedCity = {
-                                                  value: FinalCity[0].City_code,
-                                                  label: FinalCity[0].Name,
-                                                };
-                                  
-                                                var SelectedState = { value: state, label: state };
-                                                if (countryShortName === this.state.selectedToCountry.label) {
-                                                  this.setState({
-                                                    toCityAutoComplete: FinalCity.length ? true : false,
-                                                    toStateAutoComplete: this.state.toStateList.length
-                                                      ? true
-                                                      : false,
-                                                    toGoogleAPICityList: FinalCity,
-                                                    toState: this.state.toStateList.length
-                                                      ? SelectedState
-                                                      : state,
-                                                    toCity: SelectedCity.label
-                                                      ? SelectedCity.label
-                                                      : SelectedCity,
-                                                    ToFedExSelectedCity: SelectedCity,
-                                                  });
-                                                } else {
-                                                  this.setState({
-                                                    toCityAutoComplete: false,
-                                                    toStateAutoComplete: this.state.toStateList.length
-                                                      ? true
-                                                      : false,
-                                                    toGoogleAPICityList: [],
-                                                    toState: "",
-                                                    toCity: "",
-                                                  });
-                                                }
-                                              }
-                                              this.setState({ Moveupdatefromzip: true });
-                                              cogoToast.success("Zip code found");
-                                              if(this.state.selectedToCountry.label == "United States" ||this.state.selectedToCountry.label == "India" ||this.state.selectedToCountry.label == "Canada"  )
-                                                {
-                                                  
-                                                  var newZipcodedata = {
-                                                  "Pincode" : zip,
-                                                  "PickupCityList": this.state.toCity,
-                                                  "CountryID": countryValue,
-                                                  "CountryName": countryName,
-                                                  "StateName" : state,
-                                                  
-                                                };
-                                                console.log("newZipcodedata",newZipcodedata);
-                                                api
-                                                .post(
-                                                  "https://hubapi.sflworldwide.com/contactus/SflInsertPostalCode",
-                                                  newZipcodedata
-                                                )
-                                                .then((res) => {debugger
-                                                  if (res.success) {
-                                                    console.log("CheckRessData", res);
-                                                    if (res.success === true) {
-                                                     
-                                                      console.log("New Zipcode Enter Successfully");
-                                                    } else {
-                                                      console.log("Something Went Wrong");
-                                                    }
-                                                  }
-                                                })
-                                                .catch((err) => {
-                                                    console.log("err...", err);
-                                                   
-                                                  });
-                                              }
-                                            } else {
-                                              cogoToast.error("Zip code not found");
-                                  
-                                              this.setState({
-                                                toCityAutoComplete: false,
-                                                //Moveupdatefromzip: false,
-                                                toStateAutoComplete: this.state.toStateList.length ? true : false,
-                                                toGoogleAPICityList: [],
-                                                // toState: "",
-                                                // toCity: "",
-                                              });
-                                            }
-                                          });
-                                      }
-
-                                      
-                             }
-          
-          
-        } else {
-          cogoToast.error("Something went wrong");
+                      this.setState({
+                        toCityAutoComplete: false,
+                        //Moveupdatefromzip: false,
+                        toStateAutoComplete: this.state.toStateList.length
+                          ? true
+                          : false,
+                        toGoogleAPICityList: [],
+                        // toState: "",
+                        // toCity: "",
+                      });
+                    }
+                  });
+              }
+            }
+          } else {
+            cogoToast.error("Something went wrong");
+          }
         }
-      }
-    })
-    .catch((err) => {
+      })
+      .catch((err) => {
         console.log("err...", err);
         cogoToast.error("Something Went Wrong");
       });
-
-
-
-
-
-
-  
-   
   };
 
   handleBlur = (event, type) => {
@@ -5105,12 +5183,14 @@ class ShipmentCustom extends React.Component {
     }
   };
 
-  encrypt(text, key){
-      return [...text].map((x, i) => 
-      (x.codePointAt() ^ key.charCodeAt(i % key.length) % 255)
-      .toString(16)
-      .padStart(2,"0")
-    ).join('')
+  encrypt(text, key) {
+    return [...text]
+      .map((x, i) =>
+        (x.codePointAt() ^ key.charCodeAt(i % key.length) % 255)
+          .toString(16)
+          .padStart(2, "0")
+      )
+      .join("");
   }
 
   handleChangepaymentReceived = (event, type, index) => {
@@ -5293,16 +5373,16 @@ class ShipmentCustom extends React.Component {
     // }
   };
 
-  openTooltipPopup = (Commercial) =>{
-    console.log("openTooltipPopup = ",Commercial)
-    
-    this.state.ComUpdatedDate = Commercial.UpdatedDate
-    this.state.ComUpdatedName = Commercial.UpdatedByUser
-    this.state.ComCreatedDate = Commercial.CreatedDate
-    this.state.ComCreatedName = Commercial.CreatedByName
+  openTooltipPopup = (Commercial) => {
+    console.log("openTooltipPopup = ", Commercial);
 
-    this.setState({CommercialPopup:true})
-  }
+    this.state.ComUpdatedDate = Commercial.UpdatedDate;
+    this.state.ComUpdatedName = Commercial.UpdatedByUser;
+    this.state.ComCreatedDate = Commercial.CreatedDate;
+    this.state.ComCreatedName = Commercial.CreatedByName;
+
+    this.setState({ CommercialPopup: true });
+  };
 
   PackageTtypeOnBlur = (event, type, index) => {
     const PackageList = this.state.PackageList;
@@ -6242,7 +6322,8 @@ class ShipmentCustom extends React.Component {
                       this.handleCommercialInvoiceChange(
                         event,
                         "PackageNumber",
-                        commercial.Index,commercial.ShippingCommercialInvoiceID
+                        commercial.Index,
+                        commercial.ShippingCommercialInvoiceID
                       )
                     }
                   >
@@ -6259,7 +6340,8 @@ class ShipmentCustom extends React.Component {
                     this.handleCommercialInvoiceChange(
                       event,
                       "ContentDescription",
-                      commercial.Index,commercial.ShippingCommercialInvoiceID
+                      commercial.Index,
+                      commercial.ShippingCommercialInvoiceID
                     )
                   }
                   inputProps={{}}
@@ -6278,7 +6360,8 @@ class ShipmentCustom extends React.Component {
                       this.handleCommercialInvoiceChange(
                         event,
                         "Quantity",
-                        commercial.Index,commercial.ShippingCommercialInvoiceID
+                        commercial.Index,
+                        commercial.ShippingCommercialInvoiceID
                       )
                     }
                     inputProps={{
@@ -6296,7 +6379,8 @@ class ShipmentCustom extends React.Component {
                       this.handleCommercialInvoiceChange(
                         event,
                         "ValuePerQuantity",
-                        commercial.Index,commercial.ShippingCommercialInvoiceID
+                        commercial.Index,
+                        commercial.ShippingCommercialInvoiceID
                       )
                     }
                     onBlur={(event) =>
@@ -6325,7 +6409,8 @@ class ShipmentCustom extends React.Component {
                   this.handleCommercialInvoiceChange(
                     event,
                     "TotalValue",
-                    commercial.Index,commercial.ShippingCommercialInvoiceID
+                    commercial.Index,
+                    commercial.ShippingCommercialInvoiceID
                   )
                 }
                 disabled={
@@ -6350,12 +6435,16 @@ class ShipmentCustom extends React.Component {
               >
                 <i className={"fas fa-minus"} />
               </Button>
-              
-                  <Button onClick = {() => this.openTooltipPopup(commercial)} className="Plus-btn info-icon" justIcon color="twitter">
-                    <InfoIcon />
-                  </Button>
-              
-             
+
+              <Button
+                onClick={() => this.openTooltipPopup(commercial)}
+                className="Plus-btn info-icon"
+                justIcon
+                color="twitter"
+              >
+                <InfoIcon />
+              </Button>
+
               {this.state.commercialList.filter((x) => x.Status === "Active")
                 .length ===
               idx + 1 ? (
@@ -6374,14 +6463,15 @@ class ShipmentCustom extends React.Component {
       });
   };
 
-  handleCommercialInvoiceChange = (event, type, index,ComId) => {
-    console.log("ComId = ",ComId,this.state.commercialList);
+  handleCommercialInvoiceChange = (event, type, index, ComId) => {
+    console.log("ComId = ", ComId, this.state.commercialList);
     let idx = this.state.commercialList.findIndex((x) => x.Index === index);
     if (type === "PackageNumber") {
-      
       let commercialList = this.state.commercialList;
-      if(ComId !=null){
-        commercialList[idx]["NewUpdateBy"] = CommonConfig.loggedInUserData().PersonID
+      if (ComId != null) {
+        commercialList[idx][
+          "NewUpdateBy"
+        ] = CommonConfig.loggedInUserData().PersonID;
       }
       commercialList[idx][type] = event.target.value;
       this.setState({ commercialList: commercialList });
@@ -6393,8 +6483,10 @@ class ShipmentCustom extends React.Component {
       ) {
         var datatarget = event.target.value.replace(/[^\w\s]/gi, "");
         let commercialList = this.state.commercialList;
-        if(ComId !=null){
-          commercialList[idx]["NewUpdateBy"] = CommonConfig.loggedInUserData().PersonID
+        if (ComId != null) {
+          commercialList[idx][
+            "NewUpdateBy"
+          ] = CommonConfig.loggedInUserData().PersonID;
         }
         commercialList[idx][type] = datatarget;
         this.setState({ commercialList: commercialList });
@@ -6402,8 +6494,10 @@ class ShipmentCustom extends React.Component {
     } else if (type === "Quantity") {
       let commercialList = this.state.commercialList;
       commercialList[idx][type] = event.target.value.replace(/\D/g, "");
-      if(ComId !=null){
-        commercialList[idx]["NewUpdateBy"] = CommonConfig.loggedInUserData().PersonID
+      if (ComId != null) {
+        commercialList[idx][
+          "NewUpdateBy"
+        ] = CommonConfig.loggedInUserData().PersonID;
       }
       commercialList[idx]["TotalValue"] =
         commercialList[idx][type] * commercialList[idx]["ValuePerQuantity"];
@@ -6416,8 +6510,10 @@ class ShipmentCustom extends React.Component {
         event.target.value === ""
       ) {
         commercialList[idx][type] = event.target.value;
-        if(ComId !=null){
-          commercialList[idx]["NewUpdateBy"] = CommonConfig.loggedInUserData().PersonID
+        if (ComId != null) {
+          commercialList[idx][
+            "NewUpdateBy"
+          ] = CommonConfig.loggedInUserData().PersonID;
         }
         this.setState({ commercialList: commercialList });
         this.CostCalculator("Commercial", true);
@@ -6429,8 +6525,10 @@ class ShipmentCustom extends React.Component {
         event.target.value === ""
       ) {
         commercialList[idx][type] = event.target.value;
-        if(ComId !=null){
-          commercialList[idx]["NewUpdateBy"] = CommonConfig.loggedInUserData().PersonID
+        if (ComId != null) {
+          commercialList[idx][
+            "NewUpdateBy"
+          ] = CommonConfig.loggedInUserData().PersonID;
         }
         commercialList[idx]["TotalValue"] =
           commercialList[idx][type] * commercialList[idx]["Quantity"];
@@ -7695,7 +7793,7 @@ class ShipmentCustom extends React.Component {
     const PaymentTypeList = this.state.PaymentTypeList.map((type) => {
       return { value: type.Description, label: type.Description };
     });
-    const { ReadOnly, viewAllClear,NewviewAllClear } = this.state;
+    const { ReadOnly, viewAllClear, NewviewAllClear } = this.state;
     return this.state.paymentReceived
       .filter((x) => x.Status === "Active")
       .map((payment, idx) => {
@@ -9044,26 +9142,22 @@ class ShipmentCustom extends React.Component {
     }
   };
 
-  handleDocumentDeletePopup = (e,record) => {
-
-    console.log("Here")
-    this.state.deletedocsdata = record
+  handleDocumentDeletePopup = (e, record) => {
+    console.log("Here");
+    this.state.deletedocsdata = record;
     this.setState({ deletedocument: true });
     // this.state. = true
-
-
-
-  }
+  };
 
   handleDocumentDelete = (record) => {
-    debugger
+    debugger;
     delete record.TrackingNumber;
 
-    console.log("record = ",record)
+    console.log("record = ", record);
     var AttachmentList = this.state.Attachments;
-    console.log("Attachmentlist = ",AttachmentList)
+    console.log("Attachmentlist = ", AttachmentList);
     var Index = AttachmentList.indexOf(record);
-    console.log("Attachmentlist = ",Index)
+    console.log("Attachmentlist = ", Index);
     AttachmentList[Index]["Status"] = "Delete";
     if (AttachmentList.filter((x) => x.Status === "Active").length === 0) {
       AttachmentList.push(this.state.objAttachment);
@@ -9712,1059 +9806,1073 @@ class ShipmentCustom extends React.Component {
     this.handleSave(false);
   };
 
-
   handleSave = (redirect) => {
     // console.log("this.package = ",packobj)
+    console.log(
+      "this.state.setPreviousAllClear = ",
+      this.state.setPreviousAllClear
+    );
+    console.log("this.state.AllClear = ", this.state.AllClear);
 
-    var comFlag = 0
+    var comFlag = 0;
 
-    if(this.state.ShipmentStatus == "Cancelled"){
-      if(this.state.AllClearYes == false){
+    if (this.state.ShipmentStatus == "Cancelled") {
+      if (this.state.AllClearYes == false) {
         cogoToast.error("Please open accounts tab to move to cancel");
-        comFlag = 1
-      }else{
-          if(this.state.TotalCostInvoice !=
-            this.state.TotalCostReceived.toFixed(2)){
-
-              cogoToast.error("Invoice and Payment Received does not match");
-              comFlag = 1
-            }else{
-              comFlag = 0
-
-            }
-
+        comFlag = 1;
+      } else {
+        if (
+          this.state.TotalCostInvoice != this.state.TotalCostReceived.toFixed(2)
+        ) {
+          cogoToast.error("Invoice and Payment Received does not match");
+          comFlag = 1;
+        } else {
+          comFlag = 0;
+        }
       }
-    }else{
-      comFlag = 0
+    } else {
+      comFlag = 0;
     }
 
-    if(comFlag == 0){
-          var countsec = 0;
+    if (comFlag == 0) {
+      var countsec = 0;
 
-          console.log(
-            "this.state.commercialList.length = ",
-            this.state.commercialList
-          );
-      
-          if (
-            this.state.PackageType === "Package" &&
-            this.state.ShipmentType.value == "Ocean"
-          ) {
-            debugger;
-            for (let index = 0; index < this.state.commercialList.length; index++) {
-              if (this.state.commercialList[index].Status == "Active") {
-                const elementsecond = this.state.commercialList[index].PackageNumber;
-                for (
-                  let indexsecond = index + 1;
-                  indexsecond < this.state.commercialList.length;
-                  indexsecond++
-                ) {
-                  if (
-                    this.state.commercialList[indexsecond].PackageNumber ==
-                      elementsecond &&
-                    this.state.commercialList[indexsecond].Status == "Active"
-                  ) {
-                    countsec = 1;
-                    break;
-                  }
-                }
+      console.log(
+        "this.state.commercialList.length = ",
+        this.state.commercialList
+      );
+
+      if (
+        this.state.PackageType === "Package" &&
+        this.state.ShipmentType.value == "Ocean"
+      ) {
+        debugger;
+        for (let index = 0; index < this.state.commercialList.length; index++) {
+          if (this.state.commercialList[index].Status == "Active") {
+            const elementsecond = this.state.commercialList[index]
+              .PackageNumber;
+            for (
+              let indexsecond = index + 1;
+              indexsecond < this.state.commercialList.length;
+              indexsecond++
+            ) {
+              if (
+                this.state.commercialList[indexsecond].PackageNumber ==
+                  elementsecond &&
+                this.state.commercialList[indexsecond].Status == "Active"
+              ) {
+                countsec = 1;
+                break;
               }
             }
           }
-      
-          // if (this.props.history.location.state.createDup == "1") {
-          //   cogoToast.error(
-          //     "Please re-open the shipment to Save. It was duplicated created"
-          //   );
-          // } else {
-          console.log("commercialList = ", this.state.commercialList);
-          let count = 0;
-          // if (this.state.PackageType === "Package") {
-          for (let index = 0; index < this.state.commercialList.length; index++) {
-            const element = this.state.commercialList[index].PackageNumber;
-            if (
-              element > this.state.TotalPackages &&
-              this.state.commercialList[index].Status == "Active"
-            ) {
-              count = 1;
-              break;
-            }
-          }
-          // }
-          if (count == 1) {
-            console.log("In IF");
-            cogoToast.error(
-              "Please enter valid package number for commercial invoice"
-            );
-          } else if (countsec == 1) {
-            console.log("In IF");
-            cogoToast.error(
-              "Please enter unique package number for commercial invoice"
-            );
-          } else {
-            if (
-              this.state.Moveupdatetozip === true &&
-              this.state.Moveupdatefromzip === true
-            ) {
-              if (this.validate()) {
-                if (this.formValid()) {
-                  let packobj = this.state.PackageList.filter(
-                    (x) =>
-                      (x.Status === "Inactive" &&
-                        x.ShippingPackageDetailID !== null) ||
-                      ((x) => x.Status === "Active")
-                  );
-                  let scheduleobj = this.state.ShipmentType.value;
-                  let senderobj = this.state.FromAddress;
-                  let recipientobj = this.state.ToAddress;
-                  let commercialData = this.state.commercialList;
-                  let comList1 = [];
-      
-                  for (let index = 0; index < commercialData.length; index++) {
-                    const element = commercialData[index];
-                    if (
-                      commercialData[index].Status == "Inactive" &&
-                      commercialData[index].ShippingCommercialInvoiceID == null
-                    ) {
-                    } else {
-                      comList1.push(commercialData[index]);
-                    }
-                  }
-                  commercialData = comList1;
-                  console.log("commercialListin Loop = ", commercialData);
-      
-                  console.log(
-                    "This.state.this.state.commercialList = ",
-                    this.state.commercialList
-                  );
-                  let paymentInvoiceData = this.state.PaymentList.filter(
-                    (x) =>
-                      (x.Status === "Inactive" && x.ShippingInvoiceID !== null) ||
-                      (x.Status === "Active" && x.ServiceDescription !== "")
-                  );
-                  let TrackingData = this.state.trackingNumberList.filter(
-                    (x) =>
-                      (x.Status === "Inactive" && x.ShippingTrackingID !== null) ||
-                      (x.Status === "Active" && x.TrackingID !== "")
-                  );
-                  let ManualTrackingData = this.state.trackingManualList.filter(
-                    (x) =>
-                      (x.Status === "Inactive" &&
-                        x.ShippingManualTrackingID !== null) ||
-                      (x.Status === "Active" && x.Updates !== "")
-                  );
-                  let paymentReceivedData = this.state.paymentReceived.filter(
-                    (x) =>
-                      (x.Status === "Inactive" &&
-                        x.ShippingPaymentReceivedID !== null) ||
-                      (x.Status === "Active" && x.PaymentType !== "")
-                  );
-                  let paymentIssued = this.state.paymentIssued.filter(
-                    (x) =>
-                      (x.Status === "Inactive" &&
-                        x.ShippingPaymentIssuedID !== null) ||
-                      (x.Status === "Active" && x.VendorName !== "")
-                  );
-                  let creditCardObj = this.state.creditCardList.filter(
-                    (x) =>
-                      (x.Status === "Inactive" && x.PaymentID !== null) ||
-                      (x.Status === "Active" && x.CardName !== "")
-                  );
-                  let bankObj = this.state.bankList.filter(
-                    (x) =>
-                      (x.Status === "Inactive" && x.PaymentID !== null) ||
-                      (x.Status === "Active" && x.NameonAccount !== "")
-                  );
-                  let packages_data = [];
-                  let com_data = [];
-                  var paymentdata = [];
-                  if (scheduleobj === "Air" || scheduleobj === "Ground") {
-                    if (this.state.PackageType === "Package") {
-                      for (var i = 0; i < packobj.length; i++) {
-                        let package_details = {};
-                        package_details = {
-                          shipments_tracking_number: "",
-                          PackageNumber: packobj[i].PackageNumber,
-                          package_number: packobj[i].Sequence,
-                          weight: packobj[i].EstimetedWeight,
-                          unit_of_weight: "LBS",
-                          length: packobj[i].Length,
-                          width: packobj[i].Width,
-                          height: packobj[i].Height,
-                          chargable_weight: packobj[i].ChargableWeight,
-                          insured_value: packobj[i].InsuredValue,
-                          Sequence: packobj[i].Sequence,
-                          PackageContent: packobj[i].PackageContent,
-                          PackedType: packobj[i].PackedType,
-                          Status: packobj[i].Status,
-                          TV: false,
-                          Stretch: false,
-                          Repack: false,
-                          Crating: false,
-                          PackageID: packobj[i].ShippingPackageDetailID,
-                        };
-                        packages_data.push(package_details);
-                      }
-                    } else if (this.state.PackageType === "Envelop") {
-                      if (packobj.length > 1) {
-                        for (var j = 1; j < packobj.length; j++) {
-                          if (packobj[j].Status === "Inactive") {
-                            let package_details = {};
-                            package_details = {
-                              shipments_tracking_number: "",
-                              PackageNumber: packobj[j].PackageNumber,
-                              package_number: packobj[j].Sequence,
-                              weight: packobj[j].EstimetedWeight,
-                              unit_of_weight: "LBS",
-                              length: packobj[j].Length,
-                              width: packobj[j].Width,
-                              height: packobj[j].Height,
-                              chargable_weight: packobj[j].ChargableWeight,
-                              insured_value: packobj[j].InsuredValue,
-                              Sequence: packobj[j].Sequence,
-                              PackedType: packobj[j].PackedType,
-                              Status: packobj[j].Status,
-                              PackageContent: packobj[j].PackageContent,
-                              TV: false,
-                              Stretch: false,
-                              Repack: false,
-                              Crating: false,
-                              PackageID: packobj[j].ShippingPackageDetailID,
-                            };
-      
-                            packages_data.push(package_details);
-                          }
-                        }
-                      }
-                      let package_details = {};
-                      package_details = {
-                        shipments_tracking_number: "",
-                        PackageNumber: packobj[0].PackageNumber,
-                        package_number: packobj[0].Sequence,
-                        weight: packobj[0].EstimetedWeight,
-                        unit_of_weight: "LBS",
-                        length: packobj[0].Length,
-                        width: packobj[0].Width,
-                        height: packobj[0].Height,
-                        chargable_weight: packobj[0].ChargableWeight,
-                        insured_value: packobj[0].InsuredValue,
-                        Sequence: packobj[0].Sequence,
-                        PackedType: packobj[0].PackedType,
-                        Status: packobj[0].Status,
-                        PackageContent: packobj[0].PackageContent,
-                        TV: false,
-                        Stretch: false,
-                        Repack: false,
-                        Crating: false,
-                        PackageID: packobj[0].ShippingPackageDetailID,
-                      };
-      
-                      packages_data.push(package_details);
-                    }
-                  } else if (scheduleobj === "Ocean") {
-                    if (this.state.PackageType === "Package") {
-                      for (var i = 0; i < packobj.length; i++) {
-                        let package_details = {};
-                        package_details = {
-                          shipments_tracking_number: "",
-                          PackageNumber: packobj[i].PackageNumber,
-                          package_number: packobj[i].Sequence,
-                          weight: packobj[i].EstimetedWeight,
-                          unit_of_weight: "LBS",
-                          length: packobj[i].Length,
-                          width: packobj[i].Width,
-                          height: packobj[i].Height,
-                          chargable_weight: packobj[i].ChargableWeight,
-                          insured_value: packobj[i].InsuredValue,
-                          Sequence: packobj[i].Sequence,
-                          Status: packobj[i].Status,
-                          TV: false,
-                          Stretch: false,
-                          Repack: false,
-                          Crating: false,
-                          PackageContent: packobj[i].PackageContent,
-                          PackedType: packobj[i].PackedType,
-                          CFT: packobj[i].CFT,
-                          PackageID: packobj[i].ShippingPackageDetailID,
-                        };
-                        packages_data.push(package_details);
-                      }
-                    } else if (this.state.PackageType === "Envelop") {
-                      let package_details = {};
-                      package_details = {
-                        shipments_tracking_number: "",
-                        PackageNumber: packobj[0].PackageNumber,
-                        package_number: packobj[0].Sequence,
-                        weight: packobj[0].EstimetedWeight,
-                        unit_of_weight: "LBS",
-                        length: packobj[0].Length,
-                        width: packobj[0].Width,
-                        height: packobj[0].Height,
-                        chargable_weight: packobj[0].ChargableWeight,
-                        insured_value: parseFloat(packobj[0].InsuredValue).toFixed(2),
-                        Sequence: packobj[0].Sequence,
-                        Status: packobj[0].Status,
-                        TV: false,
-                        Stretch: false,
-                        Repack: false,
-                        Crating: false,
-                        PackageContent: packobj[0].PackageContent,
-                        PackedType: packobj[0].PackedType,
-                        CFT: parseFloat(packobj[0].CFT).toFixed(2),
-                        PackageID: packobj[0].ShippingPackageDetailID,
-                      };
-      
-                      packages_data.push(package_details);
-                    }
-                  }
-      
-                  var packages = packages_data;
-                  for (var i = 0; i < commercialData.length; i++) {
-                    let commercail_details = {};
+        }
+      }
 
-                    if(commercialData[i].ShippingCommercialInvoiceID == null){
-                      commercail_details = {
-                        shipments_tracking_number: "",
-                        package_number: commercialData[i].PackageNumber,
-                        content_description: commercialData[i].ContentDescription,
-                        // newipLocation: commercialData[i].ipLocation,
-                        quantity: commercialData[i].Quantity,
-                        value_per_qty: commercialData[i].ValuePerQuantity,
-                        total_value: commercialData[i].TotalValue,
-                        Status: commercialData[i].Status,
-                        NewUpdatedBy:commercialData[i].NewUpdateBy,
-                        CommercialInvoiceID:
-                          commercialData[i].ShippingCommercialInvoiceID,
-                      };
-                    }else{
-                      if(commercialData[i].NewUpdateBy > 0){
-                        commercail_details = {
-                          shipments_tracking_number: "",
-                          package_number: commercialData[i].PackageNumber,
-                          content_description: commercialData[i].ContentDescription,
-                          // newipLocation: commercialData[i].ipLocation,
-                          quantity: commercialData[i].Quantity,
-                          value_per_qty: commercialData[i].ValuePerQuantity,
-                          total_value: commercialData[i].TotalValue,
-                          Status: commercialData[i].Status,
-                          NewUpdatedBy:commercialData[i].NewUpdateBy,
-                          CommercialInvoiceID:
-                            commercialData[i].ShippingCommercialInvoiceID,
-                        };
-                      }else{
-                        commercail_details = {
-                          shipments_tracking_number: "",
-                          package_number: commercialData[i].PackageNumber,
-                          content_description: commercialData[i].ContentDescription,
-                          // newipLocation: commercialData[i].ipLocation,
-                          quantity: commercialData[i].Quantity,
-                          value_per_qty: commercialData[i].ValuePerQuantity,
-                          total_value: commercialData[i].TotalValue,
-                          Status: commercialData[i].Status,
-                          NewUpdatedBy:commercialData[i].UpdatedBy,
-                          CommercialInvoiceID:
-                            commercialData[i].ShippingCommercialInvoiceID,
-                        };
-                      }
-                      
-                    }
+      // if (this.props.history.location.state.createDup == "1") {
+      //   cogoToast.error(
+      //     "Please re-open the shipment to Save. It was duplicated created"
+      //   );
+      // } else {
+      console.log("commercialList = ", this.state.commercialList);
+      let count = 0;
+      // if (this.state.PackageType === "Package") {
+      for (let index = 0; index < this.state.commercialList.length; index++) {
+        const element = this.state.commercialList[index].PackageNumber;
+        if (
+          element > this.state.TotalPackages &&
+          this.state.commercialList[index].Status == "Active"
+        ) {
+          count = 1;
+          break;
+        }
+      }
+      // }
+      if (count == 1) {
+        console.log("In IF");
+        cogoToast.error(
+          "Please enter valid package number for commercial invoice"
+        );
+      } else if (countsec == 1) {
+        console.log("In IF");
+        cogoToast.error(
+          "Please enter unique package number for commercial invoice"
+        );
+      } else {
+        if (
+          this.state.Moveupdatetozip === true &&
+          this.state.Moveupdatefromzip === true
+        ) {
+          if (this.validate()) {
+            if (this.formValid()) {
+              let packobj = this.state.PackageList.filter(
+                (x) =>
+                  (x.Status === "Inactive" &&
+                    x.ShippingPackageDetailID !== null) ||
+                  ((x) => x.Status === "Active")
+              );
+              let scheduleobj = this.state.ShipmentType.value;
+              let senderobj = this.state.FromAddress;
+              let recipientobj = this.state.ToAddress;
+              let commercialData = this.state.commercialList;
+              let comList1 = [];
 
-                    
-                    com_data.push(commercail_details);
-                  }
-                  var commercial = com_data;
-                  var shipments = {
-                    tracking_number: "",
-                    shipment_type: scheduleobj,
-                    location_type: this.state.LocationType,
-                    is_pickup: !CommonConfig.isEmpty(this.state.IsPickup.data)
-                      ? this.state.IsPickup.data[0] === 0
-                        ? false
-                        : true
-                      : this.state.IsPickup,
-                    ShipmentStatus: this.state.ShipmentStatus,
-                    pickup_date:
-                      CommonConfig.isEmpty(this.state.PickupDate) != true
-                        ? // ? momentTimezone(this.state.PickupDate)
-                          //     .tz(CommonConfig.UStimezone)
-                          //     .format("YYYY-MM-DD HH:mm:ss")
-                          //     .toString()
-                          moment(this.state.PickupDate)
-                            .format("YYYY-MM-DD HH:mm:ss")
-                            .toString()
-                        : null,
-                    ReadyTime: this.state.ReadyTime,
-                    AvailableTime: this.state.AvailableTime,
-                    SpecialInstucation: this.state.NotesforPickup,
-                    pickupProvider: !CommonConfig.isEmpty(
-                      this.state.PickupVendorName.value
-                    )
-                      ? this.state.PickupVendorName.value
-                      : null,
-                    package_type: !CommonConfig.isEmpty(packobj)
-                      ? this.state.PackageType
-                      : "",
-                    total_packages: packobj.filter((x) => x.Status === "Active")
-                      .length,
-                    ContainerID: !CommonConfig.isEmpty(this.state.ContainerName.value)
-                      ? this.state.ContainerName.value
-                      : null,
-                    promo_code: "",
-                    is_agree: "",
-                    total_weight: !CommonConfig.isEmpty(senderobj)
-                      ? senderobj.TotalWeight
-                      : 0,
-                    total_chargable_weight: !CommonConfig.isEmpty(
-                      this.state.totalChargableWeight
-                    )
-                      ? this.state.totalChargableWeight
-                      : 0.0,
-                    total_insured_value: !CommonConfig.isEmpty(
-                      this.state.totalInsuredValue
-                    )
-                      ? this.state.totalInsuredValue
-                      : 0.0,
-                    duties_paid_by: this.state.DutiesPaidBy,
-                    total_declared_value: !CommonConfig.isEmpty(senderobj)
-                      ? senderobj.TotalDeclaredValue
-                      : 0,
-                    userName: CommonConfig.loggedInUserData().LoginID,
-                    InvoiceDueDate:
-                      CommonConfig.isEmpty(this.state.InvoiceDueDate) != true
-                        ? moment(this.state.InvoiceDueDate)
-                            .format("YYYY-MM-DD HH:mm:ss")
-                            .toString()
-                        : null,
-                    managed_by: this.state.ManagedBy.value,
-                    ServiceName: this.state.ServiceName
-                      ? this.state.ServiceName.value
-                      : "",
-                    SubServiceName: this.state.SubServiceName
-                      ? this.state.SubServiceName.value
-                      : "",
-                    PersonID: this.state.PersonID,
-                    IsPackageAccess: this.state.IsPackageAccess,
-                    ShippingID:
-                      this.props.location.state &&
-                      this.props.location.state.ShipppingID
-                        ? this.props.location.state.ShipppingID
-                        : null,
-                  };
-      
-                  var from_address = {
-                    AddressID: senderobj.FromAddressID,
-                    country_id: this.state.selectedFromCountry.value,
-                    country_name: this.state.selectedFromCountry.label,
-                    company_name: this.state.FromCompanyName,
-                    contact_name: this.state.FromContactName,
-                    address_1: this.state.FromAddressLine1,
-                    address_2: this.state.FromAddressLine2,
-                    address_3: this.state.FromAddressLine3,
-                    MovingBack: CommonConfig.isEmpty(this.state.FromMovingBack.value)
-                      ? this.state.FromMovingBack
-                      : this.state.FromMovingBack.value,
-                    OriginalPassportAvailable: CommonConfig.isEmpty(
-                      this.state.FromOriginalPassortAvailable.value
-                    )
-                      ? this.state.FromOriginalPassortAvailable
-                      : this.state.FromOriginalPassortAvailable.value,
-                    EligibleForTR: CommonConfig.isEmpty(
-                      this.state.FromEligibleForTR.value
-                    )
-                      ? this.state.FromEligibleForTR
-                      : this.state.FromEligibleForTR.value,
-                    city_id: 1,
-                    city_name: CommonConfig.isEmpty(this.state.fromCity.value)
-                      ? this.state.fromCity
-                      : this.state.fromCity.value,
-                    state_id: 1,
-                    fedex_city: senderobj.FedexCity,
-                    //state_name: this.state.FromAddressObj.AddressDetail.State,
-                    state_name: this.state.fromState.value
-                      ? this.state.fromState.value
-                      : this.state.fromState.label == ""
-                      ? ""
-                      : this.state.fromState,
-                    zip_code: this.state.FromZipCode,
-                    phone1: this.state.FromPhone1,
-                    phone2: this.state.FromPhone2,
-                    email: this.state.FromEmail,
-                  };
-                  var to_address = {
-                    AddressID: recipientobj.ToAddressID,
-                    country_id: this.state.selectedToCountry.value,
-                    country_name: this.state.selectedToCountry.label,
-                    company_name: this.state.ToCompanyName,
-                    contact_name: this.state.ToContactName,
-                    address_1: this.state.ToAddressLine1,
-                    address_2: this.state.ToAddressLine2,
-                    address_3: this.state.ToAddressLine3,
-                    city_id: 2,
-                    city_name: CommonConfig.isEmpty(this.state.toCity.value)
-                      ? this.state.toCity
-                      : this.state.toCity.value,
-                    state_id: 1,
-                    fedex_city: recipientobj.FedexCity,
-                    // state_name: this.state.ToAddressObj.AddressDetail.State,
-                    state_name: this.state.toState.value
-                      ? this.state.toState.value
-                      : this.state.toState.value == ""
-                      ? ""
-                      : this.state.toState,
-                    zip_code: this.state.ToZipCode,
-                    phone1: this.state.ToPhone1,
-                    phone2: this.state.ToPhone2,
-                    email: this.state.ToEmail,
-                  };
-                  for (var j = 0; j < bankObj.length; j++) {
-                    let paymentData = {};
-                    paymentData = {
-                      PaymentID: bankObj[j]["PaymentID"],
-                      PaymentType: bankObj[j]["PaymentType"],
-                      name_on_card: bankObj[j]["CardName"],
-                      card_number: bankObj[j]["CardNumber"],
-                      card_type: bankObj[j]["CardType"],
-                      expiration_month: bankObj[j]["CardExpiryMonth"],
-                      expiration_year: bankObj[j]["CardExpiryYear"],
-                      cvv_code: bankObj[j]["CardCVV"],
-                      zip_code: bankObj[j]["CardZipCode"],
-                      PaymentStatus: bankObj[j]["PaymentStatus"],
-                      name_on_bank_account: bankObj[j]["NameonAccount"],
-                      bank_name: bankObj[j]["BankName"],
-                      account_number: bankObj[j]["AccountNumber"],
-                      routing_number: bankObj[j]["RoutingNumber"],
-                      Status: bankObj[j]["Status"],
-                      InvoiceAmount: bankObj[j]["InvoiceAmount"],
-                      DatePaid: bankObj[j]["PaidDate"],
-                    };
-      
-                    paymentdata.push(paymentData);
-                  }
-                  console.log("pppppp", this.state.paymentIssued);
-                  for (var j = 0; j < creditCardObj.length; j++) {
-                    let paymentData = {};
-                    paymentData = {
-                      PaymentID: creditCardObj[j]["PaymentID"],
-                      PaymentType: creditCardObj[j]["PaymentType"],
-                      name_on_card: creditCardObj[j]["CardName"],
-                      card_number: creditCardObj[j]["CardNumber"],
-                      card_type: creditCardObj[j]["CardType"],
-                      expiration_month: creditCardObj[j]["CardExpiryMonth"],
-                      expiration_year: creditCardObj[j]["CardExpiryYear"],
-                      cvv_code: creditCardObj[j]["CardCVV"],
-                      PaymentStatus: creditCardObj[j]["PaymentStatus"],
-                      zip_code: creditCardObj[j]["CardZipCode"],
-                      name_on_bank_account: creditCardObj[j]["NameonAccount"],
-                      bank_name: creditCardObj[j]["BankName"],
-                      account_number: creditCardObj[j]["AccountNumber"],
-                      routing_number: creditCardObj[j]["RoutingNumber"],
-                      Status: creditCardObj[j]["Status"],
-                      InvoiceAmount: creditCardObj[j]["InvoiceAmount"],
-                      DatePaid: creditCardObj[j]["PaidDate"],
-                    };
-      
-                    paymentdata.push(paymentData);
-                  }
-      
-                  var FinalNotes = this.state.notes.filter(
-                    (x) => x.NoteText !== "" && x.NoteText !== null
-                  );
-                  var finalAttachment = [];
-      
-                  for (var i = 0; i < this.state.Attachments.length; i++) {
-                    if (!this.state.Attachments[i].hasOwnProperty("TrackingNumber")) {
-                      if (
-                        this.state.Attachments[i].hasOwnProperty("AttachmentName")
-                      ) {
-                        finalAttachment.push(this.state.Attachments[i]);
-                      }
-                    }
-                  }
-      
-                  var objdata = {};
-                  if (this.state.IsChanged) {
-                    objdata = {
-                      UserID: CommonConfig.loggedInUserData().PersonID,
-                      TrackingNumber: this.state.TrackingNumber,
-                      shipments: shipments,
-                      MovingBackToIndia: this.state.movingBackIndia,
-                      trackingData: TrackingData,
-                      from_address: from_address,
-                      to_address: to_address,
-                      PaymentData: paymentdata,
-                      manualTrackingData: ManualTrackingData,
-                      packages: packages,
-                      commercial: commercial,
-                      Notes: FinalNotes,
-                      invoiceData: paymentInvoiceData,
-                      paymentReceivedData: paymentReceivedData,
-                      paymentIssued: paymentIssued,
-                      TotalCommercialvalue: "",
-                      DocumentList: finalAttachment,
-                      previousAllClear: this.state.previousAllClear,
-                      AllClear:
-                        this.state.AllClear.value === "Not Ready"
-                          ? null
-                          : this.state.AllClear.value === "Ready for Yes"
-                          ? 3
-                          : this.state.AllClear.value === "Collections" // ? "Ready for Yes"
-                          ? 4
-                          : this.state.AllClear.value === "No"
-                          ? 0
-                          : 1,
-                      Amount: this.state.TotalCostReceived,
-                    };
-                    if (
-                      objdata.AllClear === "Yes" &&
-                      this.state.useraccess.userModuleAccess[15].ModuleID === 18 &&
-                      this.state.useraccess.userModuleAccess[15].WriteAccess === 1 &&
-                      this.state.useraccess.userModuleAccess[15].DeleteAccess === 1
-                    ) {
-                      this.setState({ IsChanged: false });
-                    }
-                  } else {
-                    objdata = {
-                      UserID: CommonConfig.loggedInUserData().PersonID,
-                      TrackingNumber: this.state.TrackingNumber,
-                      shipments: shipments,
-                      trackingData: TrackingData,
-                      MovingBackToIndia: this.state.movingBackIndia,
-                      from_address: from_address,
-                      to_address: to_address,
-                      PaymentData: paymentdata,
-                      manualTrackingData: ManualTrackingData,
-                      packages: packages,
-                      commercial: commercial,
-                      Notes: FinalNotes,
-                      invoiceData: paymentInvoiceData,
-                      paymentReceivedData: paymentReceivedData,
-                      paymentIssued: paymentIssued,
-                      TotalCommercialvalue: "",
-                      DocumentList: finalAttachment,
-                    };
-                  }
-      
-                  debugger;
-                  if (
-                    this.state.UserAdditionalDetailsID > 0
-                  ) {
-                    objdata.UserAdditionalData = {
-                      NameAsPerPassport: this.state.NameAsPerPassport,
-                      PassportNumber: this.state.PassportNumber,
-                      YearsOutsideIndia: this.state.YearsOutsideIndia,
-                      UserAdditionalDetailsID: this.state.UserAdditionalDetailsID,
-                      StayInIndia: this.state.StayInIndia,
-                      LatestArrivalDate: this.state.LatestArrivalDate
-                        ? moment(this.state.LatestArrivalDate)
-                            .format(CommonConfig.dateFormat.dbDateTime)
-                            .toString()
-                        : null,
-                      AppliedForTR: this.state.AppliedForTR,
-                      AbleToProvidePassport: this.state.AbleToProvidePassport,
-                      VisaValidDate: this.state.VisaValidDate
-                        ? moment(this.state.VisaValidDate)
-                            .format(CommonConfig.dateFormat.dbDateTime)
-                            .toString()
-                        : null,
-                      VisaCategory: this.state.VisaCategory,
-                      CustomClearanceDate:
-                        CommonConfig.isEmpty(this.state.CustomClearanceDate) != true
-                          ? moment(this.state.CustomClearanceDate)
-                              .format("YYYY-MM-DD HH:mm:ss")
-                              .toString()
-                          : null,
-                    };
-                  }
-      
-                  console.log("pppppp111", objdata.manualTrackingData);
-                  if (this.state.createDuplicate == "1") {
-                    if (objdata.shipments.shipment_type == "Ocean") {
-                        objdata.UserAdditionalData = {
-                          NameAsPerPassport: "",
-                          PassportNumber: "",
-                          YearsOutsideIndia: "",
-                          UserAdditionalDetailsID: null,
-                          StayInIndia: "",
-                          LatestArrivalDate: null,
-                          AppliedForTR: "",
-                          AbleToProvidePassport: "",
-                          VisaValidDate: null,
-                          VisaCategory: "",
-                          CustomClearanceDate:null,
-                          isBackIndia:"No",
-                          movingBackIndia:"No",
-                          AbleToProvidePassport:"No"
-                        };
-                    }
-                    var todayDate = new Date();
-                    const note1 = {
-                      NoteText:
-                        "Shipment is duplicate created by Tracking No: " +
-                        objdata.TrackingNumber,
-                      NoteType: null,
-                      NoteTitle: null,
-                      Status: "Active",
-                      AttachmentID: null,
-                      AttachmentType: null,
-                      AttachmentName: null,
-                      CreatedOn: moment(todayDate).format(
-                        CommonConfig.dateFormat.dateTime
-                      ),
-                      disabled: false,
-                      closebutton: true,
-                      CreatedBy: CommonConfig.loggedInUserData().PersonID,
-                      NoteID: null,
-                      CreatedByNote: CommonConfig.loggedInUserData().Name,
-                      AddedBy: CommonConfig.loggedInUserData().Name,
-                      Index: 1,
-                    };
-                    let NoteDate = [];
-                    NoteDate.push(note1);
-                    objdata.Notes = NoteDate;
-                    objdata.TrackingNumber = null;
-                    objdata.shipments.ShippingID = null;
-                    objdata.from_address.AddressID = null;
-                    objdata.to_address.AddressID = null;
-                    objdata.shipments.ServiceName = "";
-                    objdata.shipments.SubServiceName = "";
-                    objdata.manualTrackingData = [];
-                    objdata.trackingData = [];
-                    delete objdata.shipments.ShipmentStatus;
-                    delete objdata.shipments.ContainerID;
-                    delete objdata.shipments.pickupProvider;
-                    // objdata.UserAdditionalData = [];
-      
-                    debugger;
-      
-                    if (this.state.PackageType === "Package") {
-                      objdata.commercial = [];
-                    } else {
-                      for (var i = 0; i < commercial.length; i++) {
-                        delete commercial[i].CommercialInvoiceID;
-                      }
-                      objdata.commercial = commercial;
-                    }
-                    // objdata.Notes = []
-                    objdata.invoiceData = [];
-                    objdata.paymentReceivedData = [];
-                    objdata.paymentIssued = [];
-                    objdata.TotalCommercialvalue = "";
-                    objdata.DocumentList = [];
-      
-                    console.log(objdata.PaymentData);
-                    if (objdata.PaymentData.length == 0) {
-                      var payment_online1 = {
-                        PaymentID: null,
-                        name_on_card: "",
-                        card_number: "",
-                        card_type: "",
-                        expiration_month: "",
-                        expiration_year: "",
-                        cvv_code: "",
-                        zip_code: "",
-                        name_on_bank_account: "",
-                        bank_name: "",
-                        account_number: "",
-                        routing_number: "",
-                        InvoiceAmount: 0.0,
-                      };
-      
-                      let Paymentdata = [];
-                      Paymentdata.push(payment_online1);
-                      objdata.PaymentData = Paymentdata;
-                    } else {
-                      for (
-                        let index = 0;
-                        index < objdata.PaymentData.length;
-                        index++
-                      ) {
-                        objdata.PaymentData[index].PaymentID = null;
-                      }
-                    }
-                    console.log(objdata.PaymentData);
-                    if (objdata.shipments.shipment_type == "Ocean") {
-                      objdata.packages = [];
-                    } else {
-                      if (objdata.packages.length > 0) {
-                        for (
-                          let index = 0;
-                          index < objdata.packages.length;
-                          index++
-                        ) {
-                          objdata.packages[index].PackageID = null;
-                        }
-                      }
-                    }
-                  }
-                  var bankCount = 0
-                  debugger
-                  if(objdata.PaymentData){
-                    for(i = 0 ; i < objdata.PaymentData.length ; i++){
-                      if(objdata.PaymentData[i].Status == "Active"){
-                        if(objdata.PaymentData[i].card_number != ""){
-                          let letter = objdata.PaymentData[i].card_number.charAt(0);
-      
-                          var Cardlengths = 0
-                          if(letter == "2" || letter == "5" || letter == "4"){
-                            Cardlengths = 16
-                          }
-                          if(letter == "3"){
-                            Cardlengths = 15
-                          }
-                          if(objdata.PaymentData[i].card_number.length < Cardlengths){
-                            bankCount = 1
-                            cogoToast.error(
-                              "Please enter valid credit card number"
-                            );
-                            return;   
-                          }
-                        }
-                      }
-                    }
-                  }
-      
-                  
-      
-                  console.log("objdata = ", objdata);
-                  var formData = new FormData();
-                  formData.append("data", JSON.stringify(objdata));
-                  if (this.state.AttachmentList.length > 0) {
-                    this.state.AttachmentList.forEach((file) => {
-                      formData.append("Attachments", file);
-                    });
-                  }
-                  
-                  this.showLoader();
-                  try {
-                    api
-                      .post("scheduleshipment/addshipments", formData)
-                      .then((res) => {
-                        this.hideLoader();
-                        if (res.success) {
-                          if (res.data.success === true) {
-                            if (this.state.createDuplicate == "1") {
-                              if (objdata.shipments.shipment_type == "Ocean") {
-                                var data = {
-                                  ShippingID: res.data.ShippingID,
-                                  Mode: "I",
-                                  shipStatus: "",
-                                  pickupDate: "",
-                                };
-      
-                                api
-                                  .post("scheduleshipment/autoOceanTracking", data)
-                                  .then((res) => {
-                                    console.log(res);
-                                  });
-                              }
-      
-                              this.state.createDuplicate = "0";
-                              this.state.createopen = false;
-                              this.state.dupTracking = res.data.data;
-                              if (this.state.setDupLicate == true) {
-                                const { history } = this.props;
-      
-                                debugger;
-                                var sortPropsdata = [
-                                  {
-                                    desc: true,
-                                    id: "ShipmentDate",
-                                  },
-                                ];
-                                var filterlistdata = [];
-      
-                                var shipmentstatusListData = [
-                                  {
-                                    label: "New Request",
-                                    value: "New Request",
-                                  },
-                                ];
-      
-                                console.log("this.state.sortProps = ", sortPropsdata);
-                                console.log(
-                                  "this.state.shipmentstatusList = ",
-                                  shipmentstatusListData
-                                );
-      
-                                history.push({
-                                  pathname: "ShipmentNew",
-                                  state: {
-                                    ShipppingID: res.data.ShippingID,
-                                    filterlist: filterlistdata,
-                                    type: "Shipment",
-                                    createDup: "1",
-                                    shipmentstatusList: shipmentstatusListData,
-                                    sortlist: sortPropsdata,
-                                  },
-                                });
-                                // window.location.reload();
-                              } else {
-                                this.state.successOpened = true;
-                              }
-      
-                              // cogoToast.success("Duplicated created Successfully. Tracking Number : " + res.data.data);
-                            } else {
-                              cogoToast.success("Updated Successfully");
-                            }
-                            if (this.state.MailDelivered === true) {
-                              this.setState({ MailOpenPopup: true });
-                            } else {
-                              this.setState({ MailOpenPopup: false });
-                            }
-                            if (objdata.shipments.ShippingID < 13071) {
-                              if (objdata.shipments.shipment_type == "Ocean") {
-                                var data = {
-                                  ShippingID: objdata.shipments.ShippingID,
-                                  Mode: "U",
-                                  shipStatus: objdata.shipments.ShipmentStatus,
-                                  pickupDate:
-                                    CommonConfig.isEmpty(this.state.PickupDate) !=
-                                    true
-                                      ? moment(this.state.PickupDate)
-                                          .format("YYYY-MM-DD")
-                                          .toString()
-                                      : null,
-                                  containerID: objdata.shipments.ContainerID,
-                                };
-      
-                                api
-                                  .post(
-                                    "scheduleshipment/tempautoOceanTracking",
-                                    data
-                                  )
-                                  .then((res) => {});
-                              }
-                            } else {
-                              if (objdata.shipments.shipment_type == "Ocean") {
-                                var data = {
-                                  ShippingID: objdata.shipments.ShippingID,
-                                  Mode: "U",
-                                  shipStatus: objdata.shipments.ShipmentStatus,
-                                  pickupDate:
-                                    CommonConfig.isEmpty(this.state.PickupDate) !=
-                                    true
-                                      ? moment(this.state.PickupDate)
-                                          .format("YYYY-MM-DD")
-                                          .toString()
-                                      : null,
-                                };
-      
-                                api
-                                  .post("scheduleshipment/autoOceanTracking", data)
-                                  .then((res) => {});
-                              }
-                            }
-      
-                            if (redirect) {
-                              this.setState({ redirect: true });
-                              if (this.state.MailDelivered == false) {
-                                if (this.state.isLock === false) {
-                                  console.log("1.......");
-                                  this.releaseLock();
-                                }
-                                this.props.history.push({
-                                  pathname: "/admin/ShipmentList",
-                                  state: {
-                                    filterlist:
-                                      this.props.history.location.state &&
-                                      this.props.history.location.state.filterlist !==
-                                        undefined
-                                        ? this.props.history.location.state.filterlist
-                                        : null,
-                                    shipmentstatusList:
-                                      this.props.history.location.state &&
-                                      this.props.history.location.state
-                                        .shipmentstatusList !== undefined
-                                        ? this.props.history.location.state
-                                            .shipmentstatusList
-                                        : [],
-                                    sortlist:
-                                      this.props.history.location.state &&
-                                      this.props.history.location.state.sortlist !==
-                                        undefined
-                                        ? this.props.history.location.state.sortlist
-                                        : null,
-                                    type:
-                                      this.props.history.location.state &&
-                                      this.props.history.location.state.type !==
-                                        undefined
-                                        ? this.props.history.location.state.type
-                                        : "Shipment",
-                                  },
-                                });
-                              }
-                            } else {
-                              this.setState(
-                                {
-                                  Attachments: this.state.Attachments.filter(
-                                    (x) => x.TrackingNumber
-                                  ),
-                                  AttachmentList: [],
-                                },
-                                function() {
-                                  this.reCallApi();
-                                }
-                              );
-                            }
-                          } else {
-                            const options = {
-                              hideAfter: 5,
-                            };
-      
-                            this.setState({
-                              isLock: true,
-                              lockMsg: res.data.message,
-                            });
-      
-                            if (
-                              res.data.message === "sequence number already in use"
-                            ) {
-                              cogoToast.error("Sequence number is already assigned");
-                              this.setState({
-                                isLock: false,
-                                lockMsg: res.data.message,
-                              });
-                              //this.reCallApi();
-                            } else {
-                              cogoToast.error(res.data.message, options);
-                            }
-                          }
-                        } else {
-                          console.log("Schedule Shipment is Not Created in else");
-      
-                          cogoToast.error(res.data.message);
-                        }
-                      })
-                      .catch((err) => {
-                        console.log("error...", err);
-                      });
-                  } catch (err) {
-                    console.log("error..", err);
-                  }
+              for (let index = 0; index < commercialData.length; index++) {
+                const element = commercialData[index];
+                if (
+                  commercialData[index].Status == "Inactive" &&
+                  commercialData[index].ShippingCommercialInvoiceID == null
+                ) {
                 } else {
-                  this.setState({ redirect: false });
-                  cogoToast.error(`Please enter valid details`);
-                  cogoToast.error("Please correct error and resubmit the form.");
+                  comList1.push(commercialData[index]);
+                }
+              }
+              commercialData = comList1;
+              console.log("commercialListin Loop = ", commercialData);
+
+              console.log(
+                "This.state.this.state.commercialList = ",
+                this.state.commercialList
+              );
+              let paymentInvoiceData = this.state.PaymentList.filter(
+                (x) =>
+                  (x.Status === "Inactive" && x.ShippingInvoiceID !== null) ||
+                  (x.Status === "Active" && x.ServiceDescription !== "")
+              );
+              let TrackingData = this.state.trackingNumberList.filter(
+                (x) =>
+                  (x.Status === "Inactive" && x.ShippingTrackingID !== null) ||
+                  (x.Status === "Active" && x.TrackingID !== "")
+              );
+              let ManualTrackingData = this.state.trackingManualList.filter(
+                (x) =>
+                  (x.Status === "Inactive" &&
+                    x.ShippingManualTrackingID !== null) ||
+                  (x.Status === "Active" && x.Updates !== "")
+              );
+              let paymentReceivedData = this.state.paymentReceived.filter(
+                (x) =>
+                  (x.Status === "Inactive" &&
+                    x.ShippingPaymentReceivedID !== null) ||
+                  (x.Status === "Active" && x.PaymentType !== "")
+              );
+              let paymentIssued = this.state.paymentIssued.filter(
+                (x) =>
+                  (x.Status === "Inactive" &&
+                    x.ShippingPaymentIssuedID !== null) ||
+                  (x.Status === "Active" && x.VendorName !== "")
+              );
+              let creditCardObj = this.state.creditCardList.filter(
+                (x) =>
+                  (x.Status === "Inactive" && x.PaymentID !== null) ||
+                  (x.Status === "Active" && x.CardName !== "")
+              );
+              let bankObj = this.state.bankList.filter(
+                (x) =>
+                  (x.Status === "Inactive" && x.PaymentID !== null) ||
+                  (x.Status === "Active" && x.NameonAccount !== "")
+              );
+              let packages_data = [];
+              let com_data = [];
+              var paymentdata = [];
+              if (scheduleobj === "Air" || scheduleobj === "Ground") {
+                if (this.state.PackageType === "Package") {
+                  for (var i = 0; i < packobj.length; i++) {
+                    let package_details = {};
+                    package_details = {
+                      shipments_tracking_number: "",
+                      PackageNumber: packobj[i].PackageNumber,
+                      package_number: packobj[i].Sequence,
+                      weight: packobj[i].EstimetedWeight,
+                      unit_of_weight: "LBS",
+                      length: packobj[i].Length,
+                      width: packobj[i].Width,
+                      height: packobj[i].Height,
+                      chargable_weight: packobj[i].ChargableWeight,
+                      insured_value: packobj[i].InsuredValue,
+                      Sequence: packobj[i].Sequence,
+                      PackageContent: packobj[i].PackageContent,
+                      PackedType: packobj[i].PackedType,
+                      Status: packobj[i].Status,
+                      TV: false,
+                      Stretch: false,
+                      Repack: false,
+                      Crating: false,
+                      PackageID: packobj[i].ShippingPackageDetailID,
+                    };
+                    packages_data.push(package_details);
+                  }
+                } else if (this.state.PackageType === "Envelop") {
+                  if (packobj.length > 1) {
+                    for (var j = 1; j < packobj.length; j++) {
+                      if (packobj[j].Status === "Inactive") {
+                        let package_details = {};
+                        package_details = {
+                          shipments_tracking_number: "",
+                          PackageNumber: packobj[j].PackageNumber,
+                          package_number: packobj[j].Sequence,
+                          weight: packobj[j].EstimetedWeight,
+                          unit_of_weight: "LBS",
+                          length: packobj[j].Length,
+                          width: packobj[j].Width,
+                          height: packobj[j].Height,
+                          chargable_weight: packobj[j].ChargableWeight,
+                          insured_value: packobj[j].InsuredValue,
+                          Sequence: packobj[j].Sequence,
+                          PackedType: packobj[j].PackedType,
+                          Status: packobj[j].Status,
+                          PackageContent: packobj[j].PackageContent,
+                          TV: false,
+                          Stretch: false,
+                          Repack: false,
+                          Crating: false,
+                          PackageID: packobj[j].ShippingPackageDetailID,
+                        };
+
+                        packages_data.push(package_details);
+                      }
+                    }
+                  }
+                  let package_details = {};
+                  package_details = {
+                    shipments_tracking_number: "",
+                    PackageNumber: packobj[0].PackageNumber,
+                    package_number: packobj[0].Sequence,
+                    weight: packobj[0].EstimetedWeight,
+                    unit_of_weight: "LBS",
+                    length: packobj[0].Length,
+                    width: packobj[0].Width,
+                    height: packobj[0].Height,
+                    chargable_weight: packobj[0].ChargableWeight,
+                    insured_value: packobj[0].InsuredValue,
+                    Sequence: packobj[0].Sequence,
+                    PackedType: packobj[0].PackedType,
+                    Status: packobj[0].Status,
+                    PackageContent: packobj[0].PackageContent,
+                    TV: false,
+                    Stretch: false,
+                    Repack: false,
+                    Crating: false,
+                    PackageID: packobj[0].ShippingPackageDetailID,
+                  };
+
+                  packages_data.push(package_details);
+                }
+              } else if (scheduleobj === "Ocean") {
+                if (this.state.PackageType === "Package") {
+                  for (var i = 0; i < packobj.length; i++) {
+                    let package_details = {};
+                    package_details = {
+                      shipments_tracking_number: "",
+                      PackageNumber: packobj[i].PackageNumber,
+                      package_number: packobj[i].Sequence,
+                      weight: packobj[i].EstimetedWeight,
+                      unit_of_weight: "LBS",
+                      length: packobj[i].Length,
+                      width: packobj[i].Width,
+                      height: packobj[i].Height,
+                      chargable_weight: packobj[i].ChargableWeight,
+                      insured_value: packobj[i].InsuredValue,
+                      Sequence: packobj[i].Sequence,
+                      Status: packobj[i].Status,
+                      TV: false,
+                      Stretch: false,
+                      Repack: false,
+                      Crating: false,
+                      PackageContent: packobj[i].PackageContent,
+                      PackedType: packobj[i].PackedType,
+                      CFT: packobj[i].CFT,
+                      PackageID: packobj[i].ShippingPackageDetailID,
+                    };
+                    packages_data.push(package_details);
+                  }
+                } else if (this.state.PackageType === "Envelop") {
+                  let package_details = {};
+                  package_details = {
+                    shipments_tracking_number: "",
+                    PackageNumber: packobj[0].PackageNumber,
+                    package_number: packobj[0].Sequence,
+                    weight: packobj[0].EstimetedWeight,
+                    unit_of_weight: "LBS",
+                    length: packobj[0].Length,
+                    width: packobj[0].Width,
+                    height: packobj[0].Height,
+                    chargable_weight: packobj[0].ChargableWeight,
+                    insured_value: parseFloat(packobj[0].InsuredValue).toFixed(
+                      2
+                    ),
+                    Sequence: packobj[0].Sequence,
+                    Status: packobj[0].Status,
+                    TV: false,
+                    Stretch: false,
+                    Repack: false,
+                    Crating: false,
+                    PackageContent: packobj[0].PackageContent,
+                    PackedType: packobj[0].PackedType,
+                    CFT: parseFloat(packobj[0].CFT).toFixed(2),
+                    PackageID: packobj[0].ShippingPackageDetailID,
+                  };
+
+                  packages_data.push(package_details);
+                }
+              }
+
+              var packages = packages_data;
+              for (var i = 0; i < commercialData.length; i++) {
+                let commercail_details = {};
+
+                if (commercialData[i].ShippingCommercialInvoiceID == null) {
+                  commercail_details = {
+                    shipments_tracking_number: "",
+                    package_number: commercialData[i].PackageNumber,
+                    content_description: commercialData[i].ContentDescription,
+                    // newipLocation: commercialData[i].ipLocation,
+                    quantity: commercialData[i].Quantity,
+                    value_per_qty: commercialData[i].ValuePerQuantity,
+                    total_value: commercialData[i].TotalValue,
+                    Status: commercialData[i].Status,
+                    NewUpdatedBy: commercialData[i].NewUpdateBy,
+                    CommercialInvoiceID:
+                      commercialData[i].ShippingCommercialInvoiceID,
+                  };
+                } else {
+                  if (commercialData[i].NewUpdateBy > 0) {
+                    commercail_details = {
+                      shipments_tracking_number: "",
+                      package_number: commercialData[i].PackageNumber,
+                      content_description: commercialData[i].ContentDescription,
+                      // newipLocation: commercialData[i].ipLocation,
+                      quantity: commercialData[i].Quantity,
+                      value_per_qty: commercialData[i].ValuePerQuantity,
+                      total_value: commercialData[i].TotalValue,
+                      Status: commercialData[i].Status,
+                      NewUpdatedBy: commercialData[i].NewUpdateBy,
+                      CommercialInvoiceID:
+                        commercialData[i].ShippingCommercialInvoiceID,
+                    };
+                  } else {
+                    commercail_details = {
+                      shipments_tracking_number: "",
+                      package_number: commercialData[i].PackageNumber,
+                      content_description: commercialData[i].ContentDescription,
+                      // newipLocation: commercialData[i].ipLocation,
+                      quantity: commercialData[i].Quantity,
+                      value_per_qty: commercialData[i].ValuePerQuantity,
+                      total_value: commercialData[i].TotalValue,
+                      Status: commercialData[i].Status,
+                      NewUpdatedBy: commercialData[i].UpdatedBy,
+                      CommercialInvoiceID:
+                        commercialData[i].ShippingCommercialInvoiceID,
+                    };
+                  }
+                }
+
+                com_data.push(commercail_details);
+              }
+              var commercial = com_data;
+              var shipments = {
+                tracking_number: "",
+                shipment_type: scheduleobj,
+                location_type: this.state.LocationType,
+                is_pickup: !CommonConfig.isEmpty(this.state.IsPickup.data)
+                  ? this.state.IsPickup.data[0] === 0
+                    ? false
+                    : true
+                  : this.state.IsPickup,
+                ShipmentStatus: this.state.ShipmentStatus,
+                pickup_date:
+                  CommonConfig.isEmpty(this.state.PickupDate) != true
+                    ? // ? momentTimezone(this.state.PickupDate)
+                      //     .tz(CommonConfig.UStimezone)
+                      //     .format("YYYY-MM-DD HH:mm:ss")
+                      //     .toString()
+                      moment(this.state.PickupDate)
+                        .format("YYYY-MM-DD HH:mm:ss")
+                        .toString()
+                    : null,
+                ReadyTime: this.state.ReadyTime,
+                AvailableTime: this.state.AvailableTime,
+                SpecialInstucation: this.state.NotesforPickup,
+                pickupProvider: !CommonConfig.isEmpty(
+                  this.state.PickupVendorName.value
+                )
+                  ? this.state.PickupVendorName.value
+                  : null,
+                package_type: !CommonConfig.isEmpty(packobj)
+                  ? this.state.PackageType
+                  : "",
+                total_packages: packobj.filter((x) => x.Status === "Active")
+                  .length,
+                ContainerID: !CommonConfig.isEmpty(
+                  this.state.ContainerName.value
+                )
+                  ? this.state.ContainerName.value
+                  : null,
+                promo_code: "",
+                is_agree: "",
+                total_weight: !CommonConfig.isEmpty(senderobj)
+                  ? senderobj.TotalWeight
+                  : 0,
+                total_chargable_weight: !CommonConfig.isEmpty(
+                  this.state.totalChargableWeight
+                )
+                  ? this.state.totalChargableWeight
+                  : 0.0,
+                total_insured_value: !CommonConfig.isEmpty(
+                  this.state.totalInsuredValue
+                )
+                  ? this.state.totalInsuredValue
+                  : 0.0,
+                duties_paid_by: this.state.DutiesPaidBy,
+                total_declared_value: !CommonConfig.isEmpty(senderobj)
+                  ? senderobj.TotalDeclaredValue
+                  : 0,
+                userName: CommonConfig.loggedInUserData().LoginID,
+                InvoiceDueDate:
+                  CommonConfig.isEmpty(this.state.InvoiceDueDate) != true
+                    ? moment(this.state.InvoiceDueDate)
+                        .format("YYYY-MM-DD HH:mm:ss")
+                        .toString()
+                    : null,
+                managed_by: this.state.ManagedBy.value,
+                ServiceName: this.state.ServiceName
+                  ? this.state.ServiceName.value
+                  : "",
+                SubServiceName: this.state.SubServiceName
+                  ? this.state.SubServiceName.value
+                  : "",
+                PersonID: this.state.PersonID,
+                IsPackageAccess: this.state.IsPackageAccess,
+                ShippingID:
+                  this.props.location.state &&
+                  this.props.location.state.ShipppingID
+                    ? this.props.location.state.ShipppingID
+                    : null,
+              };
+
+              var from_address = {
+                AddressID: senderobj.FromAddressID,
+                country_id: this.state.selectedFromCountry.value,
+                country_name: this.state.selectedFromCountry.label,
+                company_name: this.state.FromCompanyName,
+                contact_name: this.state.FromContactName,
+                address_1: this.state.FromAddressLine1,
+                address_2: this.state.FromAddressLine2,
+                address_3: this.state.FromAddressLine3,
+                MovingBack: CommonConfig.isEmpty(
+                  this.state.FromMovingBack.value
+                )
+                  ? this.state.FromMovingBack
+                  : this.state.FromMovingBack.value,
+                OriginalPassportAvailable: CommonConfig.isEmpty(
+                  this.state.FromOriginalPassortAvailable.value
+                )
+                  ? this.state.FromOriginalPassortAvailable
+                  : this.state.FromOriginalPassortAvailable.value,
+                EligibleForTR: CommonConfig.isEmpty(
+                  this.state.FromEligibleForTR.value
+                )
+                  ? this.state.FromEligibleForTR
+                  : this.state.FromEligibleForTR.value,
+                city_id: 1,
+                city_name: CommonConfig.isEmpty(this.state.fromCity.value)
+                  ? this.state.fromCity
+                  : this.state.fromCity.value,
+                state_id: 1,
+                fedex_city: senderobj.FedexCity,
+                //state_name: this.state.FromAddressObj.AddressDetail.State,
+                state_name: this.state.fromState.value
+                  ? this.state.fromState.value
+                  : this.state.fromState.label == ""
+                  ? ""
+                  : this.state.fromState,
+                zip_code: this.state.FromZipCode,
+                phone1: this.state.FromPhone1,
+                phone2: this.state.FromPhone2,
+                email: this.state.FromEmail,
+              };
+              var to_address = {
+                AddressID: recipientobj.ToAddressID,
+                country_id: this.state.selectedToCountry.value,
+                country_name: this.state.selectedToCountry.label,
+                company_name: this.state.ToCompanyName,
+                contact_name: this.state.ToContactName,
+                address_1: this.state.ToAddressLine1,
+                address_2: this.state.ToAddressLine2,
+                address_3: this.state.ToAddressLine3,
+                city_id: 2,
+                city_name: CommonConfig.isEmpty(this.state.toCity.value)
+                  ? this.state.toCity
+                  : this.state.toCity.value,
+                state_id: 1,
+                fedex_city: recipientobj.FedexCity,
+                // state_name: this.state.ToAddressObj.AddressDetail.State,
+                state_name: this.state.toState.value
+                  ? this.state.toState.value
+                  : this.state.toState.value == ""
+                  ? ""
+                  : this.state.toState,
+                zip_code: this.state.ToZipCode,
+                phone1: this.state.ToPhone1,
+                phone2: this.state.ToPhone2,
+                email: this.state.ToEmail,
+              };
+              for (var j = 0; j < bankObj.length; j++) {
+                let paymentData = {};
+                paymentData = {
+                  PaymentID: bankObj[j]["PaymentID"],
+                  PaymentType: bankObj[j]["PaymentType"],
+                  name_on_card: bankObj[j]["CardName"],
+                  card_number: bankObj[j]["CardNumber"],
+                  card_type: bankObj[j]["CardType"],
+                  expiration_month: bankObj[j]["CardExpiryMonth"],
+                  expiration_year: bankObj[j]["CardExpiryYear"],
+                  cvv_code: bankObj[j]["CardCVV"],
+                  zip_code: bankObj[j]["CardZipCode"],
+                  PaymentStatus: bankObj[j]["PaymentStatus"],
+                  name_on_bank_account: bankObj[j]["NameonAccount"],
+                  bank_name: bankObj[j]["BankName"],
+                  account_number: bankObj[j]["AccountNumber"],
+                  routing_number: bankObj[j]["RoutingNumber"],
+                  Status: bankObj[j]["Status"],
+                  InvoiceAmount: bankObj[j]["InvoiceAmount"],
+                  DatePaid: bankObj[j]["PaidDate"],
+                };
+
+                paymentdata.push(paymentData);
+              }
+              console.log("pppppp", this.state.paymentIssued);
+              for (var j = 0; j < creditCardObj.length; j++) {
+                let paymentData = {};
+                paymentData = {
+                  PaymentID: creditCardObj[j]["PaymentID"],
+                  PaymentType: creditCardObj[j]["PaymentType"],
+                  name_on_card: creditCardObj[j]["CardName"],
+                  card_number: creditCardObj[j]["CardNumber"],
+                  card_type: creditCardObj[j]["CardType"],
+                  expiration_month: creditCardObj[j]["CardExpiryMonth"],
+                  expiration_year: creditCardObj[j]["CardExpiryYear"],
+                  cvv_code: creditCardObj[j]["CardCVV"],
+                  PaymentStatus: creditCardObj[j]["PaymentStatus"],
+                  zip_code: creditCardObj[j]["CardZipCode"],
+                  name_on_bank_account: creditCardObj[j]["NameonAccount"],
+                  bank_name: creditCardObj[j]["BankName"],
+                  account_number: creditCardObj[j]["AccountNumber"],
+                  routing_number: creditCardObj[j]["RoutingNumber"],
+                  Status: creditCardObj[j]["Status"],
+                  InvoiceAmount: creditCardObj[j]["InvoiceAmount"],
+                  DatePaid: creditCardObj[j]["PaidDate"],
+                };
+
+                paymentdata.push(paymentData);
+              }
+
+              var FinalNotes = this.state.notes.filter(
+                (x) => x.NoteText !== "" && x.NoteText !== null
+              );
+              var finalAttachment = [];
+
+              for (var i = 0; i < this.state.Attachments.length; i++) {
+                if (
+                  !this.state.Attachments[i].hasOwnProperty("TrackingNumber")
+                ) {
+                  if (
+                    this.state.Attachments[i].hasOwnProperty("AttachmentName")
+                  ) {
+                    finalAttachment.push(this.state.Attachments[i]);
+                  }
+                }
+              }
+
+              var objdata = {};
+              if (this.state.IsChanged) {
+                objdata = {
+                  UserID: CommonConfig.loggedInUserData().PersonID,
+                  TrackingNumber: this.state.TrackingNumber,
+                  shipments: shipments,
+                  MovingBackToIndia: this.state.movingBackIndia,
+                  trackingData: TrackingData,
+                  from_address: from_address,
+                  to_address: to_address,
+                  PaymentData: paymentdata,
+                  manualTrackingData: ManualTrackingData,
+                  packages: packages,
+                  commercial: commercial,
+                  Notes: FinalNotes,
+                  invoiceData: paymentInvoiceData,
+                  paymentReceivedData: paymentReceivedData,
+                  paymentIssued: paymentIssued,
+                  TotalCommercialvalue: "",
+                  DocumentList: finalAttachment,
+                  previousAllClear: this.state.previousAllClear,
+                  setPreviousAllClear: this.state.setPreviousAllClear.value,
+                  setNewAllClear: this.state.AllClear.value,
+                  AllClear:
+                    this.state.AllClear.value === "Not Ready"
+                      ? null
+                      : this.state.AllClear.value === "Ready for Yes"
+                      ? 3
+                      : this.state.AllClear.value === "Collections" // ? "Ready for Yes"
+                      ? 4
+                      : this.state.AllClear.value === "No"
+                      ? 0
+                      : 1,
+                  Amount: this.state.TotalCostReceived,
+                };
+                if (
+                  objdata.AllClear === "Yes" &&
+                  this.state.useraccess.userModuleAccess[15].ModuleID === 18 &&
+                  this.state.useraccess.userModuleAccess[15].WriteAccess ===
+                    1 &&
+                  this.state.useraccess.userModuleAccess[15].DeleteAccess === 1
+                ) {
+                  this.setState({ IsChanged: false });
                 }
               } else {
-                let saveClicked = this.state.saveClicked;
-                saveClicked.saveClick = true;
-                //  saveClicked.redirect = redirect;
-                this.setState({ IsAESOpen: true, saveClicked: saveClicked });
+                objdata = {
+                  UserID: CommonConfig.loggedInUserData().PersonID,
+                  TrackingNumber: this.state.TrackingNumber,
+                  shipments: shipments,
+                  trackingData: TrackingData,
+                  MovingBackToIndia: this.state.movingBackIndia,
+                  from_address: from_address,
+                  to_address: to_address,
+                  PaymentData: paymentdata,
+                  manualTrackingData: ManualTrackingData,
+                  packages: packages,
+                  commercial: commercial,
+                  Notes: FinalNotes,
+                  invoiceData: paymentInvoiceData,
+                  paymentReceivedData: paymentReceivedData,
+                  paymentIssued: paymentIssued,
+                  TotalCommercialvalue: "",
+                  DocumentList: finalAttachment,
+                };
+              }
+
+              debugger;
+              if (this.state.UserAdditionalDetailsID > 0) {
+                objdata.UserAdditionalData = {
+                  NameAsPerPassport: this.state.NameAsPerPassport,
+                  PassportNumber: this.state.PassportNumber,
+                  YearsOutsideIndia: this.state.YearsOutsideIndia,
+                  UserAdditionalDetailsID: this.state.UserAdditionalDetailsID,
+                  StayInIndia: this.state.StayInIndia,
+                  LatestArrivalDate: this.state.LatestArrivalDate
+                    ? moment(this.state.LatestArrivalDate)
+                        .format(CommonConfig.dateFormat.dbDateTime)
+                        .toString()
+                    : null,
+                  AppliedForTR: this.state.AppliedForTR,
+                  AbleToProvidePassport: this.state.AbleToProvidePassport,
+                  VisaValidDate: this.state.VisaValidDate
+                    ? moment(this.state.VisaValidDate)
+                        .format(CommonConfig.dateFormat.dbDateTime)
+                        .toString()
+                    : null,
+                  VisaCategory: this.state.VisaCategory,
+                  CustomClearanceDate:
+                    CommonConfig.isEmpty(this.state.CustomClearanceDate) != true
+                      ? moment(this.state.CustomClearanceDate)
+                          .format("YYYY-MM-DD HH:mm:ss")
+                          .toString()
+                      : null,
+                };
+              }
+
+              console.log("pppppp111", objdata.manualTrackingData);
+              if (this.state.createDuplicate == "1") {
+                if (objdata.shipments.shipment_type == "Ocean") {
+                  objdata.UserAdditionalData = {
+                    NameAsPerPassport: "",
+                    PassportNumber: "",
+                    YearsOutsideIndia: "",
+                    UserAdditionalDetailsID: null,
+                    StayInIndia: "",
+                    LatestArrivalDate: null,
+                    AppliedForTR: "",
+                    AbleToProvidePassport: "",
+                    VisaValidDate: null,
+                    VisaCategory: "",
+                    CustomClearanceDate: null,
+                    isBackIndia: "No",
+                    movingBackIndia: "No",
+                    AbleToProvidePassport: "No",
+                  };
+                }
+                var todayDate = new Date();
+                const note1 = {
+                  NoteText:
+                    "Shipment is duplicate created by Tracking No: " +
+                    objdata.TrackingNumber,
+                  NoteType: null,
+                  NoteTitle: null,
+                  Status: "Active",
+                  AttachmentID: null,
+                  AttachmentType: null,
+                  AttachmentName: null,
+                  CreatedOn: moment(todayDate).format(
+                    CommonConfig.dateFormat.dateTime
+                  ),
+                  disabled: false,
+                  closebutton: true,
+                  CreatedBy: CommonConfig.loggedInUserData().PersonID,
+                  NoteID: null,
+                  CreatedByNote: CommonConfig.loggedInUserData().Name,
+                  AddedBy: CommonConfig.loggedInUserData().Name,
+                  Index: 1,
+                };
+                let NoteDate = [];
+                NoteDate.push(note1);
+                objdata.Notes = NoteDate;
+                objdata.TrackingNumber = null;
+                objdata.shipments.ShippingID = null;
+                objdata.from_address.AddressID = null;
+                objdata.to_address.AddressID = null;
+                objdata.shipments.ServiceName = "";
+                objdata.shipments.SubServiceName = "";
+                objdata.manualTrackingData = [];
+                objdata.trackingData = [];
+                delete objdata.shipments.ShipmentStatus;
+                delete objdata.shipments.ContainerID;
+                delete objdata.shipments.pickupProvider;
+                // objdata.UserAdditionalData = [];
+
+                debugger;
+
+                if (this.state.PackageType === "Package") {
+                  objdata.commercial = [];
+                } else {
+                  for (var i = 0; i < commercial.length; i++) {
+                    delete commercial[i].CommercialInvoiceID;
+                  }
+                  objdata.commercial = commercial;
+                }
+                // objdata.Notes = []
+                objdata.invoiceData = [];
+                objdata.paymentReceivedData = [];
+                objdata.paymentIssued = [];
+                objdata.TotalCommercialvalue = "";
+                objdata.DocumentList = [];
+
+                console.log(objdata.PaymentData);
+                if (objdata.PaymentData.length == 0) {
+                  var payment_online1 = {
+                    PaymentID: null,
+                    name_on_card: "",
+                    card_number: "",
+                    card_type: "",
+                    expiration_month: "",
+                    expiration_year: "",
+                    cvv_code: "",
+                    zip_code: "",
+                    name_on_bank_account: "",
+                    bank_name: "",
+                    account_number: "",
+                    routing_number: "",
+                    InvoiceAmount: 0.0,
+                  };
+
+                  let Paymentdata = [];
+                  Paymentdata.push(payment_online1);
+                  objdata.PaymentData = Paymentdata;
+                } else {
+                  for (
+                    let index = 0;
+                    index < objdata.PaymentData.length;
+                    index++
+                  ) {
+                    objdata.PaymentData[index].PaymentID = null;
+                  }
+                }
+                console.log(objdata.PaymentData);
+                if (objdata.shipments.shipment_type == "Ocean") {
+                  objdata.packages = [];
+                } else {
+                  if (objdata.packages.length > 0) {
+                    for (
+                      let index = 0;
+                      index < objdata.packages.length;
+                      index++
+                    ) {
+                      objdata.packages[index].PackageID = null;
+                    }
+                  }
+                }
+              }
+              var bankCount = 0;
+              debugger;
+              if (objdata.PaymentData) {
+                for (i = 0; i < objdata.PaymentData.length; i++) {
+                  if (objdata.PaymentData[i].Status == "Active") {
+                    if (objdata.PaymentData[i].card_number != "") {
+                      let letter = objdata.PaymentData[i].card_number.charAt(0);
+
+                      var Cardlengths = 0;
+                      if (letter == "2" || letter == "5" || letter == "4") {
+                        Cardlengths = 16;
+                      }
+                      if (letter == "3") {
+                        Cardlengths = 15;
+                      }
+                      if (
+                        objdata.PaymentData[i].card_number.length < Cardlengths
+                      ) {
+                        bankCount = 1;
+                        cogoToast.error(
+                          "Please enter valid credit card number"
+                        );
+                        return;
+                      }
+                    }
+                  }
+                }
+              }
+
+              console.log("objdata = ", objdata);
+              var formData = new FormData();
+              formData.append("data", JSON.stringify(objdata));
+              if (this.state.AttachmentList.length > 0) {
+                this.state.AttachmentList.forEach((file) => {
+                  formData.append("Attachments", file);
+                });
+              }
+
+              this.showLoader();
+              try {
+                api
+                  .post("scheduleshipment/addshipments", formData)
+                  .then((res) => {
+                    this.hideLoader();
+                    if (res.success) {
+                      if (res.data.success === true) {
+                        if (this.state.createDuplicate == "1") {
+                          if (objdata.shipments.shipment_type == "Ocean") {
+                            var data = {
+                              ShippingID: res.data.ShippingID,
+                              Mode: "I",
+                              shipStatus: "",
+                              pickupDate: "",
+                            };
+
+                            api
+                              .post("scheduleshipment/autoOceanTracking", data)
+                              .then((res) => {
+                                console.log(res);
+                              });
+                          }
+
+                          this.state.createDuplicate = "0";
+                          this.state.createopen = false;
+                          this.state.dupTracking = res.data.data;
+                          if (this.state.setDupLicate == true) {
+                            const { history } = this.props;
+
+                            debugger;
+                            var sortPropsdata = [
+                              {
+                                desc: true,
+                                id: "ShipmentDate",
+                              },
+                            ];
+                            var filterlistdata = [];
+
+                            var shipmentstatusListData = [
+                              {
+                                label: "New Request",
+                                value: "New Request",
+                              },
+                            ];
+
+                            console.log(
+                              "this.state.sortProps = ",
+                              sortPropsdata
+                            );
+                            console.log(
+                              "this.state.shipmentstatusList = ",
+                              shipmentstatusListData
+                            );
+
+                            history.push({
+                              pathname: "ShipmentNew",
+                              state: {
+                                ShipppingID: res.data.ShippingID,
+                                filterlist: filterlistdata,
+                                type: "Shipment",
+                                createDup: "1",
+                                shipmentstatusList: shipmentstatusListData,
+                                sortlist: sortPropsdata,
+                              },
+                            });
+                            // window.location.reload();
+                          } else {
+                            this.state.successOpened = true;
+                          }
+
+                          // cogoToast.success("Duplicated created Successfully. Tracking Number : " + res.data.data);
+                        } else {
+                          cogoToast.success("Updated Successfully");
+                        }
+                        if (this.state.MailDelivered === true) {
+                          this.setState({ MailOpenPopup: true });
+                        } else {
+                          this.setState({ MailOpenPopup: false });
+                        }
+                        if (objdata.shipments.ShippingID < 13071) {
+                          if (objdata.shipments.shipment_type == "Ocean") {
+                            var data = {
+                              ShippingID: objdata.shipments.ShippingID,
+                              Mode: "U",
+                              shipStatus: objdata.shipments.ShipmentStatus,
+                              pickupDate:
+                                CommonConfig.isEmpty(this.state.PickupDate) !=
+                                true
+                                  ? moment(this.state.PickupDate)
+                                      .format("YYYY-MM-DD")
+                                      .toString()
+                                  : null,
+                              containerID: objdata.shipments.ContainerID,
+                            };
+
+                            api
+                              .post(
+                                "scheduleshipment/tempautoOceanTracking",
+                                data
+                              )
+                              .then((res) => {});
+                          }
+                        } else {
+                          if (objdata.shipments.shipment_type == "Ocean") {
+                            var data = {
+                              ShippingID: objdata.shipments.ShippingID,
+                              Mode: "U",
+                              shipStatus: objdata.shipments.ShipmentStatus,
+                              pickupDate:
+                                CommonConfig.isEmpty(this.state.PickupDate) !=
+                                true
+                                  ? moment(this.state.PickupDate)
+                                      .format("YYYY-MM-DD")
+                                      .toString()
+                                  : null,
+                            };
+
+                            api
+                              .post("scheduleshipment/autoOceanTracking", data)
+                              .then((res) => {});
+                          }
+                        }
+
+                        if (redirect) {
+                          this.setState({ redirect: true });
+                          if (this.state.MailDelivered == false) {
+                            if (this.state.isLock === false) {
+                              console.log("1.......");
+                              this.releaseLock();
+                            }
+                            this.props.history.push({
+                              pathname: "/admin/ShipmentList",
+                              state: {
+                                filterlist:
+                                  this.props.history.location.state &&
+                                  this.props.history.location.state
+                                    .filterlist !== undefined
+                                    ? this.props.history.location.state
+                                        .filterlist
+                                    : null,
+                                shipmentstatusList:
+                                  this.props.history.location.state &&
+                                  this.props.history.location.state
+                                    .shipmentstatusList !== undefined
+                                    ? this.props.history.location.state
+                                        .shipmentstatusList
+                                    : [],
+                                sortlist:
+                                  this.props.history.location.state &&
+                                  this.props.history.location.state.sortlist !==
+                                    undefined
+                                    ? this.props.history.location.state.sortlist
+                                    : null,
+                                type:
+                                  this.props.history.location.state &&
+                                  this.props.history.location.state.type !==
+                                    undefined
+                                    ? this.props.history.location.state.type
+                                    : "Shipment",
+                              },
+                            });
+                          }
+                        } else {
+                          this.setState(
+                            {
+                              Attachments: this.state.Attachments.filter(
+                                (x) => x.TrackingNumber
+                              ),
+                              AttachmentList: [],
+                            },
+                            function() {
+                              this.reCallApi();
+                            }
+                          );
+                        }
+                      } else {
+                        const options = {
+                          hideAfter: 5,
+                        };
+
+                        this.setState({
+                          isLock: true,
+                          lockMsg: res.data.message,
+                        });
+
+                        if (
+                          res.data.message === "sequence number already in use"
+                        ) {
+                          cogoToast.error(
+                            "Sequence number is already assigned"
+                          );
+                          this.setState({
+                            isLock: false,
+                            lockMsg: res.data.message,
+                          });
+                          //this.reCallApi();
+                        } else {
+                          cogoToast.error(res.data.message, options);
+                        }
+                      }
+                    } else {
+                      console.log("Schedule Shipment is Not Created in else");
+
+                      cogoToast.error(res.data.message);
+                    }
+                  })
+                  .catch((err) => {
+                    console.log("error...", err);
+                  });
+              } catch (err) {
+                console.log("error..", err);
               }
             } else {
               this.setState({ redirect: false });
               cogoToast.error(`Please enter valid details`);
+              cogoToast.error("Please correct error and resubmit the form.");
             }
-          }      
+          } else {
+            let saveClicked = this.state.saveClicked;
+            saveClicked.saveClick = true;
+            //  saveClicked.redirect = redirect;
+            this.setState({ IsAESOpen: true, saveClicked: saveClicked });
+          }
+        } else {
+          this.setState({ redirect: false });
+          cogoToast.error(`Please enter valid details`);
+        }
+      }
     }
-
 
     // }
   };
 
- 
-  releaseLockIndividual = () =>{
+  releaseLockIndividual = () => {
     this.showLoader();
 
     let data = {
@@ -10790,8 +10898,7 @@ class ShipmentCustom extends React.Component {
         this.hideLoader();
         console.log("setLock err", err);
       });
-
-  }
+  };
 
   async releaseLock() {
     let data = {
@@ -10852,34 +10959,27 @@ class ShipmentCustom extends React.Component {
     } else if (type === "DutiesPaidBy") {
       this.setState({ DutiesPaidBy: event.target.value });
     } else if (type === "ShipmentStatus") {
-
-      if(event.target.value == "Cancelled"){
-        if(this.state.AllClearYes == false){
+      if (event.target.value == "Cancelled") {
+        if (this.state.AllClearYes == false) {
           cogoToast.error("Please open accounts tab to move to cancel");
-        }else{
-            if(this.state.TotalCostInvoice !=
-              this.state.TotalCostReceived.toFixed(2)){
-
-                cogoToast.error("Invoice and Payment Received does not match");
-              }else{
-                this.setState({ ShipmentStatus: event.target.value });
-
-              }
-
+        } else {
+          if (
+            this.state.TotalCostInvoice !=
+            this.state.TotalCostReceived.toFixed(2)
+          ) {
+            cogoToast.error("Invoice and Payment Received does not match");
+          } else {
+            this.setState({ ShipmentStatus: event.target.value });
+          }
         }
-
-      }else{
-
+      } else {
         if (event.target.value === "Delivered") {
           this.setState({ MailDelivered: true });
         } else {
           this.setState({ MailDelivered: false });
         }
         this.setState({ ShipmentStatus: event.target.value });
-
       }
-
-      
     }
   };
 
@@ -11388,16 +11488,16 @@ class ShipmentCustom extends React.Component {
     try {
       var labelSize = localStorage.getItem("selectedPaperSize");
 
-      var fCountry = 0
+      var fCountry = 0;
 
-      if(this.state.selectedFromCountry.value === 89){
-        fCountry = 89
-      }else if(this.state.selectedFromCountry.value === 202){
-        fCountry = 202
-      }else if(this.state.selectedFromCountry.value === 37){
-        fCountry = 37
-      }else{
-        fCountry = 0
+      if (this.state.selectedFromCountry.value === 89) {
+        fCountry = 89;
+      } else if (this.state.selectedFromCountry.value === 202) {
+        fCountry = 202;
+      } else if (this.state.selectedFromCountry.value === 37) {
+        fCountry = 37;
+      } else {
+        fCountry = 0;
       }
 
       var data = {
@@ -11406,7 +11506,7 @@ class ShipmentCustom extends React.Component {
         UserID: CommonConfig.loggedInUserData().PersonID,
         LabelSpecification: labelSize,
         EtdDocumentId: this.state.EtdDocumentId,
-        fCountry:fCountry
+        fCountry: fCountry,
       };
       console.log(";;;;;;;;;", this.state.PackageList);
 
@@ -11717,8 +11817,8 @@ class ShipmentCustom extends React.Component {
   };
 
   GenrateHBL = () => {
-    localStorage.setItem("CustomerName",this.state.FromContactName)
-    localStorage.setItem("TrackingNumber",this.state.TrackingNumber)
+    localStorage.setItem("CustomerName", this.state.FromContactName);
+    localStorage.setItem("TrackingNumber", this.state.TrackingNumber);
 
     var TOadd1 = this.state.ToAddressLine1;
     var TOadd2 = this.state.ToAddressLine2;
@@ -11734,9 +11834,16 @@ class ShipmentCustom extends React.Component {
     if (TOadd3 != "") {
       TOAddress = TOAddress + ", " + TOadd3;
     }
-    TOAddress = TOAddress + ", " + this.state.toCity+ ", " + this.state.toState.label + " - " + this.state.ToZipCode
+    TOAddress =
+      TOAddress +
+      ", " +
+      this.state.toCity +
+      ", " +
+      this.state.toState.label +
+      " - " +
+      this.state.ToZipCode;
 
-    console.log("TOAddress= ",TOAddress)
+    console.log("TOAddress= ", TOAddress);
 
     var fromadd1 = this.state.FromAddressLine1;
     var fromadd2 = this.state.FromAddressLine2;
@@ -11752,35 +11859,37 @@ class ShipmentCustom extends React.Component {
     if (fromadd3 != "") {
       FromAddress = FromAddress + ", " + fromadd3;
     }
-    FromAddress = FromAddress + ", " + this.state.fromCity+ ", " + this.state.fromState.label + " - " + this.state.FromZipCode
-    console.log(FromAddress)
+    FromAddress =
+      FromAddress +
+      ", " +
+      this.state.fromCity +
+      ", " +
+      this.state.fromState.label +
+      " - " +
+      this.state.FromZipCode;
+    console.log(FromAddress);
 
-    localStorage.setItem("FromAddress",FromAddress)
-    localStorage.setItem("TOAddress",TOAddress)
+    localStorage.setItem("FromAddress", FromAddress);
+    localStorage.setItem("TOAddress", TOAddress);
 
+    console.log("this.state.", this.state.commercialList);
+    console.log("this.state.", this.state.PackageList);
+    var newcom = this.state.commercialList;
 
-
-    console.log("this.state.",this.state.commercialList);
-    console.log("this.state.",this.state.PackageList);
-    var newcom = this.state.commercialList
-
-    for(var i = 0; i < this.state.PackageList.length; i++){
+    for (var i = 0; i < this.state.PackageList.length; i++) {
       for (let index = 0; index < newcom.length; index++) {
-        if(this.state.PackageList[i].PackageNumber == newcom[index].PackageNumber){
-          newcom[index].packedType = this.state.PackageList[i].PackedType
+        if (
+          this.state.PackageList[i].PackageNumber == newcom[index].PackageNumber
+        ) {
+          newcom[index].packedType = this.state.PackageList[i].PackedType;
         }
-        
       }
     }
-    console.log("newcom = ",newcom)
+    console.log("newcom = ", newcom);
 
+    localStorage.setItem("TableData", JSON.stringify(newcom));
 
-    localStorage.setItem("TableData",JSON.stringify(newcom))
-
-    window.open(
-      window.location.origin + "/auth/HHNInvoice",
-      "_blank"
-    );
+    window.open(window.location.origin + "/auth/HHNInvoice", "_blank");
   };
   HselectChange = (event, value) => {
     if (value === "BookingNumber") {
@@ -11859,8 +11968,8 @@ class ShipmentCustom extends React.Component {
     } else if (value === "company") {
       this.setState({ company: event.target.value });
     } else if (value === "description") {
-      if(CommonConfig.regexp.exceptCirilic.test(event.target.value))
-      this.setState({ description: event.target.value });
+      if (CommonConfig.regexp.exceptCirilic.test(event.target.value))
+        this.setState({ description: event.target.value });
     } else if (value === "PackageNumber") {
       this.setState({ PackageNumber: event.target.value });
     } else if (value === "WEIGHT") {
@@ -11876,6 +11985,9 @@ class ShipmentCustom extends React.Component {
       const { Range_Data } = service;
       return Range_Data;
     });
+  };
+  showAllClearData = () => {
+    this.setState({ isallclearopen: true });
   };
   GetHBLdetails = (input) => {
     try {
@@ -12145,6 +12257,7 @@ class ShipmentCustom extends React.Component {
   };
   render() {
     const {
+      allCleardatachange,
       AllClear,
       TrackingNumber,
       ManagedBy,
@@ -12222,6 +12335,50 @@ class ShipmentCustom extends React.Component {
       FMCnumber,
     } = this.state;
 
+    const KeywordListData = [
+      {
+        Header: "Previous AllClear",
+        accessor: "PreviousAllClear",
+        width: 150,
+      },
+
+      {
+        Header: "Update AllClear",
+        accessor: "NewAllClear",
+        width: 150,
+      },
+
+      {
+        Header: "Updated On",
+        accessor: "CreatedOn",
+        width: 120,
+      },
+
+      {
+        Header: "Updated By",
+        accessor: "Name",
+        width: 100,
+      },
+      // {
+      //   Header:"",
+      //   headerClassName:"allclear-header",
+      //   className:"allclear-header",
+      //   Cell: (record) => {
+      //     return (
+      //       <div className="table-common-btn allclear-btn">
+      //         <Button
+      //           justIcon
+      //           color="info"
+      //           // onClick={() => this.editShipment(record)}
+      //         >
+      //           <i className="fas fa-edit"></i>
+      //         </Button>
+      //       </div>
+      //     );
+      //   },
+      // },
+    ];
+
     const shipmentType = this.state.shipmentTypeList.map((type) => {
       return { value: type.Description, label: type.Description };
     });
@@ -12291,7 +12448,6 @@ class ShipmentCustom extends React.Component {
       return { value: city.CityCode, label: city.CityName };
     });
 
-   
     const columns = [
       {
         Header: "Document Type",
@@ -12366,9 +12522,8 @@ class ShipmentCustom extends React.Component {
               ) : record.original.DocumentType === "HHG Inventory" &&
                 // (CommonConfig.loggedInUserData().PersonID == 1 ||
                 //   CommonConfig.loggedInUserData().PersonID == 18) &&
-                (this.state.ShipmentType.value === "Ocean") ? (
+                this.state.ShipmentType.value === "Ocean" ? (
                 <Button
-                  
                   className="normal-btn sm-orange"
                   onClick={() => this.GenrateHBL()}
                 >
@@ -12548,7 +12703,9 @@ class ShipmentCustom extends React.Component {
                   justIcon
                   color="danger"
                   className="Plus-btn"
-                  onClick={(e) => this.handleDocumentDeletePopup(e, record.original)}
+                  onClick={(e) =>
+                    this.handleDocumentDeletePopup(e, record.original)
+                  }
                 >
                   <i className={"fas fa-minus"} />
                 </Button>
@@ -12818,6 +12975,7 @@ class ShipmentCustom extends React.Component {
                 <h4 className="margin-right-auto text-color-black">
                   Shipment Information : {TrackingNumber}
                 </h4>
+                
               </CardHeader>
               <CardBody>
                 <GridContainer>
@@ -12850,52 +13008,69 @@ class ShipmentCustom extends React.Component {
                     </div>
                   </GridItem>
                   <GridItem xs={12} sm={4} md={3}>
-                    {/* // <GridItem xs={12} sm={3} md={3}> */}
-                    {(this.state.AllClear.value === "Yes" ||
-                      this.state.AllClear.value === "Collections") &&
-                    (this.state.useraccess.userModuleAccess[15].ModuleID ===
-                      18 &&
-                      this.state.useraccess.userModuleAccess[15].WriteAccess ===
-                        1 &&
-                      this.state.useraccess.userModuleAccess[15]
-                        .DeleteAccess === 0) ? (
-                      <CustomInput
-                        labelText="All Clear"
-                        id="proposaltype"
-                        formControlProps={{
-                          fullWidth: true,
-                        }}
-                        ReadOnly
-                        inputProps={{
-                          value: this.state.AllClear.value,
-                        }}
-                      />
-                    ) : (
-                      <Autocomplete
-                        id="combo-box-demo"
-                        options={allclearlist}
-                        value={AllClear}
-                        // disabled={viewAllClear === false ? false : true}
-                        // disabled={
-                        //   AllClear === "Yes" &&
-                        //   this.state.useraccess.userModuleAccess[15].ModuleID ===
-                        //     18 &&
-                        //   this.state.useraccess.userModuleAccess[15]
-                        //     .WriteAccess === 1 &&
-                        //   this.state.useraccess.userModuleAccess[15]
-                        //     .DeleteAccess === 0
-                        //     ? false
-                        //     : true
-                        // }
-                        onChange={(event, value) =>
-                          this.selectChange(event, value, "AllClear")
-                        }
-                        getOptionLabel={(option) => option.label}
-                        renderInput={(params) => (
-                          <TextField {...params} label="All Clear" />
+                    <GridContainer>
+                      <GridItem xs={12} sm={10} md={10}>
+                        {(this.state.AllClear.value === "Yes" ||
+                          this.state.AllClear.value === "Collections") &&
+                        (this.state.useraccess.userModuleAccess[15].ModuleID ===
+                          18 &&
+                          this.state.useraccess.userModuleAccess[15]
+                            .WriteAccess === 1 &&
+                          this.state.useraccess.userModuleAccess[15]
+                            .DeleteAccess === 0) ? (
+                          <CustomInput
+                            labelText="All Clear"
+                            id="proposaltype"
+                            formControlProps={{
+                              fullWidth: true,
+                            }}
+                            ReadOnly
+                            inputProps={{
+                              value: this.state.AllClear.value,
+                            }}
+                          />
+                        ) : (
+                          <Autocomplete
+                            id="combo-box-demo"
+                            options={allclearlist}
+                            value={AllClear}
+                            // disabled={viewAllClear === false ? false : true}
+                            // disabled={
+                            //   AllClear === "Yes" &&
+                            //   this.state.useraccess.userModuleAccess[15].ModuleID ===
+                            //     18 &&
+                            //   this.state.useraccess.userModuleAccess[15]
+                            //     .WriteAccess === 1 &&
+                            //   this.state.useraccess.userModuleAccess[15]
+                            //     .DeleteAccess === 0
+                            //     ? false
+                            //     : true
+                            // }
+                            onChange={(event, value) =>
+                              this.selectChange(event, value, "AllClear")
+                            }
+                            getOptionLabel={(option) => option.label}
+                            renderInput={(params) => (
+                              <TextField {...params} label="All Clear" />
+                            )}
+                          />
                         )}
-                      />
-                    )}
+                      </GridItem>
+                      <GridItem xs={12} sm={2} md={2}>
+                        {/* <GridItem xs={12} sm={1} md={3}> */}
+                        <Button
+                          className="Plus-btn info-icon allclear-button"
+                          justIcon
+                          color="twitter"
+                          onClick={() => this.showAllClearData()}
+                        >
+                          <InfoIcon />
+                        </Button>
+
+                        {/* </GridItem> */}
+                      </GridItem>
+                    </GridContainer>
+                    {/* // <GridItem xs={12} sm={3} md={3}> */}
                   </GridItem>
 
                   {/* <div className="select-spl">
@@ -15103,25 +15278,18 @@ class ShipmentCustom extends React.Component {
                           Open
                         </Button>
                       ) : null}
-
-                   
                     </div>
 
                     <div style={{ textAlign: "right", marginTop: "12px" }}>
-
-                      {this.state.ShipmentType.value == "Ocean" ?(
-
-                            <Button
-                            onClick={() =>
-                              this.showDivUrl()
-                            }
-                            style={{ width: "70px", height: "20px" }}
-                            color="primary"
-                            >
-                            Send Url
-                            </Button>
-
-                      ):null}
+                      {this.state.ShipmentType.value == "Ocean" ? (
+                        <Button
+                          onClick={() => this.showDivUrl()}
+                          style={{ width: "70px", height: "20px" }}
+                          color="primary"
+                        >
+                          Send Url
+                        </Button>
+                      ) : null}
                     </div>
                   </CardHeader>
                   <CardBody className="shipment-cardbody">
@@ -15910,10 +16078,8 @@ class ShipmentCustom extends React.Component {
           </Dialog>
         </div>
 
-        
         {/* Delete Popup for attachment */}
 
-          
         <div>
           <Dialog
             open={this.state.deletedocument}
@@ -15936,14 +16102,14 @@ class ShipmentCustom extends React.Component {
               {/* {this.state.Access.DeleteAccess === 1 ? */}
 
               <Button
-                onClick={() => this.handleDocumentDelete(this.state.deletedocsdata)}
+                onClick={() =>
+                  this.handleDocumentDelete(this.state.deletedocsdata)
+                }
                 color="primary"
                 autoFocus
               >
                 Delete
               </Button>
-
-              
 
               {/* :null} */}
             </DialogActions>
@@ -15951,7 +16117,6 @@ class ShipmentCustom extends React.Component {
         </div>
 
         {/* End */}
-
 
         {/* Diplicate Popup */}
 
@@ -16636,22 +16801,23 @@ class ShipmentCustom extends React.Component {
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
           >
-            <DialogTitle id="alert-dialog-title">
-              {"Generate URL"}
-            </DialogTitle>
+            <DialogTitle id="alert-dialog-title">{"Generate URL"}</DialogTitle>
             <DialogContent>
               <DialogContentText id="alert-dialog-description">
                 Commercial Invoice URL for Users
-                <p>https://hub.sflworldwide.com/auth/CommercialInvoice/{this.state.EncShippingID}</p>
+                <p>
+                  https://hub.sflworldwide.com/auth/CommercialInvoice/
+                  {this.state.EncShippingID}
+                </p>
               </DialogContentText>
             </DialogContent>
             <DialogActions>
-              <Button  onClick={() =>
-                  this.setState({ encOpen: false })
-                } color="primary">
+              <Button
+                onClick={() => this.setState({ encOpen: false })}
+                color="primary"
+              >
                 Close
               </Button>
-             
             </DialogActions>
           </Dialog>
         </div>
@@ -16700,59 +16866,94 @@ class ShipmentCustom extends React.Component {
             </DialogTitle>
             <DialogContent>
               <DialogContentText id="alert-dialog-description">
-                
-              <div className="package-table">
-                    <table>
-                      <thead>
-                        <tr>
-                          <th>Type</th>
-                          <th>Name</th>
-                          <th>Date</th>
-                        </tr>
-                      </thead>
-                      <tbody>
+                <div className="package-table">
+                  <table>
+                    <thead>
                       <tr>
-                    <td>
-                        Created By
-                    </td>
-                    <td>
-                        <span id = "CreatedName">{this.state.ComCreatedName}</span>
-                    </td>
-                    <td>
-                        <span id = "CreatedDate">{this.state.ComCreatedDate}</span>
-                    </td>
-                    
-                  </tr>
+                        <th>Type</th>
+                        <th>Name</th>
+                        <th>Date</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Created By</td>
+                        <td>
+                          <span id="CreatedName">
+                            {this.state.ComCreatedName}
+                          </span>
+                        </td>
+                        <td>
+                          <span id="CreatedDate">
+                            {this.state.ComCreatedDate}
+                          </span>
+                        </td>
+                      </tr>
 
-                  <tr>
-                    <td>
-                        Last Updated By
-                    </td>
-                    <td>
-                    <span id = "UpdatedName">{this.state.ComUpdatedName}</span>
-                    </td>
-                    <td>
-                      <span id = "UpdatedDate">{this.state.ComUpdatedDate}</span>
-                    </td>
-                  </tr>
-                      </tbody>
-                    </table>
-                  </div>
-
-                
-               
+                      <tr>
+                        <td>Last Updated By</td>
+                        <td>
+                          <span id="UpdatedName">
+                            {this.state.ComUpdatedName}
+                          </span>
+                        </td>
+                        <td>
+                          <span id="UpdatedDate">
+                            {this.state.ComUpdatedDate}
+                          </span>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
               </DialogContentText>
             </DialogContent>
             <DialogActions>
               <Button
-                onClick={() =>
-                  this.setState({ CommercialPopup: false })
-                }
+                onClick={() => this.setState({ CommercialPopup: false })}
                 color="secondary"
               >
                 Cancel
               </Button>
-             
+            </DialogActions>
+          </Dialog>
+        </div>
+
+        <div>
+          <Dialog
+            open={this.state.isallclearopen}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <DialogTitle id="alert-dialog-title">
+              {/* Commercial Invoice Information */}
+              AllClear Report
+            </DialogTitle>
+            <DialogContent>
+              <DialogContentText id="alert-dialog-description">
+                <div className="shipment-pane" id="keywordnotfound">
+                  <ReactTable
+                    data={allCleardatachange}
+                    minRows={0}
+                    filterable
+                    textAlign={"left"}
+                    defaultFilterMethod={CommonConfig.filterCaseInsensitive}
+                    resizable={false}
+                    columns={KeywordListData}
+                    defaultPageSize={10}
+                    showPaginationBottom={true}
+                    className="-striped -highlight chatMgtList1 Allclear-table"
+                  />
+                </div>
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button
+                onClick={() => this.setState({ isallclearopen: false })}
+                color="secondary"
+              >
+                Cancel
+              </Button>
             </DialogActions>
           </Dialog>
         </div>
@@ -17401,18 +17602,19 @@ class ShipmentCustom extends React.Component {
             >
               Duplicate
             </Button>
-            {this.state.isLock == true ?(
-                this.state.userLockinAllAccess == 1 || this.state.ManagedBy.value == CommonConfig.loggedInUserData().PersonID ?(
-                  <Button
-                    justify="center"
-                    color="primary"
-                    onClick={() => this.releaseLockIndividual()}
-                  >
-                    Release
-                  </Button>
-                ):null
-                
-            ):null} 
+            {this.state.isLock == true ? (
+              this.state.userLockinAllAccess == 1 ||
+              this.state.ManagedBy.value ==
+                CommonConfig.loggedInUserData().PersonID ? (
+                <Button
+                  justify="center"
+                  color="primary"
+                  onClick={() => this.releaseLockIndividual()}
+                >
+                  Release
+                </Button>
+              ) : null
+            ) : null}
           </div>
           <div className="center">
             {this.props.history.location.state &&
