@@ -118,11 +118,13 @@ class ManageProjects extends Component {
       ProjectID: "",
       ResourceProjectList: [],
       ResourceList: [],
+      ResourceID:"",
+      ResourceName:"",
       FinalResourceList: [],
-      StartDate:"",
+      StartDate:moment(Date()).startOf('month').format(CommonConfig.dateFormat.dateOnly),
       StartDateErr: false,
       StartDateHelperText: "",
-      EndDate:"",
+      EndDate:moment(Date()).endOf('year').format(CommonConfig.dateFormat.dateOnly),
       EndDateErr: false,
       EndDateHelperText: "",
       NewServiceName: "",
@@ -130,7 +132,7 @@ class ManageProjects extends Component {
       NewServiceNameErr: false,
       NewServiceNameHelperText: "",
       NewServiceType: "",
-      ResourceID:"",
+      
       DeleteOption:"",
       tabKey:0,
     };
@@ -140,6 +142,7 @@ class ManageProjects extends Component {
     await this.getProjectList();
     await this.getServiceList();
     await this.getResourceList();
+    //this.handleDateChange(this.state.StartDate, "StartDate")
     this.showHide();
     this.setState({ Access: CommonConfig.getUserAccess("User Management") });
     this.setState({
@@ -628,7 +631,7 @@ class ManageProjects extends Component {
       },
     });
   };
-  handleDelete = (recordType,record) => {
+  handleDelete = (recordType,record) => {debugger
     if(recordType =="Project"){
       if(record!=""){
         console.log(record);
@@ -714,16 +717,16 @@ class ManageProjects extends Component {
       cogoToast.error("Sorry you don't have access to delete this");
     }
   }
-}
   else
   {
    // var newArray = this.state.FinalServiceList.filter((index) => index.ServiceID !== "");
    // this.setState({FinalServiceList:newArray});
     this.closedeletemodalKeyword();
   }
+}
   };
 
-  handleDeleteResource = (record) => {
+  handleDeleteResource = (record) => {debugger
     if(record!=""){
     var data = {
       ServiceResourceID:record
@@ -1367,7 +1370,7 @@ class ManageProjects extends Component {
         StartDate:""
       };
       this.setState({
-        ProjectServiceResourceList: [...this.state.ProjectServiceResourceList, objAttachment],ResourceName:"",ResourceID:"",StartDate:"",EndDate:""
+        ProjectServiceResourceList: [...this.state.ProjectServiceResourceList, objAttachment],ResourceName:"",ResourceID:"",StartDate:moment(Date()).startOf('month').format(CommonConfig.dateFormat.dateOnly),EndDate:moment(Date()).endOf('year').format(CommonConfig.dateFormat.dateOnly)
       });
     } else {
       cogoToast.error("Please fill above row first");
@@ -1542,10 +1545,10 @@ class ManageProjects extends Component {
       {
         Header: "Service Name",
         accessor: "ServiceName",
-        width: 150,
+        width: 250,
         filterable: true,
         sortable: true,
-        maxWidth: 150,
+        maxWidth: 250,
         Cell: (record) => {
           return (
             <div>
@@ -1593,10 +1596,10 @@ class ManageProjects extends Component {
       {
         Header: "Resource Name",
         accessor: "ResourceName",
-        width: 150,
+        width: 225,
         filterable: true,
         sortable: true,
-        maxWidth: 150,
+        maxWidth: 225,
         Cell: (record) => {
           return (
             <div>
@@ -1647,7 +1650,7 @@ class ManageProjects extends Component {
         className:"date-ps",
         filterable: true,
         sortable: true,
-        width: 100,
+        width: 150,
         maxWidth: 150,
         Cell: (record) => {
           return (
@@ -1661,8 +1664,6 @@ class ManageProjects extends Component {
                   <Datetime
                     dateFormat={"MM/DD/YYYY"}
                     timeFormat={false}
-                    startDate={"08/01/2024"}
-                    selected={this.state.StartDate}
                     value={this.state.StartDate}
                     inputProps={{ placeholder: "Start Date" }}
                     onChange={(date) =>
@@ -1700,7 +1701,7 @@ class ManageProjects extends Component {
         className:"date-ps",
         filterable: true,
         sortable: true,
-        width: 100,
+        width: 150,
         maxWidth: 150,
         Cell: (record) => {
           return (
@@ -1750,23 +1751,12 @@ class ManageProjects extends Component {
         Header: "Actions",
         accessor: "Actions",
         align: "left",
-        width: 80,
-        maxWidth: 80,
+        width: 200,
+        maxWidth: 200,
         filterable: false,
         Cell: (record) => {
           return (
-            <div className="table-common-btn">
-             
-                {CommonConfig.getUserAccess("Project Management").DeleteAccess ===
-                1 ? (
-                  <Button   justIcon   color="danger" >
-                     <DeleteIcon
-                        onClick={(e) => this.openDeleteRequestModalKeyword(e,record.original.ServiceResourceID,"ResourceAllocation")}
-                      />
-                  </Button>
-                 
-                ) : null}
-             
+            <div className="table-common-btn">             
                 {this.state.ProjectServiceResourceList.length == record.index+1?(
              
                   record.original.ResourceID !="" ?(
@@ -1793,7 +1783,16 @@ class ManageProjects extends Component {
                   </Button>
                  )
                 ):null
-        }
+                }
+                 {CommonConfig.getUserAccess("Project Management").DeleteAccess ===
+                1 ? (
+                  <Button   justIcon   color="danger" >
+                     <DeleteIcon
+                        onClick={(e) => this.openDeleteRequestModalKeyword(e,record.original.ServiceResourceID,"ResourceAllocation")}
+                      />
+                  </Button>
+                 
+                ) : null}
             </div>
           )
         },
@@ -1807,10 +1806,10 @@ class ManageProjects extends Component {
       {
         Header: "Service Name",
         accessor: "ServiceName",
-        width: 300,
+        width: 275,
         filterable: true,
         sortable: true,
-        maxWidth: 300,
+        maxWidth: 275,
       },
       {
         Header: "Service Type",
@@ -1825,15 +1824,15 @@ class ManageProjects extends Component {
         accessor: "Status",
         filterable: true,
         sortable: true,
-        width: 300,
-        maxWidth: 300,
+        width: 325,
+        maxWidth: 325,
       },
       {
         Header: "Actions",
         accessor: "actions",
         sortable: false,
-        width: 150,
-        maxWidth: 150,
+        width: 200,
+        maxWidth: 200,
         Cell: (record) => {
           return (
             <div className="table-common-btn">
@@ -1934,8 +1933,8 @@ class ManageProjects extends Component {
       {
         Header: "Service Name",
         accessor: "ServiceName",
-        width: 300,
-        maxWidth: 300,
+        width: 930,
+        maxWidth: 930,
         Cell: (record) => {
           return (
             <div>
@@ -1981,7 +1980,7 @@ class ManageProjects extends Component {
       },
  
       {
-        width: 200,
+        width: 250,
         filterable: false,
         sortable: false,
         Header: "Actions",
@@ -1989,13 +1988,7 @@ class ManageProjects extends Component {
           return (
             <div className="table-common-btn">
              
-                {this.state.Access.DeleteAccess === 1 ? (
-                  <Button   justIcon   color="danger" >
-                    <DeleteIcon
-                      onClick={(e) => this.openDeleteRequestModalKeyword(e,record.original.ServiceID,"ServiceAllocation")}
-                    />
-                  </Button>
-                ) : null}
+               
              
               {this.state.FinalServiceList.filter((x) => x.AlreadySelected === true).length === record.index + 1 ? (
                 
@@ -2025,6 +2018,14 @@ class ManageProjects extends Component {
                 )):null
                 ) : null
               }
+
+                {this.state.Access.DeleteAccess === 1 ? (
+                  <Button   justIcon   color="danger" >
+                    <DeleteIcon
+                      onClick={(e) => this.openDeleteRequestModalKeyword(e,record.original.ServiceID,"ServiceAllocation")}
+                    />
+                  </Button>
+                ) : null}
             </div>
           )
         },
@@ -2327,7 +2328,7 @@ class ManageProjects extends Component {
                 columns={column3}
                 defaultFilterMethod={CommonConfig.filterCaseInsensitive}
                 showPaginationBottom={true}
-                className="-striped -highlight "
+                className="-striped -highlight table-height"
 
               />
                       </CardBody>
@@ -2359,7 +2360,7 @@ class ManageProjects extends Component {
                         </Button>
                         <Button
                           onClick={() =>
-                           this.state.DeleteOption==="ServiceAllocation"?
+                           this.state.DeleteOption==="ResourceAllocation"?
                             this.handleDeleteResource(this.state.DeleteRequestIdKeyword):this.handleDelete(this.state.DeleteOption,this.state.DeleteRequestIdKeyword)
                           }
                           color="primary"

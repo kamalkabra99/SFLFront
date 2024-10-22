@@ -61,7 +61,7 @@ class ProjectAllocation extends Component {
       WeekDayFirst:"1",
       WeekDayLast:"7",
       WeekDateFirst:"",
-      ResourceID:CommonConfig.loggedInUserData().PersonID,
+     
       TotalDay1:0,
       TotalDay2:0,
       TotalDay3:0,
@@ -69,10 +69,19 @@ class ProjectAllocation extends Component {
       TotalDay5:0,
       TotalDay6:0,
       TotalDay7:0,
+      ResourceList: [],
+      ResourceID:CommonConfig.loggedInUserData().PersonID,
+      ResourceName:{"label":CommonConfig.loggedInUserData().Name,"value":CommonConfig.loggedInUserData().PersonID},
+      ResourceNameCheck:"",
+      ResourceNameErr: false,
+      ResourceNameHelperText: "",
+      FinalResourceList:[],
     };
   }
-  componentDidMount() {
+  async componentDidMount() {
 
+console.log("this.state.ResourceName",this.state.ResourceName);
+    await this.getResourceList();
     this.setState({
       AllAccess: CommonConfig.getUserAccess("Call Back").AllAccess,
     });
@@ -147,7 +156,7 @@ class ProjectAllocation extends Component {
           this.setState({
             TimeAllocationList: data
           });
-          
+          e.target.focus();
   }
   showLoador = () => {
     this.setState({ Loading: true });
@@ -259,16 +268,16 @@ class ProjectAllocation extends Component {
               
             } else {
               this.hideLoador();
-              cogoToast.error("Something went wrong1");
+              cogoToast.error("Something went wrong1 TA");
             }
           })
           .catch((err) => {
             this.hideLoador();
-            cogoToast.error("Something went wrong2");
+            cogoToast.error("Something went wrong2 TA");
           });
       } catch (err) {
         this.hideLoador();
-        cogoToast.error("Something Went Wrong3");
+        cogoToast.error("Something Went Wrong3 TA");
       }
    
   }
@@ -340,7 +349,42 @@ class ProjectAllocation extends Component {
       }
     
   };
+  handleChangeResource = (event, value, type) => {
+    debugger
+ if (type === "ResourceName") {
+      this.setState({ ResourceNameCheck: true });
 
+      //   let Val = value.label;
+      if (value == null || value == "") {
+        console.log("value = ", value)
+      
+          this.setState({
+            ResourceName: [],
+            ResourceID: "",
+            ResourceNameErr: true,
+            ResourceNameHelperText: "Please Select Resource Name",
+          });
+        } else {
+          var selectData = {
+            label: value.label,
+            value: value.value
+          }
+          this.setState({
+            ResourceName: selectData,
+            ResourceID: value.value,
+            ResourceNameErr: false,
+            ResourceNameHelperText: "",
+          });
+
+          console.log("ResourceName = ", this.state.ResourceName);
+          //this.getServicesByProject(value.value);
+          this.getTimeAllocationList(value.value,moment(this.state.WeekDate)
+          .format(CommonConfig.dateFormat.dbDateOnly)
+          .toString())
+        }
+      
+    }
+  };
 
   filterMethod = (event, value) => {
     //let value = this.state.checkdata;
@@ -486,7 +530,34 @@ class ProjectAllocation extends Component {
     }
     return "";
   };
+  getResourceList() {
+    debugger
+    try {
+      this.showLoador();
+      api
+        .post("projectManagement/getResourceList")
+        .then((result) => {
+          if (result.success) {
+            this.hideLoador();
 
+            this.setState({ ResourceList: result.message, FinalResourceList: result.message });
+
+
+
+          } else {
+            this.hideLoador();
+            cogoToast.error("Something went wrong1 Re");
+          }
+        })
+        .catch((err) => {
+          this.hideLoador();
+          cogoToast.error("Something went wrong2");
+        });
+    } catch (err) {
+      this.hideLoador();
+      cogoToast.error("Something Went Wrong3");
+    }
+  }
   renderInputMethod = (params) => {
     // if(params.InputProps.startAdornment)
     // {
@@ -546,7 +617,7 @@ let WeekDateFirst = this.state.WeekDate1;
       Cell: (record) => {
         return (
           <div className="default-input">
-            {record.original.ProjectName !="Total"?
+            {record.original.ProjectName !="Total" && CommonConfig.getUserAccess("Project Management").WriteAccess === 1?
             <input
               type="text"
               name={"Day"+record.original.ProjectID+record.original.ServiceID+i}
@@ -554,6 +625,7 @@ let WeekDateFirst = this.state.WeekDate1;
               onChange={(event) =>
                 this.handledInput(event, record.original.ServiceID, record.original.ProjectID, "Day"+i)
               }
+              
               // onBlur={(e) =>
               //   this.handleBlur(e, record.original.ServiceID, record.original.MarkupType, "Markup")
               // }
@@ -587,10 +659,13 @@ handleDateChange = (date, type) => {
     .toString());
   }
 };
+
   render() {
     const { TimeAllocationList } = this.state;
     const column =  this.getColumns();
-    
+    const resourceList = this.state.FinalResourceList.map((type) => {
+      return { value: type.ResourceID, label: type.ResourceName };
+    });
     return (
       <GridContainer className="UserList-outer">
         {this.state.Loading === true ? (
@@ -605,9 +680,39 @@ handleDateChange = (date, type) => {
                 <PhoneCallback />
               </CardIcon>
               <h4 className="margin-right-auto text-color-black">Project Allocation </h4>
-
-              
               <div className="filter-datepicker">
+                {CommonConfig.getUserAccess("Project Management").ReadAccess === 1 || CommonConfig.getUserAccess("Project Management").WriteAccess === 1 ||CommonConfig.getUserAccess("Project Management").AllAccess === 1?
+                  <Autocomplete
+                    id="ResourceName"
+                    options={resourceList}
+                    getOptionLabel={(option) => option.label}
+                    value={this.state.ResourceName}
+                    onChange={(event, value) =>
+                      this.handleChangeResource(event, value, "ResourceName")
+                    }
+                    // onFocus={() =>
+                    //   this.setState({
+                    //     ServiceNameErr: false,
+                    //     ServiceNameCheck: "",
+                    //   })
+                    // }
+                    renderInput={(params1) => (
+                      <TextField
+                        {...params1}
+                        label="Resource Name"
+                        error={""}
+                        helperText={
+                          ""
+                        }
+                        margin="normal"
+                        fullWidth
+                      />
+                    )}
+                  />
+                    :null
+                  }
+              
+              
               
               <div className="tbl-datepicker1">
 
