@@ -38,6 +38,7 @@ import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import Datetime from "react-datetime";
+import ProjectAllocation from "./ProjectAllocation";
 
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
@@ -67,6 +68,11 @@ class ManageProjects extends Component {
         {
           stepName: "Resource Allocation",
           stepId: "ResourceAllocation",
+          classname: "inactive",
+        },
+        {
+          stepName: "Project Allocation Report",
+          stepId: "ProjectAllocationReport",
           classname: "inactive",
         },
       ],
@@ -120,6 +126,8 @@ class ManageProjects extends Component {
       ResourceList: [],
       ResourceID:"",
       ResourceName:"",
+      ReportResourceID:"",
+      ReportResourceName:"",
       FinalResourceList: [],
       StartDate:moment(Date()).startOf('month').format(CommonConfig.dateFormat.dateOnly),
       StartDateErr: false,
@@ -127,12 +135,28 @@ class ManageProjects extends Component {
       EndDate:moment(Date()).endOf('year').format(CommonConfig.dateFormat.dateOnly),
       EndDateErr: false,
       EndDateHelperText: "",
+      ReportStartDate:"",
+      ReportStartDateErr: false,
+      ReportStartDateHelperText: "",
+      ReportEndDate:"",
+      ReportEndDateErr: false,
+      ReportEndDateHelperText: "",
+      ReportProjectName: "",
+      ReportProjectID: "",
+      ReportProjectNameErr:false,
+      ReportProjectNameHelperText: "",
+      ReportProjectNameCheck:"",
+      ReportServiceID: "",
+      ReportServiceName: "",
+      ReportServiceNameErr: "",
+      ReportServiceNameHelperText:"",
+      ReportServiceNameCheck:"",
       NewServiceName: "",
       NewServiceID: "",
       NewServiceNameErr: false,
       NewServiceNameHelperText: "",
       NewServiceType: "",
-      
+      ReportResourceList:[],
       DeleteOption:"",
       tabKey:0,
     };
@@ -585,6 +609,7 @@ class ManageProjects extends Component {
     document.getElementById("ServiceMaster").style.display = "none";
     document.getElementById("ServiceAllocation").style.display = "none";
     document.getElementById("ResourceAllocation").style.display = "none";
+    document.getElementById("ProjectAllocationReport").style.display = "none";
   }
 
   selectChange = (event, value, type) => {
@@ -739,7 +764,7 @@ class ManageProjects extends Component {
         if (res.message.data[0][0].DeleteRes == 0)
           cogoToast.error("This Resource of Project is used somewhere");
         else
-        this.getResourceByProject(this.state.ResourceProjectID, "");
+        this.getResourceByProject(this.state.ResourceProjectID, "","");
         this.setState({ResourceName:"",ResourceID:""})
         this.closedeletemodalKeyword();
 
@@ -821,7 +846,7 @@ class ManageProjects extends Component {
           ResourceServiceNameHelperText: "Please Select Service Name",
           ResourceServiceType: "",
         });
-        this.getResourceByProject(this.state.ResourceProjectID, "");
+        this.getResourceByProject(this.state.ResourceProjectID, "","");
       } else {
         if (value != null && value != "") {
           let serviceType = this.state.ServiceList.filter(
@@ -841,7 +866,7 @@ class ManageProjects extends Component {
             ResourceServiceNameHelperText: "",
             ResourceServiceType: serviceType[0].ServiceType,
           });
-          this.getResourceByProject(this.state.ResourceProjectID, value.value);
+          this.getResourceByProject(this.state.ResourceProjectID, value.value,"");
         }
 
       }
@@ -876,7 +901,114 @@ class ManageProjects extends Component {
 
           console.log("ProjectName = ", this.state.ResourceProjectName);
           this.getServicesByProject(value.value);
-        this.getResourceByProject(value.value, "");
+        this.getResourceByProject(value.value, "","");
+        }
+      
+    }
+   else if (type === "ReportServiceName") {
+    this.setState({ ReportServiceNameCheck: true });
+    let ServiceNameVal = value != null && value != "" ? value.label : "";
+    if (ServiceNameVal === "" || ServiceNameVal === null) {
+      this.setState({
+        ReportServiceName: ServiceNameVal,
+        ReportServiceID: "",
+        ReportServiceNameErr: true,
+        ReportServiceNameHelperText: "Please Select Service Name",
+        ReportServiceType: "",
+      });
+      this.getResourceByProject(this.state.ReportProjectID, "","");
+      this.getProjectAllocationReport(this.state.ReportProjectID,0,this.state.ReportResourceID,this.state.ReportStartDate,this.state.ReportEndDate);
+    } else {
+      if (value != null && value != "") {
+        let serviceType = this.state.ServiceList.filter(
+          (x) =>
+            x.ServiceID === value.value
+        );
+
+        var selectData = {
+          label: ServiceNameVal,
+          value: value.value
+        }
+
+        this.setState({
+          ReporterviceName: selectData,
+          ReportServiceID: value.value,
+          ReportServiceNameErr: false,
+          ReportServiceNameHelperText: "",
+          ReportServiceType: serviceType[0].ServiceType,
+        });
+        this.getResourceByProject(this.state.ReportProjectID, value.value,"ProjectAllocationReport");
+        this.getProjectAllocationReport(this.state.ReportProjectID,value.value,this.state.ReportResourceID,this.state.ReportStartDate,this.state.ReportEndDate);
+      }
+
+    }
+
+  } 
+    else if (type === "ReportProjectName") {
+      this.setState({ ReportProjectNameCheck: true });
+
+      //   let Val = value.label;
+      if (value == null || value == "") {
+        console.log("value = ", value)
+       // if (value.label === "" && value.label === null) {
+          this.setState({
+            ReportProjectName: [],
+            ReportProjectID: "",
+            ReportProjectNameErr: true,
+            ReportProjectNameHelperText: "Please Select Project Name",
+          });
+          this.setState({ ProjectServiceList: [] });
+          this.setState({ ProjectServiceResourceList: []});
+          this.getProjectAllocationReport(0,this.state.ReportServiceID,this.state.ReportResourceID,this.state.ReportStartDate,this.state.ReportEndDate);
+      // } 
+      }else {
+          var selectData = {
+            label: value.label,
+            value: value.value
+          }
+          this.setState({
+            ReportProjectName: selectData,
+            ReportProjectID: value.value,
+            ReportProjectNameErr: false,
+            ReportProjectNameHelperText: "",
+          });
+
+          console.log("ProjectName = ", this.state.ReportProjectName);
+          this.getServicesByProject(value.value);
+        this.getResourceByProject(value.value, "","ProjectAllocationReport");
+        this.getProjectAllocationReport(value.value,this.state.ReportServiceID,this.state.ReportResourceID,this.state.ReportStartDate,this.state.ReportEndDate);
+        }
+      
+    }
+    else if (type === "ReportResourceName") {
+      this.setState({ ReportResourceNameCheck: true });
+
+      //   let Val = value.label;
+      if (value == null || value == "") {
+        console.log("value = ", value)
+      
+          this.setState({
+            ReportResourceName: [],
+            ReportResourceID: "",
+            ReportResourceNameErr: true,
+            ReportResourceNameHelperText: "Please Select Resource Name",
+          });
+          this.getProjectAllocationReport(this.state.ReportProjectID,this.state.ReportServiceID,0,this.state.ReportStartDate,this.state.ReportEndDate);
+        } else {
+          var selectData = {
+            label: value.label,
+            value: value.value
+          }
+          this.setState({
+            ReportResourceName: selectData,
+            ReportResourceID: value.value,
+            ReportResourceNameErr: false,
+            ReportResourceNameHelperText: "",
+          });
+
+          console.log("ResourceName = ", this.state.ReportResourceName);
+          //this.getServicesByProject(value.value);
+          this.getProjectAllocationReport(this.state.ReportProjectID,this.state.ReportServiceID,value.value,this.state.ReportStartDate,this.state.ReportEndDate);
         }
       
     }
@@ -977,6 +1109,46 @@ class ManageProjects extends Component {
     }
     }
   };
+
+  getProjectAllocationReport(ProjectID,ServiceID,ResourceID,StartDate,EndDate) {
+    debugger
+   
+      let data = {"ProjectID" :ProjectID===0?0:ProjectID,
+        "ServiceID" :ServiceID ===""?0:ServiceID,
+        "ResourceID" :ResourceID===""?0:ResourceID,
+        "StartDate":CommonConfig.isEmpty(StartDate)?"":moment(StartDate).format(CommonConfig.dateFormat.dbDateOnly).toString(),
+        "EndDate":CommonConfig.isEmpty(EndDate)?"":moment(EndDate).format(CommonConfig.dateFormat.dbDateOnly).toString(),
+      };
+
+        //data.StatusQuery = whereClause;
+
+      try {
+        this.showLoador();
+        api
+          .post("projectManagement/getProjectAllocationReport", data)
+          .then((result) => {
+            if (result.success) {
+              this.hideLoador();
+             
+                this.setState({ ReportProjectAllocationList: result.message[0] });
+              
+              
+            } else {
+              this.hideLoador();
+              cogoToast.error("Something went wrong1 TA");
+            }
+          })
+          .catch((err) => {
+            this.hideLoador();
+            cogoToast.error("Something went wrong2 TA");
+          });
+      } catch (err) {
+        this.hideLoador();
+        cogoToast.error("Something Went Wrong3 TA");
+      }
+   
+  }
+
   getServicesByProject(ProjectID) {
     debugger
     try {
@@ -1120,7 +1292,7 @@ class ManageProjects extends Component {
         }
         this.setState({ ResourceProjectName: selectData, ResourceProjectID: value.value });
         this.getServicesByProject(value.value);
-        this.getResourceByProject(value.value, "");
+        this.getResourceByProject(value.value, "","");
       }
       else
         if (type === "ServiceName") {
@@ -1129,13 +1301,13 @@ class ManageProjects extends Component {
             value: value.value
           }
           this.setState({ ResourceServiceName: selectData, ResourceServiceID: value.value });
-          this.getResourceByProject(this.state.ResourceProjectID, value.value);
+          this.getResourceByProject(this.state.ResourceProjectID, value.value,"");
 
         }
     }
     else {
       if (this.state.ResourceProjectID != "" && this.state.ResourceProjectID != undefined)
-        this.getResourceByProject(this.state.ResourceProjectID, value);
+        this.getResourceByProject(this.state.ResourceProjectID, value,"");
     }
   };
   
@@ -1306,7 +1478,7 @@ class ManageProjects extends Component {
             // } else {
             //   window.location.reload();
             // }
-            this.getResourceByProject(this.state.ResourceProjectID, "");
+            this.getResourceByProject(this.state.ResourceProjectID, "","");
 
           } else {
             this.setState({ loading: false });
@@ -1376,7 +1548,7 @@ class ManageProjects extends Component {
       cogoToast.error("Please fill above row first");
     }
   };
-  getResourceByProject(ProjectID,ServiceID) {
+  getResourceByProject(ProjectID,ServiceID,StepType) {
     debugger
       try {
         console.log(this.state.ResourceProjectName);
@@ -1390,30 +1562,29 @@ class ManageProjects extends Component {
           .then((result) => {
             if (result.success) {
               this.hideLoador();
-           
-              if(result.Data.ProjectService.length !=0)
-                this.setState({ ProjectServiceResourceList: result.Data.ProjectService });
-             else
-             {
-              this.setState({ ProjectServiceResourceList: []});
-              if(this.state.ServiceList.length==0 || result.Data.ProjectService.length ==0)
-              this.AddNewRowDataResource();
-              // var objAttachment = {
-              //   ResourceID:"",
-              //   ResourceName: "",
-              //   ServiceType: "",
-              //   EndDate:"",
-              //   ProjectServiceID: "",
-              //   ServiceName:"",
-              //   ServiceResourceID:"",
-              //   StartDate:""
-              // };
-              // var newArray = [];
-              // newArray.push(objAttachment);
-              // this.setState({ ProjectServiceResourceList: newArray});
-             // this.setState({ ProjectServiceResourceList: []});
-             //cogoToast.error("No Service Record Available for this Project");
-             }
+              if(StepType ==="ProjectAllocationReport")
+                {
+                  if(result.Data.ProjectService.length !=0)
+                    this.setState({ ReportResourceList: result.Data.ProjectService });
+                  else
+                  {
+                    this.setState({ ReportResourceList: []});
+                    
+                    
+                  }
+                }
+                else
+                {
+                  if(result.Data.ProjectService.length !=0)
+                    this.setState({ ProjectServiceResourceList: result.Data.ProjectService });
+                  else
+                  {
+                    this.setState({ ProjectServiceResourceList: []});
+                    if(this.state.ServiceList.length==0 || result.Data.ProjectService.length ==0)
+                    this.AddNewRowDataResource();
+                    
+                  }
+                }
             } else {
               this.hideLoador();
               cogoToast.error("Something went wrong1");
@@ -1473,6 +1644,21 @@ class ManageProjects extends Component {
           StartDateHelperText: "",
         });
       }
+      else  if (type === "ReportEndDate") {
+        this.setState({
+          ReportEndDate: date,
+          ReportEndDateErr: false,
+          ReportEndDateHelperText: "",
+        });
+        this.getProjectAllocationReport(this.state.ReportProjectID,this.state.ReportServiceID,this.state.ReportResourceID,this.state.ReportStartDate,date);
+      } else if (type === "ReportStartDate") {
+        this.setState({
+          ReportStartDate: date,
+          ReportStartDateErr: false,
+          ReportStartDateHelperText: "",
+        });
+        this.getProjectAllocationReport(this.state.ReportProjectID,this.state.ReportServiceID,this.state.ReportResourceID,date,this.state.ReportEndDate);
+      }
     };
     handleDateValidation = (date, type) => {
       debugger;
@@ -1525,12 +1711,15 @@ class ManageProjects extends Component {
 
 
   render() {
-    const { ResourceProjectList, ProjectListArray, ServiceList, ProjectServiceList, ProjectServiceResourceList, isNotesVisible } = this.state;
+    const { ResourceProjectList, ProjectListArray, ServiceList, ProjectServiceList, ProjectServiceResourceList,ReportResourceList, isNotesVisible } = this.state;
     const projectList = ProjectListArray.map((type) => {
       return { value: type.ProjectID, label: type.ProjectName };
     });
     const projectServiceList = ProjectServiceList.map((type) => {
       return { value: type.ServiceID, label: type.ServiceName };
+    });
+    const reportResourceList = ReportResourceList.map((type) => {
+      return { value: type.ResourceID, label: type.ResourceName };
     });
     const serviceList = this.state.FinalServiceListSelect.map((type) => {
       return { value: type.ServiceID, label: type.ServiceName };
@@ -1741,7 +1930,7 @@ class ManageProjects extends Component {
                   )}
                 />
 
-            </div>
+              </div>
               )}
             </div>
           );
@@ -1928,7 +2117,51 @@ class ManageProjects extends Component {
         filterable: false,
       },
     ];
+   const column2= [
+      {
+        Header: "Project Name",
+        accessor: "ProjectName",
+        width: 250,
+        filterable: true,
+        sortable: true,
+        maxWidth: 250,
+      },
+      {
+        Header: "Service Name",
+        accessor: "ServiceName",
+        width: 250,
+        filterable: true,
+        sortable: true,
+        maxWidth: 250,
+      },
+      {
+        Header: "Resource Name",
+        accessor: "ResourceName",
+        width: 225,
+        filterable: true,
+        sortable: true,
+        maxWidth: 225,
 
+      },
+      {
+        Header: "Date",
+        accessor: "Date",
+        className:"date-ps",
+        filterable: true,
+        sortable: true,
+        width: 150,
+        maxWidth: 150,
+      },
+      {
+        Header: "Hours",
+        accessor: "Hours",
+        className:"date-ps",
+        filterable: true,
+        sortable: true,
+        width: 150,
+        maxWidth: 150,
+      },
+    ];
     const column4 = [
       {
         Header: "Service Name",
@@ -2169,15 +2402,6 @@ class ManageProjects extends Component {
                           <PhoneCallback />
                         </CardIcon>
                         <h4 className="margin-right-auto text-color-black">Service Allocation List</h4>
-
-                        
-                          
-
-
-                            
-
-                          
-
                           <div className="filter-wrap">
                             <div className="autocomplete-right">
                               <div className="autocomplete-fs-small">
@@ -2198,14 +2422,6 @@ class ManageProjects extends Component {
                                   </FormControl>
                                 
                               </div>
-                              {/* <Button
-                          color="primary"
-                          className="wd-auto"
-                          onClick={() => this.AddServicecToProject()}
-                        >
-                          Add Service To Project
-                        </Button> */}
-
                             </div>
                           </div>
                         
@@ -2213,7 +2429,7 @@ class ManageProjects extends Component {
                       <CardBody>
                         <ReactTable
                           data={this.state.FinalServiceList.filter(
-                            (x) => x.AlreadySelected === true 
+                            (x) => x.AlreadySelected === true
                           )}
                           defaultPageSize={10}
                           minRows={0}
@@ -2280,37 +2496,6 @@ class ManageProjects extends Component {
                                     <TextField {...params} label="Service Name" />
                                   )}
                                 />
-                               
-                               
-                               
-                               
-                                {/* <Autocomplete
-                                  options={projectServiceList}
-                                  id="ServiceName"
-                                  getOptionLabel={(option1) => option1.label}
-                                  value={this.state.ResourceServiceName}
-                                  // onChange={(event, value) =>
-                                  //   this.selectChangeResource(event, value, "ServiceName")
-                                  // }
-                                  // onFocus={() =>
-                                  //   this.setState({
-                                  //     ServiceNameErr: false,
-                                  //     ServiceNameCheck: "",
-                                  //   })
-                                  // }
-                                  renderInput={(params1) => (
-                                    <TextField
-                                      {...params1}
-                                      label="Service Name"
-                                      error={this.state.ServiceNameErr}
-                                      helperText={
-                                        this.state.ServiceNameHelperText
-                                      }
-                                      margin="normal"
-                                      fullWidth
-                                    />
-                                  )}
-                                /> */}
                               </FormControl>
                             </GridItem>
                           </GridContainer>
@@ -2321,14 +2506,184 @@ class ManageProjects extends Component {
                       </CardHeader>
                       <CardBody>
                         <ReactTable
-                data={this.state.ProjectServiceResourceList}
+                            data={this.state.ProjectServiceResourceList}
+                            defaultPageSize={10}
+                            minRows={0}
+                            resizable={false}
+                            columns={column3}
+                            defaultFilterMethod={CommonConfig.filterCaseInsensitive}
+                            showPaginationBottom={true}
+                            className="-striped -highlight table-height"
+
+                          />
+                      </CardBody>
+                    </Card>
+                  </GridItem>
+                  <div>
+                  
+                  </div>
+                </GridContainer>
+              </div>
+              <div className="shipment-pane mt-20" id="ProjectAllocationReport">
+                <GridContainer className="UserList-outer">
+                  {this.state.Loading === true ? (
+                    <div className="loading">
+                      <SimpleBackdrop />
+                    </div>
+                  ) : null}
+                  <GridItem xs={12} sm={12} md={12}>
+                    <Card>
+                      <CardHeader className="btn-right-outer" color="primary" icon>
+                        <CardIcon color="primary">
+                          <PhoneCallback />
+                        </CardIcon>
+                        <h4 className="margin-right-auto text-color-black">Project Allocation Report</h4>
+
+                      
+                          
+                        
+                      </CardHeader>
+                      <CardBody>
+                      <div >
+                      <GridContainer>
+                            <GridItem xs={12} sm={12} md={3}>
+                              <FormControl fullWidth className="">
+                                <Autocomplete
+                                  id="combo-box-demo"
+                                  options={projectList}
+                                  value={this.state.ReportProjectName}
+                                  onChange={(event, value) =>
+                                    this.handleChangeResource(event, value, "ReportProjectName")
+                                  }
+                                  getOptionLabel={(option) => option.label}
+                                  renderInput={(params) => (
+                                    <TextField {...params} label="ProjectName" />
+                                  )}
+                                />
+                              </FormControl>
+                            </GridItem>
+                            <GridItem xs={12} sm={12} md={3}>
+                              <FormControl fullWidth>
+                              <Autocomplete
+                                  options={projectServiceList}
+                                  id="ServiceName"
+                                  getOptionLabel={(option1) => option1.label}
+                                  value={this.state.ReportServiceName}
+                                  onChange={(event, value) =>
+                                    this.handleChangeResource(event, value, "ReportServiceName")
+                                  }
+                                  renderInput={(params) => (
+                                    <TextField {...params} label="Service Name" />
+                                  )}
+                                />
+                               
+                              </FormControl>
+                            </GridItem>
+                            <GridItem xs={12} sm={12} md={2}>
+                              <FormControl fullWidth>
+                              <Autocomplete
+                                id="ResourceName"
+                                options={reportResourceList}
+                                getOptionLabel={(option) => option.label}
+                                value={this.state.ReportResourceName}
+                                onChange={(event, value) =>
+                                  this.handleChangeResource(event, value, "ReportResourceName")
+                                }
+                               
+                                renderInput={(params1) => (
+                                  <TextField
+                                    {...params1}
+                                    label="Resource Name"
+                                    error={""}
+                                    helperText={
+                                      ""
+                                    }
+                                    margin="normal"
+                                    fullWidth
+                                  />
+                                )}
+                              />
+                             </FormControl>
+                            </GridItem>
+                            <GridItem xs={12} sm={12} md={2}>
+                              <FormControl fullWidth>
+                              <div className="date-spl">
+                                  <Datetime
+                                    dateFormat={"MM/DD/YYYY"}
+                                    timeFormat={false}
+                                    value={this.state.ReportStartDate}
+                                    inputProps={{ placeholder: "Start Date" }}
+                                    onChange={(date) =>
+                                      this.handleDateChange(date, "ReportStartDate")
+                                    }
+                                    onBlur={(date) =>
+                                      this.handleDateValidation(date, "ReportStartDate")
+                                    }
+                                    closeOnSelect={true}
+                                    renderInput={(params) => (
+                                      <TextField
+                                        style={{ marginTop: "-15px" }}
+                                        error={this.state.ReportStartDateErr}
+                                        helperText={this.state.ReportStartDateHelperText}
+                                        inputProps={{
+                                          min: moment().format("YYYY-MM-DD"),
+                                        }}
+                                        {...params}
+                                        label="Start Date*"
+                                        margin="normal"
+                                    
+                                      />
+                                    )}
+                                  />
+                                
+                              </div>
+                             </FormControl>
+                            </GridItem>
+                            <GridItem xs={12} sm={12} md={2}>
+                              <FormControl fullWidth>
+                              <div className="date-spl">
+    
+                                    <Datetime
+                                      dateFormat={"MM/DD/YYYY"}
+                                      timeFormat={false}
+                                      value={this.state.ReportEndDate}
+                                      onChange={(date) =>
+                                        this.handleDateChange(date, "ReportEndDate")
+                                      }
+                                      onBlur={(date) =>
+                                        this.handleDateValidation(date, "ReportEndDate")
+                                      }
+                                      closeOnSelect={true}
+                                      renderInput={(params) => (
+                                        <TextField
+                                          style={{ marginTop: "-15px" }}
+                                          error={this.state.ReportEndDateErr}
+                                          helperText={this.state.ReportEndDateHelperText}
+                                          inputProps={{
+                                            min: moment().format("MM-DD-YYYY"),
+                                          }}
+                                          {...params}
+                                          label="End Date*"
+                                          margin="normal"
+                                        
+                                        />
+                                      )}
+                                    />
+
+                                  </div>
+                             </FormControl>
+                            </GridItem>
+                          </GridContainer>
+                          </div>
+                        <ReactTable
+                data={this.state.ReportProjectAllocationList}
                 defaultPageSize={10}
                 minRows={0}
                 resizable={false}
-                columns={column3}
+                columns={column2}
                 defaultFilterMethod={CommonConfig.filterCaseInsensitive}
                 showPaginationBottom={true}
-                className="-striped -highlight table-height"
+                className="-striped -highlight mt-20 Allclear-table"
 
               />
                       </CardBody>

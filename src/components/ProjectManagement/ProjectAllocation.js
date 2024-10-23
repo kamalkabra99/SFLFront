@@ -254,7 +254,7 @@ console.log("this.state.ResourceName",this.state.ResourceName);
       };
 
         //data.StatusQuery = whereClause;
-
+        this.setState({ TimeAllocationList: [] });
       try {
         this.showLoador();
         api
@@ -300,7 +300,7 @@ console.log("this.state.ResourceName",this.state.ResourceName);
     var newData=[];
     var finalAllocationlist = {};
     var data= this.state.TimeAllocationList;
-    for(let i=0;i<data.length;i++)
+    for(let i=0;i<data.length-1;i++)
     {   for(let j=1,x=0;j<7;j++,x++){
     //  if(data[i]["Day"+j] !=0){
           finalAllocationlist={
@@ -336,8 +336,10 @@ console.log("this.state.ResourceName",this.state.ResourceName);
           if (result.success) {
             this.setState({ loading: true });
             cogoToast.success("Save Sucessfully");
-          
-            this.getTimeAllocationList(this.state.ResourceID,this.state.WeekDate);
+            setTimeout(() => {
+              this.getTimeAllocationList(this.state.ResourceID,this.state.WeekDate);
+            }, 2000);
+            
             
           } else {
             this.setState({ loading: false });
@@ -573,7 +575,7 @@ console.log("this.state.ResourceName",this.state.ResourceName);
       return false;
     }
   };
-getColumns= () => {debugger
+getColumns= () => {
   var column =[];
 let x;
 
@@ -680,7 +682,10 @@ handleDateChange = (date, type) => {
                 <PhoneCallback />
               </CardIcon>
               <h4 className="margin-right-auto text-color-black">Project Allocation </h4>
-              <div className="filter-datepicker">
+              <div className="filter-datepicker1">
+              <GridContainer>
+                <GridItem xs={12} md={6}>
+                  <div>
                 {CommonConfig.getUserAccess("Project Management").ReadAccess === 1 || CommonConfig.getUserAccess("Project Management").WriteAccess === 1 ||CommonConfig.getUserAccess("Project Management").AllAccess === 1?
                   <Autocomplete
                     id="ResourceName"
@@ -711,33 +716,37 @@ handleDateChange = (date, type) => {
                   />
                     :null
                   }
+                  </div>
+                </GridItem>
+              <GridItem xs={12} md={6}>
               
-              
-              
-              <div className="tbl-datepicker1">
+              <div className="tbl-datepicker date-spl">
 
-                <Datetime
-                  dateFormat={"MM/DD/YYYY"}
-                  timeFormat={false}
-                  value={this.state.WeekDate}
-                  onChange={(date) =>this.handleDateChange(date, "Date")}
-                  fullWidth
-                  closeOnSelect={true}
-                  renderInput={(params) => (
-                    <TextField
-                      error={this.state.EndDateErr}
-                      helperText={this.state.EndDateHelperText}
-                      inputProps={{
-                        min: moment().format("YYYY-MM-DD"),
-                      }}
-                      {...params}
-                      label="Date*"
-                      margin="normal"
-                    
-                    />
-                  )}
-                />
-              </div>             
+                  <Datetime
+                    dateFormat={"MM/DD/YYYY"}
+                    timeFormat={false}
+                    value={this.state.WeekDate}
+                    onChange={(date) =>this.handleDateChange(date, "Date")}
+                    fullWidth
+                    closeOnSelect={true}
+                    renderInput={(params) => (
+                      <TextField
+                        error={this.state.EndDateErr}
+                        helperText={this.state.EndDateHelperText}
+                        inputProps={{
+                          min: moment().format("YYYY-MM-DD"),
+                        }}
+                        {...params}
+                        label="Date*"
+                        margin="normal"
+                      
+                      />
+                    )}
+                  />
+                  </div>  
+              </GridItem>
+                </GridContainer>         
+                         
               </div>
             </CardHeader>
             <CardBody>
