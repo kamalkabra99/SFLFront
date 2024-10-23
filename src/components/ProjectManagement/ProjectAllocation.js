@@ -617,7 +617,7 @@ let WeekDateFirst = this.state.WeekDate1;
       Cell: (record) => {
         return (
           <div className="default-input">
-            {record.original.ProjectName !="Total" && CommonConfig.getUserAccess("Project Management").WriteAccess === 1?
+            {record.original.ProjectName !="Total" && CommonConfig.getUserAccess("Project Allocation").WriteAccess === 1?
             <input
               type="text"
               name={"Day"+record.original.ProjectID+record.original.ServiceID+i}
