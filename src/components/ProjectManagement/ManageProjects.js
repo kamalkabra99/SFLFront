@@ -2213,7 +2213,7 @@ class ManageProjects extends Component {
                       <CardBody>
                         <ReactTable
                           data={this.state.FinalServiceList.filter(
-                            (x) => x.AlreadySelected === true
+                            (x) => x.AlreadySelected === true 
                           )}
                           defaultPageSize={10}
                           minRows={0}
