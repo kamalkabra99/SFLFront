@@ -301,7 +301,7 @@ console.log("this.state.ResourceName",this.state.ResourceName);
     var finalAllocationlist = {};
     var data= this.state.TimeAllocationList;
     for(let i=0;i<data.length-1;i++)
-    {   for(let j=1,x=0;j<7;j++,x++){
+    {   for(let j=1,x=0;j<=7;j++,x++){
     //  if(data[i]["Day"+j] !=0){
           finalAllocationlist={
             "ServiceResourceID":data[i]["ServiceResourceID"],

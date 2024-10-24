@@ -1393,6 +1393,7 @@ class ManageProjects extends Component {
     //   });
   };
   saveData =  (redirect) => {debugger
+    this.showLoador();
     if (
       (CommonConfig.isEmpty(this.state.ServiceName) &&
         CommonConfig.isEmpty(this.state.ProjectName) ||
@@ -1415,7 +1416,7 @@ class ManageProjects extends Component {
                
       api.post("projectManagement/addUpdateServicesAllocation", data).then( (result) => {
           if (result.success) {
-            this.setState({ loading: true });
+            this.hideLoador();
             cogoToast.success("Save Sucessfully");
             // if (redirect) {
             //   this.props.history.push("/admin/ManageProjects");
@@ -1426,15 +1427,18 @@ class ManageProjects extends Component {
             
           } else {
             this.setState({ loading: false });
+            this.hideLoador();
             cogoToast.error("Something went wrong");
           }
         });
       } catch (err) {
+        this.hideLoador();
         console.log("error", err);
       }
     }
   };
-  saveResourceData =  (redirect) => {debugger
+  saveResourceData =  (redirect) => {debugger 
+    this.showLoador();
     if (
       (CommonConfig.isEmpty(this.state.NewServiceID) &&
       CommonConfig.isEmpty(this.state.ResourceName) && CommonConfig.isEmpty(this.state.StartDate) &&
@@ -1449,6 +1453,7 @@ class ManageProjects extends Component {
         "Please correct the form and resubmit."
       );
     } else {
+      this.showLoador();
       this.setState({ saveResourceErr: false });
       let data = {
         ProjectID:this.state.ResourceProjectID,
@@ -1472,6 +1477,7 @@ class ManageProjects extends Component {
       api.post("projectManagement/addUpdateResourceAllocation", data).then( (result) => {
           if (result.success) {
             this.setState({ loading: true });
+            this.hideLoador();
             cogoToast.success("Save Sucessfully");
             // if (redirect) {
             //   this.props.history.push("/admin/ManageProjects");
@@ -1481,11 +1487,12 @@ class ManageProjects extends Component {
             this.getResourceByProject(this.state.ResourceProjectID, "","");
 
           } else {
-            this.setState({ loading: false });
+            this.hideLoador();
             cogoToast.error("Something went wrong");
           }
         });
       } catch (err) {
+        this.hideLoador();
         console.log("error", err);
       }
     }
@@ -2513,7 +2520,7 @@ class ManageProjects extends Component {
                             columns={column3}
                             defaultFilterMethod={CommonConfig.filterCaseInsensitive}
                             showPaginationBottom={true}
-                            className="-striped -highlight table-height"
+                            className="-striped -highlight table-height Allclear-table"
 
                           />
                       </CardBody>
