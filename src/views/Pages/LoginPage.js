@@ -175,8 +175,25 @@ class LoginPage extends Component {
               "https://www.sflworldwide.com"
             );
 
+            // 
             setTimeout(() => {
-              this.props.history.push("/admin/Scheduleshipment");
+              var data = localStorage.getItem("loggedInUserData")
+              console.log("datas = ",data);
+              var data2 = localStorage.getItem("CommData")
+              if(data2){
+                var newUrl = data2.split("CommercialInvoice/");
+                console.log("newUrlData = ", newUrl[1]);
+                var url = "/auth/CommercialInvoice/"+newUrl[1]
+                console.log(url)
+                this.props.history.push(url);
+
+              }else{
+                this.props.history.push("/admin/Scheduleshipment");
+
+              }
+              
+              
+              // 
             }, 4000);
           } else {
             this.setState({ Loading: false });

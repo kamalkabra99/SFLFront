@@ -723,6 +723,7 @@ class ShipmentCustom extends React.Component {
     this.showLoader();
     await this.checkLock();
     await this.invoiceAccess();
+    await this.getAllcleardata();
     this.getCountry();
 
     //----------------------------------------- Customer Details  -----------------------------------------------------------//
@@ -863,9 +864,66 @@ class ShipmentCustom extends React.Component {
   }
 
   showDivUrl = () => {
+    let fromMail = this.state.ManagedByEmail;
+    let url = "https://hub.sflworldwide.com/auth/CommercialInvoice/" + this.state.EncShippingID;
+    var data = {
+      URL:url,
+      Frommail: fromMail.includes("@sflworldwide.com")
+        ? fromMail
+        : "contact@sflworldwide.com",
+      TOmail:
+        this.state.FromEmail,
+      CCmail:
+        this.state.ManagedByEmail,
+      // TrackingNumber: this.state.TrackingNumber,
+      Subjectmail: "Your commercial Invoice form is ready to fill",
+      // Bodymail: escaped,
+      // Type: "PrepaidLables",
+    };
+    this.setState({
+      // sendmailopen: !this.state.sendmailopen,
+      sendMailInfo: data,
+      // EmailFormat: res.data[0][0].currMessage,
+      // attas: att,
+    });
     console.log(this.state.EncShippingID);
     this.setState({ encOpen: true });
   };
+
+  sendEmailComInvc = () =>{
+    let url = "https://hub.sflworldwide.com/auth/CommercialInvoice/" + this.state.EncShippingID;
+    var mailData = {
+      fromName:this.state.FromContactName,
+      Frommail: this.state.sendMailInfo.Frommail,
+      TOmail: this.state.sendMailInfo.TOmail,
+      CCmail: this.state.sendMailInfo.CCmail,
+      Subjectmail: this.state.sendMailInfo.Subjectmail,
+      ManagedByName: this.state.ManagedBy.label,
+      Url:url
+    }
+
+    console.log(mailData)
+    api
+    .post("scheduleshipment/sendCommInvoiceEmail", mailData)
+    .then((res) => {
+      this.hideLoader();
+      if (res.success) {
+        cogoToast.success(res.data);
+        this.setState({ encOpen: false });
+        // this.getDocumentation();
+        // this.getCommunicationList();
+      } else {
+        this.setState({ encOpen: false });
+        cogoToast.error("Something went wrong");
+      }
+    });
+  }
+
+  copytoclipboard = () =>{
+    var url = "https://hub.sflworldwide.com/auth/CommercialInvoice/" + this.state.EncShippingID;
+    navigator.clipboard.writeText(url);
+    cogoToast.success("Copied successfully")
+  }
 
   showDiv = (type, packageType) => {
     this.setState({
@@ -15282,13 +15340,40 @@ class ShipmentCustom extends React.Component {
 
                     <div style={{ textAlign: "right", marginTop: "12px" }}>
                       {this.state.ShipmentType.value == "Ocean" ? (
-                        <Button
-                          onClick={() => this.showDivUrl()}
-                          style={{ width: "70px", height: "20px" }}
-                          color="primary"
-                        >
-                          Send Url
-                        </Button>
+                        <div>
+                          <GridItem xs={12} sm={12} md={12}>
+                            <GridContainer>
+                              <GridItem xs={12} sm={4} md={4}>
+
+                              <Button
+                                onClick={() => this.copytoclipboard()}
+                                style={{ width: "70px", height: "20px" }}
+                                color="primary"
+                              >
+                                Copy URL
+                              </Button>
+
+
+                              </GridItem>
+
+                              <GridItem xs={12} sm={4} md={4}>
+
+                                <Button
+                                    onClick={() => this.showDivUrl()}
+                                    style={{ width: "70px", height: "20px", "margin-left": "25px"}}
+                                    color="primary"
+                                  >
+                                    Send Url
+                              </Button>
+
+                              </GridItem>
+                            </GridContainer>
+
+                          </GridItem>
+
+                        
+                        
+                        </div>
                       ) : null}
                     </div>
                   </CardHeader>
@@ -16801,15 +16886,155 @@ class ShipmentCustom extends React.Component {
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
           >
-            <DialogTitle id="alert-dialog-title">{"Generate URL"}</DialogTitle>
+            <DialogTitle id="alert-dialog-title">Commercial Invoice URL for Users</DialogTitle>
             <DialogContent>
-              <DialogContentText id="alert-dialog-description">
+              {/* <DialogContentText id="alert-dialog-description">
                 Commercial Invoice URL for Users
                 <p>
                   https://hub.sflworldwide.com/auth/CommercialInvoice/
                   {this.state.EncShippingID}
                 </p>
-              </DialogContentText>
+              </DialogContentText> */}
+
+<GridContainer>
+                <GridItem xs={12} sm={12} md={4}>
+                  <CustomInput
+                    labelText="From"
+                    id="From"
+                    formControlProps={{
+                      fullWidth: true,
+                    }}
+                    inputProps={{
+                      value: this.state.sendMailInfo.Frommail,
+                      
+                      onChange: (event) => {
+                        this.changeFrommail(event, "From");
+                      },
+                      endAdornment: (
+                        <InputAdornment
+                          position="end"
+                          className={classes.inputAdornment}
+                        >
+                          <Icon className={classes.inputAdornmentIcon}>
+                            email
+                          </Icon>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </GridItem>
+                {/* </GridContainer>
+              <GridContainer> */}
+                <GridItem xs={12} sm={12} md={4}>
+                  <CustomInput
+                    labelText="TO"
+                    id="TO"
+                    formControlProps={{
+                      fullWidth: true,
+                    }}
+                    inputProps={{
+                      value: this.state.sendMailInfo.TOmail,
+                     
+                      onChange: (event) => {
+                        this.changetomail(event, "TO");
+                      },
+                      endAdornment: (
+                        <InputAdornment
+                          position="end"
+                          className={classes.inputAdornment}
+                        >
+                          <Icon className={classes.inputAdornmentIcon}>
+                            email
+                          </Icon>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </GridItem>
+                {/* </GridContainer>
+              <GridContainer> */}
+                <GridItem xs={12} sm={12} md={4}>
+                  <CustomInput
+                    labelText="CC"
+                    id="CC"
+                    formControlProps={{
+                      fullWidth: true,
+                    }}
+                    inputProps={{
+                      onChange: (event) => {
+                        this.ChangeCCmail(event, "CC");
+                      },
+                      value: this.state.sendMailInfo.CCmail,
+                      endAdornment: (
+                        <InputAdornment
+                          position="end"
+                          className={classes.inputAdornment}
+                        >
+                          <Icon className={classes.inputAdornmentIcon}>
+                            email
+                          </Icon>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </GridItem>
+              </GridContainer>
+              <GridContainer>
+                <GridItem xs={12} sm={12} md={12}>
+                  <CustomInput
+                    labelText="Subject"
+                    id="Subject"
+                    formControlProps={{
+                      fullWidth: true,
+                    }}
+                    inputProps={{
+                      onChange: (event) => {
+                        this.ChangeSubjectmail(event, "Subject");
+                      },
+                      value: this.state.sendMailInfo.Subjectmail,
+                      
+                      endAdornment: (
+                        <InputAdornment
+                          position="end"
+                          className={classes.inputAdornment}
+                        >
+                          <Icon className={classes.inputAdornmentIcon}>
+                            email
+                          </Icon>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </GridItem>
+
+                <GridItem xs={12} sm={12} md={12}>
+                  <CustomInput
+                    labelText="URL"
+                    id="URL"
+                    formControlProps={{
+                      fullWidth: true,
+                    }}
+                    inputProps={{
+                      // onChange: (event) => {
+                      //   this.ChangeSubjectmail(event, "Subject");
+                      // },
+                      disabled:true,
+                      value: this.state.sendMailInfo.URL,
+                      
+                      endAdornment: (
+                        <InputAdornment
+                          position="end"
+                          className={classes.inputAdornment}
+                        >
+                          <Icon className={classes.inputAdornmentIcon}>
+                            email
+                          </Icon>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </GridItem>
+              </GridContainer>
             </DialogContent>
             <DialogActions>
               <Button
@@ -16817,6 +17042,13 @@ class ShipmentCustom extends React.Component {
                 color="primary"
               >
                 Close
+              </Button>
+
+              <Button
+                onClick={() => this.sendEmailComInvc()}
+                color="primary"
+              >
+                Send Email
               </Button>
             </DialogActions>
           </Dialog>

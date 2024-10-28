@@ -226,10 +226,12 @@ class CommercialInvoice extends Component {
   }
   async componentDidMount() {
     // 33651
+    debugger
 
     // console.log("this.props.match.params.id = ",this.props.match.params.id)
     console.log("test23 = ",localStorage.getItem("loggedInUserData"))
     if (localStorage.getItem("loggedInUserData")) {
+      localStorage.removeItem("CommData")
       var currentUrl = window.location.href;
       var newUrl = currentUrl.split("CommercialInvoice/");
       console.log("newUrlData = ", newUrl[1]);
@@ -241,10 +243,15 @@ class CommercialInvoice extends Component {
       await this.getShipmentInfo(ShippindIDFromURL);
       await this.getAddressDetails(ShippindIDFromURL);
       await this.getPackageDetail(ShippindIDFromURL);
-      await this.getCommercialInvoiceDetail(ShippindIDFromURL);
+      setTimeout(() => {
+         this.getCommercialInvoiceDetail(ShippindIDFromURL);
+      }, 1000);
+      
 
       // this.ScheduleshipmentRedirect();
     } else {
+      var currentUrl = window.location.href;
+      localStorage.setItem("CommData",currentUrl)
       this.loginRedirect();
     }
   }
@@ -345,7 +352,7 @@ class CommercialInvoice extends Component {
             console.log("1",shipStatus)
             // this.getServiceByShipmentType(shipmentType.value);
             // this.getSubserviceName(serviceName.value, shipmentType.value);
-            this.hideLoader();
+            // this.hideLoader();
           } else {
             this.hideLoader();
             cogoToast.error("You dont have access for this shipment");
@@ -403,10 +410,7 @@ class CommercialInvoice extends Component {
             if (res.data.length > 0) {
               this.setState({ isComInvoiceVisible: true });
             }
-            this.setState({
-              commercialList: res.data,
-              CommercialInvoiceList: res.data,
-            });
+           
               var commercialList = res.data
             
                 this.CostCalculator("Commercial", false);
@@ -421,21 +425,26 @@ class CommercialInvoice extends Component {
                 }
 
               
-              if(this.state.commercialList.length > 0){
-                for (let index = 0; index < this.state.commercialList.length; index++) {
+              if(res.data.length > 0){
+                for (let index = 0; index < res.data.length; index++) {
                     for (let indexpack = 0; indexpack < this.state.PackageList.length; indexpack++) {
-                      if(this.state.commercialList[index].PackageNumber == this.state.PackageList[indexpack].PackageNumber){
-                        this.state.commercialList[index].PackageContent = this.state.PackageList[indexpack].PackageContent
+                      if(res.data[index].PackageNumber == this.state.PackageList[indexpack].PackageNumber){
+                        res.data[index].PackageContent = this.state.PackageList[indexpack].PackageContent
                         var data = {
                           value: this.state.PackageList[indexpack].PackedType, label: this.state.PackageList[indexpack].PackedType 
                         }
-                        this.state.commercialList[index].PackedType = data
+                        res.data[index].PackedType = data
                       
                       } 
                     }
                 }
               }
 
+
+              this.setState({
+                commercialList: res.data,
+                CommercialInvoiceList: res.data,
+              });
               console.log("this.state.commercialList.length = ",this.state.commercialList)
 
               
@@ -510,7 +519,7 @@ class CommercialInvoice extends Component {
               }
             );
           }
-          this.hideLoader();
+          // this.hideLoader();
         })
         .catch((err) => {
           console.log(err);
@@ -721,7 +730,7 @@ class CommercialInvoice extends Component {
               this.setState({ FromCompanyName: FromAddress });
             }
 
-            this.hideLoader();
+            // this.hideLoader();
           }
         })
         .catch((err) => {
@@ -1432,7 +1441,8 @@ class CommercialInvoice extends Component {
                         </tr>
                       </thead>
                       <tbody>
-                        {this.viewCommercialInvoice()}
+                        {
+                        this.viewCommercialInvoice()}
                         </tbody>
                         {this.state.newbal >0 ?(
                           <tbody>
