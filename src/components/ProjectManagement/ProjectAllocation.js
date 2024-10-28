@@ -365,6 +365,7 @@ console.log("this.state.ResourceName",this.state.ResourceName);
             ResourceID: "",
             ResourceNameErr: true,
             ResourceNameHelperText: "Please Select Resource Name",
+            TimeAllocationList:[],
           });
         } else {
           var selectData = {
@@ -619,7 +620,7 @@ let WeekDateFirst = this.state.WeekDate1;
       Cell: (record) => {
         return (
           <div className="default-input">
-            {record.original.ProjectName !="Total" && CommonConfig.getUserAccess("Project Allocation").WriteAccess === 1?
+            {record.original.ProjectName !="Total" && (CommonConfig.getUserAccess("Project Allocation").WriteAccess === 1||CommonConfig.getUserAccess("Project Allocation").AllAccess === 1)?
             <input
               type="text"
               name={"Day"+record.original.ProjectID+record.original.ServiceID+i}
@@ -686,7 +687,7 @@ handleDateChange = (date, type) => {
               <GridContainer>
                 <GridItem xs={12} md={6}>
                   <div>
-                {CommonConfig.getUserAccess("Project Management").ReadAccess === 1 || CommonConfig.getUserAccess("Project Management").WriteAccess === 1 ||CommonConfig.getUserAccess("Project Management").AllAccess === 1?
+                { CommonConfig.getUserAccess("Project Allocation").AllAccess === 1?
                   <Autocomplete
                     id="ResourceName"
                     options={resourceList}
@@ -763,10 +764,11 @@ handleDateChange = (date, type) => {
             </CardBody>
             <div className="shipment-submit">
             <div className="right">
-              
+            {CommonConfig.getUserAccess("Project Allocation").WriteAccess === 1 ||CommonConfig.getUserAccess("Project Allocation").AllAccess === 1?
                 <Button color="rose" onClick={() => this.saveData(false)}>
                   Save
                 </Button>
+               :null }
               </div>
               </div>
           </Card>

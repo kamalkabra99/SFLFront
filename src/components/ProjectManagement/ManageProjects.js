@@ -39,7 +39,7 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import Datetime from "react-datetime";
 import ProjectAllocation from "./ProjectAllocation";
-
+import zipcelx from "zipcelx";
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -93,6 +93,8 @@ class ManageProjects extends Component {
       ResourceServiceID:"",
       ResourceProjectID:"",
       ProjectNameErr:"",
+      fileSetName:
+        "Project Allocation Report" + moment().format(CommonConfig.dateFormat.filename),
       ResourceProjectNameErr:"",
       ResourceProjectNameHelperText:"",
       ResourceProjectNameCheck:"",
@@ -159,6 +161,7 @@ class ManageProjects extends Component {
       ReportResourceList:[],
       DeleteOption:"",
       tabKey:0,
+      ReportProjectAllocationList:[],
     };
   }
   async componentDidMount() {
@@ -168,7 +171,7 @@ class ManageProjects extends Component {
     await this.getResourceList();
     //this.handleDateChange(this.state.StartDate, "StartDate")
     this.showHide();
-    this.setState({ Access: CommonConfig.getUserAccess("User Management") });
+    this.setState({ Access: CommonConfig.getUserAccess("Project Management") });
     this.setState({
       AllAccess: CommonConfig.getUserAccess("Call Back").AllAccess,
     });
@@ -798,6 +801,34 @@ class ManageProjects extends Component {
       DeleteOption:deleteOption,
     });
   }
+  handelExportToExcel = (evt) => {
+    const newlist = this.state.ReportProjectAllocationList.map((rest) => rest);
+    if (newlist.length > 0) {
+      const headData = Object.keys(newlist[0]).map((col) => ({
+        value: col,
+        type: "string",
+      }));
+
+      const bodyData = newlist.map((item) =>
+        Object.values(item).map((value) => ({
+          value,
+          type: typeof value,
+        }))
+      );
+      const config = {
+        filename: this.state.fileSetName,
+        sheet: {
+          data: [headData, ...bodyData],
+          columns: headData.map((col) => ({ wch: 2000 })),
+        },
+      };
+      zipcelx(config);
+    } else {
+      cogoToast.error("Search Shipment to be downloaded");
+    }
+  };
+
+
   handleChangeResource = (event, value, type) => {
     debugger
     if (type === "NewServiceName") {
@@ -883,6 +914,8 @@ class ManageProjects extends Component {
             ResourceProjectID: "",
             ResourceProjectNameErr: true,
             ResourceProjectNameHelperText: "Please Select Project Name",
+            ResourceServiceID:"",
+            ResourceServiceName:[],
           });
           this.setState({ ProjectServiceList: [] });
           this.setState({ ProjectServiceResourceList: []});
@@ -897,6 +930,9 @@ class ManageProjects extends Component {
             ResourceProjectID: value.value,
             ResourceProjectNameErr: false,
             ResourceProjectNameHelperText: "",
+            ResourceServiceID:"",
+            ResourceServiceName:[],
+
           });
 
           console.log("ProjectName = ", this.state.ResourceProjectName);
@@ -917,7 +953,7 @@ class ManageProjects extends Component {
         ReportServiceType: "",
       });
       this.getResourceByProject(this.state.ReportProjectID, "","");
-      this.getProjectAllocationReport(this.state.ReportProjectID,0,this.state.ReportResourceID,this.state.ReportStartDate,this.state.ReportEndDate);
+     // this.getProjectAllocationReport(this.state.ReportProjectID,0,this.state.ReportResourceID,this.state.ReportStartDate,this.state.ReportEndDate);
     } else {
       if (value != null && value != "") {
         let serviceType = this.state.ServiceList.filter(
@@ -926,19 +962,19 @@ class ManageProjects extends Component {
         );
 
         var selectData = {
-          label: ServiceNameVal,
+          label: value.label,
           value: value.value
         }
 
         this.setState({
-          ReporterviceName: selectData,
+          ReportServiceName: selectData,
           ReportServiceID: value.value,
           ReportServiceNameErr: false,
           ReportServiceNameHelperText: "",
-          ReportServiceType: serviceType[0].ServiceType,
+       //   ReportServiceType: serviceType[0].ServiceType,
         });
         this.getResourceByProject(this.state.ReportProjectID, value.value,"ProjectAllocationReport");
-        this.getProjectAllocationReport(this.state.ReportProjectID,value.value,this.state.ReportResourceID,this.state.ReportStartDate,this.state.ReportEndDate);
+     //   this.getProjectAllocationReport(this.state.ReportProjectID,value.value,this.state.ReportResourceID,this.state.ReportStartDate,this.state.ReportEndDate);
       }
 
     }
@@ -956,10 +992,14 @@ class ManageProjects extends Component {
             ReportProjectID: "",
             ReportProjectNameErr: true,
             ReportProjectNameHelperText: "Please Select Project Name",
+            ReportServiceID:"",
+            ReportServicetName:[],
+            //Re
+
           });
           this.setState({ ProjectServiceList: [] });
           this.setState({ ProjectServiceResourceList: []});
-          this.getProjectAllocationReport(0,this.state.ReportServiceID,this.state.ReportResourceID,this.state.ReportStartDate,this.state.ReportEndDate);
+      //    this.getProjectAllocationReport(0,this.state.ReportServiceID,this.state.ReportResourceID,this.state.ReportStartDate,this.state.ReportEndDate);
       // } 
       }else {
           var selectData = {
@@ -976,7 +1016,7 @@ class ManageProjects extends Component {
           console.log("ProjectName = ", this.state.ReportProjectName);
           this.getServicesByProject(value.value);
         this.getResourceByProject(value.value, "","ProjectAllocationReport");
-        this.getProjectAllocationReport(value.value,this.state.ReportServiceID,this.state.ReportResourceID,this.state.ReportStartDate,this.state.ReportEndDate);
+     //   this.getProjectAllocationReport(value.value,this.state.ReportServiceID,this.state.ReportResourceID,this.state.ReportStartDate,this.state.ReportEndDate);
         }
       
     }
@@ -993,7 +1033,7 @@ class ManageProjects extends Component {
             ReportResourceNameErr: true,
             ReportResourceNameHelperText: "Please Select Resource Name",
           });
-          this.getProjectAllocationReport(this.state.ReportProjectID,this.state.ReportServiceID,0,this.state.ReportStartDate,this.state.ReportEndDate);
+      //    this.getProjectAllocationReport(this.state.ReportProjectID,this.state.ReportServiceID,0,this.state.ReportStartDate,this.state.ReportEndDate);
         } else {
           var selectData = {
             label: value.label,
@@ -1008,7 +1048,7 @@ class ManageProjects extends Component {
 
           console.log("ResourceName = ", this.state.ReportResourceName);
           //this.getServicesByProject(value.value);
-          this.getProjectAllocationReport(this.state.ReportProjectID,this.state.ReportServiceID,value.value,this.state.ReportStartDate,this.state.ReportEndDate);
+      //    this.getProjectAllocationReport(this.state.ReportProjectID,this.state.ReportServiceID,value.value,this.state.ReportStartDate,this.state.ReportEndDate);
         }
       
     }
@@ -1063,7 +1103,7 @@ class ManageProjects extends Component {
         );
 
         var selectData = {
-          label: ServiceNameVal,
+          label: value.label,
           value: value.value
         }
 
@@ -1109,7 +1149,23 @@ class ManageProjects extends Component {
     }
     }
   };
+  reset = () => {
+ 
+    this.setState({
+      ReportProjectID: "",
+      ReportProjectName:{label:"",value:""},
+      ReportServiceID: "",
+      ReportServiceName:{label:"",value:""},
+      ReportResourceID: "",
+      ReportResourceName:{label:"",value:""},
+      ReportProjectAllocationList:[],
 
+    });
+    localStorage.removeItem("SearchCount");
+    if (CommonConfig.getUserAccess("Search Shipment") === 0) {
+      this.setState({ AllAccess: 0 });
+    }
+  };
   getProjectAllocationReport(ProjectID,ServiceID,ResourceID,StartDate,EndDate) {
     debugger
    
@@ -1657,14 +1713,14 @@ class ManageProjects extends Component {
           ReportEndDateErr: false,
           ReportEndDateHelperText: "",
         });
-        this.getProjectAllocationReport(this.state.ReportProjectID,this.state.ReportServiceID,this.state.ReportResourceID,this.state.ReportStartDate,date);
+       // this.getProjectAllocationReport(this.state.ReportProjectID,this.state.ReportServiceID,this.state.ReportResourceID,this.state.ReportStartDate,date);
       } else if (type === "ReportStartDate") {
         this.setState({
           ReportStartDate: date,
           ReportStartDateErr: false,
           ReportStartDateHelperText: "",
         });
-        this.getProjectAllocationReport(this.state.ReportProjectID,this.state.ReportServiceID,this.state.ReportResourceID,date,this.state.ReportEndDate);
+    //    this.getProjectAllocationReport(this.state.ReportProjectID,this.state.ReportServiceID,this.state.ReportResourceID,date,this.state.ReportEndDate);
       }
     };
     handleDateValidation = (date, type) => {
@@ -1954,7 +2010,7 @@ class ManageProjects extends Component {
           return (
             <div className="table-common-btn">             
                 {this.state.ProjectServiceResourceList.length == record.index+1?(
-             
+                  this.state.Access.WriteAccess === 1 || this.state.Access.AllAccess ===1?
                   record.original.ResourceID !="" ?(
                   
                     <Button
@@ -1978,7 +2034,9 @@ class ManageProjects extends Component {
                  
                   </Button>
                  )
+                 :null
                 ):null
+                
                 }
                  {CommonConfig.getUserAccess("Project Management").DeleteAccess ===
                 1 ? (
@@ -2032,6 +2090,7 @@ class ManageProjects extends Component {
         Cell: (record) => {
           return (
             <div className="table-common-btn">
+              {this.state.Access.WriteAccess ===1 || this.state.Access.AllAccess?
               <Button
                 justIcon
                 color="info"
@@ -2039,6 +2098,7 @@ class ManageProjects extends Component {
               >
                 <i className="fas fa-edit"></i>
               </Button>
+              :null}
               {this.state.Access.DeleteAccess === 1 ? (
                   <Button   justIcon   color="danger" >
                     <DeleteIcon
@@ -2103,15 +2163,15 @@ class ManageProjects extends Component {
           return (
             
             <div className="table-common-btn">
-                 
+             {console.log("this.state.Accessthis.state.Access",this.state.Access)}  { this.state.Access.WriteAccess === 1 || this.state.Access.AllAccess === 1  ? (  
               <Button
                 justIcon
                 color="info"
                 onClick={() => this.handleEdit(record)}
               >
                 <i className="fas fa-edit"></i>
-              </Button>
-              {console.log("record.original.ProjectID",record.original.ProjectID)}{ this.state.Access.DeleteAccess === 1 ? (
+              </Button>) : null}
+              {console.log("record.original.ProjectID",record.original.ProjectID)}{ this.state.Access.DeleteAccess === 1 || this.state.Access.AllAccess === 1  ? (
                   <Button   justIcon   color="danger" >
                     <DeleteIcon
                       onClick={(e) => this.openDeleteRequestModalKeyword(e,record.original.ProjectID,"Project")}
@@ -2226,6 +2286,7 @@ class ManageProjects extends Component {
         Header: "Actions",
         Cell: (record) => {
           return (
+            
             <div className="table-common-btn">
              
                
@@ -2233,6 +2294,7 @@ class ManageProjects extends Component {
               {this.state.FinalServiceList.filter((x) => x.AlreadySelected === true).length === record.index + 1 ? (
                 
                   record.original.ServiceID !="" && this.state.FinalServiceList.length != this.state.ServiceList.length?(
+                    this.state.Access.WriteAccess ===1 || this.state.Access.AllAccess?
                     <Button
                     justIcon
                     color="info"
@@ -2242,9 +2304,10 @@ class ManageProjects extends Component {
                   
                     
                   </Button>
-                    
+                    :null
                   ):this.state.ProjectServiceList.length != this.state.ServiceList.length?(
                   (
+                    this.state.Access.WriteAccess ===1 || this.state.Access.AllAccess?
                     <Button
                     justIcon
                     color="info"
@@ -2254,7 +2317,7 @@ class ManageProjects extends Component {
                     
                  
                   </Button>
-                
+                  :null
                 )):null
                 ) : null
               }
@@ -2267,6 +2330,7 @@ class ManageProjects extends Component {
                   </Button>
                 ) : null}
             </div>
+            
           )
         },
       },
@@ -2317,7 +2381,7 @@ class ManageProjects extends Component {
                         </CardIcon>
                         <h4 className="margin-right-auto text-color-black">Project List</h4>
 
-
+                    {this.state.Access.WriteAccess === 1 || this.state.Access.AllAccess === 1 ?
                         <div className="filter-wrap">
                           <div
                             className="filter-top-right"
@@ -2333,6 +2397,7 @@ class ManageProjects extends Component {
                             </Button>
                           </div>
                         </div>
+                    :null}
                       </CardHeader>
                       <CardBody>
 
@@ -2347,7 +2412,7 @@ class ManageProjects extends Component {
                           columns={column}
                           defaultPageSize={10}
                           showPaginationBottom={true}
-                          className="-striped -highlight chatMgtList1"
+                          className="-striped -highlight chatMgtList1 Allclear-table"
                         />
                       </CardBody>
                     </Card>
@@ -2368,6 +2433,7 @@ class ManageProjects extends Component {
                           <PhoneCallback />
                         </CardIcon>
                         <h4 className="margin-right-auto text-color-black">Service List</h4>
+                        {this.state.Access.WriteAccess ===1 || this.state.Access.AllAccess?
                         <div className="filter-wrap">
                           <div className="filter-top-right">
                             <Button color="primary" className="wd-auto" onClick={() => this.AddService()}>
@@ -2375,6 +2441,7 @@ class ManageProjects extends Component {
                             </Button>
                           </div>
                         </div>
+                        :null}
                       </CardHeader>
                       <CardBody>
                         <ReactTable
@@ -2447,7 +2514,7 @@ class ManageProjects extends Component {
 
                           defaultFilterMethod={CommonConfig.filterCaseInsensitive}
                           showPaginationBottom={true}
-                          className="-striped -highlight"
+                          className="-striped -highlight Allclear-table"
                         />
                       </CardBody>
                     </Card>
@@ -2553,7 +2620,7 @@ class ManageProjects extends Component {
                       <CardBody>
                       <div >
                       <GridContainer>
-                            <GridItem xs={12} sm={12} md={3}>
+                            <GridItem xs={12} sm={12} md={4}>
                               <FormControl fullWidth className="">
                                 <Autocomplete
                                   id="combo-box-demo"
@@ -2569,7 +2636,7 @@ class ManageProjects extends Component {
                                 />
                               </FormControl>
                             </GridItem>
-                            <GridItem xs={12} sm={12} md={3}>
+                            <GridItem xs={12} sm={12} md={4}>
                               <FormControl fullWidth>
                               <Autocomplete
                                   options={projectServiceList}
@@ -2586,7 +2653,7 @@ class ManageProjects extends Component {
                                
                               </FormControl>
                             </GridItem>
-                            <GridItem xs={12} sm={12} md={2}>
+                            <GridItem xs={12} sm={12} md={4}>
                               <FormControl fullWidth>
                               <Autocomplete
                                 id="ResourceName"
@@ -2612,7 +2679,10 @@ class ManageProjects extends Component {
                               />
                              </FormControl>
                             </GridItem>
-                            <GridItem xs={12} sm={12} md={2}>
+                            
+                          </GridContainer>
+                          <GridContainer>
+                          <GridItem xs={12} sm={12} md={4}>
                               <FormControl fullWidth>
                               <div className="date-spl">
                                   <Datetime
@@ -2646,7 +2716,7 @@ class ManageProjects extends Component {
                               </div>
                              </FormControl>
                             </GridItem>
-                            <GridItem xs={12} sm={12} md={2}>
+                            <GridItem xs={12} sm={12} md={4}>
                               <FormControl fullWidth>
                               <div className="date-spl">
     
@@ -2680,6 +2750,30 @@ class ManageProjects extends Component {
                                   </div>
                              </FormControl>
                             </GridItem>
+                            <GridItem>
+                            <div className="shipment-submit mt-20">
+                            <div className="right">
+                              <Button
+                                justIcon
+                                color="danger"
+                                onClick={(evt) => this.handelExportToExcel(evt)}
+                              >
+                                <i class="fas fa-download"></i>
+                              </Button>
+                              <Button color="rose" onClick={() => this.getProjectAllocationReport(this.state.ReportProjectID,this.state.ReportServiceID,this.state.ReportResourceID,this.state.ReportStartDate,this.state.ReportEndDate)}>
+                                Search
+                              </Button>
+                              <Button
+                                color="secondary"
+                                onClick={() => this.reset()}
+                              >
+                                Reset
+                              </Button>
+                            </div>
+                          </div>
+                            
+                          
+                          </GridItem>
                           </GridContainer>
                           </div>
                         <ReactTable
