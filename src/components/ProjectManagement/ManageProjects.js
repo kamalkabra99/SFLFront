@@ -824,7 +824,7 @@ class ManageProjects extends Component {
       };
       zipcelx(config);
     } else {
-      cogoToast.error("Search Shipment to be downloaded");
+      cogoToast.error("Search Project Allocation to be downloaded");
     }
   };
 
@@ -1161,10 +1161,7 @@ class ManageProjects extends Component {
       ReportProjectAllocationList:[],
 
     });
-    localStorage.removeItem("SearchCount");
-    if (CommonConfig.getUserAccess("Search Shipment") === 0) {
-      this.setState({ AllAccess: 0 });
-    }
+   
   };
   getProjectAllocationReport(ProjectID,ServiceID,ResourceID,StartDate,EndDate) {
     debugger
