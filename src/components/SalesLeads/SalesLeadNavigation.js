@@ -264,11 +264,21 @@ class SalesLeadNavigation extends Component {
         this.setState({checkdata:this.props.history.location.state.statusList});
         console.log("lok",this.state.checkdata);
         let index="";
+        if(this.state.checkdata.length >0)
+         {
+            const newRequestStatus = this.state.requestStatus.map(data => {
+              return { ...data, IsSelected: false};
+            });
+        
+            this.setState({requestStatus: newRequestStatus});
+         
+          }
         for(let i=0;i<this.state.checkdata.length;i++)
         { let xy= this.state.checkdata[i].value;
              index = this.state.requestStatus.findIndex(
               (x) => x.value === xy 
             );
+
             this.state.requestStatus[index].IsSelected = true;
           }
       }
@@ -2245,8 +2255,9 @@ class SalesLeadNavigation extends Component {
       } else {
         this.state.checkdata = `All`;
       }
+    
       this.setState({
-        requestStatus: checkedArr,
+        requestStatus: checkedArr,statusList:previousList 
       });
     }
   };
