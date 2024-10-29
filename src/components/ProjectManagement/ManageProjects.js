@@ -952,7 +952,7 @@ class ManageProjects extends Component {
         ReportServiceNameHelperText: "Please Select Service Name",
         ReportServiceType: "",
       });
-      this.getResourceByProject(this.state.ReportProjectID, "","");
+    //  this.getResourceByProject(this.state.ReportProjectID, "","");
      // this.getProjectAllocationReport(this.state.ReportProjectID,0,this.state.ReportResourceID,this.state.ReportStartDate,this.state.ReportEndDate);
     } else {
       if (value != null && value != "") {
@@ -973,7 +973,7 @@ class ManageProjects extends Component {
           ReportServiceNameHelperText: "",
        //   ReportServiceType: serviceType[0].ServiceType,
         });
-        this.getResourceByProject(this.state.ReportProjectID, value.value,"ProjectAllocationReport");
+        //this.getResourceByProject(this.state.ReportProjectID, value.value,"ProjectAllocationReport");
      //   this.getProjectAllocationReport(this.state.ReportProjectID,value.value,this.state.ReportResourceID,this.state.ReportStartDate,this.state.ReportEndDate);
       }
 
@@ -1165,8 +1165,14 @@ class ManageProjects extends Component {
   };
   getProjectAllocationReport(ProjectID,ServiceID,ResourceID,StartDate,EndDate) {
     debugger
+    if(ProjectID === "" && ServiceID==="" && ResourceID===""&&StartDate===""&&EndDate==="")
+    {
+      cogoToast.error("Please select atleast one criteria");
+    }
+    else
+    {
    
-      let data = {"ProjectID" :ProjectID===0?0:ProjectID,
+      let data = {"ProjectID" :ProjectID===0 || ProjectID===""?0:ProjectID,
         "ServiceID" :ServiceID ===""?0:ServiceID,
         "ResourceID" :ResourceID===""?0:ResourceID,
         "StartDate":CommonConfig.isEmpty(StartDate)?"":moment(StartDate).format(CommonConfig.dateFormat.dbDateOnly).toString(),
@@ -1199,7 +1205,7 @@ class ManageProjects extends Component {
         this.hideLoador();
         cogoToast.error("Something Went Wrong3 TA");
       }
-   
+    }
   }
 
   getServicesByProject(ProjectID) {
@@ -1784,7 +1790,7 @@ class ManageProjects extends Component {
     const serviceList = this.state.FinalServiceListSelect.map((type) => {
       return { value: type.ServiceID, label: type.ServiceName };
     });
-    const serviceListselect = this.state.FinalServiceListSelect.map((type) => {
+    const serviceListOriginal = this.state.ServicesList.map((type) => {
       return { value: type.ServiceID, label: type.ServiceName };
     });
     const resourceList = this.state.FinalResourceList.map((type) => {
@@ -2636,7 +2642,7 @@ class ManageProjects extends Component {
                             <GridItem xs={12} sm={12} md={4}>
                               <FormControl fullWidth>
                               <Autocomplete
-                                  options={projectServiceList}
+                                  options={serviceListOriginal}
                                   id="ServiceName"
                                   getOptionLabel={(option1) => option1.label}
                                   value={this.state.ReportServiceName}
@@ -2654,7 +2660,7 @@ class ManageProjects extends Component {
                               <FormControl fullWidth>
                               <Autocomplete
                                 id="ResourceName"
-                                options={reportResourceList}
+                                options={resourceList}
                                 getOptionLabel={(option) => option.label}
                                 value={this.state.ReportResourceName}
                                 onChange={(event, value) =>
@@ -2714,10 +2720,10 @@ class ManageProjects extends Component {
                              </FormControl>
                             </GridItem>
                             <GridItem xs={12} sm={12} md={4}>
-                              <FormControl fullWidth>
+                             
                               <div className="date-spl">
-    
-                                    <Datetime
+                                <FormControl fullWidth>
+                                    <Datetime 
                                       dateFormat={"MM/DD/YYYY"}
                                       timeFormat={false}
                                       value={this.state.ReportEndDate}
@@ -2743,9 +2749,9 @@ class ManageProjects extends Component {
                                         />
                                       )}
                                     />
-
+                                  </FormControl>
                                   </div>
-                             </FormControl>
+                          
                             </GridItem>
                             <GridItem>
                             <div className="shipment-submit mt-20">
