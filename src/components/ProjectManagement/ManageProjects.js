@@ -2685,7 +2685,7 @@ class ManageProjects extends Component {
                             
                           </GridContainer>
                           <GridContainer>
-                          <GridItem xs={12} sm={12} md={4}>
+                            <GridItem xs={12} sm={12} md={4}>
                               <FormControl fullWidth>
                               <div className="date-spl">
                                   <Datetime
@@ -2711,7 +2711,7 @@ class ManageProjects extends Component {
                                         {...params}
                                         label="Start Date*"
                                         margin="normal"
-                                    
+                                        fullWidth
                                       />
                                     )}
                                   />
@@ -2719,6 +2719,8 @@ class ManageProjects extends Component {
                               </div>
                              </FormControl>
                             </GridItem>
+                      
+                
                             <GridItem xs={12} sm={12} md={4}>
                              
                               <div className="date-spl">
@@ -2745,7 +2747,7 @@ class ManageProjects extends Component {
                                           {...params}
                                           label="End Date*"
                                           margin="normal"
-                                        
+                                          fullWidth
                                         />
                                       )}
                                     />
@@ -2753,9 +2755,9 @@ class ManageProjects extends Component {
                                   </div>
                           
                             </GridItem>
-                            <GridItem>
-                            <div className="shipment-submit mt-20">
                             <div className="right">
+                            <div className="shipment-submit mt-20">
+                            
                               <Button
                                 justIcon
                                 color="danger"
@@ -2776,7 +2778,7 @@ class ManageProjects extends Component {
                           </div>
                             
                           
-                          </GridItem>
+                          
                           </GridContainer>
                           </div>
                         <ReactTable

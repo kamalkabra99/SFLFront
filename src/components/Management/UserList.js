@@ -15,6 +15,12 @@ import CardIcon from "components/Card/CardIcon.js";
 import CardHeader from "components/Card/CardHeader.js";
 import zipcelx from "zipcelx";
 import * as XLSX from "xlsx";
+import FormControl from "@material-ui/core/FormControl";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import TextField from "@material-ui/core/TextField";
+import Datetime from "react-datetime";
+import InputLabel from "@material-ui/core/InputLabel";
+import Select from "@material-ui/core/Select";
 var fileNameSet = "";
 
 setInterval(() => {
@@ -44,11 +50,44 @@ class UserLists extends Component {
       sortProps: [],
       previousFilterList: [],
       previousSortList: [],
+      Name:"",
+      UserName:"",
+      UserType:[],
+      Email:"",
+      CreatedOn:"",
+      AccountNumber:"",
+      ManagedBy:[],
+      Status:[],
+      UserStatusList: [
+        {
+          label: "Enable",
+          value: "Enable",
+        },
+        {
+          label: "Disable",
+          value: "Disable",
+        },
+      ],
+      UserTypeList: [
+        {
+          label: "Customer",
+          value: "Customer",
+        },
+        {
+          label: "Employee",
+          value: "Employee",
+        },
+        {
+          label: "Contractor",
+          value: "Contractor",
+        },
+      ],
+      ManagedByList:[],
     };
   }
 
   componentDidMount() {
-    this.getUserList();
+  //  this.getUserList();
     if (
       this.props.history.location.state !== undefined &&
       this.props.history.location.state !== null
@@ -64,6 +103,7 @@ class UserLists extends Component {
       };
       this.setState({ previousSortList: [defaultSort] });
     }
+    this.getManagedBy();
   }
   doExcel1 = (tableId1, tableId2, tableId3) => {
     debugger;
@@ -185,7 +225,15 @@ class UserLists extends Component {
       );
     });
   };
-
+  dateChange = (date, type) => {
+    if (type === "CreatedOn") 
+      {
+        if(date!="")
+          this.setState({ CreatedOn: date });    
+        else
+          this.setState({ CreatedOn: "" });
+      }
+  };
 
   renderTrackingData = () => {
     return this.state.userListSal.map((service) => {
@@ -213,14 +261,30 @@ class UserLists extends Component {
       );
     });
   };
-
-
-  getUserList() {
+  getUserList(Name,UserName,UserType,Email,CreatedOn,AccountNumber,ManagedBy,Status) {
+    debugger
     try {
-      this.setState({ Loading: true });
+      if((Name==="" || Name===undefined) &&(UserName==="" || UserName===undefined) &&(AccountNumber==="" || AccountNumber===undefined) &&(Email==="" || Email===undefined) &&( UserType.length ===0 || UserType===undefined) &&(CreatedOn==="" || CreatedOn===undefined) &&(ManagedBy.length ===0 || ManagedBy===undefined) &&(Status.length ===0 || Status===undefined)  )
+      {
+        cogoToast.error("Please Select Atleast One Criteria");
+
+      }
+      else{
+      let data = {
+        "Name":Name===""|| Name===undefined ?"":Name,
+        "UserName":UserName===""|| UserName===undefined ?"":UserName,
+        "UserType":UserType.length ===0||UserType===undefined ?"":UserType.value,
+        "Email":Email===""||Email===undefined?"":Email,
+        "CreatedOn":CreatedOn===""?"":moment(CreatedOn).format(CommonConfig.dateFormat.dbDateOnly),
+        "AccountNumber":AccountNumber===""||AccountNumber===undefined?"":AccountNumber,
+        "ManagedBy":ManagedBy.length ===0||ManagedBy===undefined?"":ManagedBy.value,
+        "Status":Status.length ===0||Status===undefined?"":Status.value,
+      };
+
       api
-        .get("userManagement/getUserList")
+        .post("userManagement/getUserList", data)
         .then((res) => {
+
           if (res.success) {
 
             if(CommonConfig.getUserAccess("User Management").AllAccess === 1){
@@ -269,12 +333,32 @@ class UserLists extends Component {
           } else {
             cogoToast.error("Something Went Wrong");
           }
+
         })
         .catch((err) => {
-          cogoToast.error("Something Went Wrong");
+          console.log(err);
         });
-    } catch (error) {}
+      }
+
+    } catch (err) {
+      console.log("error", err);
+    }
+    
   }
+  reset = () => {
+    this.setState({
+      Name: "",
+      ManagedBy: "",
+      CreatedOn: "",
+      UserName: "",
+      UserTpye:[],
+      Status:[],
+      ManagedBy:[],
+      Email:"",
+      AccountNumber:"",
+      userList:[],
+    });
+  };
 
   addUser = () => {
     this.props.history.push("AddUserNew/");
@@ -330,9 +414,106 @@ class UserLists extends Component {
       sortlist: this.state.sortProps,
     });
   };
-
+  inputChange = (e, type) => {debugger
+    this.setState({
+      [type]: e.target.value,
+    });
+  };
+  getManagedBy() {debugger
+    try {
+      api
+        .get("contactus/getUsersForTMSList")
+        .then((res) => {
+          if (res.success) {
+            for (var j = 0; j < res.Data.length; j++) {
+              this.state.ManagedByList.push(res.Data[j]);
+            }
+          }
+        })
+        .catch((err) => {
+          cogoToast.error("Something went wrong");
+          console.log(err);
+        });
+    } catch (err) {
+      cogoToast.error("Something went wrong");
+      console.log(err);
+    }
+  }
+  handleChange = (event, value,type) => {
+    debugger
+    if (type === "ManagedBy") {
+    
+ 
+      if (value === "" || value === null) {
+      
+         this.setState({
+          ManagedBy: [],
+          
+        });
+      } else {
+        var selectData ={
+          label:value.label,
+          value:value.value
+        }
+        this.setState({
+          ManagedBy: selectData,
+         
+        });
+      }
+    } else
+    if (type === "Status") {
+    
+ 
+      if (value === "" || value === null) {
+      
+         this.setState({
+          Status: [],
+          
+        });
+      } else {
+        var selectData ={
+          label:value.label,
+          value:value.value
+        }
+        this.setState({
+          Status: selectData,
+         
+        });
+      }
+    }
+    else
+    if (type === "UserType") {
+    
+ 
+      if (value === "" || value === null) {
+      
+         this.setState({
+          UserType: [],
+          
+        });
+      } else {
+        var selectData ={
+          label:value.label,
+          value:value.value
+        }
+        this.setState({
+          UserType: selectData,
+         
+        });
+      }
+    }
+  };
   render() {
     const { userList,fileSetName,userListSal } = this.state;
+    const userstatus = this.state.UserStatusList.map((type) => {
+      return { value: type.value, label: type.label };
+    });
+    const userType = this.state.UserTypeList.map((type) => {
+      return { value: type.value, label: type.label };
+    });
+    const managedBy = this.state.ManagedByList.map((type) => {
+      return { value: type.PersonId, label: type.ContactName };
+    });
     const handelExportToExcel = (evt) => {
       const headData = Object.keys(userList[0]).map((col) => ({
         value: col,
@@ -508,8 +689,185 @@ class UserLists extends Component {
               >
                 Add User
               </Button>
+            
             </CardHeader>
             <CardBody>
+                
+            <GridContainer>
+            <GridItem xs={12} sm={12} md={4}>
+                      <div className="mt-15">
+                          <FormControl fullWidth>
+                            <TextField
+                              label="Name"
+                              value={this.state.Name}
+                              onChange={(event) =>
+                                this.inputChange(event, "Name")
+                              }
+                            />
+                          </FormControl>
+                        </div>
+                       
+                      </GridItem>
+                      <GridItem xs={12} sm={12} md={4}>
+                      <div className="mt-15">
+                          <FormControl fullWidth>
+                            <TextField
+                              label="User Name"
+                              value={this.state.UserName}
+                              onChange={(event) =>
+                                this.inputChange(event, "UserName")
+                              }
+                            />
+                          </FormControl>
+                        </div>
+                       
+                      </GridItem>
+                      <GridItem xs={12} sm={12} md={4}>
+                        <FormControl fullWidth>
+                          <Autocomplete
+                            options={userType}
+                            id="UserType"
+                            getOptionLabel={(option) => option.label}
+                            value={this.state.UserType}
+                            autoSelect
+                            autoComplete="new-password"
+                            onChange={(event, value) =>
+                              this.handleChange(event,value,"UserType")
+                            }
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                label="User Type"
+                                error={this.state.VendorcountryErr}
+                                helperText={this.state.VendorcountryHelperText}
+                                fullWidth
+                              />
+                            )}
+                          />
+                        </FormControl>
+                      </GridItem>
+                      </GridContainer>
+                    <GridContainer>
+                    <GridItem xs={12} sm={12} md={4}>
+                      <div className="mt-15">
+                          <FormControl fullWidth>
+                            <TextField
+                              label="Email"
+                              value={this.state.Email}
+                              onChange={(event) =>
+                                this.inputChange(event, "Email")
+                              }
+                            />
+                          </FormControl>
+                        </div>
+                       
+                      </GridItem>
+                    
+                      <GridItem xs={12} sm={12} md={4} className="z-index-9">
+                        <div className="date-spl">
+                          <FormControl fullWidth>
+                            <Datetime
+                              dateFormat={"MM/DD/YYYY"}
+                              timeFormat={false}
+                              value={this.state.CreatedOn}
+                              onChange={(date) =>
+                                this.dateChange(date, "CreatedOn")
+                              }
+                              closeOnSelect={true}
+                              renderInput={(params) => (
+                                <TextField
+                                label="Created On"
+                                {...params} fullWidth />
+                              )}
+                            />
+                          </FormControl>
+                        </div>
+                      </GridItem>
+                      <GridItem xs={12} sm={12} md={4}>
+                      <div className="mt-15">
+                          <FormControl fullWidth>
+                            <TextField
+                              label="Account Number"
+                              value={this.state.AccountNumber}
+                              onChange={(event) =>
+                                this.inputChange(event, "AccountNumber")
+                              }
+                            />
+                          </FormControl>
+                        </div>
+                       
+                      </GridItem>
+                      
+                    </GridContainer>
+
+                    <GridContainer>
+                      <GridItem xs={12} sm={12} md={4}>
+                        <FormControl fullWidth>
+                          <Autocomplete
+                            options={managedBy}
+                            id="Managed By"
+                            getOptionLabel={(option) => option.label}
+                            value={this.state.ManagedBy}
+                            autoSelect
+                            autoComplete="Managed By"
+                            onChange={(event, value) =>
+                              this.handleChange(event,value,"ManagedBy")
+                            }
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                label="Managed By"
+                                error={this.state.VendorcountryErr}
+                                helperText={this.state.VendorcountryHelperText}
+                                fullWidth
+                              />
+                            )}
+                          />
+                        </FormControl>
+                      </GridItem>
+                      <GridItem xs={12} sm={12} md={4}>
+                        <FormControl fullWidth>
+                          <Autocomplete
+                            options={userstatus}
+                            id="Status"
+                            getOptionLabel={(option) => option.label}
+                            value={this.state.Status}
+                            autoSelect
+                            autoComplete="Status"
+                            onChange={(event, value) =>
+                              this.handleChange(event,value,"Status")
+                            }
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                label="Status"
+                                error={this.state.VendorcountryErr}
+                                helperText={this.state.VendorcountryHelperText}
+                                fullWidth
+                              />
+                            )}
+                          />
+                        </FormControl>
+                      </GridItem>
+                     
+                    </GridContainer>
+
+                    <div className="shipment-submit  mt-20">
+                      <div className="right">
+                        <Button
+                          color="rose"
+                          onClick={() => this.getUserList(this.state.Name,this.state.UserName,this.state.UserType,this.state.Email,this.state.CreatedOn,this.state.AccountNumber,this.state.ManagedBy,this.state.Status)}
+                        >
+                          Search
+                        </Button>
+                        <Button
+                          color="secondary"
+                          onClick={() => this.reset()}
+                        >
+                          Reset
+                        </Button>
+                      </div>
+                    </div>
               <ReactTable
                 getTheadFilterProps={(e) => this.filterProps(e)}
                 defaultFiltered={this.state.previousFilterList}
