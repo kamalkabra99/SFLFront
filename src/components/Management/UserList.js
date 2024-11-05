@@ -44,6 +44,7 @@ class UserLists extends Component {
     this.state = {
       Loading: false,
       fileSetName: "",
+      searchfinalLength: 0,
       userList: [],
       userListSal:[],
       filterProps: [],
@@ -88,6 +89,8 @@ class UserLists extends Component {
 
   componentDidMount() {
   //  this.getUserList();
+  this.getManagedBy();
+  this.reset();
     if (
       this.props.history.location.state !== undefined &&
       this.props.history.location.state !== null
@@ -103,17 +106,22 @@ class UserLists extends Component {
       };
       this.setState({ previousSortList: [defaultSort] });
     }
-    this.getManagedBy();
+ 
   }
   doExcel1 = (tableId1, tableId2, tableId3) => {
     debugger;
+    if(this.state.userList.length){
     let targetTableElm1 = document.getElementById(tableId1);
     let targetTableElm2 = document.getElementById(tableId2);
     // let targetTableElm3 = document.getElementById(tableId3);
+    console.log(targetTableElm1);
 
     const wb = { SheetNames: [], Sheets: {} };
     var ws1 = XLSX.utils.table_to_book(targetTableElm1, { raw: true }).Sheets
       .Sheet1;
+
+
+      console.log(ws1.length);
     wb.SheetNames.push("User Detail");
     wb.Sheets["User Detail"] = ws1;
 
@@ -139,6 +147,9 @@ class UserLists extends Component {
     document.body.removeChild(link);
 
     this.setState({ Dialogopen: false });
+  }
+  else
+  cogoToast.error("No Data for Download");
   };
 
   s2ab = (s) => {
@@ -234,7 +245,15 @@ class UserLists extends Component {
           this.setState({ CreatedOn: "" });
       }
   };
-
+  searchUserlen = (len) => {
+    this.setState({ searchfinalLength: len });
+  };
+  searchCheckProps = (e) => {
+    if (this.state.searchfinalLength !== e.sortedData.length) {
+      this.searchUserlen(e.sortedData.length);
+    }
+    return "";
+  };
   renderTrackingData = () => {
     return this.state.userListSal.map((service) => {
       const {
@@ -348,10 +367,9 @@ class UserLists extends Component {
   reset = () => {
     this.setState({
       Name: "",
-      ManagedBy: "",
       CreatedOn: "",
       UserName: "",
-      UserTpye:[],
+      UserType:[],
       Status:[],
       ManagedBy:[],
       Email:"",
@@ -511,7 +529,7 @@ class UserLists extends Component {
     const userType = this.state.UserTypeList.map((type) => {
       return { value: type.value, label: type.label };
     });
-    const managedBy = this.state.ManagedByList.map((type) => {
+    const managedBy = this.state.ManagedByList.map((type) => {console.log(this.state.ManagedByList);
       return { value: type.PersonId, label: type.ContactName };
     });
     const handelExportToExcel = (evt) => {
@@ -667,20 +685,7 @@ class UserLists extends Component {
                 <UserList />
               </CardIcon>
               <h4 className="margin-right-auto text-color-black">User List</h4>
-              
-              <Button
-                justIcon
-                color="danger"
-                // onClick={handelExportToExcel}
-                onClick={() =>
-                  this.doExcel1(
-                    "table-to-xls1",
-                    "table-to-xls2",
-                  )
-                }
-              >
-                <i class="fas fa-download"></i>
-              </Button>
+             
               
               <Button
                 color="primary"
@@ -854,6 +859,19 @@ class UserLists extends Component {
 
                     <div className="shipment-submit  mt-20">
                       <div className="right">
+                      <Button
+                justIcon
+                color="danger"
+                // onClick={handelExportToExcel}
+                onClick={() =>
+                  this.doExcel1(
+                    "table-to-xls1",
+                    "table-to-xls2",
+                  )
+                }
+              >
+                <i class="fas fa-download"></i>
+              </Button>
                         <Button
                           color="rose"
                           onClick={() => this.getUserList(this.state.Name,this.state.UserName,this.state.UserType,this.state.Email,this.state.CreatedOn,this.state.AccountNumber,this.state.ManagedBy,this.state.Status)}
@@ -875,6 +893,8 @@ class UserLists extends Component {
                 defaultSorted={this.state.previousSortList}
                 minRows={0}
                 filterable
+                pageText={"Total rows : " + this.state.searchfinalLength}
+                getPaginationProps={(e) => this.searchCheckProps(e)}
                 defaultFilterMethod={CommonConfig.filterCaseInsensitive}
                 resizable={false}
                 columns={columns}
