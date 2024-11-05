@@ -23,6 +23,7 @@ import ResourceAllocationList from "components/ProjectManagement/ResourceAllocat
 import AddServicesToProject from "components/ProjectManagement/AddServicesToProject";
 import AddResourceToService from "components/ProjectManagement/AddResourceToService";
 import AddTimeAllocation from "components/ProjectManagement/AddTimeAllocation";
+import Notification from "components/Notifications/Notifications"
 
 import ServiceList from "components/ProjectManagement/ServiceList";
 //import VendorSearch from "components/Management/VendorSearch";
@@ -944,6 +945,14 @@ var dashRoutes = [
     name: "Add Time Allocation",
     icon: EditSalesLeadIcon,
     component: AddTimeAllocation,
+    layout: "/admin",
+    invisible: false,
+  },
+  {
+    path: "/Notification",
+    name: "Notification",
+    icon: EditSalesLeadIcon,
+    component: Notification,
     layout: "/admin",
     invisible: false,
   },

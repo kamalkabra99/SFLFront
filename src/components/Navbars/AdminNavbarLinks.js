@@ -98,6 +98,10 @@ export default function HeaderLinks(props) {
     }
   };
 
+  const onNotification = () =>{
+    history.push("/admin/Notification");
+  }
+
   const onSearch = () => {
     if (search !== null && search.length > 3) {
       if (history.location.pathname.substring(1, 14) == "admin/Search/") {
@@ -122,6 +126,21 @@ export default function HeaderLinks(props) {
           <SimpleBackdrop />
         </div>
       ) : null}
+
+      {CommonConfig.loggedInUserData().SFLUsers == "Employee" ?(
+        <div className="notification">
+          
+          <Button
+            color="transparent"
+            aria-haspopup="true"
+            className={classes.buttonLink}
+            onClick={onNotification}
+          >
+            <i className="bell-icon fa fa-bell" aria-hidden="true"></i>
+          </Button>
+        </div>
+      ):null}
+
       
       {CommonConfig.getUserAccess("Basic Search").ReadAccess ? (
         <div className="header-search">

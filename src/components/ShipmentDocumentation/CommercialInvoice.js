@@ -413,7 +413,7 @@ class CommercialInvoice extends Component {
            
               var commercialList = res.data
             
-                this.CostCalculator("Commercial", false);
+              
                 console.log("this.state.TotalPackages = ",this.state.PackageList)
                 console.log("this.state.commercialList.length = ",commercialList)
                 if(this.state.TotalPackages != commercialList.length){
@@ -446,6 +446,7 @@ class CommercialInvoice extends Component {
                 CommercialInvoiceList: res.data,
               });
               console.log("this.state.commercialList.length = ",this.state.commercialList)
+                this.CostCalculator("Commercial", false);
 
               
             // if(this.state.commercialList.length == 0){
@@ -1109,6 +1110,7 @@ class CommercialInvoice extends Component {
                 }}
               />
             </td>
+            <td></td>
 
             <td style={{ width: "104px" }}>
                   <div className="package-select">
@@ -1155,6 +1157,7 @@ class CommercialInvoice extends Component {
               value={
                 ""
               }
+              className="allclear-btn"
               
               disabled={
                 true
@@ -1169,61 +1172,21 @@ class CommercialInvoice extends Component {
         {this.state.ShipmentType !== "Ocean" ? (
           <>
             <td className="wd-num right">
-              <TextField
-                value={
-                  ""
-                }
-                
-                disabled={
-                  true
-                }
-                inputProps={{
-                  maxLength: 3,
-                }}
-                InputProps={{
-                  disableUnderline: true,
-                }}
-              />
+              
             </td>
             <td className="wd-num right">
-              <TextField
-                
-                value={
-                  ""
-                }
-                
-                disabled={
-                  true
-                }
-                
-                inputProps={{}}
-                InputProps={{
-                  disableUnderline: true,
-                }}
-              />
+              
             </td>
           </>
         ) : null}
         <td className="wd-num right">
-          <TextField
-            value={
-              ""
-            }
-            
-            disabled={
-              true
-            }
-            
-            inputProps={{}}
-            InputProps={{
-              disableUnderline: true,
-            }}
-          />
+          
         </td>
+        <td></td>
 
         <td style={{ width: "104px" }}>
               <div className="package-select">
-                <FormControl className={classes.formControl} fullWidth>
+                {/* <FormControl className={classes.formControl} fullWidth>
                   <Select
                     id="package_number"
                     name="package_number"
@@ -1241,7 +1204,7 @@ class CommercialInvoice extends Component {
                   >
                     {this.packedBy()}
                   </Select>
-                </FormControl>
+                </FormControl> */}
               </div>
             </td>
         
@@ -1256,10 +1219,12 @@ class CommercialInvoice extends Component {
 
   CostCalculator = (type, IsFalse) => {
     if (type === "Commercial") {
+      console.log("Here")
       let commercialList = this.state.commercialList.filter(
         (x) => x.Status === "Active"
       );
       var totalCost = 0;
+      console.log("commercialList = ",commercialList);
       for (var i = 0; i < commercialList.length; i++) {
         totalCost = Number(totalCost) + Number(commercialList[i].TotalValue);
       }
@@ -1317,7 +1282,7 @@ class CommercialInvoice extends Component {
             <table className="common-table">
               <tr>
                 <td className="align-center">
-                  <h1>Commercial Invoice</h1>
+                 <h1>Household Goods Descriptive Inventory</h1>
                 </td>
               </tr>
             </table>
@@ -1342,6 +1307,59 @@ class CommercialInvoice extends Component {
                 </td>
               </tr>
             </table>
+            <table className="common-table bordered-table mt-20 font-12 tl-fixed">
+					<tr>
+						<td colspan="6" className="align-center">EXECPTION SYMBOLS</td>
+						<td colspan="3" className="align-center">LOCATION SYMBOLS</td>
+					</tr>
+					<tr>
+						<td>BE-BENT</td>
+						<td>D-DENTED</td>
+						<td>L-LOOSE</td>
+						<td>CH-CHIPPED</td>
+						<td>SC-SCRATCHED</td>
+						<td>W-BADLY WORN</td>
+						<td>1) AR</td>
+						<td>5) LEFT</td>
+						<td>9) SIDE</td>
+					</tr>
+					<tr>
+						<td>BR-BROKEN</td>
+						<td>F-FADED</td>
+						<td>MA-MARRED</td>
+						<td>R-RUBBED</td>
+						<td>SH-SHORT</td>
+						<td>Z-CRACKED</td>
+						<td>2) BOTTOM</td>
+						<td>6) LEG</td>
+						<td>10) TOP</td>
+					</tr>
+					<tr>
+						<td>BU-BURNT</td>
+						<td>R-GOUGED</td>
+						<td>M-MILDEW</td>
+						<td>RU-RUSTED</td>
+						
+						<td colSpan={2}>PBO-PACKED BY OWNER</td>
+						
+						<td>3) CORNER</td>
+						<td>7) REAR</td>
+						<td>11) VENEER</td>
+					</tr>
+					<tr>
+						<td>MO-MOTH EATEN</td>
+						<td>T-TORN</td>
+						<td>SO-SOLED</td>
+						<td>PBM-PACKED BY MOVERS</td>
+						
+						<td colSpan={2}>CU-CONTENTS & CONDITION UNKNOWN</td>
+						
+						<td>4) FRONT</td>
+						<td>8) RIGHT</td>
+						<td></td>
+					</tr>
+				</table>
+
             {/* 
 				<table className="common-table bordered-table mt-20 font-12 tl-fixed">
 					<tr>
@@ -1423,20 +1441,15 @@ class CommercialInvoice extends Component {
               <GridContainer className="MuiGrid-justify-xs-center">
                 <GridItem xs={12} sm={12} md={12}>
                   <div className="package-table">
-                    <table>
+                    <table className="common-table bordered-table mt-20">
                       <thead>
                         <tr>
-                          <th>Package Number</th>
-                          <th>Package Type</th>
-                          <th>Package Content</th>
-                          {this.state.ShipmentType !== "Ocean" ? (
-                            <>
-                              <th className="right">Quantity</th>
-                              <th className="right nowrap">Value Per Qty</th>
-                            </>
-                          ) : null}
-                          <th className="right">Value (USD)</th>
-                          <th className="right">Packed By</th>
+                            <td className="bold item">Item No.</td>
+                            <td className="bold box">Box Type</td>
+                            <td className="bold content">Contents</td>
+                            <td className="bold value">Value (USD)</td>
+                            <td className="bold symbol">Exception Symbols</td>
+                            <td className="bold packed-by">Packed By</td>
                           
                         </tr>
                       </thead>
@@ -1472,6 +1485,7 @@ class CommercialInvoice extends Component {
                               }}
                             />
                           </td>
+                          <td></td>
                           <td></td>
                          
                         </tr>

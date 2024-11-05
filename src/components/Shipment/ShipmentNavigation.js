@@ -1652,17 +1652,17 @@ class ShipmentNavigation extends Component {
                     filterList[i]["columnname"] +
                     " " +
                     filterList[i]["conditionoperator"] +
-                    " " +
+                    " '" +
                     filterList[i]["value"] +
-                    " " +
+                    "' " +
                     "OR" +
                     " " +
                     "stm.TrackingID" +
                     " " +
                     filterList[i]["conditionoperator"] +
-                    " " +
+                    " '" +
                     filterList[i]["value"] +
-                    ")";
+                    "')";
                 } else {
                   debugger;
                   FinalStr =

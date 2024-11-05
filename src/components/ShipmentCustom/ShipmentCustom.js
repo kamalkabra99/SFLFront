@@ -132,6 +132,7 @@ class ShipmentCustom extends React.Component {
       TransactionMessage: "",
       isallclearopen: false,
       EncShippingID: "",
+      EncUrl:"",
       //-----------------------------  Tab 1 and Common Tab Data -------------------------------------------//
       shipmentTypeList: [],
       ManagedBy: "",
@@ -656,6 +657,7 @@ class ShipmentCustom extends React.Component {
     this.state.EncShippingID = encoded;
     console.log("SID = ", this.state.EncShippingID);
 
+    this.state.EncUrl = "https://hub.sflworldwide.com/auth/CommercialInvoice/" + this.state.EncShippingID;
     //----------------------------------------- Customer Details  -----------------------------------------------------------//
 
     await this.getShipmentType();
@@ -16885,6 +16887,8 @@ class ShipmentCustom extends React.Component {
             open={this.state.encOpen}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
+             className = "newcss"
+            //  style={{maxWidth:"664 px !important"}}
           >
             <DialogTitle id="alert-dialog-title">Commercial Invoice URL for Users</DialogTitle>
             <DialogContent>
@@ -17034,6 +17038,113 @@ class ShipmentCustom extends React.Component {
                     }}
                   />
                 </GridItem>
+              </GridContainer>
+              <GridContainer>
+              <div style={{width: "100%", background: "#eee", boxSizing: "border-box"}}>
+                  <div style={{maxWidth: "630px", margin: "0 auto"}}>    
+                      <table align="center" style={{width: "630px", maxWidth: "630px", background: "#fff"}}>
+                          <tr>
+                          <td style={{width: "100%", padding: "15px"}}>
+                              <table style={{width: "100%", maxWidth: "100%", margin: "0 auto"}}>
+                              <tr>
+                                  <td>
+                                      <table style={{width: "100%"}}>
+                                          <tr>
+                                          <td style={{width: "20%", border: "1px solid #000", padding: "10px"}}>
+                                              <img style={{width: "170px"}} src="https://hubapi.sflworldwide.com/document/logo.png" />
+                                          </td>
+                                          <td style={{textAlign:"center",width: "80%", border: "1px solid #000", fontSize: "18px", fontWeight: "600", padding: "10px"}}>
+                                              Your commercial Invoice form is ready to fill
+                                          </td>
+                                          </tr>
+                                      </table>
+                                  </td>
+                              </tr>
+                              <tr>
+                                  <td style={{height: "20px"}} >
+                                  </td>
+                              </tr>
+                              <tr>
+                                  <td>
+                                      <table style={{width: "100%", marginTop: "40px", fontSize:"14px", backgroundColor: "#fff"}}>
+                                          <tr>
+                                          <td colspan="2" style={{paddingBottom: "10px"}}>Dear {this.state.FromContactName},</td>
+                                          </tr>
+                                          <tr>
+                                          <td colspan="2" style={{paddingBottom: "10px"}}>Thank you for your business with SFL Worldwide.</td>
+                                          </tr>
+                                          <tr>
+                                          <td colspan="2" style={{paddingBottom: "10px"}}>Your commercial invoice form is ready to fill. Click the below button to fill the form.</td>
+                                          </tr>
+                        <tr>
+                          <td colspan="2" style={{paddingBottom: "10px"}}><a href={this.state.EncUrl}>Click Here</a></td>
+                        </tr>
+                                          
+                                      </table>
+                                  </td>
+                              </tr>
+                              <tr>
+                                  <td style={{height: "10px"}} >
+                                  </td>
+                              </tr>
+                              <tr>
+                                  <td>
+                                      
+                                  </td>
+                              </tr>
+                              </table>
+                              <table style={{width: "100%", marginTop: "10px"}}>
+                              <tr>
+                                  <td style={{height: "10px"}} height="20px">
+                                  </td>
+                              </tr>
+                              <tr>
+                                  <td>
+                                      Thanks & Regards.<br />
+                                      <br />
+                                      {this.state.ManagedBy.label}<br />
+                                      Email: <a href="mailto:{this.state.sendMailInfo.Frommail}">{this.state.sendMailInfo.Frommail}</a>
+                                  </td>
+                              </tr>
+                              <tr>
+                                  <td style={{height: "10px"}} height="20px">
+                                  </td>
+                              </tr>
+                              <tr>
+                                  <td style={{width: "20%"}}>
+                                      <img style={{width: "140px"}} src="https://hubapi.sflworldwide.com/document/logo.png" />
+                                  </td>
+                              </tr>
+                              <tr>
+                                  <td>
+                                      3364 Garden Brook Drive, Farmers Branch, TX 75234<br />
+                                      Phone 1-800-691-2335 | Fax: 1-888-609-0778 | Website: <a target="_blank" href="https://www.sflworldwide.com">www.sflworldwide.com</a>
+                                  </td>
+                              </tr>
+                              <tr>
+                                  <td style = {{height: "10px"}} height="20px">
+                                  </td>
+                              </tr>
+                              <tr>
+                                  <td>
+                                      <img style = {{width: "400px"}} src="https://hubapi.sflworldwide.com/mailImage.png" />
+                                  </td>
+                              </tr>
+                              <tr>
+                                  <td style={{height:"10px"}} height="20px">
+                                  </td>
+                              </tr>
+                              <tr>
+                                  <td style={{width:"100%"}} >
+                                      Confidentiality notice: The information contained in this email message including attachments is confidential and is intended only for the use of the individual or entity named above and others who have been specifically authorized to receive it. If you are not the intended recipient, you are hereby notified that any use, unauthorized dissemination, distribution, or copying of this communication is strictly prohibited. If you have received this communication in error, please delete immediately or if any problems occur with transmission, please notify us immediately by telephone. Thank you.
+                                  </td>
+                              </tr>
+                              </table>
+                          </td>
+                          </tr>
+                      </table>         
+                  </div>
+              </div>
               </GridContainer>
             </DialogContent>
             <DialogActions>
