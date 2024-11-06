@@ -2531,6 +2531,8 @@ class Step1 extends React.Component {
                         state: {
                           filterlist: this.props.history.location.filterlist,
                           sortlist: this.props.history.location.sortlist,
+                          searchCriteria:this.props.history.location.searchCriteria,
+                          userList:this.props.history.location.userList,
                         },
                       });
                     } else {
@@ -2560,6 +2562,8 @@ class Step1 extends React.Component {
                     state: {
                       filterlist: this.props.history.location.filterlist,
                       sortlist: this.props.history.location.sortlist,
+                      searchCriteria:this.props.history.location.searchCriteria,
+                      userList:this.props.history.location.userList,
                     },
                   });
                 } else {
@@ -2590,6 +2594,8 @@ class Step1 extends React.Component {
       state: {
         filterlist: this.props.history.location.filterlist,
         sortlist: this.props.history.location.sortlist,
+        searchCriteria:this.props.history.location.searchCriteria,
+        userList:this.props.history.location.userList,
       },
     });
   };

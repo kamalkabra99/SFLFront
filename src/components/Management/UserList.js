@@ -58,6 +58,7 @@ class UserLists extends Component {
       CreatedOn:"",
       AccountNumber:"",
       ManagedBy:[],
+      ManagedByAC:[],
       Status:[],
       UserStatusList: [
         {
@@ -84,6 +85,7 @@ class UserLists extends Component {
         },
       ],
       ManagedByList:[],
+      searchCriteria:[],
     };
   }
 
@@ -98,7 +100,17 @@ class UserLists extends Component {
       this.setState({
         previousFilterList: this.props.history.location.state.filterlist,
         previousSortList: this.props.history.location.state.sortlist,
+        Name:this.props.history.location.state.searchCriteria.Name,
+        UserName:this.props.history.location.state.searchCriteria.UserName,
+        UserType:this.props.history.location.state.searchCriteria.UserType,
+        Email:this.props.history.location.state.searchCriteria.Email,
+        CreatedOn:this.props.history.location.state.searchCriteria.CreatedOn,
+        AccountNumber:this.props.history.location.state.searchCriteria.AccountNumber,
+        ManagedBy:this.props.history.location.state.searchCriteria.ManagedBy,
+        Status:this.props.history.location.state.searchCriteria.Status,
+        userList:this.props.history.location.state.userList,
       });
+      
     } else {
       var defaultSort = {
         id: "CreatedOn",
@@ -425,11 +437,23 @@ class UserLists extends Component {
   editUser = (record) => {
     const { history } = this.props;
     let UserID = record.original.PersonID;
+    let searchCriteria = {
+      Name:this.state.Name,
+      UserName:this.state.UserName,
+      UserType:this.state.UserType,
+      Email:this.state.Email,
+      CreatedOn:this.state.CreatedOn,
+      AccountNumber:this.state.AccountNumber,
+      ManagedBy:this.state.ManagedBy,
+      Status:this.state.Status,
+    }
     history.push({
       pathname: "EditUser",
       state: UserID,
       filterlist: this.state.filterProps,
       sortlist: this.state.sortProps,
+      searchCriteria:searchCriteria,
+      userList:this.state.userList,
     });
   };
   inputChange = (e, type) => {debugger
@@ -446,7 +470,11 @@ class UserLists extends Component {
             for (var j = 0; j < res.Data.length; j++) {
               this.state.ManagedByList.push(res.Data[j]);
             }
-          }
+            var managedBy = this.state.ManagedByList.map((type) => {
+              return { value: type.PersonId, label: type.ContactName };
+            });
+            this.setState({ ManagedByAC: managedBy });
+           }
         })
         .catch((err) => {
           cogoToast.error("Something went wrong");
@@ -522,16 +550,17 @@ class UserLists extends Component {
     }
   };
   render() {
-    const { userList,fileSetName,userListSal } = this.state;
+    const { userList,fileSetName,userListSal,ManagedByAC } = this.state;
+    const managedBy = this.state.ManagedByList.map((type) => {
+      return { value: type.PersonId, label: type.ContactName };
+    });
     const userstatus = this.state.UserStatusList.map((type) => {
       return { value: type.value, label: type.label };
     });
     const userType = this.state.UserTypeList.map((type) => {
       return { value: type.value, label: type.label };
     });
-    const managedBy = this.state.ManagedByList.map((type) => {console.log(this.state.ManagedByList);
-      return { value: type.PersonId, label: type.ContactName };
-    });
+   
     const handelExportToExcel = (evt) => {
       const headData = Object.keys(userList[0]).map((col) => ({
         value: col,
@@ -809,7 +838,7 @@ class UserLists extends Component {
                       <GridItem xs={12} sm={12} md={4}>
                         <FormControl fullWidth>
                           <Autocomplete
-                            options={managedBy}
+                            options={ManagedByAC}
                             id="Managed By"
                             getOptionLabel={(option) => option.label}
                             value={this.state.ManagedBy}
