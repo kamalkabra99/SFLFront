@@ -1559,6 +1559,10 @@ td.wd-num {
   width: 93px;
 }
 
+td.wd-num12 {
+  width: 60px;
+}
+
 .package-select .MuiSelect-root {
   padding-left: 6px;
 }
@@ -1590,6 +1594,17 @@ td.wd-num {
 .wd-130 {
   width: 130px;
 }
+.wid-80{
+  width: 60px;
+}
+td .wdfix{
+  width: 75px !important;
+}
+
+.wd-100 {
+  width: 75px !important;
+}
+
 
 .pck-action-column {
   width: 90px;
@@ -6943,4 +6958,8 @@ button.file-doc {
 .bell-icon{
   font-size: 20px;
   color: #d13428;
+}
+
+.hidepageination .-center{
+  display: none !important;
 }

@@ -1512,6 +1512,7 @@ class editContainer extends Component {
         IsValid = false;
       }
     }
+    debugger
     var AttachmentList = this.state.Attachments.filter(
       (x) => x.Status === "Active" && (x.FileName === "" || x.FileName === null)
     );

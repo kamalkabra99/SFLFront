@@ -274,8 +274,12 @@
 
    
     function openChatActiveModel() {
-      var modal = document.getElementById("myModalForChat");
-      modal.style.display = "block";
+      var getdata = localStorage.getItem("CommData")
+      if(getdata == undefined){
+        var modal = document.getElementById("myModalForChat");
+        modal.style.display = "block";
+      }
+     
     }
 
     function openResumeModel() {

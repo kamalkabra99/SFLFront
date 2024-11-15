@@ -923,9 +923,14 @@ class CommercialInvoice extends Component {
 
             this.hideLoader();
             cogoToast.success("Record added successfully");
-            setTimeout(() => {
-              this.loginRedirect();
-            }, 2000);
+            if(redirect){
+              setTimeout(() => {
+                this.loginRedirect();
+              }, 2000);
+            }else{
+              this.recallApi()
+            }
+            
           }
         })
         .catch((err) => {
@@ -933,6 +938,23 @@ class CommercialInvoice extends Component {
         });
 
 
+  }
+
+  async reCallApi() {
+    var currentUrl = window.location.href;
+    var newUrl = currentUrl.split("CommercialInvoice/");
+    console.log("newUrlData = ", newUrl[1]);
+    let ShippindIDFromURL = window.atob(newUrl[1]);
+    
+
+    this.setState({ShippingID:ShippindIDFromURL})
+
+    await this.getShipmentInfo(ShippindIDFromURL);
+    await this.getAddressDetails(ShippindIDFromURL);
+    await this.getPackageDetail(ShippindIDFromURL);
+    setTimeout(() => {
+       this.getCommercialInvoiceDetail(ShippindIDFromURL);
+    }, 1000);
   }
 
   addnewRowCommercial = () => {
@@ -994,7 +1016,7 @@ class CommercialInvoice extends Component {
       .map((commercial, idx) => {
         return (
           <tr>
-            <td className="wd-130">
+            <td className="">
               <div className="package-select">
                 <FormControl className={classes.formControl} fullWidth>
                   <Select
@@ -1016,7 +1038,7 @@ class CommercialInvoice extends Component {
                 </FormControl>
               </div>
             </td>
-            <td>{commercial.PackageContent}</td>
+            <td className="wd-100">{commercial.PackageContent}</td>
             <td className="">
               <div className="width-full">
                 <TextField
@@ -1083,7 +1105,7 @@ class CommercialInvoice extends Component {
                 </td>
               </>
             ) : null}
-            <td className="wd-num right">
+            <td className="wd-num12 right wdfix">
               <TextField
                 value={
                   this.state.ShipmentType === "Ocean"
@@ -1110,7 +1132,7 @@ class CommercialInvoice extends Component {
                 }}
               />
             </td>
-            <td></td>
+            <td className="wd-100"></td>
 
             <td style={{ width: "104px" }}>
                   <div className="package-select">
@@ -1147,7 +1169,7 @@ class CommercialInvoice extends Component {
     return this.state.newbalarray.map((commercial, idx) => {
       return (
         <tr>
-        <td className="wd-130">
+        <td className="">
           
         </td>
         <td>{commercial.PackageContent}</td>
@@ -1171,15 +1193,15 @@ class CommercialInvoice extends Component {
         </td>
         {this.state.ShipmentType !== "Ocean" ? (
           <>
-            <td className="wd-num right">
+            <td className="right">
               
             </td>
-            <td className="wd-num right">
+            <td className="right">
               
             </td>
           </>
         ) : null}
-        <td className="wd-num right">
+        <td className="right">
           
         </td>
         <td></td>
@@ -1444,7 +1466,7 @@ class CommercialInvoice extends Component {
                     <table className="common-table bordered-table mt-20">
                       <thead>
                         <tr>
-                            <td className="bold item">Item No.</td>
+                            <td className="bold item wid-80">Item No.</td>
                             <td className="bold box">Box Type</td>
                             <td className="bold content">Contents</td>
                             <td className="bold value">Value (USD)</td>
@@ -1499,13 +1521,23 @@ class CommercialInvoice extends Component {
             <div className="shipment-submit">
               <div className="right">
             { this.state.datasetsOrigin == 1 ? (
-              <Button
-              justify="center"
-              color="primary"
-                onClick={() => this.handleSave(true)}
-              >
-              Save & Exit
-              </Button>
+              <div>
+                <Button
+                justify="center"
+                color="primary"
+                  onClick={() => this.handleSave(false)}
+                >
+                Save
+                </Button>
+                
+                <Button
+                justify="center"
+                color="primary"
+                  onClick={() => this.handleSave(true)}
+                >
+                Save & Exit
+                </Button>
+              </div>
 
             ):null}
                 

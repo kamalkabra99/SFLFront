@@ -33,6 +33,10 @@ import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import { DownloadTableExcel } from "react-export-table-to-excel";
 import zipcelx from "zipcelx";
+import AssignmentTurnedInIcon from '@material-ui/icons/AssignmentTurnedIn';
+import CakeIcon from '@material-ui/icons/Cake';
+import EventIcon from '@material-ui/icons/Event';
+import TagFacesIcon from '@material-ui/icons/TagFaces';
 import {
   Checkbox,
   Box,
@@ -85,6 +89,7 @@ class Notification extends Component {
       LoginType: "",
       open: false,
       updateopen: false,
+      setValuetoday:"",
 
       logintypevalue: [],
       DobProposalData:[],
@@ -110,6 +115,13 @@ class Notification extends Component {
     this.getHolidayList();
     this.getDOBList();
     this.getWorkAnniversaryList();
+    // setValuetoday
+
+    var fromDate = moment(this.state.FromDate)
+    .format(CommonConfig.dateFormat.dateOnly)
+    
+    this.setState({setValuetoday:fromDate})
+
   }
 
   getHolidayList(){
@@ -141,9 +153,50 @@ class Notification extends Component {
           
           
           if(requestData.length > 0){
-            // this.state.timeoffStyle = "table-pane.active"
+            
             this.setState({HolidayListProposalData : res.Data[0]})
-            // this.setState({totalLeave : requestData.length})
+
+
+            if(requestData.length >4){
+
+              this.setState({HolidayListProposalData : res.Data[0]})
+
+            }else{    
+              
+              var len = 5-requestData.length;
+              console.log("len = ",len)
+              for (let index = 0; index < len; index++) {
+                  var data = {
+                    HolidayDate:"",
+                    HolidayName:"",
+                    Day:"",
+                    HolidayExpiryDate:"",
+                    TimeZone:""
+                  }
+                  requestData.push(data)
+                
+              }
+              console.log("requestData = ",requestData)
+              this.setState({HolidayListProposalData : requestData})
+
+            }
+            
+          }else{
+
+            for (let index = 0; index < 5; index++) {
+              var data = {
+                HolidayDate:"",
+                HolidayName:"",
+                Day:"",
+                HolidayExpiryDate:"",
+                TimeZone:""
+              }
+              res.Data[0].push(data)
+            
+            }
+            // console.log("requestData = ",requestData)
+            this.setState({HolidayListProposalData : res.Data[0]})
+
           }
          
   
@@ -195,15 +248,64 @@ class Notification extends Component {
                 var ageDifMs = Date.now() - dob.getTime();
                 var ageDate = new Date(ageDifMs); // miliseconds from epoch
                 var agre =  Math.abs(ageDate.getUTCFullYear() - 1970);
+                agre = agre +1
 
+                var curDate = new Date(pData.fromDate)
+                if(dob.getDate() == curDate.getDate() && dob.getMonth()==curDate.getMonth()){
+                  agre = agre - 1
+                }
                 res.Data[0][index].Age = agre;
                 
             }
 
             console.log("res.Data[0] = ",res.Data[0])
-            this.setState({DobProposalData : res.Data[0]})
+            
+
+
+            if(res.Data[0].length >4){
+
+              this.setState({DobProposalData : res.Data[0]})
+
+            }else{    
+              
+              var len = 5-res.Data[0].length;
+              console.log("len = ",len)
+              for (let index = 0; index < len; index++) {
+                  var data = {
+                    Birthdate:"",
+                  
+                    LoginID:"",
+                    Age:"",
+                    
+                  }
+                  res.Data[0].push(data)
+                
+              }
+              console.log("res.Data[0] = ",res.Data[0])
+              this.setState({DobProposalData : res.Data[0]})
+
+            }
+
+
             // this.setState({totalLeave : requestData.length})
+          }else{
+
+            for (let index = 0; index < 5; index++) {
+              var data = {
+                Birthdate:"",
+              
+                LoginID:"",
+                Age:"",
+                
+              }
+              res.Data[0].push(data)
+            
+            }
+            // console.log("requestData = ",requestData)
+            this.setState({DobProposalData : res.Data[0]})
+
           }
+         
          
   
           
@@ -257,15 +359,57 @@ class Notification extends Component {
                 var agre =  Math.abs(ageDate.getUTCFullYear() - 1970);
                 // if(agre == 0){
                     agre = agre + 1
+
+                    var curDate = new Date(pData.fromDate)
+                    if(dob.getDate() == curDate.getDate() && dob.getMonth()==curDate.getMonth()){
+                      agre = agre - 1
+                    }
+
                 // }
                 res.Data[0][index].Age = agre;
 
                 
             }
 
-            console.log("res.Data[0] = ",res.Data[0])
-            this.setState({getWorkAnniversaryListData : res.Data[0]})
+            if(res.Data[0].length >4){
+
+              this.setState({getWorkAnniversaryListData : res.Data[0]})
+
+            }else{    
+              
+              var len = 5-res.Data[0].length;
+              console.log("len = ",len)
+              for (let index = 0; index < len; index++) {
+                  var data = {
+                    Joiningdate:"",
+                    LoginID:"",
+                    Age:""
+                  }
+                  res.Data[0].push(data)
+                
+              }
+              // console.log("requestData = ",requestData)
+              this.setState({getWorkAnniversaryListData : res.Data[0]})
+
+            }
+
+         
+           
             // this.setState({totalLeave : requestData.length})
+          }else{
+
+            for (let index = 0; index < 5; index++) {
+              var data = {
+                Joiningdate:"",
+                LoginID:"",
+                Age:""
+              }
+              res.Data[0].push(data)
+            
+            }
+            // console.log("requestData = ",requestData)
+            this.setState({getWorkAnniversaryListData : res.Data[0]})
+
           }
          
   
@@ -309,9 +453,54 @@ class Notification extends Component {
           
           
           if(requestData.length > 0){
+            if(requestData.length >4){
+              for (let index = 0; index < res.Data[0].length; index++) {
+                // const element = array[index];
+                  // if(res.Data[0][index].LeaveFromDate == this.state.setValuetoday){
+                  //   res.Data[0][index].classname = "TodayDate"
+                  // }
+                
+              }
+
+              this.setState({TimeoffProposalData : res.Data[0]})
+
+            }else{    
+              
+              var len = 5-requestData.length;
+              console.log("len = ",len)
+              for (let index = 0; index < len; index++) {
+                  var data = {
+                    LeaveFromDate:"",
+                    LeaveToDate:"",
+                    LoginID:"",
+                    LeaveType:"",
+                    Reason:""
+                  }
+                  requestData.push(data)
+                
+              }
+              console.log("requestData = ",requestData)
+              this.setState({TimeoffProposalData : requestData})
+
+            }
+            
             // this.state.timeoffStyle = "table-pane.active"
-            this.setState({TimeoffProposalData : res.Data[0]})
+            
             // this.setState({totalLeave : requestData.length})
+          }else{
+            for (let index = 0; index < 5; index++) {
+              var data = {
+                LeaveFromDate:"",
+                LeaveToDate:"",
+                LoginID:"",
+                LeaveType:"",
+                Reason:""
+              }
+              requestData.push(data)
+            
+            }
+            this.setState({TimeoffProposalData : requestData})
+
           }
          
   
@@ -458,6 +647,7 @@ class Notification extends Component {
       {
         Header: "From Date",
         accessor: "LeaveFromDate",
+        // className:"classname",
         width: 100,
       },
       {
@@ -471,8 +661,6 @@ class Notification extends Component {
         accessor: "LoginID",
         width: 100,
       },
-
-      
 
       {
         Header: "Reason",
@@ -492,6 +680,7 @@ class Notification extends Component {
       {
         Header: "Date",
         accessor: "HolidayDate",
+        // className:(this.state.setValuetoday < HolidayDate ?"Welcome2":""),
         width: 100,
       },
       {
@@ -509,7 +698,7 @@ class Notification extends Component {
       
 
       {
-        Header: "Expiry Date",
+        Header: "Leave Type",
         accessor: "HolidayExpiryDate",
         width: 100,
       },
@@ -526,17 +715,13 @@ class Notification extends Component {
       {
         Header: "Birth Date",
         accessor: "Birthdate",
-        width: 100,
+        width: 250,
       },
+      
       {
         Header: "User",
         accessor: "LoginID",
-        width: 100,
-      },
-      {
-        Header: "Age",
-        accessor: "Age",
-        width: 100,
+        width: 250,
       },
 
      
@@ -547,12 +732,12 @@ class Notification extends Component {
         {
             Header: "Joining Date",
             accessor: "Joiningdate",
-            width: 100,
+            width: 200,
           },
           {
             Header: "User",
             accessor: "LoginID",
-            width: 100,
+            width: 200,
           },
           {
             Header: "Work Experiance",
@@ -595,7 +780,7 @@ class Notification extends Component {
           <Card>
             <CardHeader className="btn-right-outer" color="primary" icon>
               <CardIcon color="primary">
-                <HeadsetMic />
+                <TagFacesIcon />
               </CardIcon>
               <h4 className="margin-right-auto text-color-black">
                 Leave List
@@ -619,8 +804,10 @@ class Notification extends Component {
                         shipColumsDataHBL
                       }
                       defaultPageSize={5}
+                      enablePagination= {false}
                       showPaginationBottom={true}
-                      className="-striped -highlight chatMgtList1"
+                      pagination={false}
+                      className="-striped -highlight chatMgtList1 hidepageination"
                     />
                   </div>
                 </GridItem>
@@ -638,7 +825,7 @@ class Notification extends Component {
           <Card>
             <CardHeader className="btn-right-outer" color="primary" icon>
               <CardIcon color="primary">
-                <HeadsetMic />
+                <EventIcon />
               </CardIcon>
               <h4 className="margin-right-auto text-color-black">
                 Holiday List
@@ -662,8 +849,8 @@ class Notification extends Component {
                         shipColumsHolidayListProposalData
                       }
                       defaultPageSize={5}
-                      showPaginationBottom={true}
-                      className="-striped -highlight chatMgtList1"
+                      // showPaginationBottom={true}
+                      className="-striped -highlight chatMgtList1 hidepageination"
                     />
                   </div>
                 </GridItem>
@@ -681,7 +868,7 @@ class Notification extends Component {
           <Card>
             <CardHeader className="btn-right-outer" color="primary" icon>
               <CardIcon color="primary">
-                <HeadsetMic />
+                <CakeIcon />
               </CardIcon>
               <h4 className="margin-right-auto text-color-black">
                 Birthday List
@@ -707,8 +894,8 @@ class Notification extends Component {
                         //   : KeywordListData
                       }
                       defaultPageSize={5}
-                      showPaginationBottom={true}
-                      className="-striped -highlight chatMgtList1"
+                      // showPaginationBottom={true}
+                      className="-striped -highlight chatMgtList1 hidepageination"
                     />
                   </div>
                 </GridItem>
@@ -726,7 +913,7 @@ class Notification extends Component {
           <Card>
             <CardHeader className="btn-right-outer" color="primary" icon>
               <CardIcon color="primary">
-                <HeadsetMic />
+                <AssignmentTurnedInIcon />
               </CardIcon>
               <h4 className="margin-right-auto text-color-black">
                 Work Anniversary List
@@ -750,8 +937,8 @@ class Notification extends Component {
                         getWorkAnniversaryListDataColumn
                       }
                       defaultPageSize={5}
-                      showPaginationBottom={true}
-                      className="-striped -highlight chatMgtList1"
+                      // showPaginationBottom={true}
+                      className="-striped -highlight chatMgtList1 hidepageination"
                     />
                   </div>
                 </GridItem>

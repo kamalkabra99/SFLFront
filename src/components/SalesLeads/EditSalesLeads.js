@@ -5136,7 +5136,7 @@ if (res.success) {
           };
 
           if(this.state.ProposalStatus === "Cancelled"){
-            data.ManagedBy = 18;
+            // data.ManagedBy = 18;
             data.SalesLeadFollowupDate = null;
           }
           if(this.state.ProposalStatus === "Closed"){
@@ -5188,7 +5188,7 @@ if (res.success) {
                           if (result.data.length > 0) {
                             data.ManagedBy = result.data[0].ManagedBy;
                             if(this.state.ProposalStatus === "Cancelled"){
-                              data.ManagedBy = 18;
+                              // data.ManagedBy = 18;
                             }
                           }
                           var formData = new FormData();

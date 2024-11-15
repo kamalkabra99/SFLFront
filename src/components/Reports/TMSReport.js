@@ -110,6 +110,7 @@ class TMSReport extends Component {
       UserNameValue: "",
       TmsDeleteAccess: "",
       TmsWriteAccess: "",
+      TmsAllAccess:"",
       updateLogin: "",
       updateLogout: "",
       updateFullLogout: "",
@@ -130,6 +131,9 @@ class TMSReport extends Component {
     this.state.TmsWriteAccess = CommonConfig.getUserAccess(
       "Time Booking Report"
     ).WriteAccess;
+    this.state.TmsAllAccess = CommonConfig.getUserAccess(
+      "Time Booking Report"
+    ).AllAccess;
     this.getManagedBy();
   }
 
@@ -614,22 +618,64 @@ class TMSReport extends Component {
   deleteLoginReport = (record, type) => {
     console.log(record.original.tmsID);
 
-    if(type == "Leave"){
+    
 
-      this.setState({
-        open: true,
-        deleteID: record.original.LeaveId,
-        deleteType: type,
-      });
+    if(type == "Leave"){
+      var newfromDate = new Date()
+
+      var compdate =   moment(newfromDate)
+      .format(CommonConfig.dateFormat.dateOnly)
+      .toString()
+      if(record.original.LeaveFromDate > compdate){
+        this.setState({
+          open: true,
+          deleteID: record.original.LeaveId,
+          deleteType: type,
+        });
+
+      }else{
+        if(this.state.TmsAllAccess == "1"){
+            this.setState({
+              open: true,
+              deleteID: record.original.LeaveId,
+              deleteType: type,
+            });
+
+        }else{
+          cogoToast.error("You don't have permission to delete the current date leave")
+        }
+        
+      }
+
+      
 
     }else{
 
-      this.setState({
-        open: true,
-        deleteID: record.original.tmsID,
-        deleteType: type,
-      });
+      var newfromDate = new Date()
 
+      var compdate =   moment(newfromDate)
+      .format(CommonConfig.dateFormat.dateOnly)
+      .toString()
+
+      if(record.original.LoginDate > compdate){
+        this.setState({
+          open: true,
+          deleteID: record.original.tmsID,
+          deleteType: type,
+        });
+
+      }else{
+        if(this.state.TmsAllAccess == "1"){
+          this.setState({
+            open: true,
+            deleteID: record.original.tmsID,
+            deleteType: type,
+          });
+
+        }else{
+          cogoToast.error("You don't have permission to delete the current date record")
+        }
+      }
     }
 
     
