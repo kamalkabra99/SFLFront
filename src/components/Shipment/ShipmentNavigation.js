@@ -1140,7 +1140,7 @@ class ShipmentNavigation extends Component {
                     " '" +
                     filterList[i]["value"] +
                     "%'" +
-                    "OR" +
+                    " OR " +
                     " " +
                     "spi.ConfirmationNumber" +
                     " " +
@@ -1161,7 +1161,7 @@ class ShipmentNavigation extends Component {
                     " '" +
                     filterList[i]["value"] +
                     "%'" +
-                    "OR" +
+                    " OR " +
                     " " +
                     "stm.TrackingID" +
                     " " +
@@ -1208,7 +1208,7 @@ class ShipmentNavigation extends Component {
                     " '" +
                     filterList[i]["value"] +
                     "%'" +
-                    "OR" +
+                    " OR " +
                     " " +
                     "spi.ConfirmationNumber" +
                     " " +
@@ -1230,7 +1230,7 @@ class ShipmentNavigation extends Component {
                     " '" +
                     filterList[i]["value"] +
                     "%'" +
-                    "OR" +
+                    " OR " +
                     " " +
                     "stm.TrackingID" +
                     " " +
@@ -1278,7 +1278,7 @@ class ShipmentNavigation extends Component {
                     "%" +
                     filterList[i]["value"] +
                     "'" +
-                    "OR" +
+                    " OR " +
                     " " +
                     "spi.ConfirmationNumber" +
                     " '" +
@@ -1298,7 +1298,7 @@ class ShipmentNavigation extends Component {
                     "%" +
                     filterList[i]["value"] +
                     "'" +
-                    "OR" +
+                    " OR " +
                     " " +
                     "stm.TrackingID" +
                     " '" +
@@ -1346,7 +1346,7 @@ class ShipmentNavigation extends Component {
                     "%" +
                     filterList[i]["value"] +
                     "'" +
-                    "OR" +
+                    " OR " +
                     " " +
                     "spi.ConfirmationNumber" +
                     " '" +
@@ -1368,7 +1368,7 @@ class ShipmentNavigation extends Component {
                     "%" +
                     filterList[i]["value"] +
                     "'" +
-                    "OR" +
+                    " OR " +
                     " " +
                     "stm.TrackingID" +
                     " '" +
@@ -1415,7 +1415,7 @@ class ShipmentNavigation extends Component {
                     " '%" +
                     filterList[i]["value"] +
                     "%'" +
-                    "OR" +
+                    " OR " +
                     " " +
                     "spi.ConfirmationNumber" +
                     " " +
@@ -1435,7 +1435,7 @@ class ShipmentNavigation extends Component {
                     " '%" +
                     filterList[i]["value"] +
                     "%'" +
-                    "OR" +
+                    " OR " +
                     " " +
                     "stm.TrackingID" +
                     " " +
@@ -1481,7 +1481,7 @@ class ShipmentNavigation extends Component {
                     " '%" +
                     filterList[i]["value"] +
                     "%'" +
-                    "OR" +
+                    " OR " +
                     " " +
                     "spi.ConfirmationNumber" +
                     " " +
@@ -1503,7 +1503,7 @@ class ShipmentNavigation extends Component {
                     " '%" +
                     filterList[i]["value"] +
                     "%'" +
-                    "OR" +
+                    " OR " +
                     " " +
                     "stm.TrackingID" +
                     " " +
@@ -1552,7 +1552,7 @@ class ShipmentNavigation extends Component {
                     " '" +
                     filterList[i]["value"] +
                     "'" +
-                    "OR" +
+                    " OR " +
                     " " +
                     "spi.ConfirmationNumber" +
                     " " +
@@ -1572,7 +1572,7 @@ class ShipmentNavigation extends Component {
                     " '" +
                     filterList[i]["value"] +
                     "'" +
-                    "OR" +
+                    " OR " +
                     " " +
                     "stm.TrackingID" +
                     " " +
@@ -1633,7 +1633,7 @@ class ShipmentNavigation extends Component {
                     " " +
                     filterList[i]["value"] +
                     " " +
-                    "OR" +
+                    " OR " +
                     " " +
                     "spi.ConfirmationNumber" +
                     " " +
@@ -1655,7 +1655,7 @@ class ShipmentNavigation extends Component {
                     " '" +
                     filterList[i]["value"] +
                     "' " +
-                    "OR" +
+                    " OR " +
                     " " +
                     "stm.TrackingID" +
                     " " +
@@ -1713,7 +1713,7 @@ class ShipmentNavigation extends Component {
                   " '" +
                   filterList[i]["value"] +
                   "'" +
-                  "OR" +
+                  " OR " +
                   " " +
                   "spi.ConfirmationNumber" +
                   " " +
@@ -1731,7 +1731,7 @@ class ShipmentNavigation extends Component {
                   " '" +
                   filterList[i]["value"] +
                   "'" +
-                  "OR" +
+                  " OR " +
                   " " +
                   "stm.TrackingID" +
                   " " +
@@ -1779,7 +1779,7 @@ class ShipmentNavigation extends Component {
                   " '" +
                   filterList[i]["value"] +
                   "'" +
-                  "OR" +
+                  " OR " +
                   " " +
                   "spi.ConfirmationNumber" +
                   " " +
@@ -1799,7 +1799,7 @@ class ShipmentNavigation extends Component {
                   " '" +
                   filterList[i]["value"] +
                   "'" +
-                  "OR" +
+                  " OR " +
                   " " +
                   "stm.TrackingID" +
                   " " +
