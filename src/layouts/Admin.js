@@ -176,6 +176,7 @@ export default function Dashboard(props) {
       setShowModal(true);
       idleTimer.current.reset();
       setIsTimedOut(true);
+      handleLogout();
     }
   };
 
