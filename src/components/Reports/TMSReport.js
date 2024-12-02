@@ -78,6 +78,7 @@ class TMSReport extends Component {
       TimeoffProposalData:[],
       setweekendsCount: 0,
       setTimeOff: 0,
+      setLeaveCount:0,
       isCommitted: false,
       committedLength: 0,
       notCommitedLength: 0,
@@ -479,6 +480,7 @@ class TMSReport extends Component {
   
                   var weekendsCount = 0;
                   var TimeOffCount = 0;
+                  var LeaveCount = 0
                   for (let indesSet = 0; indesSet < setArr.length; indesSet++) {
                     // const element = array[indesSet];
                     if (setArr[indesSet].IPDetails == "Weekends") {
@@ -502,6 +504,13 @@ class TMSReport extends Component {
                       TimeOffCount = TimeOffCount + 1;
                       // setArr[indesSetTime].IPDetails = "TimeOff"
                       console.log("TimeOffCount = ", TimeOffCount);
+                    }
+                    if(setArr[indesSetTime].IPDetails == "Leave"){
+
+                      LeaveCount = LeaveCount + 1;
+                      // setArr[indesSetTime].IPDetails = "TimeOff"
+                      console.log("TimeOffCount = ", LeaveCount);
+
                     }
                   }
                   if(this.state.TimeoffProposalData.length > 0){
@@ -529,6 +538,8 @@ class TMSReport extends Component {
                   
   
                   this.setState({ setTimeOff: TimeOffCount });
+                  this.setState({ setLeaveCount: LeaveCount });
+                  
                   console.log("TimeOff = ", TimeOffCount);
                   this.setState({ setweekendsCount: weekendsCount });
                 } else {
@@ -871,6 +882,15 @@ class TMSReport extends Component {
         Header: "End Time",
         accessor: "LogoutTime",
         width: 100,
+        Footer: (
+          <span>
+            <b>
+              {this.state.setWeekandTimeoff == 0
+                ? ""
+                : "Leave:- " + this.state.setLeaveCount}
+            </b>
+          </span>
+        ),
       },
       {
         Header: "Total Break",

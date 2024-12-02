@@ -507,8 +507,15 @@ class TimeManagement extends React.Component {
         console.log("Res = ", res);
         if (res.success) {
           this.hideLoador();
+          console.log("res.Data[0] = ",res)
+          console.log("res.Data[0] = ",res.Data.alreadyLeave);
           this.setState({ Leaveopen: false });
-          cogoToast.success("Request TimeOff added successfully");
+          if(res.Data.alreadyLeave == 1){
+            cogoToast.error(res.Data.message);
+          }else{
+            cogoToast.success("Request TimeOff added successfully");
+          }
+          
           this.getTmsUserName(this.state.userTimeZone.value);
         } else {
           this.hideLoador();

@@ -103,6 +103,7 @@ class StandardInvoiceReport extends Component {
                 this.setState({
                 ExcelJSONData : finalJson
                 })
+                console.log("finalJson = ",finalJson)
             };
             reader.readAsBinaryString(f);
         }
@@ -295,6 +296,12 @@ class StandardInvoiceReport extends Component {
 
     for(var j = 0 ; j < this.state.ExcelJSONData.length ; j++ ){
         let obj = {};
+        
+        if(this.state.ExcelJSONData[j]["NetChargeAmount"].includes("$ ") == true){
+            this.state.ExcelJSONData[j]["NetChargeAmount"] = this.state.ExcelJSONData[j]["NetChargeAmount"].replace("$ ", "");
+            console.log('this.state.ExcelJSONData[j]["NetChargeAmount"]',this.state.ExcelJSONData[j]["NetChargeAmount"])
+        }
+        console.log('this.state.ExcelJSONData[j]["NetChargeAmount"]',this.state.ExcelJSONData[j]["NetChargeAmount"])
         obj.PaymentIssuedDate = this.state.ExcelJSONData[j]["InvoiceDate"];
         obj.VendorName = this.state.ExcelJSONData[j]["VendorName"];
         obj.DatePaid = this.state.ExcelJSONData[j]["DatePaid"];
@@ -309,8 +316,8 @@ class StandardInvoiceReport extends Component {
         paymentIssued : finalJson,
         userid : CommonConfig.loggedInUserData().PersonID,
     }
-    this.showLoader();
-    // console.log("data......",data);
+    // this.showLoader();
+    console.log("data......",data);
     try{
         api.post("scheduleshipment/addIssuedPayments",data).then(res => {
             // console.log("res......",res);

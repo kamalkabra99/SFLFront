@@ -311,7 +311,7 @@ class CommercialInvoice extends Component {
       this.showLoader();
       api.post("scheduleshipment/getShipmentInfo", data).then((res) => {
         if (res.success) {
-          var datatoaccess = 0;
+          var datatoaccess = 1;
           if (CommonConfig.getUserAccess("Shipment").AllAccess === 1) {
             datatoaccess = 1;
           } else {
@@ -320,6 +320,9 @@ class CommercialInvoice extends Component {
             ) {
               datatoaccess = 1;
             }
+            // else if(){
+              
+            // }
           }
 
           if (datatoaccess == 1) {

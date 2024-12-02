@@ -4697,17 +4697,17 @@ if (res.success) {
     
     console.log("previousManaged = ",this.state.previousManaged.value)
     debugger
-    if(this.state.ProposalStatus === "Cancelled" && this.state.selectedWorkingOnRequest && this.state.previousManaged.value == undefined){
+    // if(this.state.ProposalStatus === "Cancelled" && this.state.selectedWorkingOnRequest && this.state.previousManaged.value == undefined){
       
-      debugger
-      // this.state.proposalstatusErr
-      this.setState({
-        proposalstatusErr: true,
-        proposalstatusHelperText: "Please change Proposal Status to new or open",
-      });
-      return;
+    //   debugger
+    //   // this.state.proposalstatusErr
+    //   this.setState({
+    //     proposalstatusErr: true,
+    //     proposalstatusHelperText: "Please change Proposal Status to new or open",
+    //   });
+    //   return;
       
-    }
+    // }
 
     if(this.state.ProposalStatus != "Cancelled" && this.state.selectedWorkingOnRequest.value == undefined){
       // this.state.trackingNumber = ""

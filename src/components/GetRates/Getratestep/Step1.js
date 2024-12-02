@@ -110,6 +110,7 @@ class Step1 extends React.Component {
         SelectedWeightType: "",
         PickUp: "No",
         Residential: "No",
+        identical:"",
 
         FromCountry: "",
         ToCountry: "",
@@ -371,8 +372,13 @@ class Step1 extends React.Component {
   }
 
   ChangeFromCountry = (event) => {
+    debugger
     if (CommonConfig.isEmpty(event)) {
       return null;
+    }
+    debugger
+    if(event.value != 89 || event.value !=202){
+      this.state.identical = "no"
     }
     this.setState({
       fromZipCodeErr: false,
@@ -497,6 +503,9 @@ class Step1 extends React.Component {
     } else {
       this.setState({ IsPickupZone: false });
     }
+
+    
+    
 
     this.setState({ GetRate: GetRate });
   };
@@ -1910,6 +1919,15 @@ class Step1 extends React.Component {
     }
   };
 
+  ChangeResidential = (e) => {
+    this.setState({ SelectedResidential: e.target.value });
+    if (e.target.value == "yes") {
+      this.setState({ IsResidential: true });
+    } else {
+      this.setState({ IsResidential: false });
+    }
+  };
+
   handleChange(date) {
     this.setState({ StartDate: moment(date).toDate() });
   }
@@ -2159,6 +2177,13 @@ class Step1 extends React.Component {
       }
       this.setState({ GetRate: GetRate });
     }
+  }
+
+  changePackage = (event) =>{
+   
+      this.setState({ identical: event.target.value });
+      this.state.identical = event.target.value
+    
   }
 
   handleZipChange = (e, type) => {
@@ -2633,6 +2658,7 @@ class Step1 extends React.Component {
     FinalGetRate.ShipDate = this.state.StartDate;
     FinalGetRate.PackageDetails = this.state.PackageDetails;
     FinalGetRate.AgentCode = CommonConfig.loggedInUserData().PersonID;
+    FinalGetRate.identical = this.state.identical
     this.setState({ FinalGetRate: FinalGetRate });
 
     var data = JSON.stringify({ quoteData: FinalGetRate });
@@ -2925,6 +2951,7 @@ class Step1 extends React.Component {
       toFedExCityHelperText: "",
       toUpsCityError: false,
       toUpsCityHelperText: "",
+      
     });
 
     this.GetCountry();
@@ -3725,9 +3752,65 @@ class Step1 extends React.Component {
         </GridContainer>
 
         <GridContainer>
-          <GridItem xs={12} sm={12} md={12}>
-            <h3>Package Details</h3>
+          {/* <GridItem xs={12} sm={12} md={12}> */}
+            <GridItem xs={9} sm={9} md={9}>
+                  <h3>Package Details</h3>
+            </GridItem>
+
+
+            <GridItem xs={3} sm={3} md={3}>
+            <div className="select-spl">
+              <FormControl className={classes.formControl} fullWidth>
+                <InputLabel
+                  htmlFor="selectshipmenttype"
+                  className={classes.selectLabel}
+                >
+                  Do you want pickup?
+                </InputLabel>
+                <Select
+                  onChange={(event) => this.changePackage(event)}
+                  inputProps={{ name: "identical?", id: "identical" }}
+                  defaultValue={
+                    this.state.GetRate.FromCountry.CountryCode == "US" ||
+                    this.state.GetRate.FromCountry.CountryCode == "IN"
+                      ? "no"
+                      : "no"
+                  }
+                  disabled={
+                    this.state.GetRate.FromCountry.CountryCode == "US" ||
+                    this.state.GetRate.FromCountry.CountryCode == "IN"
+                      ? false
+                      : true
+                  }
+                >
+                  <MenuItem
+                    classes={{
+                      root: classes.selectMenuItem,
+                      selected: classes.selectMenuItemSelected,
+                    }}
+                    value="yes"
+                  >
+                    {" "}
+                    Yes{" "}
+                  </MenuItem>
+                  <MenuItem
+                    classes={{
+                      root: classes.selectMenuItem,
+                      selected: classes.selectMenuItemSelected,
+                    }}
+                    value="no"
+                  >
+                    {" "}
+                    No{" "}
+                  </MenuItem>
+                 
+                </Select>
+              </FormControl>
+            </div>
           </GridItem>
+                        
+            
+          {/* </GridItem> */}
           <GridItem xs={12} sm={12} md={12}>
             <div className="package-table">
               <table>
