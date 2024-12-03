@@ -1797,7 +1797,7 @@ class Step2 extends React.Component {
                   <thead>
                     <tr>
                       <th>No of Packages</th>
-                      <th>Weight (lbs)*</th>
+                      <th>Actual Weight (lbs)*</th>
                       <th>Dimenstion (L + W + H in Inches)*</th>
                       <th>Chargeble Weight</th>
                       <th>CFT</th>

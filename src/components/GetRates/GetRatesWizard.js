@@ -714,7 +714,7 @@ class GetRatesWizard extends React.Component {
                               ""
                             ) : (
                               <td>
-                                <b>{this.state.DallasCostToal}</b>
+                                <b>$ {this.state.DallasCostToal}</b>
                               </td>
                             )}
 
@@ -722,7 +722,7 @@ class GetRatesWizard extends React.Component {
                               ""
                             ) : (
                               <td>
-                                <b>{this.state.DallasTotal}</b>
+                                <b>$ {this.state.DallasTotal}</b>
                               </td>
                             )}
 
@@ -730,7 +730,7 @@ class GetRatesWizard extends React.Component {
                               ""
                             ) : (
                               <td>
-                                <b>{this.state.SecaucusCostTotal}</b>
+                                <b>$ {this.state.SecaucusCostTotal}</b>
                               </td>
                             )}
 
@@ -738,7 +738,7 @@ class GetRatesWizard extends React.Component {
                               ""
                             ) : (
                               <td>
-                                <b>{this.state.SecaucusTotal}</b>
+                                <b>$ {this.state.SecaucusTotal}</b>
                               </td>
                             )}
 
@@ -746,7 +746,7 @@ class GetRatesWizard extends React.Component {
                               ""
                             ) : (
                               <td>
-                                <b>{this.state.HaywardCostTotal}</b>
+                                <b>$ {this.state.HaywardCostTotal}</b>
                               </td>
                             )}
 
@@ -754,7 +754,7 @@ class GetRatesWizard extends React.Component {
                               ""
                             ) : (
                               <td>
-                                <b>{this.state.HaywardTotal}</b>
+                                <b>$ {this.state.HaywardTotal}</b>
                               </td>
                             )}
                           </tr>
