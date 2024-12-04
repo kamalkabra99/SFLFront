@@ -28,6 +28,7 @@ import CardHeader from "components/Card/CardHeader.js";
 import SimpleBackdrop from "../../utils/general";
 import { format } from "date-fns";
 import _ from "lodash";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
 //time picker
 import TimePicker from "react-time-picker";
 import "react-time-picker/dist/TimePicker.css";
@@ -5218,6 +5219,7 @@ class ShipmentCustom extends React.Component {
       Status: "Active",
       ShippingInvoiceID: null,
       Index: this.state.PaymentList.length + 1,
+      SelectedForReport:0,
     };
     this.setState(
       {
@@ -7157,7 +7159,18 @@ class ShipmentCustom extends React.Component {
       InvoiceDueDate: moment(dateNew).format(CommonConfig.dateFormat.dateOnly),
     });
   };
+  handleInputChange = (e, access) => {debugger
+    let paymentModules = this.state.PaymentList;
+    let cbVal = e.target.checked;
+    let cbName = e.target.name;
 
+    if (access === "Check") {
+      let index = paymentModules.findIndex(
+        (x) => x.ShippingInvoiceID == cbName);
+      paymentModules[index].SelectedForReport = cbVal ? 1 : 0;
+      this.setState({ PaymentList: paymentModules });
+    }
+};
   viewInvoice = () => {
     const ServiceList = this.state.ServiceDescriptionList.map((type) => {
       return { value: type.Description, label: type.Description };
@@ -7294,6 +7307,26 @@ class ShipmentCustom extends React.Component {
                   value: parseFloat(payment.TotalAmount).toFixed(2),
                 }}
               />
+            </td>
+            <td className="width-full"> 
+          
+            <div className="inline-element">
+                <div className="th-check">
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={payment.SelectedForReport}
+                        name={payment.ShippingInvoiceID}
+                        onChange={(event) =>
+                          this.handleInputChange(event, "Check")
+                        }
+                      />
+                    }
+                    classes={{ label: classes.label, root: classes.labelRoot }}
+                  />
+                </div>
+                
+              </div>   
             </td>
             <td className="pck-action-column">
               {!this.state.NewviewAllClear && !this.state.hasInvoiceAccess ? (
@@ -11303,7 +11336,7 @@ class ShipmentCustom extends React.Component {
     // }
   };
 
-  viewShipmentCommercial = (type) => {
+  viewShipmentCommercial = (type,InvoiceType = "Auto") => {
     if (type === "Commercial Invoice") {
       let printCommercialData = {
         ShippingID:
@@ -11325,12 +11358,15 @@ class ShipmentCustom extends React.Component {
         "_blank"
       );
     } else {
+      let CustomInvoiceData = this.state.PaymentList.filter(
+        (x) => x.SelectedForReport === 1
+      );
       let printInvoiceData = {
         ShippingID:
           this.props.location.state && this.props.location.state.ShipppingID
             ? this.props.location.state.ShipppingID
             : null,
-        InvoiceData: this.state.DocumentInvoiceData,
+        InvoiceData: InvoiceType =="Custom"?CustomInvoiceData:this.state.DocumentInvoiceData,
         TotalReceivedCost: this.state.TotalReceivedCost,
         DatePaidOn: this.state.DatePaidOn,
         FromAddress: this.state.FromAddressObj,
@@ -15475,6 +15511,19 @@ class ShipmentCustom extends React.Component {
                       Invoice
                     </h4>
                     <div style={{ textAlign: "right", marginTop: "12px" }}>
+                     
+                        <Button
+                          onClick={() =>
+                            this.viewShipmentCommercial("Invoice","Custom")
+                          }
+                          style={{ width: "170px", height: "20px" }}
+                          color="primary"
+                        >
+                          Generate Custom Invoice
+                        </Button>
+                      
+                    </div>
+                    <div style={{ textAlign: "right", marginTop: "12px" }}>
                       {this.state.PaymentList.filter(
                         (x) => x.Status === "Active"
                       ).length === 0 ? (
@@ -15512,6 +15561,7 @@ class ShipmentCustom extends React.Component {
                                   <th className="right">Qty</th>
                                   <th className="right">Cost</th>
                                   <th className="right">Total</th>
+                                  <th className="right">Select</th>
                                   <th>Action</th>
                                 </tr>
                               </thead>
