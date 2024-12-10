@@ -94,6 +94,7 @@ import AllSalesReports from "components/Reports/AllSalesReports";
 import ShipmentReport from "components/Reports/ShipmentReport";
 import PrintCommercialInvoice from "components/ShipmentDocumentation/PrintCommercialInvoice";
 import PrintInvoice from "components/ShipmentDocumentation/PrintInvoice";
+import PrintInvoiceCustom from "components/ShipmentDocumentation/PrintInvoiceCustom";
 import AllInputs from "components/SalesLeads/AllInputs";
 import SalesLeadNavigation from "components/SalesLeads/SalesLeadNavigation";
 import ShipmentNavigation from "components/Shipment/ShipmentNavigation";
@@ -286,7 +287,14 @@ var dashRoutes = [
     layout: "/auth",
     invisible: false,
   },
-
+  {
+    path: "/PrintInvoiceCustom",
+    name: "PrintInvoiceCustom",
+    icon: ScheduleShipmentIcon,
+    component: PrintInvoiceCustom,
+    layout: "/auth",
+    invisible: false,
+  },
   {
     path: "/SalesLeads",
     name: "Sales Leads",

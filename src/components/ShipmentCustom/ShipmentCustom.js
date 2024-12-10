@@ -64,7 +64,7 @@ import Checkbox from "@material-ui/core/Checkbox";
 import { confirmAlert } from "react-confirm-alert"; // Import
 import "react-confirm-alert/src/react-confirm-alert.css"; // Import css
 import axios from "axios";
-import Geocode from "react-geocode";
+import Geocode, { fromAddress } from "react-geocode";
 import { publicIp, publicIpv4, publicIpv6 } from "public-ip";
 import UserAccess from "components/User Access/UserAccess";
 import momentTimezoneWithData20122022 from "moment-timezone/builds/moment-timezone-with-data-2012-2022";
@@ -75,7 +75,11 @@ import momentTimezoneWithData20122022 from "moment-timezone/builds/moment-timezo
 import stamp from "../../assets/img/HBL/stamp.png";
 import pshah from "../../assets/img/HBL/pshah.png";
 import html2pdf from "html2pdf.js";
+import SFLlogo from "../../assets/img/SFL_logo.png";
+import { jsPDF } from "jspdf";
+import html2canvas from "html2canvas";
 
+const ref = React.createRef();
 var creditCardType = require("credit-card-type");
 var valid = require("card-validator");
 const DBName_prod = "myzuwvvaqk";
@@ -122,6 +126,20 @@ class ShipmentCustom extends React.Component {
           classname: "inactive",
         },
       ],
+      Invoicedata: [],
+      FromAddress: {},
+      ToAddress: {},
+      TrackingNumber: "",
+      ShipmentType: "",
+      FromCountryName: "",
+      ToCountryName: "",
+      BookingDate: "",
+      TotalCost: 0,
+      InvoiceDate: "",
+      InvoiceDueDate: "",
+      TotalReceivedCost: 0,
+      DatePaidOn: "",
+      ShippingID: "",
       useraccess: JSON.parse(localStorage.getItem("loggedInUserData")),
       updatedipAddress: "",
       createDuplicate: "0",
@@ -307,7 +325,8 @@ class ShipmentCustom extends React.Component {
       TotalCostCommercial: 0,
       TotalReceivedCost: 0,
       DatePaidOn: "",
-
+      TotalReceivedCostCustom:0,
+      TotalBalanceCustom:0,
       totalCFT: 0,
       totalChargableWeight: 0,
       totalInsuredValue: 0.0,
@@ -381,7 +400,7 @@ class ShipmentCustom extends React.Component {
       isPaymentMethod: false,
       isPaymentMethodBank: false,
       shipmentstatusList: "",
-
+      fromAdd:"",
       //------------------------------------- Tab 5 Tracking Data          ---------------------------------------------------------//
 
       trackingNumberList: [],
@@ -610,6 +629,7 @@ class ShipmentCustom extends React.Component {
       ConsignedTo: "",
       ShipperExportor: "",
       APPLYTO: "",
+      CustomInvoiceOpen:false,
     };
   }
 
@@ -3330,6 +3350,7 @@ class ShipmentCustom extends React.Component {
               this.getStates(selectedFromCountry);
               this.toStates(selectedToCountry);
               //   setTimeout(() => {
+                debugger
               this.setState({
                 FromAddress: fromRes[0],
                 FromCompanyName: fromRes[0].CompanyName,
@@ -3717,6 +3738,9 @@ class ShipmentCustom extends React.Component {
       this.setState({ FromEmail: Email });
     } else if (type === "CreatedBy") {
       this.setState({ CreatedBy: event.target.value });
+    }
+    else if (type === "Custom") {
+      this.setState({ fromAdd: event.target.value });
     }
   };
 
@@ -7170,7 +7194,13 @@ class ShipmentCustom extends React.Component {
       paymentModules[index].SelectedForReport = cbVal ? 1 : 0;
       this.setState({ PaymentList: paymentModules });
     }
-};
+    else if(access === "FtotalReceive"){
+      this.setState({ TotalReceivedCostCustom: e.target.value });
+    }
+    else if(access === "FBalance"){
+      this.setState({ TotalBalanceCustom: e.target.value });
+    }
+  };
   viewInvoice = () => {
     const ServiceList = this.state.ServiceDescriptionList.map((type) => {
       return { value: type.Description, label: type.Description };
@@ -7308,26 +7338,6 @@ class ShipmentCustom extends React.Component {
                 }}
               />
             </td>
-            <td className="width-full"> 
-          
-            <div className="inline-element">
-                <div className="th-check">
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={payment.SelectedForReport}
-                        name={payment.ShippingInvoiceID}
-                        onChange={(event) =>
-                          this.handleInputChange(event, "Check")
-                        }
-                      />
-                    }
-                    classes={{ label: classes.label, root: classes.labelRoot }}
-                  />
-                </div>
-                
-              </div>   
-            </td>
             <td className="pck-action-column">
               {!this.state.NewviewAllClear && !this.state.hasInvoiceAccess ? (
                 <Button
@@ -7360,6 +7370,23 @@ class ShipmentCustom extends React.Component {
                   <InfoIcon />
                 </Button>
               </Tooltip>
+      
+          
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={payment.SelectedForReport}
+                        name={payment.ShippingInvoiceID}
+                        onChange={(event) =>
+                          this.handleInputChange(event, "Check")
+                        }
+                      />
+                    }
+                    classes={{ label: classes.label, root: classes.labelRoot }}
+                  />
+               
+                
+         
             </td>
           </tr>
         );
@@ -11379,6 +11406,139 @@ class ShipmentCustom extends React.Component {
       window.open(window.location.origin + "/auth/PrintInvoice", "_blank");
     }
   };
+
+
+  viewShipmentInvoiceCustom = (type,InvoiceType = "Auto") => {debugger
+   
+      let CustomInvoiceData = this.state.PaymentList.filter(
+        (x) => x.SelectedForReport === 1
+      );
+      if(CustomInvoiceData.length!=0){
+      let printInvoiceData = {
+        ShippingID:
+          this.props.location.state && this.props.location.state.ShipppingID
+            ? this.props.location.state.ShipppingID
+            : null,
+        InvoiceData: InvoiceType =="Custom"?CustomInvoiceData:this.state.DocumentInvoiceData,
+        TotalReceivedCost: this.state.TotalReceivedCost,
+        DatePaidOn: this.state.DatePaidOn,
+        FromAddress: this.state.FromAddressObj,
+        DocumentManagedBy: this.state.DocumentManagedBy,
+        TrackingNumber: this.state.TrackingNumber,
+        ToAddress: this.state.ToAddressObj,
+        DocumentInvoiceDueDate: this.state.DocumentInvoiceDueDate,
+      };
+      localStorage.setItem("printInvoice", JSON.stringify(printInvoiceData));
+    
+     let data = JSON.parse(localStorage.getItem("printInvoice"));
+     
+     this.setState({
+      propData: data,
+      FromAddress: data.FromAddress.AddressDetail,
+      ShipmentType: data.FromAddress.AddressDetail.ShipmentType,
+      FromCountryName: data.FromAddress.CountryName,
+      DocumentManagedBy: data.DocumentManagedBy,
+      BookingDate: data.FromAddress.AddressDetail.ShipmentDate,
+      ToAddress: data.ToAddress.AddressDetail,
+      ToCountryName: data.ToAddress.CountryName,
+      TrackingNumber: data.TrackingNumber,
+      TotalReceivedCost: data.TotalReceivedCost,
+      DatePaidOn: data.DatePaidOn,
+      ShippingID: data.ShippingID,
+      GeneratePDF: data.GeneratePDF,
+      InvoiceDueDate: data.DocumentInvoiceDueDate,
+    });
+    data.InvoiceData.sort(function(a, b) {
+      return new Date(b.InvoiceDate) - new Date(a.InvoiceDate);
+    });
+    let totalCost = 0;
+    let invoiceDate = "";
+    for (var i = 0; i < data.InvoiceData.length; i++) {
+      totalCost = data.InvoiceData[i].TotalAmount + totalCost;
+      invoiceDate = data.InvoiceData[0].InvoiceDate;
+      var date = new Date(invoiceDate);
+      date.setDate(date.getDate() + 7);
+    }
+    if (data.InvoiceData.length < 10) {
+      let diff = 10 - data.InvoiceData.length;
+      for (var j = 0; j < diff; j++) {
+        var invoiceObj = {
+          ServiceDescription: "",
+          Quantity: "",
+          Amount: "",
+          TotalAmount: "",
+          Index: "",
+        };
+        data.InvoiceData.push(invoiceObj);
+      }
+    }
+    debugger
+    this.setState({
+      TotalCost: totalCost,
+      Invoicedata: data.InvoiceData,
+      InvoiceDate: invoiceDate,
+      // InvoiceDueDate : date
+    });
+
+    var FromAddress= data.FromAddress.AddressDetail;
+    var fromadd = FromAddress.ContactName+"\n"+FromAddress.AddressLine1;
+    fromadd=!CommonConfig.isEmpty(FromAddress.AddressLine2)
+    ? fromadd+","
+    : fromadd+"";
+    
+    
+    fromadd=fromadd+FromAddress.AddressLine2;
+    fromadd=fromadd+!CommonConfig.isEmpty(FromAddress.AddressLine3)
+    ? fromadd+","
+    : fromadd+"";
+    fromadd=fromadd+FromAddress.AddressLine3
+    fromadd=fromadd+"\n"+FromAddress.City;
+    fromadd=fromadd+"\n"+FromAddress.State+"- "+FromAddress.ZipCode+","+ data.FromAddress.CountryName+"\n"+FromAddress.Phone1;
+    fromadd=!CommonConfig.isEmpty(FromAddress.Phone2) && FromAddress.Phone2!=undefined ? fromadd+","+FromAddress.Phone2 : fromadd+"";
+  
+
+    var totalReceivedCost = data.TotalReceivedCost;
+    var totalBalance = totalCost - totalReceivedCost;
+    
+    this.setState({fromAdd:fromadd,TotalReceivedCostCustom:totalReceivedCost,TotalBalanceCustom:totalBalance});
+
+
+     this.setState({
+      CustomInvoiceOpen: true,
+      // RemoveShipID: "",
+    });
+  }
+  else
+  cogoToast.error("Please select at least one record.")
+  };
+
+  renderInvoice = () => {
+    return this.state.Invoicedata.map((invoice, idx) => {
+      return (
+        <tr>
+          <td>
+            {invoice.ServiceDescription}
+            {invoice.Description ? " - " + invoice.Description : ""}
+          </td>
+          {/* <td>{invoice.Description}</td> */}
+          <td className="right">{invoice.Quantity}</td>
+          <td className="right">
+            {invoice.Amount ? "$" : null}
+            {invoice.Amount}
+          </td>
+          <td className="right">
+            {invoice.TotalAmount ? "$" : null}
+            {invoice.TotalAmount
+              ? parseFloat(invoice.TotalAmount).toFixed(2)
+              : null}
+          </td>
+        </tr>
+      );
+    });
+  };
+
+
+
   isGeneratedPriperdlableBox = async (type) => {
     if (type === "Prepaid Labels") {
       if (this.state.TotalPackages == 0) {
@@ -12195,8 +12355,6 @@ class ShipmentCustom extends React.Component {
     debugger;
     this.showLoader();
     console.log("in pdf......");
-
-    //var input = document.getElementById("HBL");
     document.getElementById("border-hide").style.display = "none";
     document.getElementById("border-hidediv").style.display = "block";
 
@@ -12226,7 +12384,6 @@ class ShipmentCustom extends React.Component {
     document.getElementById("Unloadingdiv").style.display = "block";
     document.getElementById("Export").style.display = "none";
     document.getElementById("Exportdiv").style.display = "block";
-
     document.getElementById("TrackingNumber").style.display = "none";
     document.getElementById("TrackingNumberdiv").style.display = "block";
     document.getElementById("BLNumber").style.display = "none";
@@ -12263,17 +12420,7 @@ class ShipmentCustom extends React.Component {
       pdf.save();
     });
     this.setState({ HBLdocOpen: false });
-    // this.hideLoader();
-    // cogoToast.success("HBL Download successfully");
-    //  html2pdf(element, options).then((pdf) => {
-    // Convert the PDF to a blob
-
-    // var pdfFile = new File();
-    // pdf.output("blob").then((blob) => {
-    //   pdfFile = new File([blob], this.state.BLNumber + ".pdf", {
-    //     type: "application/pdf",
-    //   });
-    // });
+   
     var HtmlData = "<html>" + elementdata + "</html>";
     let data = {
       dateTime: new Date().getTime(),
@@ -12301,55 +12448,42 @@ class ShipmentCustom extends React.Component {
       .catch((err) => {
         console.log(err);
       });
-    // });
-    // Use html2pdf to convert HTML to PDF
-    // html2pdf(element, options).then((pdf) => {
-    // pdf.save();
-    // });
-    //  this.hideLoader();
+   
+  };
+  generateCustomPDF = () => {debugger
+   // printInvoiceCustom
+   let CustomInvoiceData = this.state.PaymentList.filter(
+    (x) => x.SelectedForReport === 1
+  );
+  let printInvoiceData = {
+    ShippingID:
+      this.props.location.state && this.props.location.state.ShipppingID
+        ? this.props.location.state.ShipppingID
+        : null,
+    InvoiceData: CustomInvoiceData,
+    TotalReceivedCost: this.state.TotalReceivedCost,
+    DatePaidOn: this.state.DatePaidOn,
+    FromAddress: this.state.FromAddressObj,
+    DocumentManagedBy: this.state.DocumentManagedBy,
+    TrackingNumber: this.state.TrackingNumber,
+    ToAddress: this.state.ToAddressObj,
+    DocumentInvoiceDueDate: this.state.DocumentInvoiceDueDate,
+    FromAddressCustom:this.state.fromAdd,
+    TotalReceivedCostCustom:this.state.TotalReceivedCostCustom,
+    TotalBalanceCustom:this.state.TotalBalanceCustom,
+  };
+  localStorage.setItem("printInvoiceCustom", JSON.stringify(printInvoiceData));
 
-    // html2canvas(input).then((canvas) => {
-    //   var options = {
-    //     compressPdf: true,
-    //   };
-    //   var pdf = new jsPDF("a4");
-    //   var imgData = canvas.toDataURL("image/jpeg", 1.0);
-    //   pdf.addImage(imgData, "JPEG", 5, 5, 200, 150);
-    //   var doc = btoa(pdf.output());
+  window.open(window.location.origin + "/auth/PrintInvoiceCustom", "_blank");
 
-    //   const pdfFile = new File(
-    //     [pdf.output("blob")],
-    //     this.state.BLNumber + ".pdf",
-    //     { type: "application/pdf" }
-    //   );
 
-    //   let data = {
-    //     dateTime: new Date().getTime(),
-    //     ShippingID: this.state.ShippingID,
-    //     BLNumber: this.state.BLNumber,
-    //   };
-    //   var formData = new FormData();
-    //   formData.append("data", JSON.stringify(data));
-    //   formData.append("Attachments", pdfFile);
 
-    //   api
-    //     .post("scheduleshipment/downloadHBLpdf", formData)
-    //     .then((res) => {
-    //       if (res.success) {
-    //         this.hideLoader();
-    //         cogoToast.success("HBL Generated");
-    //         window.close();
-    //       } else {
-    //         this.hideLoader();
-    //         cogoToast.error("HBL Generation Error");
-    //       }
-    //     })
-    //     .catch((err) => {
-    //       console.log(err);
-    //     });
 
-    //   //pdf.save(this.state.BLNumber + ".pdf");
-    // });
+
+
+
+
+
   };
   render() {
     const {
@@ -12429,6 +12563,20 @@ class ShipmentCustom extends React.Component {
       TypeOfMove,
       pointState,
       FMCnumber,
+
+      FromAddress,
+      TotalReceivedCost,
+      TotalReceivedCostCustom,
+      TotalBalanceCustom,
+      FromCountryName,
+      InvoiceDate,
+      TotalCost,
+      DocumentManagedBy,
+      DatePaidOn,
+      ToAddress,
+      ToCountryName,
+      BookingDate,
+      fromAdd,
     } = this.state;
 
     const KeywordListData = [
@@ -15514,7 +15662,7 @@ class ShipmentCustom extends React.Component {
                      
                         <Button
                           onClick={() =>
-                            this.viewShipmentCommercial("Invoice","Custom")
+                            this.viewShipmentInvoiceCustom("Invoice","Custom")
                           }
                           style={{ width: "170px", height: "20px" }}
                           color="primary"
@@ -15561,7 +15709,6 @@ class ShipmentCustom extends React.Component {
                                   <th className="right">Qty</th>
                                   <th className="right">Cost</th>
                                   <th className="right">Total</th>
-                                  <th className="right">Select</th>
                                   <th>Action</th>
                                 </tr>
                               </thead>
@@ -15606,6 +15753,7 @@ class ShipmentCustom extends React.Component {
                                       }}
                                     />
                                   </td>
+                                  
                                   <td></td>
                                 </tr>
                               </tbody>
@@ -15799,34 +15947,34 @@ class ShipmentCustom extends React.Component {
                       ) : null}
                     </div>
 
-                    <div style={{ textAlign: "right", marginTop: "12px" }}>
-                      {this.state.bankList.filter((x) => x.Status === "Active")
-                        .length === 0 ? (
-                        // <i onClick={() => this.showDiv("isInvoiceVisible","Invoice")} class="fas fa-car"></i>
-                        // <img
-                        //   style={{ width: "32px", marginLeft: "20px" }}
-                        //   src={tvSVG}
-                        //   onClick={() =>
-                        //     this.showDiv(
-                        //       "isPaymentMethodBank",
-                        //       "PaymentMethodBank"
-                        //     )
-                        //   }
-                        // />
-                        <Button
-                          onClick={() =>
-                            this.showDiv(
-                              "isPaymentMethodBank",
-                              "PaymentMethodBank"
-                            )
-                          }
-                          style={{ width: "70px", height: "20px" }}
-                          color="primary"
-                        >
-                          Open ACH
-                        </Button>
-                      ) : null}
-                    </div>
+                      <div style={{ textAlign: "right", marginTop: "12px" }}>
+                        {this.state.bankList.filter((x) => x.Status === "Active")
+                          .length === 0 ? (
+                          // <i onClick={() => this.showDiv("isInvoiceVisible","Invoice")} class="fas fa-car"></i>
+                          // <img
+                          //   style={{ width: "32px", marginLeft: "20px" }}
+                          //   src={tvSVG}
+                          //   onClick={() =>
+                          //     this.showDiv(
+                          //       "isPaymentMethodBank",
+                          //       "PaymentMethodBank"
+                          //     )
+                          //   }
+                          // />
+                          <Button
+                            onClick={() =>
+                              this.showDiv(
+                                "isPaymentMethodBank",
+                                "PaymentMethodBank"
+                              )
+                            }
+                            style={{ width: "70px", height: "20px" }}
+                            color="primary"
+                          >
+                            Open ACH
+                          </Button>
+                        ) : null}
+                      </div>
                   </CardHeader>
                   <CardBody className="shipment-cardbody">
                     {isPaymentMethod ? (
@@ -17400,7 +17548,7 @@ class ShipmentCustom extends React.Component {
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
           >
-            <DialogTitle id="alert-dialog-title">Genrate HBL</DialogTitle>
+            <DialogTitle id="alert-dialog-title">Genrate Custom Invoice</DialogTitle>
             <DialogContent>
               <DialogContentText id="alert-dialog-description">
                 <div className="hbl-outer">
@@ -17976,6 +18124,311 @@ class ShipmentCustom extends React.Component {
             </DialogActions>
           </Dialog>
         </div>
+        <div>
+            <Dialog
+              open={this.state.CustomInvoiceOpen}
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description"
+              className="large-Modal"
+            >
+              <DialogTitle id="alert-dialog-title">Genrate Custom Invoice</DialogTitle>
+              <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                <div>
+        <div class="book" id="PrintInvoice">
+          <div class="page" id="printInvoice">
+            <table ref={ref} className="invoice-table" id="invoiceTable">
+              <tr>
+                <td style={{ width: "50%" }}>
+                  <img src={SFLlogo} alt="SFL" />
+                </td>
+                <td style={{ width: "50%" }} className="right">
+                  SFL Worldwide LLC<br></br>
+                  3364 Garden Brook Drive, Farmers Branch, TX 75234<br></br>
+                  Phone: 972-255-7447 | Fax : 1-888-609-0778
+                </td>
+              </tr>
+              <tr>
+                <td colspan="2" className="center">
+                  <h3>INVOICE</h3>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="2">
+                  <table className="invoice-table-inner">
+                    <tr>
+                      <td rowspan="2" style={{ width: "50%" }}>
+                        <b>From:</b> 
+                        <textarea
+                              id="From"
+                              name="Body"
+                              style={{
+                                width: "100%",
+                                height: "120px",
+                                display: "block",
+                              }}
+                              labelText="Body"
+                              //KRUTIU
+                              value={this.state.fromAdd}
+                              onChange={(e) =>
+                                this.handleChangeFrom(e, "Custom")
+                              }
+                            ></textarea>
+                      </td>
+                      <td>
+                        Invoice Number<br></br>
+                        <b>{TrackingNumber}</b>
+                      </td>
+                      <td>
+                        Invoice Date<br></br>
+                        <b>{moment(InvoiceDate).format("MM/DD/YYYY")}</b>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        Tracking Number<br></br>
+                        <b>{TrackingNumber}</b>
+                      </td>
+                      <td>
+                        Booking Date<br></br>
+                        <b>{moment(BookingDate).format("MM/DD/YYYY")}</b>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td rowspan="2">
+                        <b>To:</b> {ToAddress.ContactName}
+                        <br />
+                        {ToAddress.AddressLine1}
+                        {!CommonConfig.isEmpty(ToAddress.AddressLine2)
+                          ? ","
+                          : ""}
+                        {ToAddress.AddressLine2}
+                        {!CommonConfig.isEmpty(ToAddress.AddressLine3)
+                          ? ","
+                          : ""}
+                        {ToAddress.AddressLine3}
+                        <br />
+                        {ToAddress.City}, {ToAddress.State} -{" "}
+                        {ToAddress.ZipCode}, {ToCountryName}
+                        <br />
+                        {ToAddress.Phone1}
+                        {!CommonConfig.isEmpty(ToAddress.Phone2) ? "," : ""}
+                        {ToAddress.Phone2}
+                      </td>
+                      <td>
+                        Mode of Shipment<br></br>
+                        <b>{ShipmentType}</b>
+                      </td>
+                      <td>
+                        Invoice Due Date<br></br>
+                        <b>{moment(InvoiceDueDate).format("MM/DD/YYYY")}</b>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td colspan="2">
+                        Sales Representative<br></br>
+                        <b>{DocumentManagedBy}</b>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="2">
+                  <table className="invoice-table-inner">
+                    <tr>
+                      <th style={{ width: "60%", textAlign: "left" }}>
+                        Service Type - Description
+                      </th>
+                      {/* <th className="right">Description</th> */}
+                      <th className="right">Quantity</th>
+                      <th className="right">Cost</th>
+                      <th className="right">Total Cost</th>
+                    </tr>
+                    {this.renderInvoice()}
+                    <tr>
+                      <th className="right" colspan="3">
+                        Gross Amount :
+                      </th>
+                      <th className="right">
+                        $ {parseFloat(TotalCost).toFixed(2)}
+                      </th>
+                    </tr>
+                    <tr>
+                      <th className="right" colspan="3">
+                        Paid on{" "}
+                        {DatePaidOn
+                          ? moment(DatePaidOn).format(
+                              CommonConfig.dateFormat.dateOnly
+                            )
+                          : ""}
+                        :
+                      </th>
+                      <th className="right">
+                      $
+                      <input
+                              id="FtotalReceive"
+                              style={{
+                                display: "block",
+                                textAlign: "right",
+                                width:"80px",
+                                float:"right",
+                              }}
+                              value={parseFloat(TotalReceivedCostCustom).toFixed(2)}
+                              onChange={(e) =>
+                                this.handleInputChange(e, "FtotalReceive")
+                              }
+                            />
+                      
+                      </th>
+                    </tr>
+                    <tr>
+                      <th className="right" colspan="3">
+                        Balance :
+                      </th>
+                      <th className="right">
+                      $
+                      <input
+                              id="FBalance"
+                              style={{
+                                display: "block",
+                                textAlign: "right",
+                                width:"80px",
+                                float:"right",
+                              }}
+                              value={parseFloat(TotalBalanceCustom).toFixed(2)}
+                              onChange={(e) =>
+                                this.handleInputChange(e, "FBalance")
+                              }
+                            />
+                        
+                      </th>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="2">
+                  <table className="invoice-table-inner">
+                    <tr>
+                      <td>
+                        <b>Payment Terms</b>: All charges, as above must be paid
+                        by check or wire transfer within seven days from the
+                        receipt of our trade invoice after pickup of your
+                        shipment. Credit Card will be only accepted for payment
+                        under $500.00 and credit card fees will be charged at 3%
+                        if payment is being made by Credit Card. If payment is
+                        not made by due date late fees of $35.00 and interest of
+                        14.99 % per annum will be applied.<br></br>
+                        <br></br>
+                        {/* Payment should be mailed at below address<br></br><br></br>
+                                                    SFL Worldwide LLc<br></br><br></br>
+                                                    3364 Garden Brook Drive, Farmers Branch, TX 75234, United States<br></br><br></br>
+                                                    Thanks<br></br>
+                                                    SFL Worldwide */}
+                        <b>Method of Payment</b>
+                        <br />
+                        <br />
+                        <table
+                          className="invoice-table-inner"
+                          style={{ marginBottom: "10px" }}
+                        >
+                          <tr>
+                            <th style={{ textAlign: "left" }}>Zelle Payment</th>
+                            <th style={{ textAlign: "left" }}>
+                              Bank (ACH) Payment
+                            </th>
+                            <th style={{ textAlign: "left" }}>
+                              Credit Card Payment
+                            </th>
+                            <th style={{ textAlign: "left" }}>Pay by Mail</th>
+                          </tr>
+                          <tr>
+                            <td style={{ width: "31%" }}>
+                              Zelle payment is fast, safe and secure free bank
+                              to bank transfer via your email or phone number..
+                              <br />
+                              <br />
+                              Zelle Email:{" "}
+                              <a href="mailto:contact@sflworldwide.com">
+                                contact@sflworldwide.com
+                              </a>
+                              <br />
+                              Zelle Name: SFL Worldwide LLC
+                              <br />
+                              <b>
+                                <span style={{ color: "red" }}>
+                                  Please mention tracking number in memo field.{" "}
+                                </span>
+                              </b>
+                            </td>
+                            <td style={{ width: "23%" }}>
+                              ACH payment is safe, secure and free electronic
+                              bank-to-bank payment authorized in USA.
+                              <br />
+                              <br />
+                              <a href="https://www.sflworldwide.com/pay">
+                                www.sflworldwide.com/pay
+                              </a>
+                            </td>
+                            <td style={{ width: "23%" }}>
+                              On type and value of shipment; credit card fees
+                              may be applied on credit card payments.
+                              <br />
+                              <br />
+                              <a href="https://www.sflworldwide.com/pay">
+                                www.sflworldwide.com/pay
+                              </a>
+                            </td>
+                            <td style={{ width: "23%" }}>
+                              Below our registered address to mail physical
+                              check for your shipment.
+                              <br />
+                              <br />
+                              SFL Worldwide LLC
+                              <br />
+                              3364 Garden Brook Drive
+                              <br />
+                              Farmers Branch TX 75063
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        Subject To Texas - United States Jurisdiction<br></br>
+                        contact@SFLWorldwide.com | www.SFLWorldwide.com | SFL
+                        WORLDWIDE LLC | FMC Licence No.: 025184
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>     
+            </table>                 
+          </div>
+        </div>
+        <div></div>
+      </div>
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button
+                  onClick={() => this.setState({ CustomInvoiceOpen: false })}
+                  color="secondary"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={() => this.generateCustomPDF()}
+                  color="primary"
+                  autoFocus
+                >
+                  Genrate
+                </Button>
+              </DialogActions>
+            </Dialog>
+          </div>
         <div className="shipment-submit">
           <div className="left">
             {this.state.Access.DeleteAccess === 1 ? (
