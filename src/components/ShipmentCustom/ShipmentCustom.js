@@ -7195,7 +7195,7 @@ class ShipmentCustom extends React.Component {
       this.setState({ PaymentList: paymentModules });
     }
     else if(access === "FtotalReceive"){
-      this.setState({ TotalReceivedCostCustom: e.target.value });
+      this.setState({ TotalReceivedCostCustom: e.target.value, TotalBalanceCustom:this.state.TotalCost-e.target.value });
     }
     else if(access === "FBalance"){
       this.setState({ TotalBalanceCustom: e.target.value });
