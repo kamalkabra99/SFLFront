@@ -79,8 +79,10 @@ class TimeManagement extends React.Component {
       managedByList: [],
 
       Timetype: [
-        { value: "Half Day", label: "Half Day" },
+        { value: "1st Half", label: "1st Half" },
+        { value: "2nd Half", label: "2nd Half" },
         { value: "Full Day", label: "Full Day" },
+        { value: "Work From Home", label: "Work From Home" },
       ],
 
       Reason: [

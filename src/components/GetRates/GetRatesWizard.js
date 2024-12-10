@@ -106,7 +106,11 @@ class GetRatesWizard extends React.Component {
 
   async GetRateData() {
     debugger;
+    console.log("this.state.currentStep = ",this.state.currentStep);
+    
     if (this.state.currentStep == 0) {
+      console.log("Here data = 0");
+      
       if (this[this.props.steps[this.state.currentStep].stepId].validate()) {
         let data = await this[
           this.props.steps[this.state.currentStep].stepId
@@ -130,6 +134,31 @@ class GetRatesWizard extends React.Component {
         }
 
         this.setState({ finalGetResults: data });
+      }else{
+        console.log("Welcome in else");
+        let data = await this[
+          this.props.steps[this.state.currentStep].stepId
+        ].GetRateData();
+
+        var datasset = this[this.props.steps[this.state.currentStep].stepId].state.FinalGetRate
+        datasset = JSON.parse(datasset.UpsData.FromCountry)
+        console.log("Datas = ",datasset)
+        console.log("Datas = ",datasset.CountryID)
+
+        if(datasset.CountryID == "89"){
+          this.state.setCurrencyIcon = "₹ "
+          this.state.setCurrencyIconLabel = "INR "
+          
+        }else if(datasset.CountryID == "37"){
+          this.state.setCurrencyIcon = "$c "
+          this.state.setCurrencyIconLabel = "CAD "
+        }else{
+          this.state.setCurrencyIcon = "$ "
+          this.state.setCurrencyIconLabel = "USD "
+        }
+
+        this.setState({ finalGetResults: data });
+        
       }
     } else if (this.state.currentStep == 1) {
       if (this[this.props.steps[this.state.currentStep].stepId].validate()) {

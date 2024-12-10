@@ -2412,6 +2412,8 @@ class Step1 extends React.Component {
     var UpsData = {};
     this.state.GetRate.FromCountry.FromZipCodeOptional = false;
     this.state.GetRate.ToCountry.ToZipCodeOptional = false;
+    console.log("Test1");
+    
     if (
       this.state.GetRate.FromCountry.IsFedexCity === 1 &&
       this.state.GetRate.FromCountry.IsUpsCity === 1
@@ -2502,6 +2504,7 @@ class Step1 extends React.Component {
 
     }
 
+    console.log("Test2");
     // if (
     //   (UpsData.ToCity === undefined || UpsData.ToCity === "") &&
     //   UpsData.ToZipCode === "" &&
@@ -2543,6 +2546,7 @@ class Step1 extends React.Component {
     var TotalHeight = 0;
     var TotalInsuredValues = 0;
 
+    console.log("Test3");
     for (var i = 0; i < this.state.PackageDetails.length; i++) {
       if (this.state.PackageDetails[i].PackageNumber) {
         TotalPackageNumber =
@@ -2655,6 +2659,8 @@ class Step1 extends React.Component {
       FinalGetRate.EnvelopeWeightLBSText = this.state.GetRate.TotalChargableWeight;
     }
 
+    console.log("Test4");
+
     FinalGetRate.ShipDate = this.state.StartDate;
     FinalGetRate.PackageDetails = this.state.PackageDetails;
     FinalGetRate.AgentCode = CommonConfig.loggedInUserData().PersonID;
@@ -2662,6 +2668,8 @@ class Step1 extends React.Component {
     this.setState({ FinalGetRate: FinalGetRate });
 
     var data = JSON.stringify({ quoteData: FinalGetRate });
+
+    console.log("Test5 = ",FinalGetRate);
 
     let res = await api.post("getQuote/getRates", data);
     ;
