@@ -2149,12 +2149,20 @@ class ManageProjects extends Component {
         maxWidth: 200,
       },
       {
+        Header: "Services",
+        accessor: "Services",
+        filterable: true,
+        sortable: true,
+        width: 250,
+        maxWidth: 250,
+      },
+      {
         Header: "Status",
         accessor: "Status",
         filterable: true,
         sortable: true,
-        width: 200,
-        maxWidth: 200,
+        width: 150,
+        maxWidth: 150,
       },
       {
         Header: "Actions",

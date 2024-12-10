@@ -7371,7 +7371,7 @@ class ShipmentCustom extends React.Component {
                 </Button>
               </Tooltip>
       
-          
+                <div className="checkbox-btn">
                   <FormControlLabel
                     control={
                       <Checkbox
@@ -7384,7 +7384,7 @@ class ShipmentCustom extends React.Component {
                     }
                     classes={{ label: classes.label, root: classes.labelRoot }}
                   />
-               
+                </div>
                 
          
             </td>

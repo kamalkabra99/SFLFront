@@ -187,7 +187,7 @@ class PrintInvoice extends React.Component {
                 <td colspan="2">
                   <table className="invoice-table-inner">
                     <tr>
-                      <td rowspan="2" style={{ width: "50%" }}>
+                      <td rowspan="2" style={{ width: "50%", whiteSpace: "break-spaces" }}>
                         <b>From:</b> {FromAddressCustom}
                       </td>
                       <td>

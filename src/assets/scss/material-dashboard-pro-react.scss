@@ -6963,3 +6963,22 @@ button.file-doc {
 .hidepageination .-center{
   display: none !important;
 }
+
+.checkbox-btn {
+  width: 26px;
+  height: 26px;
+  display: inline-block;
+  background: #dfdfdf;
+  border-radius: 4px;
+  margin: 0px 0 0px 1px;
+  padding: 1px 1px;
+}
+
+.checkbox-btn label.MuiFormControlLabel-root {
+  margin: 0;
+  padding: 0;
+}
+
+.checkbox-btn label.MuiFormControlLabel-root span.MuiButtonBase-root {
+  padding: 0;
+}

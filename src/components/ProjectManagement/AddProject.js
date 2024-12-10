@@ -74,6 +74,10 @@ class AddProject extends Component {
         { value: "Usd", label: "USD" },
         { value: "Percentage", label: "Percentage" },
       ],
+      ProjectStatusList:[        
+        { value: "Active", label: "Active" },
+        { value: "Inactive", label: "Inactive" },],
+        ProjectStatus:{},
       clientname: "",
       clientnameCheck: false,
       clientnameErr: false,
@@ -163,6 +167,7 @@ class AddProject extends Component {
       let data = {
         ProjectID: this.state.ProjectID,
         ProjectName: this.state.ProjectName,
+        ProjectStatus:this.state.ProjectStatus.value,
         ClientName: this.state.clientname,
         userId: CommonConfig.loggedInUserData().PersonID,
         flag:this.state.ProjectID!=null?"U":"I",
@@ -272,11 +277,12 @@ class AddProject extends Component {
       if(this.state.ProjectID!= null){ 
       let result = await api.post("projectManagement/getProjectDetailsById", data);
       if (result.success) {
-
-        this.setState({ProjectID:result.Data[0].ProjectID,ProjectName:result.Data[0].ProjectName,clientname:result.Data[0].ClientName}); 
+        var selectData = {value:result.Data[0].Status,label:result.Data[0].Status}
+        this.setState({ProjectID:result.Data[0].ProjectID,ProjectName:result.Data[0].ProjectName,clientname:result.Data[0].ClientName, ProjectStatus:selectData}); 
         console.log(this.state.ProjectName);
         console.log(this.state.ProjectID);
         console.log(this.state.clientname); 
+        console.log(this.state.ProjectStatus); 
         this.hideLoader();
       } else {
         this.hideLoader();
@@ -289,9 +295,21 @@ class AddProject extends Component {
     }
   }
 
-  
+  selectChange = (event, value, type) => {
+    debugger
+
+    if (value !== null) {
+      if (type === "ProjectStatus") {
+        var selectData = {
+          label: value.label,
+          value: value.value
+        }
+        this.setState({ ProjectStatus: selectData});
+      }
+    }
+  };
   render() {
-    const { defaultMarkupType } = this.state;
+    const { defaultMarkupType,ProjectStatusList } = this.state;
     const defaultmarkuptype = {
       options: defaultMarkupType.map((option) => option.label),
     };
@@ -317,7 +335,7 @@ class AddProject extends Component {
             </CardHeader>
             <CardBody>
               <GridContainer justify="center">
-                <GridItem xs={12} sm={12} md={6}>
+                <GridItem xs={12} sm={12} md={4}>
                   <CustomInput
                     labelText="Project Name"
                     id="ProjectName"
@@ -358,7 +376,7 @@ class AddProject extends Component {
                     }}
                   />
                 </GridItem>
-                <GridItem xs={12} sm={12} md={6}>
+                <GridItem xs={12} sm={12} md={4}>
                   <CustomInput
                     labelText="Client Name"
                     id="clientname"
@@ -399,6 +417,21 @@ class AddProject extends Component {
                     }}
                   />
                 </GridItem>
+                <GridItem xs={12} sm={12} md={4}>
+                    <Autocomplete
+                      id="combo-box-demo"
+                      options={ProjectStatusList}
+                      value={this.state.ProjectStatus}
+                      onChange={(event, value) =>
+                        this.selectChange(event, value, "ProjectStatus")
+                      }
+                      getOptionLabel={(option) => option.label}
+                      renderInput={(params) => (
+                        <TextField {...params} label="Project Status" />
+                      )}
+                    />
+                </GridItem>
+                
               </GridContainer>
              
             </CardBody>
