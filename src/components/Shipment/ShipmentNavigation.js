@@ -2662,7 +2662,29 @@ class ShipmentNavigation extends Component {
       this.hideLoader();
     }
   }
-
+  UpdateStatus() {debugger
+    try {
+      let data = {
+        countryId: ""
+      };
+      debugger;
+      api
+        .post("userManagement/UpdateStatus", data)
+        .then((res) => {
+          if (res.success) {
+           
+            this.hideLoader();
+          }
+        })
+        .catch((err) => {
+          this.hideLoader();
+          console.log("err...", err);
+          cogoToast.error("Something Went Wrong");
+        });
+    } catch (error) {
+      this.hideLoader();
+    }
+  }
   SenderCountry = (event, type, idx, value) => {
     const filterList = this.state.filtered;
     filterList[idx][type] = value;
@@ -3489,6 +3511,13 @@ class ShipmentNavigation extends Component {
                 this.state.Steps.findIndex((x) => x.classname === "active")
               ]["stepId"] === "shipment" ? (
                 <div className="filter-wrap">
+                  <div><Button className="cm-toggle" color="rose"
+                    onClick={() =>
+                      this.UpdateStatus()
+                    }
+                  >
+                      Update Shipment Status
+                    </Button></div>
                   <div
                     className="filter-top-right"
                     onMouseLeave={() =>
@@ -3496,6 +3525,7 @@ class ShipmentNavigation extends Component {
                     }
                     onMouseOver={() => this.setState({ IsDropDownShow: true })}
                   >
+                    
                     <Button className="cm-toggle" color="rose">
                       Search Shipment Status <ExpandMoreIcon />
                     </Button>
