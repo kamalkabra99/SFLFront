@@ -32,6 +32,9 @@ class PrintInvoice extends React.Component {
       TotalReceivedCostCustom:0,
       TotalBalanceCustom:0,
       FromAddressCustom:"",
+      BookingDateCustom:"",
+      InvoiceDateCustom:"",
+      InvoiceDueDateCustom:"",
     };
   }
 
@@ -55,6 +58,9 @@ class PrintInvoice extends React.Component {
       TotalReceivedCostCustom:data.TotalReceivedCostCustom,
       TotalBalanceCustom:data.TotalBalanceCustom,
       FromAddressCustom:data.FromAddressCustom,
+      BookingDateCustom:data.BookingDateCustom,
+      InvoiceDateCustom:data.InvoiceDateCustom,
+      InvoiceDueDateCustom:data.InvoiceDueDateCustom,
     });
     data.InvoiceData.sort(function(a, b) {
       return new Date(b.InvoiceDate) - new Date(a.InvoiceDate);
@@ -151,14 +157,17 @@ class PrintInvoice extends React.Component {
       TotalReceivedCost,
       FromCountryName,
       InvoiceDate,
+      InvoiceDateCustom,
       TotalCost,
       DocumentManagedBy,
       DatePaidOn,
       ToAddress,
       InvoiceDueDate,
+      InvoiceDueDateCustom,
       ToCountryName,
       TrackingNumber,
       BookingDate,
+      BookingDateCustom,
       TotalReceivedCostCustom,
       TotalBalanceCustom,
       FromAddressCustom,  
@@ -196,7 +205,7 @@ class PrintInvoice extends React.Component {
                       </td>
                       <td>
                         Invoice Date<br></br>
-                        <b>{moment(InvoiceDate).format("MM/DD/YYYY")}</b>
+                        <b>{moment(InvoiceDateCustom).format("MM/DD/YYYY")}</b>
                       </td>
                     </tr>
                     <tr>
@@ -206,7 +215,7 @@ class PrintInvoice extends React.Component {
                       </td>
                       <td>
                         Booking Date<br></br>
-                        <b>{moment(BookingDate).format("MM/DD/YYYY")}</b>
+                        <b>{moment(BookingDateCustom).format("MM/DD/YYYY")}</b>
                       </td>
                     </tr>
                     <tr>
@@ -236,7 +245,7 @@ class PrintInvoice extends React.Component {
                       </td>
                       <td>
                         Invoice Due Date<br></br>
-                        <b>{moment(InvoiceDueDate).format("MM/DD/YYYY")}</b>
+                        <b>{moment(InvoiceDueDateCustom).format("MM/DD/YYYY")}</b>
                       </td>
                     </tr>
                     <tr>
@@ -271,12 +280,12 @@ class PrintInvoice extends React.Component {
                     </tr>
                     <tr>
                       <th className="right" colspan="3">
-                        Paid on{" "}
-                        {DatePaidOn
+                        Paid {" "}
+                        {/* {DatePaidOn
                           ? moment(DatePaidOn).format(
                               CommonConfig.dateFormat.dateOnly
                             )
-                          : ""}
+                          : ""} */}
                         :
                       </th>
                       <th className="right">

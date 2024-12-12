@@ -76,7 +76,9 @@ class AddProject extends Component {
       ],
       ProjectStatusList:[        
         { value: "Active", label: "Active" },
-        { value: "Inactive", label: "Inactive" },],
+        { value: "Cancelled", label: "Cancelled" },
+        { value: "Closed", label: "Closed" },
+        { value: "Hold", label: "Hold" },],
         ProjectStatus:{},
       clientname: "",
       clientnameCheck: false,

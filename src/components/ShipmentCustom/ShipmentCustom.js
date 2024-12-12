@@ -389,6 +389,15 @@ class ShipmentCustom extends React.Component {
       InvoiceDueDate: "",
       invoiceDueDateErr: false,
       invoiceDueDateHelperText: "",
+      InvoiceDueDateCustom: "",
+      invoiceDueDateCustomErr: false,
+      invoiceDueDateCustomHelperText: "",
+      InvoiceDateCustom: "",
+      invoiceDateCustomErr: false,
+      invoiceDateCustomHelperText: "",
+      BookingDateCustom: "",
+      bookingDateCustomHelperText: "",
+      bookingDateCustomErr: false,
       pickupDateErr: false,
       pickupProviderErr: false,
       pickupDateHelperText: "",
@@ -5137,6 +5146,27 @@ class ShipmentCustom extends React.Component {
         InvoiceDueDate: date,
         invoiceDueDateHelperText: "",
         invoiceDueDateErr: false,
+      });
+    }
+    else if (type === "InvoiceDateCustom") {
+      this.setState({
+        InvoiceDateCustom: date,
+        invoiceDateCustomHelperText: "",
+        invoiceDateCustomErr: false,
+      });
+    }
+    else if (type === "InvoiceDueDateCustom") {
+      this.setState({
+        InvoiceDueDateCustom: date,
+        invoiceDueDateCustomHelperText: "",
+        invoiceDueDateCustomErr: false,
+      });
+    }
+    else if (type === "BookingDateCustom") {
+      this.setState({
+        BookingDateCustom: date,
+        bookingDateCustomHelperText: "",
+        bookingDateCustomErr: false,
       });
     }
   };
@@ -11447,6 +11477,8 @@ class ShipmentCustom extends React.Component {
       ShippingID: data.ShippingID,
       GeneratePDF: data.GeneratePDF,
       InvoiceDueDate: data.DocumentInvoiceDueDate,
+      InvoiceDueDateCustom:data.DocumentInvoiceDueDate,
+      BookingDateCustom: data.FromAddress.AddressDetail.ShipmentDate,
     });
     data.InvoiceData.sort(function(a, b) {
       return new Date(b.InvoiceDate) - new Date(a.InvoiceDate);
@@ -11476,7 +11508,8 @@ class ShipmentCustom extends React.Component {
     this.setState({
       TotalCost: totalCost,
       Invoicedata: data.InvoiceData,
-      InvoiceDate: invoiceDate,
+      invoiceDate: invoiceDate,
+      InvoiceDateCustom:invoiceDate,
       // InvoiceDueDate : date
     });
 
@@ -12471,6 +12504,9 @@ class ShipmentCustom extends React.Component {
     FromAddressCustom:this.state.fromAdd,
     TotalReceivedCostCustom:this.state.TotalReceivedCostCustom,
     TotalBalanceCustom:this.state.TotalBalanceCustom,
+    BookingDateCustom:this.state.BookingDateCustom,
+    InvoiceDateCustom:this.state.InvoiceDateCustom,
+    InvoiceDueDateCustom:this.state.InvoiceDueDateCustom,
   };
   localStorage.setItem("printInvoiceCustom", JSON.stringify(printInvoiceData));
 
@@ -12531,6 +12567,9 @@ class ShipmentCustom extends React.Component {
       FromOriginalPassortAvailable,
       totalInsuredValue,
       InvoiceDueDate,
+      InvoiceDateCustom,
+      BookingDateCustom,
+      InvoiceDueDateCustom,
       CommuncationList,
       isBackIndia,
       VisaCategory,
@@ -18181,7 +18220,27 @@ class ShipmentCustom extends React.Component {
                       </td>
                       <td>
                         Invoice Date<br></br>
-                        <b>{moment(InvoiceDate).format("MM/DD/YYYY")}</b>
+                        <Datetime
+                          dateFormat={"MM/DD/YYYY"}
+                          timeFormat={false}
+                          value={InvoiceDateCustom}
+                          onChange={(date) =>
+                            this.dateChange(date, "InvoiceDateCustom")
+                          }
+                          closeOnSelect={true}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              margin="normal"
+                              fullWidth
+                              error={this.state.invoiceDateCustomErr}
+                              helperText={
+                                this.state.invoiceDateCustomHelperText
+                              }
+                            />
+                          )}
+                        />
+                        {/* <b>{moment(InvoiceDate).format("MM/DD/YYYY")}</b> */}
                       </td>
                     </tr>
                     <tr>
@@ -18191,7 +18250,28 @@ class ShipmentCustom extends React.Component {
                       </td>
                       <td>
                         Booking Date<br></br>
-                        <b>{moment(BookingDate).format("MM/DD/YYYY")}</b>
+
+                        <Datetime
+                          dateFormat={"MM/DD/YYYY"}
+                          timeFormat={false}
+                          value={moment(BookingDate).format("MM/DD/YYYY")}
+                          onChange={(date) =>
+                            this.dateChange(date, "BookingDateCustom")
+                          }
+                          closeOnSelect={true}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              margin="normal"
+                              fullWidth
+                              error={this.state.bookingDateCustomErr}
+                              helperText={
+                                this.state.bookingDateCustomHelperText
+                              }
+                            />
+                          )}
+                        />
+                        {/* <b>{moment(BookingDate).format("MM/DD/YYYY")}</b> */}
                       </td>
                     </tr>
                     <tr>
@@ -18221,7 +18301,28 @@ class ShipmentCustom extends React.Component {
                       </td>
                       <td>
                         Invoice Due Date<br></br>
-                        <b>{moment(InvoiceDueDate).format("MM/DD/YYYY")}</b>
+
+                        <Datetime
+                          dateFormat={"MM/DD/YYYY"}
+                          timeFormat={false}
+                          value={moment(InvoiceDueDateCustom).format("MM/DD/YYYY")}
+                          onChange={(date) =>
+                            this.dateChange(date, "InvoiceDueDateCustom")
+                          }
+                          closeOnSelect={true}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              margin="normal"
+                              fullWidth
+                              error={this.state.invoiceDueDateCustomErr}
+                              helperText={
+                                this.state.invoiceDueDateCustomHelperText
+                              }
+                            />
+                          )}
+                        />
+                        {/* <b>{moment(InvoiceDueDate).format("MM/DD/YYYY")}</b> */}
                       </td>
                     </tr>
                     <tr>
@@ -18256,12 +18357,12 @@ class ShipmentCustom extends React.Component {
                     </tr>
                     <tr>
                       <th className="right" colspan="3">
-                        Paid on{" "}
-                        {DatePaidOn
+                        Paid {" "}
+                        {/* {DatePaidOn
                           ? moment(DatePaidOn).format(
                               CommonConfig.dateFormat.dateOnly
                             )
-                          : ""}
+                          : ""} */}
                         :
                       </th>
                       <th className="right">
