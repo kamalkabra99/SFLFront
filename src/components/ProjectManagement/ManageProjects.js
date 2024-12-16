@@ -83,6 +83,9 @@ class ManageProjects extends Component {
       BookofWorkData: [],
       ProjectListArray: [],
       ProjectName: "",
+      finalProjectLength:0,
+      finalProjectAllocationLength:0,
+      finalProjectAllocationHours:0,
       saveResourceErr:"",
       saveErr:"",
       ResourceServiceName:"",
@@ -123,6 +126,7 @@ class ManageProjects extends Component {
       ServiceID: "",
       ProjectServiceList: [],
       ProjectServiceResourceList: [],
+      FinalAllocationResourceList:[],
       ProjectID: "",
       ResourceProjectList: [],
       ResourceList: [],
@@ -169,6 +173,7 @@ class ManageProjects extends Component {
     await this.getProjectList();
     await this.getServiceList();
     await this.getResourceList();
+    await this.getAllocationResourceList();
     //this.handleDateChange(this.state.StartDate, "StartDate")
     this.showHide();
     this.setState({ Access: CommonConfig.getUserAccess("Project Management") });
@@ -558,17 +563,7 @@ class ManageProjects extends Component {
       },
     });
   };
-  setLength = (len) => {
-    this.setState({ finalLength: len });
-  };
-
-  checkProps = (e) => {
-    if (this.state.finalLength !== e.sortedData.length) {
-      this.setLength(e.sortedData.length);
-    }
-    return "";
-  };
-
+ 
   renderInputMethod = (params) => {
     // if(params.InputProps.startAdornment)
     // {
@@ -1379,6 +1374,46 @@ class ManageProjects extends Component {
     );
   };
 
+  setLength = (len,type) => {debugger
+    if(type == "ProjectList")
+      {
+        this.setState({ finalProjectLength: len });
+      }
+    else if(type == "ProjectAllocation")
+      {  
+        this.setState({ finalProjectAllocationLength: len });
+      }
+  };
+
+  setHours = (Hours,type) => {
+     if(type == "ProjectAllocation")
+      {  
+        this.setState({ finalProjectAllocationHours: Hours });
+      }
+  };
+
+  checkProps = (e,type) => {debugger
+    if(type == "ProjectList")
+    { if (this.state.finalProjectLength !== e.sortedData.length) {
+        this.setLength(e.sortedData.length,type);
+      } 
+    }
+    else if(type == "ProjectAllocation")
+      { if (this.state.finalProjectAllocationLength !== e.sortedData.length) {
+          this.setLength(e.sortedData.length, type);
+          const data = e.sortedData;
+          
+          const result = data.reduce((total, currentValue) => total = total + currentValue.Hours,0);
+          this.setHours(result, type);
+        console.log("lokesh lokesh",result);  
+        } 
+      }
+
+    return "";
+  };
+
+
+
   viewNotes = () => {
     return this.state.notes
     // .filter((x) => x.Status === "Active")
@@ -1694,6 +1729,37 @@ class ManageProjects extends Component {
         cogoToast.error("Something Went Wrong3");
       }
     }
+
+    getAllocationResourceList() {
+      debugger
+      try {
+        this.showLoador();
+        api
+          .post("projectManagement/getAllocationResourceList")
+          .then((result) => {
+            if (result.success) {
+              this.hideLoador();
+  
+              this.setState({FinalAllocationResourceList: result.message });
+  
+  
+  
+            } else {
+              this.hideLoador();
+              cogoToast.error("Something went wrong1");
+            }
+          })
+          .catch((err) => {
+            this.hideLoador();
+            cogoToast.error("Something went wrong2");
+          });
+      } catch (err) {
+        this.hideLoador();
+        cogoToast.error("Something Went Wrong3");
+      }
+    }
+
+
     handleDateChange = (date, type) => {
       debugger;
    
@@ -1794,6 +1860,9 @@ class ManageProjects extends Component {
       return { value: type.ServiceID, label: type.ServiceName };
     });
     const resourceList = this.state.FinalResourceList.map((type) => {
+      return { value: type.ResourceID, label: type.ResourceName };
+    });
+    const allocationResourceList = this.state.FinalAllocationResourceList.map((type) => {
       return { value: type.ResourceID, label: type.ResourceName };
     });
     const column3 = [
@@ -2415,6 +2484,8 @@ class ManageProjects extends Component {
 
                         <ReactTable
                           data={this.state.ProjectListArray}
+                          pageText={"Total Count : " + this.state.finalProjectLength}
+                          getPaginationProps={(e) => this.checkProps(e, "ProjectList")}
                           minRows={0}
                           filterable
                           textAlign={"left"}
@@ -2668,7 +2739,7 @@ class ManageProjects extends Component {
                               <FormControl fullWidth>
                               <Autocomplete
                                 id="ResourceName"
-                                options={resourceList}
+                                options={allocationResourceList}
                                 getOptionLabel={(option) => option.label}
                                 value={this.state.ReportResourceName}
                                 onChange={(event, value) =>
@@ -2791,6 +2862,8 @@ class ManageProjects extends Component {
                           </div>
                         <ReactTable
                 data={this.state.ReportProjectAllocationList}
+                pageText={"Total Count : " + this.state.finalProjectAllocationLength+"    Total Hours : " + this.state.finalProjectAllocationHours}
+                getPaginationProps={(e) => this.checkProps(e, "ProjectAllocation")}                      
                 defaultPageSize={10}
                 minRows={0}
                 resizable={false}
