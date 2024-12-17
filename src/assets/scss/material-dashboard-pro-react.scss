@@ -6982,3 +6982,7 @@ button.file-doc {
 .checkbox-btn label.MuiFormControlLabel-root span.MuiButtonBase-root {
   padding: 0;
 }
+
+.invoice-table-inner .rdtPicker td, .invoice-table-inner .rdtPicker th {
+  border: inherit;
+}
