@@ -76,6 +76,12 @@ class ManageProjects extends Component {
           classname: "inactive",
         },
       ],
+      ProjectStatusList: [
+        { value: "Active", label: "Active" },
+        { value: "Cancelled", label: "Cancelled" },
+        { value: "Closed", label: "Closed" },
+        { value: "Hold", label: "Hold" },],
+      ProjectStatus: {},
       notes: "",
       FinalServiceList: [],
       FinalServiceListSelect: [],
@@ -83,24 +89,24 @@ class ManageProjects extends Component {
       BookofWorkData: [],
       ProjectListArray: [],
       ProjectName: "",
-      finalProjectLength:0,
-      finalProjectAllocationLength:0,
-      finalProjectAllocationHours:0,
-      saveResourceErr:"",
-      saveErr:"",
-      ResourceServiceName:"",
-      ResourceServiceNameErr:"",
-      ResourceServiceNameHelperText:"",
-      ResourceServiceNameCheck:"",
-      ResourceProjectName:"",
-      ResourceServiceID:"",
-      ResourceProjectID:"",
-      ProjectNameErr:"",
+      finalProjectLength: 0,
+      finalProjectAllocationLength: 0,
+      finalProjectAllocationHours: 0,
+      saveResourceErr: "",
+      saveErr: "",
+      ResourceServiceName: "",
+      ResourceServiceNameErr: "",
+      ResourceServiceNameHelperText: "",
+      ResourceServiceNameCheck: "",
+      ResourceProjectName: "",
+      ResourceServiceID: "",
+      ResourceProjectID: "",
+      ProjectNameErr: "",
       fileSetName:
         "Project Allocation Report" + moment().format(CommonConfig.dateFormat.filename),
-      ResourceProjectNameErr:"",
-      ResourceProjectNameHelperText:"",
-      ResourceProjectNameCheck:"",
+      ResourceProjectNameErr: "",
+      ResourceProjectNameHelperText: "",
+      ResourceProjectNameCheck: "",
       ClientName: "",
       ProjectId: "",
       WorkStatus: [],
@@ -120,52 +126,52 @@ class ManageProjects extends Component {
       ServiceList: [],
       ServiceName: "",
       ServiceNameErr: "",
-      ServiceNameHelperText:"",
+      ServiceNameHelperText: "",
       ServiceType: "",
       ServiceId: "",
       ServiceID: "",
       ProjectServiceList: [],
       ProjectServiceResourceList: [],
-      FinalAllocationResourceList:[],
+      FinalAllocationResourceList: [],
       ProjectID: "",
       ResourceProjectList: [],
       ResourceList: [],
-      ResourceID:"",
-      ResourceName:"",
-      ReportResourceID:"",
-      ReportResourceName:"",
+      ResourceID: "",
+      ResourceName: "",
+      ReportResourceID: "",
+      ReportResourceName: "",
       FinalResourceList: [],
-      StartDate:moment(Date()).startOf('month').format(CommonConfig.dateFormat.dateOnly),
+      StartDate: moment(Date()).startOf('month').format(CommonConfig.dateFormat.dateOnly),
       StartDateErr: false,
       StartDateHelperText: "",
-      EndDate:moment(Date()).endOf('year').format(CommonConfig.dateFormat.dateOnly),
+      EndDate: moment(Date()).endOf('year').format(CommonConfig.dateFormat.dateOnly),
       EndDateErr: false,
       EndDateHelperText: "",
-      ReportStartDate:"",
+      ReportStartDate: "",
       ReportStartDateErr: false,
       ReportStartDateHelperText: "",
-      ReportEndDate:"",
+      ReportEndDate: "",
       ReportEndDateErr: false,
       ReportEndDateHelperText: "",
       ReportProjectName: "",
       ReportProjectID: "",
-      ReportProjectNameErr:false,
+      ReportProjectNameErr: false,
       ReportProjectNameHelperText: "",
-      ReportProjectNameCheck:"",
+      ReportProjectNameCheck: "",
       ReportServiceID: "",
       ReportServiceName: "",
       ReportServiceNameErr: "",
-      ReportServiceNameHelperText:"",
-      ReportServiceNameCheck:"",
+      ReportServiceNameHelperText: "",
+      ReportServiceNameCheck: "",
       NewServiceName: "",
       NewServiceID: "",
       NewServiceNameErr: false,
       NewServiceNameHelperText: "",
       NewServiceType: "",
-      ReportResourceList:[],
-      DeleteOption:"",
-      tabKey:0,
-      ReportProjectAllocationList:[],
+      ReportResourceList: [],
+      DeleteOption: "",
+      tabKey: 0,
+      ReportProjectAllocationList: [],
     };
   }
   async componentDidMount() {
@@ -191,10 +197,10 @@ class ManageProjects extends Component {
       this.setState({
         previousFilterList: this.props.history.location.state.filterlist,
         previousSortList: this.props.history.location.state.sortlist,
-        tabKey:this.props.history.location.state.tabKey,
+        tabKey: this.props.history.location.state.tabKey,
       });
       debugger
-      
+
       if (this.props.history.location.state.WorkStatus !== undefined) {
         APIcheck = false;
 
@@ -222,7 +228,7 @@ class ManageProjects extends Component {
       let newFilter = [{ label: "New", value: "New", IsSelected: true }, { label: "Open", value: "Open", IsSelected: true }];
       this.state.checkdata = newFilter;
     }
-    
+
   }
 
   getProjectListForResource = () => {
@@ -263,7 +269,7 @@ class ManageProjects extends Component {
       state: {
         filterlist: this.state.filterProps,
         sortlist: this.state.sortProps,
-        tabKey:this.state.tabKey,
+        tabKey: this.state.tabKey,
         // WorkStatus: this.state.WorkStatus,
       },
     });
@@ -308,7 +314,7 @@ class ManageProjects extends Component {
         id: ServiceId,
         filterlist: this.state.filterProps,
         sortlist: this.state.sortProps,
-        tabKey:this.state.tabKey,
+        tabKey: this.state.tabKey,
       },
     });
   }
@@ -335,7 +341,7 @@ class ManageProjects extends Component {
       state: {
         filterlist: this.state.filterProps,
         sortlist: this.state.sortProps,
-        tabKey:this.state.tabKey,
+        tabKey: this.state.tabKey,
         // WorkStatus: this.state.WorkStatus,
       },
     });
@@ -461,7 +467,7 @@ class ManageProjects extends Component {
         id: ProjectId,
         filterlist: this.state.filterProps,
         sortlist: this.state.sortProps,
-        tabKey:this.state.tabKey,
+        tabKey: this.state.tabKey,
         //WorkStatus: this.state.WorkStatus,
       },
     });
@@ -540,7 +546,8 @@ class ManageProjects extends Component {
     });
   };
 
-  filterProps = (e) => {debugger
+  filterProps = (e) => {
+    debugger
     console.log("e = ", e)
     console.log("this.state.filterProps = ", this.state.filterProps, this.state.sortProps)
     if (this.state.filterProps !== e.filtered) {
@@ -558,12 +565,12 @@ class ManageProjects extends Component {
       state: {
         filterlist: this.state.filterProps,
         sortlist: this.state.sortProps,
-        tabKey:this.state.tabKey,
+        tabKey: this.state.tabKey,
         // WorkStatus: this.state.WorkStatus,
       },
     });
   };
- 
+
   renderInputMethod = (params) => {
     // if(params.InputProps.startAdornment)
     // {
@@ -579,27 +586,28 @@ class ManageProjects extends Component {
       return false;
     }
   };
-  navigateChange = (key) => {debugger
-    if(key != undefined){
-    let stepsList = this.state.Steps;
-    let activeIndex = stepsList.findIndex((x) => x.classname === "active");
-    if (key !== activeIndex) {
-      stepsList[key]["classname"] = "active";
-      stepsList[activeIndex]["classname"] = "inactive";
-      this.setState({ Steps: stepsList, tabKey:key });
-      let divID = stepsList[key]["stepId"];
-      let activeDiv = stepsList[activeIndex]["stepId"];
-      document.getElementById(divID).style.display = "block";
-      document.getElementById(activeDiv).style.display = "none";
-      this.props.history.push({
-        state: {
-          filterlist: this.state.filterProps,
-          sortlist: this.state.sortProps,
-          tabKey:this.state.key,
-          //WorkStatus: this.state.WorkStatus,
-        },
-      });
-    }
+  navigateChange = (key) => {
+    debugger
+    if (key != undefined) {
+      let stepsList = this.state.Steps;
+      let activeIndex = stepsList.findIndex((x) => x.classname === "active");
+      if (key !== activeIndex) {
+        stepsList[key]["classname"] = "active";
+        stepsList[activeIndex]["classname"] = "inactive";
+        this.setState({ Steps: stepsList, tabKey: key });
+        let divID = stepsList[key]["stepId"];
+        let activeDiv = stepsList[activeIndex]["stepId"];
+        document.getElementById(divID).style.display = "block";
+        document.getElementById(activeDiv).style.display = "none";
+        this.props.history.push({
+          state: {
+            filterlist: this.state.filterProps,
+            sortlist: this.state.sortProps,
+            tabKey: this.state.key,
+            //WorkStatus: this.state.WorkStatus,
+          },
+        });
+      }
     }
   };
   showHide() {
@@ -609,7 +617,7 @@ class ManageProjects extends Component {
     document.getElementById("ResourceAllocation").style.display = "none";
     document.getElementById("ProjectAllocationReport").style.display = "none";
   }
-
+  
   selectChange = (event, value, type) => {
     debugger
 
@@ -621,6 +629,14 @@ class ManageProjects extends Component {
         }
         this.setState({ ProjectName: selectData, ProjectID: value.value });
         this.getNonSelectedServicesByProject(value.value, selectData);
+      }
+      else
+      if (type === "ProjectStatus") {
+        var selectData = {
+          label: value.label,
+          value: value.value
+        }
+        this.setState({ ProjectStatus: selectData});
       }
     }
   };
@@ -649,14 +665,15 @@ class ManageProjects extends Component {
       state: {
         filterlist: this.state.filterProps,
         sortlist: this.state.sortProps,
-        tabKey:this.state.tabKey,
+        tabKey: this.state.tabKey,
         // WorkStatus: this.state.WorkStatus,
       },
     });
   };
-  handleDelete = (recordType,record) => {debugger
-    if(recordType =="Project"){
-      if(record!=""){
+  handleDelete = (recordType, record) => {
+    debugger
+    if (recordType == "Project") {
+      if (record != "") {
         console.log(record);
         var data = {
           ProjectID: record,
@@ -667,13 +684,13 @@ class ManageProjects extends Component {
             if (res.message[0][0].DeleteRes == 0)
               cogoToast.error("This Project is used somewhere");
             else
-            this.getProjectList();
+              this.getProjectList();
             this.closedeletemodalKeyword();
-    
-    
+
+
           });
         }
-    
+
         if (
           CommonConfig.getUserAccess("Project Management").AllAccess === 0 &&
           CommonConfig.getUserAccess("Project Management").ReadAccess === 1
@@ -683,117 +700,116 @@ class ManageProjects extends Component {
       }
     }
     else
-    if(recordType =="Service"){
-      if(record!=""){
-        console.log(record);
-        var data = {
-          ServiceID: record,
-        };
-        if (CommonConfig.getUserAccess("Project Management").AllAccess === 1) {
-          api.post("projectManagement/deleteService", data).then((res) => {
-            console.log(res);
-            if (res.message[0][0].DeleteRes == 0)
-              cogoToast.error("This Service is used somewhere");
-            else
-             this.getServiceList();
-            this.closedeletemodalKeyword();
-    
-    
-          });
-        }
-    
-        if (
-          CommonConfig.getUserAccess("Project Management").AllAccess === 0 &&
-          CommonConfig.getUserAccess("Project Management").ReadAccess === 1
-        ) {
-          cogoToast.error("Sorry you don't have access to delete this");
+      if (recordType == "Service") {
+        if (record != "") {
+          console.log(record);
+          var data = {
+            ServiceID: record,
+          };
+          if (CommonConfig.getUserAccess("Project Management").AllAccess === 1) {
+            api.post("projectManagement/deleteService", data).then((res) => {
+              console.log(res);
+              if (res.message[0][0].DeleteRes == 0)
+                cogoToast.error("This Service is used somewhere");
+              else
+                this.getServiceList();
+              this.closedeletemodalKeyword();
+
+
+            });
+          }
+
+          if (
+            CommonConfig.getUserAccess("Project Management").AllAccess === 0 &&
+            CommonConfig.getUserAccess("Project Management").ReadAccess === 1
+          ) {
+            cogoToast.error("Sorry you don't have access to delete this");
+          }
         }
       }
-    }
-    else
-    if(recordType =="ServiceAllocation")
-    {
-      if(record!=""){
-        console.log(record);
-        var data = {
-          ProjectID: this.state.ProjectID,
-          ServiceID: record,
-        };
-      if (CommonConfig.getUserAccess("Project Management").AllAccess === 1) {
-      api.post("projectManagement/deleteServiceAllocation", data).then((res) => {
-        console.log(res);
-        if (res.message[0][0].DeleteRes == 0)
-          cogoToast.error("This Service of Project is used somewhere");
-        else
-          this.getNonSelectedServicesByProject(this.state.ProjectID,0);
-        this.setState({ServiceName:"",ServiceID:""})
-        this.closedeletemodalKeyword();
+      else
+        if (recordType == "ServiceAllocation") {
+          if (record != "") {
+            console.log(record);
+            var data = {
+              ProjectID: this.state.ProjectID,
+              ServiceID: record,
+            };
+            if (CommonConfig.getUserAccess("Project Management").AllAccess === 1) {
+              api.post("projectManagement/deleteServiceAllocation", data).then((res) => {
+                console.log(res);
+                if (res.message[0][0].DeleteRes == 0)
+                  cogoToast.error("This Service of Project is used somewhere");
+                else
+                  this.getNonSelectedServicesByProject(this.state.ProjectID, 0);
+                this.setState({ ServiceName: "", ServiceID: "" })
+                this.closedeletemodalKeyword();
 
 
-      });
-    }
+              });
+            }
 
-    if (
-      CommonConfig.getUserAccess("Project Management").AllAccess === 0 &&
-      CommonConfig.getUserAccess("Project Management").ReadAccess === 1
-    ) {
-      cogoToast.error("Sorry you don't have access to delete this");
-    }
-  }
-  else
-  {
-   // var newArray = this.state.FinalServiceList.filter((index) => index.ServiceID !== "");
-   // this.setState({FinalServiceList:newArray});
-    this.closedeletemodalKeyword();
-  }
-}
+            if (
+              CommonConfig.getUserAccess("Project Management").AllAccess === 0 &&
+              CommonConfig.getUserAccess("Project Management").ReadAccess === 1
+            ) {
+              cogoToast.error("Sorry you don't have access to delete this");
+            }
+          }
+          else {
+            // var newArray = this.state.FinalServiceList.filter((index) => index.ServiceID !== "");
+            // this.setState({FinalServiceList:newArray});
+            this.closedeletemodalKeyword();
+          }
+        }
   };
 
-  handleDeleteResource = (record) => {debugger
-    if(record!=""){
-    var data = {
-      ServiceResourceID:record
-      //Attachment: Attachment,
-    };
+  handleDeleteResource = (record) => {
+    debugger
+    if (record != "") {
+      var data = {
+        ServiceResourceID: record
+        //Attachment: Attachment,
+      };
 
-    if (CommonConfig.getUserAccess("Project Management").AllAccess === 1) {
-      api.post("projectManagement/deleteResourceAllocation", data).then((res) => {
-        console.log(res);
-        if (res.message.data[0][0].DeleteRes == 0)
-          cogoToast.error("This Resource of Project is used somewhere");
-        else
-        this.getResourceByProject(this.state.ResourceProjectID, "","");
-        this.setState({ResourceName:"",ResourceID:""})
-        this.closedeletemodalKeyword();
+      if (CommonConfig.getUserAccess("Project Management").AllAccess === 1) {
+        api.post("projectManagement/deleteResourceAllocation", data).then((res) => {
+          console.log(res);
+          if (res.message.data[0][0].DeleteRes == 0)
+            cogoToast.error("This Resource of Project is used somewhere");
+          else
+            this.getResourceByProject(this.state.ResourceProjectID, "", "");
+          this.setState({ ResourceName: "", ResourceID: "" })
+          this.closedeletemodalKeyword();
 
 
-      });
+        });
+      }
+
+      if (
+        CommonConfig.getUserAccess("Project Management").AllAccess === 0 &&
+        CommonConfig.getUserAccess("Project Management").ReadAccess === 1
+      ) {
+        cogoToast.error("Sorry you don't have access to delete this");
+      }
     }
+    else {
+      var newArray = this.state.FinalServiceList.filter((index) => index.ServiceID !== "");
+      this.setState({ FinalServiceList: newArray });
 
-    if (
-      CommonConfig.getUserAccess("Project Management").AllAccess === 0 &&
-      CommonConfig.getUserAccess("Project Management").ReadAccess === 1
-    ) {
-      cogoToast.error("Sorry you don't have access to delete this");
+      this.closedeletemodalKeyword();
     }
-  }
-  else
-  {
-    var newArray = this.state.FinalServiceList.filter((index) => index.ServiceID !== "");
-    this.setState({FinalServiceList:newArray});
-
-    this.closedeletemodalKeyword();
-  }
   };
 
   closedeletemodalKeyword = () => {
     this.setState({ DeleteRequestKeyword: false });
   };
-  openDeleteRequestModalKeyword(e,recordDeleteId,deleteOption) {debugger
+  openDeleteRequestModalKeyword(e, recordDeleteId, deleteOption) {
+    debugger
     this.setState({
       DeleteRequestKeyword: true,
       DeleteRequestIdKeyword: recordDeleteId,
-      DeleteOption:deleteOption,
+      DeleteOption: deleteOption,
     });
   }
   handelExportToExcel = (evt) => {
@@ -856,7 +872,7 @@ class ManageProjects extends Component {
             NewServiceNameHelperText: "",
             ServiceType: serviceType[0].ServiceType,
           });
-          
+
         }
 
       }
@@ -872,7 +888,7 @@ class ManageProjects extends Component {
           ResourceServiceNameHelperText: "Please Select Service Name",
           ResourceServiceType: "",
         });
-        this.getResourceByProject(this.state.ResourceProjectID, "","");
+        this.getResourceByProject(this.state.ResourceProjectID, "", "");
       } else {
         if (value != null && value != "") {
           let serviceType = this.state.ServiceList.filter(
@@ -892,7 +908,7 @@ class ManageProjects extends Component {
             ResourceServiceNameHelperText: "",
             ResourceServiceType: serviceType[0].ServiceType,
           });
-          this.getResourceByProject(this.state.ResourceProjectID, value.value,"");
+          this.getResourceByProject(this.state.ResourceProjectID, value.value, "");
         }
 
       }
@@ -903,117 +919,117 @@ class ManageProjects extends Component {
       //   let Val = value.label;
       if (value == null || value == "") {
         console.log("value = ", value)
-       // if (value.label === "" && value.label === null) {
-          this.setState({
-            ResourceProjectName: [],
-            ResourceProjectID: "",
-            ResourceProjectNameErr: true,
-            ResourceProjectNameHelperText: "Please Select Project Name",
-            ResourceServiceID:"",
-            ResourceServiceName:[],
-          });
-          this.setState({ ProjectServiceList: [] });
-          this.setState({ ProjectServiceResourceList: []});
-      // } 
-      }else {
-          var selectData = {
-            label: value.label,
-            value: value.value
-          }
-          this.setState({
-            ResourceProjectName: selectData,
-            ResourceProjectID: value.value,
-            ResourceProjectNameErr: false,
-            ResourceProjectNameHelperText: "",
-            ResourceServiceID:"",
-            ResourceServiceName:[],
-
-          });
-
-          console.log("ProjectName = ", this.state.ResourceProjectName);
-          this.getServicesByProject(value.value);
-        this.getResourceByProject(value.value, "","");
-        }
-      
-    }
-   else if (type === "ReportServiceName") {
-    this.setState({ ReportServiceNameCheck: true });
-    let ServiceNameVal = value != null && value != "" ? value.label : "";
-    if (ServiceNameVal === "" || ServiceNameVal === null) {
-      this.setState({
-        ReportServiceName: ServiceNameVal,
-        ReportServiceID: "",
-        ReportServiceNameErr: true,
-        ReportServiceNameHelperText: "Please Select Service Name",
-        ReportServiceType: "",
-      });
-    //  this.getResourceByProject(this.state.ReportProjectID, "","");
-     // this.getProjectAllocationReport(this.state.ReportProjectID,0,this.state.ReportResourceID,this.state.ReportStartDate,this.state.ReportEndDate);
-    } else {
-      if (value != null && value != "") {
-        let serviceType = this.state.ServiceList.filter(
-          (x) =>
-            x.ServiceID === value.value
-        );
-
+        // if (value.label === "" && value.label === null) {
+        this.setState({
+          ResourceProjectName: [],
+          ResourceProjectID: "",
+          ResourceProjectNameErr: true,
+          ResourceProjectNameHelperText: "Please Select Project Name",
+          ResourceServiceID: "",
+          ResourceServiceName: [],
+        });
+        this.setState({ ProjectServiceList: [] });
+        this.setState({ ProjectServiceResourceList: [] });
+        // } 
+      } else {
         var selectData = {
           label: value.label,
           value: value.value
         }
-
         this.setState({
-          ReportServiceName: selectData,
-          ReportServiceID: value.value,
-          ReportServiceNameErr: false,
-          ReportServiceNameHelperText: "",
-       //   ReportServiceType: serviceType[0].ServiceType,
+          ResourceProjectName: selectData,
+          ResourceProjectID: value.value,
+          ResourceProjectNameErr: false,
+          ResourceProjectNameHelperText: "",
+          ResourceServiceID: "",
+          ResourceServiceName: [],
+
         });
-        //this.getResourceByProject(this.state.ReportProjectID, value.value,"ProjectAllocationReport");
-     //   this.getProjectAllocationReport(this.state.ReportProjectID,value.value,this.state.ReportResourceID,this.state.ReportStartDate,this.state.ReportEndDate);
+
+        console.log("ProjectName = ", this.state.ResourceProjectName);
+        this.getServicesByProject(value.value);
+        this.getResourceByProject(value.value, "", "");
       }
 
     }
+    else if (type === "ReportServiceName") {
+      this.setState({ ReportServiceNameCheck: true });
+      let ServiceNameVal = value != null && value != "" ? value.label : "";
+      if (ServiceNameVal === "" || ServiceNameVal === null) {
+        this.setState({
+          ReportServiceName: ServiceNameVal,
+          ReportServiceID: "",
+          ReportServiceNameErr: true,
+          ReportServiceNameHelperText: "Please Select Service Name",
+          ReportServiceType: "",
+        });
+        //  this.getResourceByProject(this.state.ReportProjectID, "","");
+        // this.getProjectAllocationReport(this.state.ReportProjectID,0,this.state.ReportResourceID,this.state.ReportStartDate,this.state.ReportEndDate);
+      } else {
+        if (value != null && value != "") {
+          let serviceType = this.state.ServiceList.filter(
+            (x) =>
+              x.ServiceID === value.value
+          );
 
-  } 
+          var selectData = {
+            label: value.label,
+            value: value.value
+          }
+
+          this.setState({
+            ReportServiceName: selectData,
+            ReportServiceID: value.value,
+            ReportServiceNameErr: false,
+            ReportServiceNameHelperText: "",
+            //   ReportServiceType: serviceType[0].ServiceType,
+          });
+          //this.getResourceByProject(this.state.ReportProjectID, value.value,"ProjectAllocationReport");
+          //   this.getProjectAllocationReport(this.state.ReportProjectID,value.value,this.state.ReportResourceID,this.state.ReportStartDate,this.state.ReportEndDate);
+        }
+
+      }
+
+    }
     else if (type === "ReportProjectName") {
       this.setState({ ReportProjectNameCheck: true });
 
       //   let Val = value.label;
       if (value == null || value == "") {
         console.log("value = ", value)
-       // if (value.label === "" && value.label === null) {
-          this.setState({
-            ReportProjectName: [],
-            ReportProjectID: "",
-            ReportProjectNameErr: true,
-            ReportProjectNameHelperText: "Please Select Project Name",
-            ReportServiceID:"",
-            ReportServicetName:[],
-            //Re
+        // if (value.label === "" && value.label === null) {
+        this.setState({
+          ReportProjectName: [],
+          ReportProjectID: "",
+          ReportProjectNameErr: true,
+          ReportProjectNameHelperText: "Please Select Project Name",
+          ReportServiceID: "",
+          ReportServicetName: [],
+          //Re
 
-          });
-          this.setState({ ProjectServiceList: [] });
-          this.setState({ ProjectServiceResourceList: []});
-      //    this.getProjectAllocationReport(0,this.state.ReportServiceID,this.state.ReportResourceID,this.state.ReportStartDate,this.state.ReportEndDate);
-      // } 
-      }else {
-          var selectData = {
-            label: value.label,
-            value: value.value
-          }
-          this.setState({
-            ReportProjectName: selectData,
-            ReportProjectID: value.value,
-            ReportProjectNameErr: false,
-            ReportProjectNameHelperText: "",
-          });
-
-          console.log("ProjectName = ", this.state.ReportProjectName);
-          this.getServicesByProject(value.value);
-        this.getResourceByProject(value.value, "","ProjectAllocationReport");
-     //   this.getProjectAllocationReport(value.value,this.state.ReportServiceID,this.state.ReportResourceID,this.state.ReportStartDate,this.state.ReportEndDate);
+        });
+        this.setState({ ProjectServiceList: [] });
+        this.setState({ ProjectServiceResourceList: [] });
+        //    this.getProjectAllocationReport(0,this.state.ReportServiceID,this.state.ReportResourceID,this.state.ReportStartDate,this.state.ReportEndDate);
+        // } 
+      } else {
+        var selectData = {
+          label: value.label,
+          value: value.value
         }
-      
+        this.setState({
+          ReportProjectName: selectData,
+          ReportProjectID: value.value,
+          ReportProjectNameErr: false,
+          ReportProjectNameHelperText: "",
+        });
+
+        console.log("ProjectName = ", this.state.ReportProjectName);
+        this.getServicesByProject(value.value);
+        this.getResourceByProject(value.value, "", "ProjectAllocationReport");
+        //   this.getProjectAllocationReport(value.value,this.state.ReportServiceID,this.state.ReportResourceID,this.state.ReportStartDate,this.state.ReportEndDate);
+      }
+
     }
     else if (type === "ReportResourceName") {
       this.setState({ ReportResourceNameCheck: true });
@@ -1021,31 +1037,31 @@ class ManageProjects extends Component {
       //   let Val = value.label;
       if (value == null || value == "") {
         console.log("value = ", value)
-      
-          this.setState({
-            ReportResourceName: [],
-            ReportResourceID: "",
-            ReportResourceNameErr: true,
-            ReportResourceNameHelperText: "Please Select Resource Name",
-          });
-      //    this.getProjectAllocationReport(this.state.ReportProjectID,this.state.ReportServiceID,0,this.state.ReportStartDate,this.state.ReportEndDate);
-        } else {
-          var selectData = {
-            label: value.label,
-            value: value.value
-          }
-          this.setState({
-            ReportResourceName: selectData,
-            ReportResourceID: value.value,
-            ReportResourceNameErr: false,
-            ReportResourceNameHelperText: "",
-          });
 
-          console.log("ResourceName = ", this.state.ReportResourceName);
-          //this.getServicesByProject(value.value);
-      //    this.getProjectAllocationReport(this.state.ReportProjectID,this.state.ReportServiceID,value.value,this.state.ReportStartDate,this.state.ReportEndDate);
+        this.setState({
+          ReportResourceName: [],
+          ReportResourceID: "",
+          ReportResourceNameErr: true,
+          ReportResourceNameHelperText: "Please Select Resource Name",
+        });
+        //    this.getProjectAllocationReport(this.state.ReportProjectID,this.state.ReportServiceID,0,this.state.ReportStartDate,this.state.ReportEndDate);
+      } else {
+        var selectData = {
+          label: value.label,
+          value: value.value
         }
-      
+        this.setState({
+          ReportResourceName: selectData,
+          ReportResourceID: value.value,
+          ReportResourceNameErr: false,
+          ReportResourceNameHelperText: "",
+        });
+
+        console.log("ResourceName = ", this.state.ReportResourceName);
+        //this.getServicesByProject(value.value);
+        //    this.getProjectAllocationReport(this.state.ReportProjectID,this.state.ReportServiceID,value.value,this.state.ReportStartDate,this.state.ReportEndDate);
+      }
+
     }
     else if (type === "ResourceName") {
       this.setState({ ResourceNameCheck: true });
@@ -1053,12 +1069,79 @@ class ManageProjects extends Component {
       //   let Val = value.label;
       if (value == null || value == "") {
         console.log("value = ", value)
-      
+
+        this.setState({
+          ResourceName: [],
+          ResourceID: "",
+          ResourceNameErr: true,
+          ResourceNameHelperText: "Please Select Resource Name",
+        });
+      } else {
+        var selectData = {
+          label: value.label,
+          value: value.value
+        }
+        this.setState({
+          ResourceName: selectData,
+          ResourceID: value.value,
+          ResourceNameErr: false,
+          ResourceNameHelperText: "",
+        });
+
+        console.log("ResourceName = ", this.state.ResourceName);
+        //this.getServicesByProject(value.value);
+      }
+
+    }
+  };
+  handleChange = (event, value, type) => {
+    debugger
+    if (type === "ServiceName") {
+      this.setState({ ServiceNameCheck: true });
+      let ServiceNameVal = value != null && value != "" ? value.label : "";
+      if (ServiceNameVal === "" || ServiceNameVal === null) {
+        this.setState({
+          ServiceName: ServiceNameVal,
+          ServiceID: "",
+          ServiceNameErr: true,
+          ServiceNameHelperText: "Please Select Service Name",
+          ServiceType: "",
+        });
+      } else {
+        if (value != null && value != "") {
+          let serviceType = this.state.ServiceList.filter(
+            (x) =>
+              x.ServiceID === value.value
+          );
+
+          var selectData = {
+            label: value.label,
+            value: value.value
+          }
+
           this.setState({
-            ResourceName: [],
-            ResourceID: "",
-            ResourceNameErr: true,
-            ResourceNameHelperText: "Please Select Resource Name",
+            ServiceName: selectData,
+            ServiceID: value.value,
+            ServiceNameErr: false,
+            ServiceNameHelperText: "",
+            ServiceType: serviceType[0].ServiceType,
+          });
+        }
+
+      }
+
+    } else if (type === "ProjectName") {
+      this.setState({ ProjectNameCheck: true });
+
+      //   let Val = value.label;
+      if (value != null || value != "") {
+        console.log("value = ", value)
+        if (value.label === "" && value.label === null) {
+          this.setState({
+            ProjectName: [],
+            ProjectID: "",
+            ProjectNameErr: true,
+            ProjectNameHelperText: "Please Select Project Name",
           });
         } else {
           var selectData = {
@@ -1066,115 +1149,49 @@ class ManageProjects extends Component {
             value: value.value
           }
           this.setState({
-            ResourceName: selectData,
-            ResourceID: value.value,
-            ResourceNameErr: false,
-            ResourceNameHelperText: "",
+            ProjectName: selectData,
+            ProjectID: value.value,
+            ProjectNameErr: false,
+            ProjectNameHelperText: "",
           });
 
-          console.log("ResourceName = ", this.state.ResourceName);
-          //this.getServicesByProject(value.value);
+          console.log("ProjectName = ", this.state.ProjectName);
+          this.getServicesByProject(value.value);
         }
-      
-    }
-  };
-  handleChange = (event,value, type) => {debugger
-    if (type === "ServiceName") {
-      this.setState({ ServiceNameCheck: true });
-      let ServiceNameVal = value!=null && value!=""?value.label:"";
-      if (ServiceNameVal === "" || ServiceNameVal === null) {
-        this.setState({
-            ServiceName: ServiceNameVal,
-            ServiceID:"",
-            ServiceNameErr: true,
-            ServiceNameHelperText: "Please Select Service Name",
-            ServiceType:"",
-        });
-      } else {
-        if(value!=null && value!=""){
-        let serviceType = this.state.ServiceList.filter(
-          (x) =>
-            x.ServiceID === value.value
-        );
-
-        var selectData = {
-          label: value.label,
-          value: value.value
-        }
-
-        this.setState({
-          ServiceName: selectData,
-          ServiceID:value.value,
-          ServiceNameErr: false,
-          ServiceNameHelperText: "",
-          ServiceType:serviceType[0].ServiceType,
-          });
-        }
-       
       }
-    
-    } else if (type === "ProjectName") {
-      this.setState({ ProjectNameCheck: true });
-
-   //   let Val = value.label;
-   if(value!=null || value!=""){
-      console.log("value = ",value)
-      if (value.label === "" && value.label === null) {
-        this.setState({
-          ProjectName: [],
-          ProjectID:"",
-          ProjectNameErr: true,
-          ProjectNameHelperText: "Please Select Project Name",
-        });
-      } else {
-        var selectData = {
-          label: value.label,
-          value: value.value
-        }
-        this.setState({
-          ProjectName: selectData,
-          ProjectID:value.value,
-          ProjectNameErr: false,
-          ProjectNameHelperText: "",
-        });
-
-        console.log("ProjectName = ",this.state.ProjectName);
-        this.getServicesByProject(value.value);
-      }
-    }
     }
   };
   reset = () => {
- 
+
     this.setState({
       ReportProjectID: "",
-      ReportProjectName:{label:"",value:""},
+      ReportProjectName: { label: "", value: "" },
       ReportServiceID: "",
-      ReportServiceName:{label:"",value:""},
+      ReportServiceName: { label: "", value: "" },
       ReportResourceID: "",
-      ReportResourceName:{label:"",value:""},
-      ReportProjectAllocationList:[],
+      ReportResourceName: { label: "", value: "" },
+      ReportProjectAllocationList: [],
 
     });
-   
+
   };
-  getProjectAllocationReport(ProjectID,ServiceID,ResourceID,StartDate,EndDate) {
+  getProjectAllocationReport(ProjectID, ServiceID, ResourceID, StartDate, EndDate, ProjectStatus) {
     debugger
-    if(ProjectID === "" && ServiceID==="" && ResourceID===""&&StartDate===""&&EndDate==="")
-    {
+    if (ProjectID === "" && ServiceID === "" && ResourceID === "" && StartDate === "" && EndDate === "" && ProjectStatus === "") {
       cogoToast.error("Please select atleast one criteria");
     }
-    else
-    {
-   
-      let data = {"ProjectID" :ProjectID===0 || ProjectID===""?0:ProjectID,
-        "ServiceID" :ServiceID ===""?0:ServiceID,
-        "ResourceID" :ResourceID===""?0:ResourceID,
-        "StartDate":CommonConfig.isEmpty(StartDate)?"":moment(StartDate).format(CommonConfig.dateFormat.dbDateOnly).toString(),
-        "EndDate":CommonConfig.isEmpty(EndDate)?"":moment(EndDate).format(CommonConfig.dateFormat.dbDateOnly).toString(),
+    else {
+
+      let data = {
+        "ProjectID": ProjectID === 0 || ProjectID === "" ? 0 : ProjectID,
+        "ServiceID": ServiceID === "" ? 0 : ServiceID,
+        "ResourceID": ResourceID === "" ? 0 : ResourceID,
+        "StartDate": CommonConfig.isEmpty(StartDate) ? "" : moment(StartDate).format(CommonConfig.dateFormat.dbDateOnly).toString(),
+        "EndDate": CommonConfig.isEmpty(EndDate) ? "" : moment(EndDate).format(CommonConfig.dateFormat.dbDateOnly).toString(),
+        "Status": ProjectStatus.value,
       };
 
-        //data.StatusQuery = whereClause;
+      //data.StatusQuery = whereClause;
 
       try {
         this.showLoador();
@@ -1183,10 +1200,10 @@ class ManageProjects extends Component {
           .then((result) => {
             if (result.success) {
               this.hideLoador();
-             
-                this.setState({ ReportProjectAllocationList: result.message[0] });
-              
-              
+
+              this.setState({ ReportProjectAllocationList: result.message[0] });
+
+
             } else {
               this.hideLoador();
               cogoToast.error("Something went wrong1 TA");
@@ -1221,7 +1238,7 @@ class ManageProjects extends Component {
               this.setState({ ProjectServiceList: result.Data.ProjectService });
             else {
               this.setState({ ProjectServiceList: [] });
-              this.setState({ NewServiceName: "",NewServiceID: "",NewServiceNameErr: false });
+              this.setState({ NewServiceName: "", NewServiceID: "", NewServiceNameErr: false });
               cogoToast.error("No Service Available for this Project");
             }
           } else {
@@ -1239,7 +1256,7 @@ class ManageProjects extends Component {
     }
   }
 
-  async getNonSelectedServicesByProject(ProjectID,Add) {
+  async getNonSelectedServicesByProject(ProjectID, Add) {
     debugger
     try {
       let data = {
@@ -1257,7 +1274,7 @@ class ManageProjects extends Component {
               this.setState({ ProjectServiceList: result.Data.ProjectService });
               var finalServicelist = {}
               var finalServicelistselect = {}
-           
+
               var newArraySelect = []
               let check = 0;
               console.log("this.state.ServiceList.length", this.state.ServiceList.length);
@@ -1296,24 +1313,24 @@ class ManageProjects extends Component {
 
               }
               this.setState({ FinalServiceList: newArray })
-          //    if (check == 1 || result.Data.ProjectService.length === this.state.ServiceList.length) {
-                
-                this.setState({ FinalServiceListSelect: newArraySelect })
-          //    }
+              //    if (check == 1 || result.Data.ProjectService.length === this.state.ServiceList.length) {
+
+              this.setState({ FinalServiceListSelect: newArraySelect })
+              //    }
             }
-            else
-            {     finalServicelist = {
-                  "ServiceID": "",
-                  "ServiceName": "",
-                  "ServiceType": "",
-                  "AlreadySelected": true,
-                  }
-                  newArray.push(finalServicelist)
-                  this.setState({ FinalServiceList: newArray});
-                  this.setState({ FinalServiceListSelect: this.state.ServiceList })
+            else {
+              finalServicelist = {
+                "ServiceID": "",
+                "ServiceName": "",
+                "ServiceType": "",
+                "AlreadySelected": true,
+              }
+              newArray.push(finalServicelist)
+              this.setState({ FinalServiceList: newArray });
+              this.setState({ FinalServiceListSelect: this.state.ServiceList })
             }
 
-            if(Add == 1 && result.Data.ProjectService.length != this.state.ServiceList.length)
+            if (Add == 1 && result.Data.ProjectService.length != this.state.ServiceList.length)
               this.AddNewRowData();
 
 
@@ -1346,7 +1363,7 @@ class ManageProjects extends Component {
         }
         this.setState({ ResourceProjectName: selectData, ResourceProjectID: value.value });
         this.getServicesByProject(value.value);
-        this.getResourceByProject(value.value, "","");
+        this.getResourceByProject(value.value, "", "");
       }
       else
         if (type === "ServiceName") {
@@ -1355,16 +1372,16 @@ class ManageProjects extends Component {
             value: value.value
           }
           this.setState({ ResourceServiceName: selectData, ResourceServiceID: value.value });
-          this.getResourceByProject(this.state.ResourceProjectID, value.value,"");
+          this.getResourceByProject(this.state.ResourceProjectID, value.value, "");
 
         }
     }
     else {
       if (this.state.ResourceProjectID != "" && this.state.ResourceProjectID != undefined)
-        this.getResourceByProject(this.state.ResourceProjectID, value,"");
+        this.getResourceByProject(this.state.ResourceProjectID, value, "");
     }
   };
-  
+
   renderServiceName = (cellInfo) => {
     debugger
     return (
@@ -1374,40 +1391,39 @@ class ManageProjects extends Component {
     );
   };
 
-  setLength = (len,type) => {debugger
-    if(type == "ProjectList")
-      {
-        this.setState({ finalProjectLength: len });
-      }
-    else if(type == "ProjectAllocation")
-      {  
-        this.setState({ finalProjectAllocationLength: len });
-      }
-  };
-
-  setHours = (Hours,type) => {
-     if(type == "ProjectAllocation")
-      {  
-        this.setState({ finalProjectAllocationHours: Hours });
-      }
-  };
-
-  checkProps = (e,type) => {debugger
-    if(type == "ProjectList")
-    { if (this.state.finalProjectLength !== e.sortedData.length) {
-        this.setLength(e.sortedData.length,type);
-      } 
+  setLength = (len, type) => {
+    debugger
+    if (type == "ProjectList") {
+      this.setState({ finalProjectLength: len });
     }
-    else if(type == "ProjectAllocation")
-      { if (this.state.finalProjectAllocationLength !== e.sortedData.length) {
-          this.setLength(e.sortedData.length, type);
-          const data = e.sortedData;
-          
-          const result = data.reduce((total, currentValue) => total = total + currentValue.Hours,0);
-          this.setHours(result, type);
-        console.log("lokesh lokesh",result);  
-        } 
+    else if (type == "ProjectAllocation") {
+      this.setState({ finalProjectAllocationLength: len });
+    }
+  };
+
+  setHours = (Hours, type) => {
+    if (type == "ProjectAllocation") {
+      this.setState({ finalProjectAllocationHours: Hours });
+    }
+  };
+
+  checkProps = (e, type) => {
+    
+    if (type == "ProjectList") {
+      if (this.state.finalProjectLength !== e.sortedData.length) {
+        this.setLength(e.sortedData.length, type);
       }
+    }
+    else if (type == "ProjectAllocation") {
+      if (this.state.finalProjectAllocationLength !== e.sortedData.length) {
+        this.setLength(e.sortedData.length, type);
+        const data = e.sortedData;
+
+        const result = data.reduce((total, currentValue) => total = total + currentValue.Hours, 0);
+        this.setHours(result, type);
+        console.log("lokesh lokesh", result);
+      }
+    }
 
     return "";
   };
@@ -1486,14 +1502,15 @@ class ManageProjects extends Component {
     //   );
     //   });
   };
-  saveData =  (redirect) => {debugger
+  saveData = (redirect) => {
+    debugger
     this.showLoador();
     if (
       (CommonConfig.isEmpty(this.state.ServiceName) &&
         CommonConfig.isEmpty(this.state.ProjectName) ||
-      (this.state.ServiceNameErr === true ||
-        this.state.ProjectNameErr === true )
-    ) ){
+        (this.state.ServiceNameErr === true ||
+          this.state.ProjectNameErr === true)
+      )) {
       this.setState({ saveErr: true });
       cogoToast.error(
         "Please correct the form and resubmit."
@@ -1501,14 +1518,14 @@ class ManageProjects extends Component {
     } else {
       this.setState({ saveErr: false });
       let data = {
-        ProjectID:this.state.ProjectID,
+        ProjectID: this.state.ProjectID,
         ServiceID: this.state.ServiceID,
         userId: CommonConfig.loggedInUserData().PersonID,
-        flag:"I",
+        flag: "I",
       };
       try {
-               
-      api.post("projectManagement/addUpdateServicesAllocation", data).then( (result) => {
+
+        api.post("projectManagement/addUpdateServicesAllocation", data).then((result) => {
           if (result.success) {
             this.hideLoador();
             cogoToast.success("Save Sucessfully");
@@ -1517,8 +1534,8 @@ class ManageProjects extends Component {
             // } else {
             //   window.location.reload();
             // }
-            this.getNonSelectedServicesByProject(this.state.ProjectID,1);
-            
+            this.getNonSelectedServicesByProject(this.state.ProjectID, 1);
+
           } else {
             this.setState({ loading: false });
             this.hideLoador();
@@ -1531,17 +1548,18 @@ class ManageProjects extends Component {
       }
     }
   };
-  saveResourceData =  (redirect) => {debugger 
+  saveResourceData = (redirect) => {
+    debugger
     this.showLoador();
     if (
       (CommonConfig.isEmpty(this.state.NewServiceID) &&
-      CommonConfig.isEmpty(this.state.ResourceName) && CommonConfig.isEmpty(this.state.StartDate) &&
-      CommonConfig.isEmpty(this.state.EndDate) ||
-      (this.state.NewServiceNameErr === true ||
-        this.state.ResourceNameErr === true ||
-        this.state.StartDateErr === true ||
-        this.state.EndDateErr === true )
-    ) ){
+        CommonConfig.isEmpty(this.state.ResourceName) && CommonConfig.isEmpty(this.state.StartDate) &&
+        CommonConfig.isEmpty(this.state.EndDate) ||
+        (this.state.NewServiceNameErr === true ||
+          this.state.ResourceNameErr === true ||
+          this.state.StartDateErr === true ||
+          this.state.EndDateErr === true)
+      )) {
       this.setState({ saveResourceErr: true });
       cogoToast.error(
         "Please correct the form and resubmit."
@@ -1550,25 +1568,25 @@ class ManageProjects extends Component {
       this.showLoador();
       this.setState({ saveResourceErr: false });
       let data = {
-        ProjectID:this.state.ResourceProjectID,
+        ProjectID: this.state.ResourceProjectID,
         ServiceID: this.state.NewServiceID,
         ResourceID: this.state.ResourceID,
-        StartDate:this.state.StartDate == null || this.state.StartDate == ""
-        ? "NULL"
-        :moment(this.state.StartDate)
-        .format(CommonConfig.dateFormat.dbDateOnly)
-        .toString(),
-        EndDate:this.state.EndDate == null || this.state.EndDate == ""
-        ? "NULL"
-        :moment(this.state.EndDate)
-        .format(CommonConfig.dateFormat.dbDateOnly)
-        .toString(),
+        StartDate: this.state.StartDate == null || this.state.StartDate == ""
+          ? "NULL"
+          : moment(this.state.StartDate)
+            .format(CommonConfig.dateFormat.dbDateOnly)
+            .toString(),
+        EndDate: this.state.EndDate == null || this.state.EndDate == ""
+          ? "NULL"
+          : moment(this.state.EndDate)
+            .format(CommonConfig.dateFormat.dbDateOnly)
+            .toString(),
         userId: CommonConfig.loggedInUserData().PersonID,
-        flag:"I",
+        flag: "I",
       };
       try {
-               
-      api.post("projectManagement/addUpdateResourceAllocation", data).then( (result) => {
+
+        api.post("projectManagement/addUpdateResourceAllocation", data).then((result) => {
           if (result.success) {
             this.setState({ loading: true });
             this.hideLoador();
@@ -1578,7 +1596,7 @@ class ManageProjects extends Component {
             // } else {
             //   window.location.reload();
             // }
-            this.getResourceByProject(this.state.ResourceProjectID, "","");
+            this.getResourceByProject(this.state.ResourceProjectID, "", "");
 
           } else {
             this.hideLoador();
@@ -1606,13 +1624,13 @@ class ManageProjects extends Component {
     if (AttachmentList.length === 0 && IsValid) {
       const objAttachment = {
         Index: AttachmentList.filter((x) => x.AlreadySelected === true).length + 1,
-        ServiceID:"",
+        ServiceID: "",
         ServiceName: "",
         ServiceType: "",
         AlreadySelected: true,
       };
       this.setState({
-        FinalServiceList: [...this.state.FinalServiceList, objAttachment],ServiceName:"",ServiceID:""
+        FinalServiceList: [...this.state.FinalServiceList, objAttachment], ServiceName: "", ServiceID: ""
       });
     } else {
       cogoToast.error("Please fill above row first");
@@ -1628,222 +1646,218 @@ class ManageProjects extends Component {
       }
     }
     var AttachmentList = this.state.ProjectServiceResourceList.filter(
-      (x) =>  (x.ResourceName === "" || x.ResourceName === null)
+      (x) => (x.ResourceName === "" || x.ResourceName === null)
     );
     if (AttachmentList.length === 0 && IsValid) {
       const objAttachment = {
         Index: AttachmentList.filter((x) => x.AlreadySelected === true).length + 1,
-        ResourceID:"",
+        ResourceID: "",
         ResourceName: "",
         ServiceType: "",
-        EndDate:"",
+        EndDate: "",
         ProjectServiceID: "",
-        ServiceName:"",
-        ServiceResourceID:"",
-        StartDate:""
+        ServiceName: "",
+        ServiceResourceID: "",
+        StartDate: ""
       };
       this.setState({
-        ProjectServiceResourceList: [...this.state.ProjectServiceResourceList, objAttachment],ResourceName:"",ResourceID:"",StartDate:moment(Date()).startOf('month').format(CommonConfig.dateFormat.dateOnly),EndDate:moment(Date()).endOf('year').format(CommonConfig.dateFormat.dateOnly)
+        ProjectServiceResourceList: [...this.state.ProjectServiceResourceList, objAttachment], ResourceName: "", ResourceID: "", StartDate: moment(Date()).startOf('month').format(CommonConfig.dateFormat.dateOnly), EndDate: moment(Date()).endOf('year').format(CommonConfig.dateFormat.dateOnly)
       });
     } else {
       cogoToast.error("Please fill above row first");
     }
   };
-  getResourceByProject(ProjectID,ServiceID,StepType) {
+  getResourceByProject(ProjectID, ServiceID, StepType) {
     debugger
-      try {
-        console.log(this.state.ResourceProjectName);
-        let data={
-          "ProjectID":ProjectID,
-          "ServiceID":ServiceID ==undefined?0:ServiceID,
-        }
-        this.showLoador();
-        api
-          .post("projectManagement/getResourceByProject", data)
-          .then((result) => {
-            if (result.success) {
-              this.hideLoador();
-              if(StepType ==="ProjectAllocationReport")
-                {
-                  if(result.Data.ProjectService.length !=0)
-                    this.setState({ ReportResourceList: result.Data.ProjectService });
-                  else
-                  {
-                    this.setState({ ReportResourceList: []});
-                    
-                    
-                  }
-                }
-                else
-                {
-                  if(result.Data.ProjectService.length !=0)
-                    this.setState({ ProjectServiceResourceList: result.Data.ProjectService });
-                  else
-                  {
-                    this.setState({ ProjectServiceResourceList: []});
-                    if(this.state.ServiceList.length==0 || result.Data.ProjectService.length ==0)
-                    this.AddNewRowDataResource();
-                    
-                  }
-                }
-            } else {
-              this.hideLoador();
-              cogoToast.error("Something went wrong1");
-            }
-          })
-          .catch((err) => {
+    try {
+      console.log(this.state.ResourceProjectName);
+      let data = {
+        "ProjectID": ProjectID,
+        "ServiceID": ServiceID == undefined ? 0 : ServiceID,
+      }
+      this.showLoador();
+      api
+        .post("projectManagement/getResourceByProject", data)
+        .then((result) => {
+          if (result.success) {
             this.hideLoador();
-            cogoToast.error("Something went wrong2");
-          });
-      } catch (err) {
-        this.hideLoador();
-        cogoToast.error("Something Went Wrong3");
-      }
-    } 
+            if (StepType === "ProjectAllocationReport") {
+              if (result.Data.ProjectService.length != 0)
+                this.setState({ ReportResourceList: result.Data.ProjectService });
+              else {
+                this.setState({ ReportResourceList: [] });
 
-    getResourceList() {
-      debugger
-      try {
-        this.showLoador();
-        api
-          .post("projectManagement/getResourceList")
-          .then((result) => {
-            if (result.success) {
-              this.hideLoador();
-  
-              this.setState({ ResourceList: result.message, FinalResourceList: result.message });
-  
-  
-  
-            } else {
-              this.hideLoador();
-              cogoToast.error("Something went wrong1");
+
+              }
             }
-          })
-          .catch((err) => {
-            this.hideLoador();
-            cogoToast.error("Something went wrong2");
-          });
-      } catch (err) {
-        this.hideLoador();
-        cogoToast.error("Something Went Wrong3");
-      }
-    }
+            else {
+              if (result.Data.ProjectService.length != 0)
+                this.setState({ ProjectServiceResourceList: result.Data.ProjectService });
+              else {
+                this.setState({ ProjectServiceResourceList: [] });
+                if (this.state.ServiceList.length == 0 || result.Data.ProjectService.length == 0)
+                  this.AddNewRowDataResource();
 
-    getAllocationResourceList() {
-      debugger
-      try {
-        this.showLoador();
-        api
-          .post("projectManagement/getAllocationResourceList")
-          .then((result) => {
-            if (result.success) {
-              this.hideLoador();
-  
-              this.setState({FinalAllocationResourceList: result.message });
-  
-  
-  
-            } else {
-              this.hideLoador();
-              cogoToast.error("Something went wrong1");
+              }
             }
-          })
-          .catch((err) => {
-            this.hideLoador();
-            cogoToast.error("Something went wrong2");
-          });
-      } catch (err) {
-        this.hideLoador();
-        cogoToast.error("Something Went Wrong3");
-      }
-    }
-
-
-    handleDateChange = (date, type) => {
-      debugger;
-   
-      if (type === "EndDate") {
-        this.setState({
-          EndDate: date,
-          EndDateErr: false,
-          EndDateHelperText: "",
-        });
-      } else if (type === "StartDate") {
-        this.setState({
-          StartDate: date,
-          StartDateErr: false,
-          StartDateHelperText: "",
-        });
-      }
-      else  if (type === "ReportEndDate") {
-        this.setState({
-          ReportEndDate: date,
-          ReportEndDateErr: false,
-          ReportEndDateHelperText: "",
-        });
-       // this.getProjectAllocationReport(this.state.ReportProjectID,this.state.ReportServiceID,this.state.ReportResourceID,this.state.ReportStartDate,date);
-      } else if (type === "ReportStartDate") {
-        this.setState({
-          ReportStartDate: date,
-          ReportStartDateErr: false,
-          ReportStartDateHelperText: "",
-        });
-    //    this.getProjectAllocationReport(this.state.ReportProjectID,this.state.ReportServiceID,this.state.ReportResourceID,date,this.state.ReportEndDate);
-      }
-    };
-    handleDateValidation = (date, type) => {
-      debugger;
-  
-      if (type === "StartDate") {
-        this.setState({
-          StartDate: date,
-          StartDateErr: false,
-          StartDateHelperText: "",
-        });
-        if (this.state.EndDate !== "")
-          if (date < this.state.EndDate) {
-            this.setState({
-              StartDate: date,
-              StartDateErr: false,
-              StartDateHelperText: "",
-            });
           } else {
-            this.setState({
-              StartDate: "",
-              StartDateErr: true,
-              StartDateHelperText: "Start Date must be Before End Date",
-            });
+            this.hideLoador();
+            cogoToast.error("Something went wrong1");
           }
-      } 
-      if (type === "EndDate") {
-        this.setState({
-          EndDate: date,
-          EndDateErr: false,
-          EndDateHelperText: "",
+        })
+        .catch((err) => {
+          this.hideLoador();
+          cogoToast.error("Something went wrong2");
         });
-        if (this.state.StartDate !== "")
-          if (date > this.state.StartDate) {
-            this.setState({
-              EndDate: date,
-              EndDateErr: false,
-              EndDateHelperText: "",
-            });
-          } else if (date != "") {
-            this.setState({
-              EndDate: "",
-              EndDateErr: true,
-              EndDateHelperText: "End Date must be after Start Date",
-            });
+    } catch (err) {
+      this.hideLoador();
+      cogoToast.error("Something Went Wrong3");
+    }
+  }
+
+  getResourceList() {
+    debugger
+    try {
+      this.showLoador();
+      api
+        .post("projectManagement/getResourceList")
+        .then((result) => {
+          if (result.success) {
+            this.hideLoador();
+
+            this.setState({ ResourceList: result.message, FinalResourceList: result.message });
+
+
+
+          } else {
+            this.hideLoador();
+            cogoToast.error("Something went wrong1");
           }
-      
-      }
-    };
+        })
+        .catch((err) => {
+          this.hideLoador();
+          cogoToast.error("Something went wrong2");
+        });
+    } catch (err) {
+      this.hideLoador();
+      cogoToast.error("Something Went Wrong3");
+    }
+  }
+
+  getAllocationResourceList() {
+    debugger
+    try {
+      this.showLoador();
+      api
+        .post("projectManagement/getAllocationResourceList")
+        .then((result) => {
+          if (result.success) {
+            this.hideLoador();
+
+            this.setState({ FinalAllocationResourceList: result.message });
+
+
+
+          } else {
+            this.hideLoador();
+            cogoToast.error("Something went wrong1");
+          }
+        })
+        .catch((err) => {
+          this.hideLoador();
+          cogoToast.error("Something went wrong2");
+        });
+    } catch (err) {
+      this.hideLoador();
+      cogoToast.error("Something Went Wrong3");
+    }
+  }
+
+
+  handleDateChange = (date, type) => {
+    debugger;
+
+    if (type === "EndDate") {
+      this.setState({
+        EndDate: date,
+        EndDateErr: false,
+        EndDateHelperText: "",
+      });
+    } else if (type === "StartDate") {
+      this.setState({
+        StartDate: date,
+        StartDateErr: false,
+        StartDateHelperText: "",
+      });
+    }
+    else if (type === "ReportEndDate") {
+      this.setState({
+        ReportEndDate: date,
+        ReportEndDateErr: false,
+        ReportEndDateHelperText: "",
+      });
+      // this.getProjectAllocationReport(this.state.ReportProjectID,this.state.ReportServiceID,this.state.ReportResourceID,this.state.ReportStartDate,date);
+    } else if (type === "ReportStartDate") {
+      this.setState({
+        ReportStartDate: date,
+        ReportStartDateErr: false,
+        ReportStartDateHelperText: "",
+      });
+      //    this.getProjectAllocationReport(this.state.ReportProjectID,this.state.ReportServiceID,this.state.ReportResourceID,date,this.state.ReportEndDate);
+    }
+  };
+  handleDateValidation = (date, type) => {
+    debugger;
+
+    if (type === "StartDate") {
+      this.setState({
+        StartDate: date,
+        StartDateErr: false,
+        StartDateHelperText: "",
+      });
+      if (this.state.EndDate !== "")
+        if (date < this.state.EndDate) {
+          this.setState({
+            StartDate: date,
+            StartDateErr: false,
+            StartDateHelperText: "",
+          });
+        } else {
+          this.setState({
+            StartDate: "",
+            StartDateErr: true,
+            StartDateHelperText: "Start Date must be Before End Date",
+          });
+        }
+    }
+    if (type === "EndDate") {
+      this.setState({
+        EndDate: date,
+        EndDateErr: false,
+        EndDateHelperText: "",
+      });
+      if (this.state.StartDate !== "")
+        if (date > this.state.StartDate) {
+          this.setState({
+            EndDate: date,
+            EndDateErr: false,
+            EndDateHelperText: "",
+          });
+        } else if (date != "") {
+          this.setState({
+            EndDate: "",
+            EndDateErr: true,
+            EndDateHelperText: "End Date must be after Start Date",
+          });
+        }
+
+    }
+  };
 
 
 
   render() {
-    const { ResourceProjectList, ProjectListArray, ServiceList, ProjectServiceList, ProjectServiceResourceList,ReportResourceList, isNotesVisible } = this.state;
+    const { ResourceProjectList, ProjectListArray, ProjectStatusList, ServiceList, ProjectServiceList, ProjectServiceResourceList, ReportResourceList, isNotesVisible } = this.state;
     const projectList = ProjectListArray.map((type) => {
       return { value: type.ProjectID, label: type.ProjectName };
     });
@@ -1971,7 +1985,7 @@ class ManageProjects extends Component {
       {
         Header: "Start Date",
         accessor: "StartDate",
-        className:"date-ps",
+        className: "date-ps",
         filterable: true,
         sortable: true,
         width: 150,
@@ -2008,12 +2022,12 @@ class ManageProjects extends Component {
                         {...params}
                         label="Start Date*"
                         margin="normal"
-                    
+
                       />
                     )}
                   />
-                 
-              </div>
+
+                </div>
               )}
             </div>
           );
@@ -2022,7 +2036,7 @@ class ManageProjects extends Component {
       {
         Header: "End Date",
         accessor: "EndDate",
-        className:"date-ps",
+        className: "date-ps",
         filterable: true,
         sortable: true,
         width: 150,
@@ -2032,40 +2046,40 @@ class ManageProjects extends Component {
             <div>
               {record.original.EndDate != "" && record.original.EndDate != null && record.original.EndDate != undefined ? (
                 <div>
-                {record.original.EndDate}
+                  {record.original.EndDate}
                 </div>
               ) : (
-                
-              <div className="tbl-datepicker">
-    
-                <Datetime
-                  dateFormat={"MM/DD/YYYY"}
-                  timeFormat={false}
-                  value={this.state.EndDate}
-                  onChange={(date) =>
-                    this.handleDateChange(date, "EndDate")
-                  }
-                  onBlur={(date) =>
-                    this.handleDateValidation(date, "EndDate")
-                  }
-                  closeOnSelect={true}
-                  renderInput={(params) => (
-                    <TextField
-                      style={{ marginTop: "-15px" }}
-                      error={this.state.EndDateErr}
-                      helperText={this.state.EndDateHelperText}
-                      inputProps={{
-                        min: moment().format("MM-DD-YYYY"),
-                      }}
-                      {...params}
-                      label="End Date*"
-                      margin="normal"
-                    
-                    />
-                  )}
-                />
 
-              </div>
+                <div className="tbl-datepicker">
+
+                  <Datetime
+                    dateFormat={"MM/DD/YYYY"}
+                    timeFormat={false}
+                    value={this.state.EndDate}
+                    onChange={(date) =>
+                      this.handleDateChange(date, "EndDate")
+                    }
+                    onBlur={(date) =>
+                      this.handleDateValidation(date, "EndDate")
+                    }
+                    closeOnSelect={true}
+                    renderInput={(params) => (
+                      <TextField
+                        style={{ marginTop: "-15px" }}
+                        error={this.state.EndDateErr}
+                        helperText={this.state.EndDateHelperText}
+                        inputProps={{
+                          min: moment().format("MM-DD-YYYY"),
+                        }}
+                        {...params}
+                        label="End Date*"
+                        margin="normal"
+
+                      />
+                    )}
+                  />
+
+                </div>
               )}
             </div>
           );
@@ -2080,45 +2094,45 @@ class ManageProjects extends Component {
         filterable: false,
         Cell: (record) => {
           return (
-            <div className="table-common-btn">             
-                {this.state.ProjectServiceResourceList.length == record.index+1?(
-                  this.state.Access.WriteAccess === 1 || this.state.Access.AllAccess ===1?
-                  record.original.ResourceID !="" ?(
-                  
+            <div className="table-common-btn">
+              {this.state.ProjectServiceResourceList.length == record.index + 1 ? (
+                this.state.Access.WriteAccess === 1 || this.state.Access.AllAccess === 1 ?
+                  record.original.ResourceID != "" ? (
+
                     <Button
-                    justIcon
-                    color="info"
-                  >
-                  <AddIcon onClick={() => this.AddNewRowDataResource()}/>
-                    
-                  
-                    
-                  </Button>
-                  ):
-                  (
-                    <Button
-                    justIcon
-                    color="info"
-                  >
-                  
-                  <SaveIcon onClick={() => this.saveResourceData()}/>
-                    
-                 
-                  </Button>
-                 )
-                 :null
-                ):null
-                
-                }
-                 {CommonConfig.getUserAccess("Project Management").DeleteAccess ===
+                      justIcon
+                      color="info"
+                    >
+                      <AddIcon onClick={() => this.AddNewRowDataResource()} />
+
+
+
+                    </Button>
+                  ) :
+                    (
+                      <Button
+                        justIcon
+                        color="info"
+                      >
+
+                        <SaveIcon onClick={() => this.saveResourceData()} />
+
+
+                      </Button>
+                    )
+                  : null
+              ) : null
+
+              }
+              {CommonConfig.getUserAccess("Project Management").DeleteAccess ===
                 1 ? (
-                  <Button   justIcon   color="danger" >
-                     <DeleteIcon
-                        onClick={(e) => this.openDeleteRequestModalKeyword(e,record.original.ServiceResourceID,"ResourceAllocation")}
-                      />
-                  </Button>
-                 
-                ) : null}
+                <Button justIcon color="danger" >
+                  <DeleteIcon
+                    onClick={(e) => this.openDeleteRequestModalKeyword(e, record.original.ServiceResourceID, "ResourceAllocation")}
+                  />
+                </Button>
+
+              ) : null}
             </div>
           )
         },
@@ -2162,22 +2176,22 @@ class ManageProjects extends Component {
         Cell: (record) => {
           return (
             <div className="table-common-btn">
-              {this.state.Access.WriteAccess ===1 || this.state.Access.AllAccess?
-              <Button
-                justIcon
-                color="info"
-                onClick={() => this.handleEditService(record)}
-              >
-                <i className="fas fa-edit"></i>
-              </Button>
-              :null}
+              {this.state.Access.WriteAccess === 1 || this.state.Access.AllAccess ?
+                <Button
+                  justIcon
+                  color="info"
+                  onClick={() => this.handleEditService(record)}
+                >
+                  <i className="fas fa-edit"></i>
+                </Button>
+                : null}
               {this.state.Access.DeleteAccess === 1 ? (
-                  <Button   justIcon   color="danger" >
-                    <DeleteIcon
-                      onClick={(e) => this.openDeleteRequestModalKeyword(e,record.original.ServiceID,"Service")}
-                    />
-                  </Button>
-                ) : null}
+                <Button justIcon color="danger" >
+                  <DeleteIcon
+                    onClick={(e) => this.openDeleteRequestModalKeyword(e, record.original.ServiceID, "Service")}
+                  />
+                </Button>
+              ) : null}
             </div>
           );
         },
@@ -2241,30 +2255,30 @@ class ManageProjects extends Component {
         maxWidth: 200,
         Cell: (record) => {
           return (
-            
+
             <div className="table-common-btn">
-             {console.log("this.state.Accessthis.state.Access",this.state.Access)}  { this.state.Access.WriteAccess === 1 || this.state.Access.AllAccess === 1  ? (  
-              <Button
-                justIcon
-                color="info"
-                onClick={() => this.handleEdit(record)}
-              >
-                <i className="fas fa-edit"></i>
-              </Button>) : null}
-              {console.log("record.original.ProjectID",record.original.ProjectID)}{ this.state.Access.DeleteAccess === 1 || this.state.Access.AllAccess === 1  ? (
-                  <Button   justIcon   color="danger" >
-                    <DeleteIcon
-                      onClick={(e) => this.openDeleteRequestModalKeyword(e,record.original.ProjectID,"Project")}
-                    />
-                  </Button>
-                ) : null}
+              {console.log("this.state.Accessthis.state.Access", this.state.Access)}  {this.state.Access.WriteAccess === 1 || this.state.Access.AllAccess === 1 ? (
+                <Button
+                  justIcon
+                  color="info"
+                  onClick={() => this.handleEdit(record)}
+                >
+                  <i className="fas fa-edit"></i>
+                </Button>) : null}
+              {console.log("record.original.ProjectID", record.original.ProjectID)}{this.state.Access.DeleteAccess === 1 || this.state.Access.AllAccess === 1 ? (
+                <Button justIcon color="danger" >
+                  <DeleteIcon
+                    onClick={(e) => this.openDeleteRequestModalKeyword(e, record.original.ProjectID, "Project")}
+                  />
+                </Button>
+              ) : null}
             </div>
           );
         },
         filterable: false,
       },
     ];
-   const column2= [
+    const column2 = [
       {
         Header: "Project Name",
         accessor: "ProjectName",
@@ -2293,7 +2307,7 @@ class ManageProjects extends Component {
       {
         Header: "Date",
         accessor: "Date",
-        className:"date-ps",
+        className: "date-ps",
         filterable: true,
         sortable: true,
         width: 150,
@@ -2302,7 +2316,7 @@ class ManageProjects extends Component {
       {
         Header: "Hours",
         accessor: "Hours",
-        className:"date-ps",
+        className: "date-ps",
         filterable: true,
         sortable: true,
         width: 150,
@@ -2358,7 +2372,7 @@ class ManageProjects extends Component {
           );
         },
       },
- 
+
       {
         width: 250,
         filterable: false,
@@ -2366,51 +2380,51 @@ class ManageProjects extends Component {
         Header: "Actions",
         Cell: (record) => {
           return (
-            
+
             <div className="table-common-btn">
-             
-               
-             
+
+
+
               {this.state.FinalServiceList.filter((x) => x.AlreadySelected === true).length === record.index + 1 ? (
-                
-                  record.original.ServiceID !="" && this.state.FinalServiceList.length != this.state.ServiceList.length?(
-                    this.state.Access.WriteAccess ===1 || this.state.Access.AllAccess?
+
+                record.original.ServiceID != "" && this.state.FinalServiceList.length != this.state.ServiceList.length ? (
+                  this.state.Access.WriteAccess === 1 || this.state.Access.AllAccess ?
                     <Button
-                    justIcon
-                    color="info"
-                  >
-                  <AddIcon onClick={() => this.AddNewRowData()}/>
-                    
-                  
-                    
-                  </Button>
-                    :null
-                  ):this.state.ProjectServiceList.length != this.state.ServiceList.length?(
+                      justIcon
+                      color="info"
+                    >
+                      <AddIcon onClick={() => this.AddNewRowData()} />
+
+
+
+                    </Button>
+                    : null
+                ) : this.state.ProjectServiceList.length != this.state.ServiceList.length ? (
                   (
-                    this.state.Access.WriteAccess ===1 || this.state.Access.AllAccess?
-                    <Button
-                    justIcon
-                    color="info"
-                  >
-                  
-                  <SaveIcon onClick={() => this.saveData()}/>
-                    
-                 
-                  </Button>
-                  :null
-                )):null
-                ) : null
+                    this.state.Access.WriteAccess === 1 || this.state.Access.AllAccess ?
+                      <Button
+                        justIcon
+                        color="info"
+                      >
+
+                        <SaveIcon onClick={() => this.saveData()} />
+
+
+                      </Button>
+                      : null
+                  )) : null
+              ) : null
               }
 
-                {this.state.Access.DeleteAccess === 1 ? (
-                  <Button   justIcon   color="danger" >
-                    <DeleteIcon
-                      onClick={(e) => this.openDeleteRequestModalKeyword(e,record.original.ServiceID,"ServiceAllocation")}
-                    />
-                  </Button>
-                ) : null}
+              {this.state.Access.DeleteAccess === 1 ? (
+                <Button justIcon color="danger" >
+                  <DeleteIcon
+                    onClick={(e) => this.openDeleteRequestModalKeyword(e, record.original.ServiceID, "ServiceAllocation")}
+                  />
+                </Button>
+              ) : null}
             </div>
-            
+
           )
         },
       },
@@ -2461,23 +2475,23 @@ class ManageProjects extends Component {
                         </CardIcon>
                         <h4 className="margin-right-auto text-color-black">Project List</h4>
 
-                    {this.state.Access.WriteAccess === 1 || this.state.Access.AllAccess === 1 ?
-                        <div className="filter-wrap">
-                          <div
-                            className="filter-top-right"
+                        {this.state.Access.WriteAccess === 1 || this.state.Access.AllAccess === 1 ?
+                          <div className="filter-wrap">
+                            <div
+                              className="filter-top-right"
 
-                          >
-
-                            <Button
-                              color="primary"
-                              className="wd-auto"
-                              onClick={() => this.AddProject()}
                             >
-                              Add Project
-                            </Button>
+
+                              <Button
+                                color="primary"
+                                className="wd-auto"
+                                onClick={() => this.AddProject()}
+                              >
+                                Add Project
+                              </Button>
+                            </div>
                           </div>
-                        </div>
-                    :null}
+                          : null}
                       </CardHeader>
                       <CardBody>
 
@@ -2515,15 +2529,15 @@ class ManageProjects extends Component {
                           <PhoneCallback />
                         </CardIcon>
                         <h4 className="margin-right-auto text-color-black">Service List</h4>
-                        {this.state.Access.WriteAccess ===1 || this.state.Access.AllAccess?
-                        <div className="filter-wrap">
-                          <div className="filter-top-right">
-                            <Button color="primary" className="wd-auto" onClick={() => this.AddService()}>
-                              Add Service
-                            </Button>
+                        {this.state.Access.WriteAccess === 1 || this.state.Access.AllAccess ?
+                          <div className="filter-wrap">
+                            <div className="filter-top-right">
+                              <Button color="primary" className="wd-auto" onClick={() => this.AddService()}>
+                                Add Service
+                              </Button>
+                            </div>
                           </div>
-                        </div>
-                        :null}
+                          : null}
                       </CardHeader>
                       <CardBody>
                         <ReactTable
@@ -2558,29 +2572,29 @@ class ManageProjects extends Component {
                           <PhoneCallback />
                         </CardIcon>
                         <h4 className="margin-right-auto text-color-black">Service Allocation List</h4>
-                          <div className="filter-wrap">
-                            <div className="autocomplete-right">
-                              <div className="autocomplete-fs-small">
-                                
-                                  <FormControl fullWidth className="mt-2">
-                                    <Autocomplete
-                                      id="combo-box-demo"
-                                      options={projectList}
-                                      value={this.state.ProjectName}
-                                      onChange={(event, value) =>
-                                        this.selectChange(event, value, "ProjectName")
-                                      }
-                                      getOptionLabel={(option) => option.label}
-                                      renderInput={(params) => (
-                                        <TextField {...params} label="ProjectName" />
-                                      )}
-                                    />
-                                  </FormControl>
-                                
-                              </div>
+                        <div className="filter-wrap">
+                          <div className="autocomplete-right">
+                            <div className="autocomplete-fs-small">
+
+                              <FormControl fullWidth className="mt-2">
+                                <Autocomplete
+                                  id="combo-box-demo"
+                                  options={projectList}
+                                  value={this.state.ProjectName}
+                                  onChange={(event, value) =>
+                                    this.selectChange(event, value, "ProjectName")
+                                  }
+                                  getOptionLabel={(option) => option.label}
+                                  renderInput={(params) => (
+                                    <TextField {...params} label="ProjectName" />
+                                  )}
+                                />
+                              </FormControl>
+
                             </div>
                           </div>
-                        
+                        </div>
+
                       </CardHeader>
                       <CardBody>
                         <ReactTable
@@ -2640,7 +2654,7 @@ class ManageProjects extends Component {
                             </GridItem>
                             <GridItem xs={12} sm={12} md={6}>
                               <FormControl fullWidth>
-                              <Autocomplete
+                                <Autocomplete
                                   options={projectServiceList}
                                   id="ServiceName"
                                   getOptionLabel={(option1) => option1.label}
@@ -2657,26 +2671,26 @@ class ManageProjects extends Component {
                           </GridContainer>
                         </div>
 
-                          
-                        
+
+
                       </CardHeader>
                       <CardBody>
                         <ReactTable
-                            data={this.state.ProjectServiceResourceList}
-                            defaultPageSize={10}
-                            minRows={0}
-                            resizable={false}
-                            columns={column3}
-                            defaultFilterMethod={CommonConfig.filterCaseInsensitive}
-                            showPaginationBottom={true}
-                            className="-striped -highlight table-height Allclear-table"
+                          data={this.state.ProjectServiceResourceList}
+                          defaultPageSize={10}
+                          minRows={0}
+                          resizable={false}
+                          columns={column3}
+                          defaultFilterMethod={CommonConfig.filterCaseInsensitive}
+                          showPaginationBottom={true}
+                          className="-striped -highlight table-height Allclear-table"
 
-                          />
+                        />
                       </CardBody>
                     </Card>
                   </GridItem>
                   <div>
-                  
+
                   </div>
                 </GridContainer>
               </div>
@@ -2695,13 +2709,13 @@ class ManageProjects extends Component {
                         </CardIcon>
                         <h4 className="margin-right-auto text-color-black">Project Allocation Report</h4>
 
-                      
-                          
-                        
+
+
+
                       </CardHeader>
                       <CardBody>
-                      <div >
-                      <GridContainer>
+                        <div >
+                          <GridContainer>
                             <GridItem xs={12} sm={12} md={4}>
                               <FormControl fullWidth className="">
                                 <Autocomplete
@@ -2720,7 +2734,7 @@ class ManageProjects extends Component {
                             </GridItem>
                             <GridItem xs={12} sm={12} md={4}>
                               <FormControl fullWidth>
-                              <Autocomplete
+                                <Autocomplete
                                   options={serviceListOriginal}
                                   id="ServiceName"
                                   getOptionLabel={(option1) => option1.label}
@@ -2732,41 +2746,41 @@ class ManageProjects extends Component {
                                     <TextField {...params} label="Service Name" />
                                   )}
                                 />
-                               
+
                               </FormControl>
                             </GridItem>
                             <GridItem xs={12} sm={12} md={4}>
                               <FormControl fullWidth>
-                              <Autocomplete
-                                id="ResourceName"
-                                options={allocationResourceList}
-                                getOptionLabel={(option) => option.label}
-                                value={this.state.ReportResourceName}
-                                onChange={(event, value) =>
-                                  this.handleChangeResource(event, value, "ReportResourceName")
-                                }
-                               
-                                renderInput={(params1) => (
-                                  <TextField
-                                    {...params1}
-                                    label="Resource Name"
-                                    error={""}
-                                    helperText={
-                                      ""
-                                    }
-                                    margin="normal"
-                                    fullWidth
-                                  />
-                                )}
-                              />
-                             </FormControl>
+                                <Autocomplete
+                                  id="ResourceName"
+                                  options={allocationResourceList}
+                                  getOptionLabel={(option) => option.label}
+                                  value={this.state.ReportResourceName}
+                                  onChange={(event, value) =>
+                                    this.handleChangeResource(event, value, "ReportResourceName")
+                                  }
+
+                                  renderInput={(params1) => (
+                                    <TextField
+                                      {...params1}
+                                      label="Resource Name"
+                                      error={""}
+                                      helperText={
+                                        ""
+                                      }
+                                      margin="normal"
+                                      fullWidth
+                                    />
+                                  )}
+                                />
+                              </FormControl>
                             </GridItem>
-                            
+
                           </GridContainer>
                           <GridContainer>
                             <GridItem xs={12} sm={12} md={4}>
                               <FormControl fullWidth>
-                              <div className="date-spl">
+                                <div className="date-spl">
                                   <Datetime
                                     dateFormat={"MM/DD/YYYY"}
                                     timeFormat={false}
@@ -2794,124 +2808,139 @@ class ManageProjects extends Component {
                                       />
                                     )}
                                   />
-                                
-                              </div>
-                             </FormControl>
+
+                                </div>
+                              </FormControl>
                             </GridItem>
-                      
-                
+
+
                             <GridItem xs={12} sm={12} md={4}>
-                             
+
                               <div className="date-spl">
                                 <FormControl fullWidth>
-                                    <Datetime 
-                                      dateFormat={"MM/DD/YYYY"}
-                                      timeFormat={false}
-                                      value={this.state.ReportEndDate}
-                                      onChange={(date) =>
-                                        this.handleDateChange(date, "ReportEndDate")
-                                      }
-                                      onBlur={(date) =>
-                                        this.handleDateValidation(date, "ReportEndDate")
-                                      }
-                                      closeOnSelect={true}
-                                      renderInput={(params) => (
-                                        <TextField
-                                          style={{ marginTop: "-15px" }}
-                                          error={this.state.ReportEndDateErr}
-                                          helperText={this.state.ReportEndDateHelperText}
-                                          inputProps={{
-                                            min: moment().format("MM-DD-YYYY"),
-                                          }}
-                                          {...params}
-                                          label="End Date*"
-                                          margin="normal"
-                                          fullWidth
-                                        />
-                                      )}
-                                    />
-                                  </FormControl>
-                                  </div>
-                          
-                            </GridItem>
-                            <div className="right">
-                            <div className="shipment-submit mt-20">
-                            
-                              <Button
-                                justIcon
-                                color="danger"
-                                onClick={(evt) => this.handelExportToExcel(evt)}
-                              >
-                                <i class="fas fa-download"></i>
-                              </Button>
-                              <Button color="rose" onClick={() => this.getProjectAllocationReport(this.state.ReportProjectID,this.state.ReportServiceID,this.state.ReportResourceID,this.state.ReportStartDate,this.state.ReportEndDate)}>
-                                Search
-                              </Button>
-                              <Button
-                                color="secondary"
-                                onClick={() => this.reset()}
-                              >
-                                Reset
-                              </Button>
-                            </div>
-                          </div>
-                            
-                          
-                          
-                          </GridContainer>
-                          </div>
-                        <ReactTable
-                data={this.state.ReportProjectAllocationList}
-                pageText={"Total Count : " + this.state.finalProjectAllocationLength+"    Total Hours : " + this.state.finalProjectAllocationHours}
-                getPaginationProps={(e) => this.checkProps(e, "ProjectAllocation")}                      
-                defaultPageSize={10}
-                minRows={0}
-                resizable={false}
-                columns={column2}
-                defaultFilterMethod={CommonConfig.filterCaseInsensitive}
-                showPaginationBottom={true}
-                className="-striped -highlight mt-20 Allclear-table"
+                                  <Datetime
+                                    dateFormat={"MM/DD/YYYY"}
+                                    timeFormat={false}
+                                    value={this.state.ReportEndDate}
+                                    onChange={(date) =>
+                                      this.handleDateChange(date, "ReportEndDate")
+                                    }
+                                    onBlur={(date) =>
+                                      this.handleDateValidation(date, "ReportEndDate")
+                                    }
+                                    closeOnSelect={true}
+                                    renderInput={(params) => (
+                                      <TextField
+                                        style={{ marginTop: "-15px" }}
+                                        error={this.state.ReportEndDateErr}
+                                        helperText={this.state.ReportEndDateHelperText}
+                                        inputProps={{
+                                          min: moment().format("MM-DD-YYYY"),
+                                        }}
+                                        {...params}
+                                        label="End Date*"
+                                        margin="normal"
+                                        fullWidth
+                                      />
+                                    )}
+                                  />
+                                </FormControl>
+                              </div>
 
-              />
+                            </GridItem>
+                            <GridItem xs={12} sm={12} md={4}>
+                              <Autocomplete
+                                id="combo-box-demo"
+                                options={ProjectStatusList}
+                                value={this.state.ProjectStatus}
+                                onChange={(event, value) =>
+                                  this.selectChange(event, value, "ProjectStatus")
+                                }
+                                getOptionLabel={(option) => option.label}
+                                renderInput={(params) => (
+                                  <TextField {...params} label="Project Status" />
+                                )}
+                              />
+                            </GridItem>
+                          </GridContainer>
+
+                          <GridContainer>
+                            <div className="right">
+                              <div className="shipment-submit mt-20">
+
+                                <Button
+                                  justIcon
+                                  color="danger"
+                                  onClick={(evt) => this.handelExportToExcel(evt)}
+                                >
+                                  <i class="fas fa-download"></i>
+                                </Button>
+                                <Button color="rose" onClick={() => this.getProjectAllocationReport(this.state.ReportProjectID, this.state.ReportServiceID, this.state.ReportResourceID, this.state.ReportStartDate, this.state.ReportEndDate, this.state.ProjectStatus)}>
+                                  Search
+                                </Button>
+                                <Button
+                                  color="secondary"
+                                  onClick={() => this.reset()}
+                                >
+                                  Reset
+                                </Button>
+                              </div>
+                            </div>
+                          </GridContainer>
+
+                        </div>
+                        <ReactTable
+                          data={this.state.ReportProjectAllocationList}
+                          pageText={"Total Count : " + this.state.finalProjectAllocationLength + "    Total Hours : " + this.state.finalProjectAllocationHours}
+                          getPaginationProps={(e) => this.checkProps(e, "ProjectAllocation")}
+                          defaultPageSize={10}
+                          minRows={0}
+                          resizable={false}
+                          columns={column2}
+                          defaultFilterMethod={CommonConfig.filterCaseInsensitive}
+                          showPaginationBottom={true}
+                          className="-striped -highlight mt-20 Allclear-table"
+
+                        />
                       </CardBody>
                     </Card>
                   </GridItem>
                   <div>
-                  
+
                   </div>
                 </GridContainer>
               </div>
             </div>
             <Dialog
-                      open={this.state.DeleteRequestKeyword}
-                      onClose={this.closedeletemodalKeyword}
-                      aria-labelledby="alert-dialog-title"
-                      aria-describedby="alert-dialog-description"
-                    >
-                      <DialogTitle id="alert-dialog-title">
-                        {"Confirm Delete"}
-                      </DialogTitle>
-                      <DialogContent>
-                        <DialogContentText id="alert-dialog-description">
-                          Are you sure, you want to delete this record?
-                        </DialogContentText>
-                      </DialogContent>
-                      <DialogActions>
-                        <Button onClick={this.closedeletemodalKeyword} color="primary">
-                          Cancel
-                        </Button>
-                        <Button
-                          onClick={() =>
-                           this.state.DeleteOption==="ResourceAllocation"?
-                            this.handleDeleteResource(this.state.DeleteRequestIdKeyword):this.handleDelete(this.state.DeleteOption,this.state.DeleteRequestIdKeyword)
-                          }
-                          color="primary"
-                         // autoFocus
-                        >
-                          Delete
-                        </Button>
-                      </DialogActions>
-                    </Dialog>
+              open={this.state.DeleteRequestKeyword}
+              onClose={this.closedeletemodalKeyword}
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description"
+            >
+              <DialogTitle id="alert-dialog-title">
+                {"Confirm Delete"}
+              </DialogTitle>
+              <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                  Are you sure, you want to delete this record?
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={this.closedeletemodalKeyword} color="primary">
+                  Cancel
+                </Button>
+                <Button
+                  onClick={() =>
+                    this.state.DeleteOption === "ResourceAllocation" ?
+                      this.handleDeleteResource(this.state.DeleteRequestIdKeyword) : this.handleDelete(this.state.DeleteOption, this.state.DeleteRequestIdKeyword)
+                  }
+                  color="primary"
+                // autoFocus
+                >
+                  Delete
+                </Button>
+              </DialogActions>
+            </Dialog>
           </GridItem>
         </GridContainer>
 
