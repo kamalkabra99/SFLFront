@@ -86,7 +86,7 @@ class ManageProjects extends Component {
         { value: "Cancelled", label: "Cancelled" },
         { value: "Closed", label: "Closed" },
         { value: "Hold", label: "Hold" },],
-      ProjectStatus: {},
+      ProjectStatus: { value: "", label: ""},
       notes: "",
       FinalServiceList: [],
       FinalServiceListSelect: [],
