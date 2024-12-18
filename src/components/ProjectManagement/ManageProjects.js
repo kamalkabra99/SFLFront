@@ -50,6 +50,11 @@ class ManageProjects extends Component {
 
     this.state = {
       Steps: [
+      /*  {
+          stepName: "Client Master",
+          stepId: "ClientMaster",
+          classname: "inactive",
+        },*/
         {
           stepName: "Project Master",
           stepId: "ProjectMaster",
@@ -87,6 +92,8 @@ class ManageProjects extends Component {
       FinalServiceListSelect: [],
       isNotesVisible: true,
       BookofWorkData: [],
+      ClientListArray:[],
+      finalClientLength:0,
       ProjectListArray: [],
       ProjectName: "",
       finalProjectLength: 0,
@@ -611,6 +618,7 @@ class ManageProjects extends Component {
     }
   };
   showHide() {
+   // document.getElementById("ClientMaster").style.display = "none";
     document.getElementById("ProjectMaster").style.display = "block";
     document.getElementById("ServiceMaster").style.display = "none";
     document.getElementById("ServiceAllocation").style.display = "none";
@@ -659,17 +667,7 @@ class ManageProjects extends Component {
 
 
 
-  AddServicecToProject = () => {
-    this.props.history.push({
-      pathname: "AddServicesToProject/",
-      state: {
-        filterlist: this.state.filterProps,
-        sortlist: this.state.sortProps,
-        tabKey: this.state.tabKey,
-        // WorkStatus: this.state.WorkStatus,
-      },
-    });
-  };
+
   handleDelete = (recordType, record) => {
     debugger
     if (recordType == "Project") {
@@ -1879,6 +1877,192 @@ class ManageProjects extends Component {
     const allocationResourceList = this.state.FinalAllocationResourceList.map((type) => {
       return { value: type.ResourceID, label: type.ResourceName };
     });
+    
+
+    
+    const column = [
+      {
+        Header: "Project Id",
+        accessor: "ProjectID",
+        width: 100,
+        filterable: true,
+        sortable: true,
+        maxWidth: 100,
+      },
+      {
+        Header: "Date Created",
+        accessor: "CreatedOn",
+        width: 100,
+        filterable: true,
+        sortable: true,
+        maxWidth: 100,
+      },
+      {
+        Header: "Project Name",
+        accessor: "ProjectName",
+        width: 200,
+        filterable: true,
+        sortable: true,
+        maxWidth: 200,
+      },
+      {
+        Header: "Client Name",
+        accessor: "ClientName",
+        filterable: true,
+        sortable: true,
+        width: 200,
+        maxWidth: 200,
+      },
+      {
+        Header: "Services",
+        accessor: "Services",
+        filterable: true,
+        sortable: true,
+        width: 300,
+        maxWidth: 300,
+      },
+      {
+        Header: "Status",
+        accessor: "Status",
+        filterable: true,
+        sortable: true,
+        width: 150,
+        maxWidth: 150,
+      },
+      {
+        Header: "Actions",
+        accessor: "actions",
+        sortable: false,
+        width: 100,
+        maxWidth: 100,
+        Cell: (record) => {
+          return (
+
+            <div className="table-common-btn">
+              {console.log("this.state.Accessthis.state.Access", this.state.Access)}  {this.state.Access.WriteAccess === 1 || this.state.Access.AllAccess === 1 ? (
+                <Button
+                  justIcon
+                  color="info"
+                  onClick={() => this.handleEdit(record)}
+                >
+                  <i className="fas fa-edit"></i>
+                </Button>) : null}
+              {console.log("record.original.ProjectID", record.original.ProjectID)}{this.state.Access.DeleteAccess === 1 || this.state.Access.AllAccess === 1 ? (
+                <Button justIcon color="danger" >
+                  <DeleteIcon
+                    onClick={(e) => this.openDeleteRequestModalKeyword(e, record.original.ProjectID, "Project")}
+                  />
+                </Button>
+              ) : null}
+            </div>
+          );
+        },
+        filterable: false,
+      },
+    ];
+    const column1 = [
+
+
+      {
+        Header: "Service Name",
+        accessor: "ServiceName",
+        width: 275,
+        filterable: true,
+        sortable: true,
+        maxWidth: 275,
+      },
+      {
+        Header: "Service Type",
+        accessor: "ServiceType",
+        filterable: true,
+        sortable: true,
+        width: 300,
+        maxWidth: 300,
+      },
+      {
+        Header: "Status",
+        accessor: "Status",
+        filterable: true,
+        sortable: true,
+        width: 325,
+        maxWidth: 325,
+      },
+      {
+        Header: "Actions",
+        accessor: "actions",
+        sortable: false,
+        width: 200,
+        maxWidth: 200,
+        Cell: (record) => {
+          return (
+            <div className="table-common-btn">
+              {this.state.Access.WriteAccess === 1 || this.state.Access.AllAccess ?
+                <Button
+                  justIcon
+                  color="info"
+                  onClick={() => this.handleEditService(record)}
+                >
+                  <i className="fas fa-edit"></i>
+                </Button>
+                : null}
+              {this.state.Access.DeleteAccess === 1 ? (
+                <Button justIcon color="danger" >
+                  <DeleteIcon
+                    onClick={(e) => this.openDeleteRequestModalKeyword(e, record.original.ServiceID, "Service")}
+                  />
+                </Button>
+              ) : null}
+            </div>
+          );
+        },
+        filterable: false,
+      },
+    ];
+    const column2 = [
+      {
+        Header: "Project Name",
+        accessor: "ProjectName",
+        width: 250,
+        filterable: true,
+        sortable: true,
+        maxWidth: 250,
+      },
+      {
+        Header: "Service Name",
+        accessor: "ServiceName",
+        width: 250,
+        filterable: true,
+        sortable: true,
+        maxWidth: 250,
+      },
+      {
+        Header: "Resource Name",
+        accessor: "ResourceName",
+        width: 225,
+        filterable: true,
+        sortable: true,
+        maxWidth: 225,
+
+      },
+      {
+        Header: "Date",
+        accessor: "Date",
+        className: "date-ps",
+        filterable: true,
+        sortable: true,
+        width: 150,
+        maxWidth: 150,
+      },
+      {
+        Header: "Hours",
+        accessor: "Hours",
+        className: "date-ps",
+        filterable: true,
+        sortable: true,
+        width: 150,
+        maxWidth: 150,
+      },
+    ];
     const column3 = [
       {
         Header: "Service Name",
@@ -2139,190 +2323,6 @@ class ManageProjects extends Component {
         sortable: false,
       },
     ];
-
-    const column1 = [
-
-
-      {
-        Header: "Service Name",
-        accessor: "ServiceName",
-        width: 275,
-        filterable: true,
-        sortable: true,
-        maxWidth: 275,
-      },
-      {
-        Header: "Service Type",
-        accessor: "ServiceType",
-        filterable: true,
-        sortable: true,
-        width: 300,
-        maxWidth: 300,
-      },
-      {
-        Header: "Status",
-        accessor: "Status",
-        filterable: true,
-        sortable: true,
-        width: 325,
-        maxWidth: 325,
-      },
-      {
-        Header: "Actions",
-        accessor: "actions",
-        sortable: false,
-        width: 200,
-        maxWidth: 200,
-        Cell: (record) => {
-          return (
-            <div className="table-common-btn">
-              {this.state.Access.WriteAccess === 1 || this.state.Access.AllAccess ?
-                <Button
-                  justIcon
-                  color="info"
-                  onClick={() => this.handleEditService(record)}
-                >
-                  <i className="fas fa-edit"></i>
-                </Button>
-                : null}
-              {this.state.Access.DeleteAccess === 1 ? (
-                <Button justIcon color="danger" >
-                  <DeleteIcon
-                    onClick={(e) => this.openDeleteRequestModalKeyword(e, record.original.ServiceID, "Service")}
-                  />
-                </Button>
-              ) : null}
-            </div>
-          );
-        },
-        filterable: false,
-      },
-    ];
-    const column = [
-      {
-        Header: "Project Id",
-        accessor: "ProjectID",
-        width: 100,
-        filterable: true,
-        sortable: true,
-        maxWidth: 100,
-      },
-      {
-        Header: "Date Created",
-        accessor: "CreatedOn",
-        width: 200,
-        filterable: true,
-        sortable: true,
-        maxWidth: 200,
-      },
-      {
-        Header: "Project Name",
-        accessor: "ProjectName",
-        width: 200,
-        filterable: true,
-        sortable: true,
-        maxWidth: 200,
-      },
-      {
-        Header: "Client Name",
-        accessor: "ClientName",
-        filterable: true,
-        sortable: true,
-        width: 200,
-        maxWidth: 200,
-      },
-      {
-        Header: "Services",
-        accessor: "Services",
-        filterable: true,
-        sortable: true,
-        width: 250,
-        maxWidth: 250,
-      },
-      {
-        Header: "Status",
-        accessor: "Status",
-        filterable: true,
-        sortable: true,
-        width: 150,
-        maxWidth: 150,
-      },
-      {
-        Header: "Actions",
-        accessor: "actions",
-        sortable: false,
-        width: 200,
-        maxWidth: 200,
-        Cell: (record) => {
-          return (
-
-            <div className="table-common-btn">
-              {console.log("this.state.Accessthis.state.Access", this.state.Access)}  {this.state.Access.WriteAccess === 1 || this.state.Access.AllAccess === 1 ? (
-                <Button
-                  justIcon
-                  color="info"
-                  onClick={() => this.handleEdit(record)}
-                >
-                  <i className="fas fa-edit"></i>
-                </Button>) : null}
-              {console.log("record.original.ProjectID", record.original.ProjectID)}{this.state.Access.DeleteAccess === 1 || this.state.Access.AllAccess === 1 ? (
-                <Button justIcon color="danger" >
-                  <DeleteIcon
-                    onClick={(e) => this.openDeleteRequestModalKeyword(e, record.original.ProjectID, "Project")}
-                  />
-                </Button>
-              ) : null}
-            </div>
-          );
-        },
-        filterable: false,
-      },
-    ];
-    const column2 = [
-      {
-        Header: "Project Name",
-        accessor: "ProjectName",
-        width: 250,
-        filterable: true,
-        sortable: true,
-        maxWidth: 250,
-      },
-      {
-        Header: "Service Name",
-        accessor: "ServiceName",
-        width: 250,
-        filterable: true,
-        sortable: true,
-        maxWidth: 250,
-      },
-      {
-        Header: "Resource Name",
-        accessor: "ResourceName",
-        width: 225,
-        filterable: true,
-        sortable: true,
-        maxWidth: 225,
-
-      },
-      {
-        Header: "Date",
-        accessor: "Date",
-        className: "date-ps",
-        filterable: true,
-        sortable: true,
-        width: 150,
-        maxWidth: 150,
-      },
-      {
-        Header: "Hours",
-        accessor: "Hours",
-        className: "date-ps",
-        filterable: true,
-        sortable: true,
-        width: 150,
-        maxWidth: 150,
-      },
-    ];
     const column4 = [
       {
         Header: "Service Name",
@@ -2429,8 +2429,79 @@ class ManageProjects extends Component {
         },
       },
     ];
+   /* const column5 = [
+      {
+        Header: "Client Id",
+        accessor: "ClientID",
+        width: 150,
+        filterable: true,
+        sortable: true,
+        maxWidth: 150,
+      },
+      {
+        Header: "Name",
+        accessor: "ClientName",
+        width: 200,
+        filterable: true,
+        sortable: true,
+        maxWidth: 200,
+      },
+      {
+        Header: "Address",
+        accessor: "Address",
+        width: 200,
+        filterable: true,
+        sortable: true,
+        maxWidth: 200,
+      },
+      {
+        Header: "Email",
+        accessor: "Email",
+        filterable: true,
+        sortable: true,
+        width: 200,
+        maxWidth: 200,
+      },
+      {
+        Header: "Phone",
+        accessor: "Phone",
+        filterable: true,
+        sortable: true,
+        width: 250,
+        maxWidth: 250,
+      },
+      {
+        Header: "Actions",
+        accessor: "actions",
+        sortable: false,
+        width: 200,
+        maxWidth: 200,
+        Cell: (record) => {
+          return (
 
-
+            <div className="table-common-btn">
+              {console.log("this.state.Accessthis.state.Access", this.state.Access)}  {this.state.Access.WriteAccess === 1 || this.state.Access.AllAccess === 1 ? (
+                <Button
+                  justIcon
+                  color="info"
+                  onClick={() => this.handleEdit(record)}
+                >
+                  <i className="fas fa-edit"></i>
+                </Button>) : null}
+              {this.state.Access.DeleteAccess === 1 || this.state.Access.AllAccess === 1 ? (
+                <Button justIcon color="danger" >
+                  <DeleteIcon
+                    onClick={(e) => this.openDeleteRequestModalKeyword(e, record.original.ProjectID, "Project")}
+                  />
+                </Button>
+              ) : null}
+            </div>
+          );
+        },
+        filterable: false,
+      },
+    ];
+*/
     return (
       <div>
         <GridContainer className="MuiGrid-justify-xs-center">
@@ -2458,7 +2529,61 @@ class ManageProjects extends Component {
             </div>
             <div className="shipment-content mt-30">
 
+           {/* <div className="shipment-pane mt-20" id="ClientMaster">
+                <GridContainer className="UserList-outer">
+                  {this.state.Loading === true ? (
+                    <div className="loading">
+                      <SimpleBackdrop />
+                    </div>
+                  ) : null}
+                  <GridItem xs={12}>
+                    <Card>
+                      <CardHeader className="btn-right-outer" color="primary" icon>
+                        <CardIcon color="primary">
+                          <PhoneCallback />
+                        </CardIcon>
+                        <h4 className="margin-right-auto text-color-black">Client List</h4>
 
+                        {this.state.Access.WriteAccess === 1 || this.state.Access.AllAccess === 1 ?
+                          <div className="filter-wrap">
+                            <div
+                              className="filter-top-right"
+
+                            >
+
+                              <Button
+                                color="primary"
+                                className="wd-auto"
+                                onClick={() => this.AddClient()}
+                              >
+                                Add Client
+                              </Button>
+                            </div>
+                          </div>
+                          : null}
+                      </CardHeader>
+                      <CardBody>
+
+                      
+                        <ReactTable
+                          data={this.state.ClientListArray}
+                          pageText={"Total Count : " + this.state.finalClientLength}
+                          getPaginationProps={(e) => this.checkProps(e, "ClientList")}
+                          minRows={0}
+                          filterable
+                          textAlign={"left"}
+                          defaultFilterMethod={CommonConfig.filterCaseInsensitive}
+                          resizable={false}
+                          columns={column5}
+                          defaultPageSize={10}
+                          showPaginationBottom={true}
+                          className="-striped -highlight mt-20 Allclear-table"
+                        />
+                      </CardBody>
+                    </Card>
+                  </GridItem>
+                </GridContainer>
+              </div>*/}
 
               <div className="shipment-pane mt-20" id="ProjectMaster">
                 <GridContainer className="UserList-outer">
@@ -2865,9 +2990,9 @@ class ManageProjects extends Component {
                           </GridContainer>
 
                           <GridContainer>
-                            <div className="right">
+                            
                               <div className="shipment-submit mt-20">
-
+                              <div className="right">
                                 <Button
                                   justIcon
                                   color="danger"
@@ -2891,7 +3016,7 @@ class ManageProjects extends Component {
                         </div>
                         <ReactTable
                           data={this.state.ReportProjectAllocationList}
-                          pageText={"Total Count : " + this.state.finalProjectAllocationLength + "    Total Hours : " + this.state.finalProjectAllocationHours}
+                          pageText={"Total Count : " + this.state.finalProjectAllocationLength + ".           Total Hours : " + this.state.finalProjectAllocationHours+"                      ."}
                           getPaginationProps={(e) => this.checkProps(e, "ProjectAllocation")}
                           defaultPageSize={10}
                           minRows={0}
