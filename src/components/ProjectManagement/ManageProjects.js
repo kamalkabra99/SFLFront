@@ -50,11 +50,11 @@ class ManageProjects extends Component {
 
     this.state = {
       Steps: [
-      /*  {
-          stepName: "Client Master",
-          stepId: "ClientMaster",
-          classname: "inactive",
-        },*/
+        // {
+        //   stepName: "Client Master",
+        //   stepId: "ClientMaster",
+        //   classname: "inactive",
+        // },
         {
           stepName: "Project Master",
           stepId: "ProjectMaster",
@@ -2034,6 +2034,14 @@ class ManageProjects extends Component {
         filterable: true,
         sortable: true,
         maxWidth: 250,
+        Footer: (
+          <span>
+            <b>
+            {"Total Count : " + this.state.finalProjectAllocationLength}
+            </b>
+          </span>
+        ),
+        
       },
       {
         Header: "Resource Name",
@@ -2042,7 +2050,8 @@ class ManageProjects extends Component {
         filterable: true,
         sortable: true,
         maxWidth: 225,
-
+        
+        
       },
       {
         Header: "Date",
@@ -2061,6 +2070,13 @@ class ManageProjects extends Component {
         sortable: true,
         width: 150,
         maxWidth: 150,
+        Footer: (
+          <span>
+            <b>
+            {"Total Hours : " + this.state.finalProjectAllocationHours}
+            </b>
+          </span>
+        ),
       },
     ];
     const column3 = [
@@ -2529,7 +2545,7 @@ class ManageProjects extends Component {
             </div>
             <div className="shipment-content mt-30">
 
-           {/* <div className="shipment-pane mt-20" id="ClientMaster">
+            {/* <div className="shipment-pane mt-20" id="ClientMaster">
                 <GridContainer className="UserList-outer">
                   {this.state.Loading === true ? (
                     <div className="loading">
@@ -2583,7 +2599,7 @@ class ManageProjects extends Component {
                     </Card>
                   </GridItem>
                 </GridContainer>
-              </div>*/}
+              </div> */}
 
               <div className="shipment-pane mt-20" id="ProjectMaster">
                 <GridContainer className="UserList-outer">
@@ -3016,7 +3032,7 @@ class ManageProjects extends Component {
                         </div>
                         <ReactTable
                           data={this.state.ReportProjectAllocationList}
-                          pageText={"Total Count : " + this.state.finalProjectAllocationLength + ".           Total Hours : " + this.state.finalProjectAllocationHours+"                      ."}
+                        
                           getPaginationProps={(e) => this.checkProps(e, "ProjectAllocation")}
                           defaultPageSize={10}
                           minRows={0}
