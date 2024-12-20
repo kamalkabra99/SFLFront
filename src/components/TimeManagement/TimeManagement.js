@@ -77,6 +77,7 @@ class TimeManagement extends React.Component {
       ManagedBy: "",
       viewAllClear: false,
       managedByList: [],
+      TimeTypeValue: { value: "1st Half", label: "1st Half" },
 
       Timetype: [
         { value: "1st Half", label: "1st Half" },

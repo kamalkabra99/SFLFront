@@ -1423,6 +1423,11 @@ class Scheduleshipment extends React.Component {
               }
             }
 
+            console.log("this.state.GetRateAccess.WriteAccess = ",this.state.GetRateAccess.WriteAccess);
+            console.log("this.state.GetRateAccess.WriteAccess = ",objdata.shipments.ServiceName);
+            console.log("ommonConfig.isEmpty(objdata.shipments.SubServiceName) = ",CommonConfig.isEmpty(objdata.shipments.SubServiceName));
+            
+            
             if (
               objdata.shipments.ServiceName === "FedEx" &&
               objdata.from_address.country_name != "Canada" &&
@@ -1431,6 +1436,20 @@ class Scheduleshipment extends React.Component {
             ) {
               var labelSize = localStorage.getItem("selectedPaperSize");
               try {
+                var contryIdfrom = 0
+                if(objdata.from_address.country_name == "Canada"){
+                  contryIdfrom = 37
+
+                }else if(objdata.from_address.country_name == "United State"){
+                  contryIdfrom = 202
+
+                }else if(objdata.from_address.country_name == "India"){
+                  contryIdfrom = 89
+
+                }else{
+                  contryIdfrom = 0
+
+                }
                 var data = {
                   TrackingNumber: res.data.data,
                   isSendEmail: true,
@@ -1438,6 +1457,7 @@ class Scheduleshipment extends React.Component {
                   Rates: getrate,
                   LabelSpecification: labelSize,
                   EtdDocumentId: EtdDocID,
+                  fCountry:contryIdfrom,
                 };
                 api
                   .post("scheduleshipment/Fedexship", data)

@@ -138,6 +138,7 @@ class ShipmentCustom extends React.Component {
       InvoiceDate: "",
       InvoiceDueDate: "",
       TotalReceivedCost: 0,
+      // newContainerID:"",
       DatePaidOn: "",
       ShippingID: "",
       useraccess: JSON.parse(localStorage.getItem("loggedInUserData")),
@@ -2519,6 +2520,8 @@ class ShipmentCustom extends React.Component {
                 this.state.TotalCostReceived.toFixed(2)
             ) {
               this.setState({ IsChanged: false });
+              console.log("this.state.TotalCostInvoice89",this.state.TotalCostInvoice);
+            console.log("this.state.TotalCostInvoice89",this.state.TotalCostReceived.toFixed(2));
 
               cogoToast.error("Invoice and Payment Received does not match");
             } else if (
@@ -5215,9 +5218,15 @@ class ShipmentCustom extends React.Component {
       );
       var totalCost = 0;
       for (var i = 0; i < paymentList.length; i++) {
-        totalCost = Number(totalCost) + Number(paymentList[i].TotalAmount);
+        totalCost = Number(totalCost.toFixed(2)) + Number((paymentList[i].TotalAmount).toFixed(2));
       }
       totalCost = totalCost.toFixed(2);
+      console.log("totalCost= ",totalCost);
+
+      if(totalCost == "-0.00"){
+        totalCost = 0.00
+      }
+      
 
       this.setState({ TotalCostInvoice: totalCost });
       console.log("Anshul= 1245 = ", this.state.TotalCostInvoice);
@@ -9974,6 +9983,8 @@ class ShipmentCustom extends React.Component {
         if (
           this.state.TotalCostInvoice != this.state.TotalCostReceived.toFixed(2)
         ) {
+          console.log("this.state.TotalCostInvoice14",this.state.TotalCostInvoice);
+            console.log("this.state.TotalCostInvoice15",this.state.TotalCostReceived.toFixed(2));
           cogoToast.error("Invoice and Payment Received does not match");
           comFlag = 1;
         } else {
@@ -11117,6 +11128,9 @@ class ShipmentCustom extends React.Component {
             this.state.TotalCostInvoice !=
             this.state.TotalCostReceived.toFixed(2)
           ) {
+            console.log("this.state.TotalCostInvoice58",this.state.TotalCostInvoice);
+            console.log("this.state.TotalCostInvoice58",this.state.TotalCostReceived.toFixed(2));
+            
             cogoToast.error("Invoice and Payment Received does not match");
           } else {
             this.setState({ ShipmentStatus: event.target.value });
@@ -13526,7 +13540,11 @@ class ShipmentCustom extends React.Component {
                 </GridContainer>
                 <GridContainer>
                   <GridItem xs={12} sm={3} md={3}>
-                    <Autocomplete
+                  {CommonConfig.getUserAccess("Shipment").WriteAccess == 1 && CommonConfig.getUserAccess("Shipment").AllAccess == 1 ?(
+
+                      
+
+                      <Autocomplete
                       id="combo-box-demo"
                       options={managedBy}
                       value={ManagedBy}
@@ -13539,6 +13557,26 @@ class ShipmentCustom extends React.Component {
                         <TextField {...params} label="Managed By" />
                       )}
                     />
+                    
+
+                  ):
+
+                  <Autocomplete
+                        id="combo-box-demo"
+                        options={managedBy}
+                        value={ManagedBy}
+                        disabled={true}
+                        onChange={(event, value) =>
+                          this.selectChange(event, value, "ManagedBy")
+                        }
+                        getOptionLabel={(option) => option.label}
+                        renderInput={(params) => (
+                          <TextField {...params} label="Managed By" />
+                        )}
+                      />
+                    
+                  }
+                    
                   </GridItem>
                   <GridItem xs={12} sm={3} md={3}>
                     <Autocomplete
