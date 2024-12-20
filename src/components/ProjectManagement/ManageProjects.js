@@ -2819,7 +2819,7 @@ class ManageProjects extends Component {
                         <ReactTable
                           data={this.state.ProjectServiceResourceList}
                           defaultPageSize={10}
-                          minRows={0}
+                          minRows={10}
                           resizable={false}
                           columns={column3}
                           defaultFilterMethod={CommonConfig.filterCaseInsensitive}
