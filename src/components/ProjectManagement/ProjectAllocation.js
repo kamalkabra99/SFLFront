@@ -576,16 +576,12 @@ console.log("this.state.ResourceName",this.state.ResourceName);
       return false;
     }
   };
-getColumns= () => {
+getColumns= () => {debugger
   var column =[];
-let x;
+let x,y;
 
 let WeekDateFirst = this.state.WeekDate1;
-//const dateTo = moment(WeekDateFirst).endOf('isoWeek').toDate();  
-
-
-//console.log("dateFromdateFromdateFromdateFrom",dateFrom);
-//console.log("dateTodateTodateTodateTodateTodateTo",dateTo);
+ let WeekDateFirst1;
   for(let i= -1;i<=7;i++)
   {
     if(i == -1){
@@ -597,7 +593,8 @@ let WeekDateFirst = this.state.WeekDate1;
         sortable: true,
         maxWidth: 150,
       }) ;
-      x=moment(WeekDateFirst).format("MM/DD/YY")+" ("+moment(WeekDateFirst).format('ddd')+")";}
+      x=moment(WeekDateFirst).format("MM/DD/YY")+" ("+moment(WeekDateFirst).format('ddd')+")";
+      y=moment(WeekDateFirst).format("MM/DD/YY");}
     else
     if(i == 0)
       column.push({
@@ -618,21 +615,43 @@ let WeekDateFirst = this.state.WeekDate1;
       width: 100,
       maxWidth: 150,
       Cell: (record) => {
+       
+        if(i==1)
+        {  WeekDateFirst1 ="";WeekDateFirst1 = this.state.WeekDate1;}
+        y=moment(WeekDateFirst1).format("MM/DD/YY");
+        WeekDateFirst1 =moment(WeekDateFirst1).add(1,"d");
+        console.log("y",y);
+        console.log("record.original.EndDate",record.original.EndDate);
+        console.log(" record.original.EndDate>=y", moment(record.original.EndDate).format("MM/DD/YY")>=y);
         return (
           <div className="default-input">
+          
+           
             {record.original.ProjectName !="Total" && (CommonConfig.getUserAccess("Project Allocation").WriteAccess === 1||CommonConfig.getUserAccess("Project Allocation").AllAccess === 1)?
-            <input
+            
+            record.original.ProjectStatus  =="Closed"?(
+              moment(record.original.EndDate).format("MM/DD/YY")>=y?( 
+           <input
               type="text"
+             
+              disabled="false"
+             
               name={"Day"+record.original.ProjectID+record.original.ServiceID+i}
               value={record.original.Day1!="" && i==1?record.original.Day1:record.original.Day2!="" && i==2?record.original.Day2:record.original.Day3!="" && i==3?record.original.Day3:record.original.Day4!="" && i==4?record.original.Day4:record.original.Day5!="" && i==5?record.original.Day5:record.original.Day6!="" && i==6?record.original.Day6:record.original.Day7!="" && i==7?record.original.Day7:0}
               onChange={(event) =>
                 this.handledInput(event, record.original.ServiceID, record.original.ProjectID, "Day"+i)
               }
-              
-              // onBlur={(e) =>
-              //   this.handleBlur(e, record.original.ServiceID, record.original.MarkupType, "Markup")
-              // }
-            />:<p class="total-hours">{record.original.Day1!="" && i==1?record.original.Day1:record.original.Day2!="" && i==2?record.original.Day2:record.original.Day3!="" && i==3?record.original.Day3:record.original.Day4!="" && i==4?record.original.Day4:record.original.Day5!="" && i==5?record.original.Day5:record.original.Day6!="" && i==6?record.original.Day6:record.original.Day7!="" && i==7?record.original.Day7:0}</p>}
+            />):""
+          ):( 
+          <input
+            type="text"
+            name={"Day"+record.original.ProjectID+record.original.ServiceID+i}
+            value={record.original.Day1!="" && i==1?record.original.Day1:record.original.Day2!="" && i==2?record.original.Day2:record.original.Day3!="" && i==3?record.original.Day3:record.original.Day4!="" && i==4?record.original.Day4:record.original.Day5!="" && i==5?record.original.Day5:record.original.Day6!="" && i==6?record.original.Day6:record.original.Day7!="" && i==7?record.original.Day7:0}
+            onChange={(event) =>
+              this.handledInput(event, record.original.ServiceID, record.original.ProjectID, "Day"+i)
+            }
+          />)
+            :<p class="total-hours">{record.original.Day1!="" && i==1?record.original.Day1:record.original.Day2!="" && i==2?record.original.Day2:record.original.Day3!="" && i==3?record.original.Day3:record.original.Day4!="" && i==4?record.original.Day4:record.original.Day5!="" && i==5?record.original.Day5:record.original.Day6!="" && i==6?record.original.Day6:record.original.Day7!="" && i==7?record.original.Day7:0}</p>}
           </div>
         );
       },
@@ -640,6 +659,7 @@ let WeekDateFirst = this.state.WeekDate1;
 
     WeekDateFirst =moment(WeekDateFirst).add(1,"d");
     x=moment(WeekDateFirst).format("MM/DD/YY")+" ("+moment(WeekDateFirst).format('ddd')+")";
+    y=moment(WeekDateFirst).format("MM/DD/YY");
   }
   }
 
