@@ -620,9 +620,6 @@ let WeekDateFirst = this.state.WeekDate1;
         {  WeekDateFirst1 ="";WeekDateFirst1 = this.state.WeekDate1;}
         y=moment(WeekDateFirst1).format("MM/DD/YY");
         WeekDateFirst1 =moment(WeekDateFirst1).add(1,"d");
-        console.log("y",y);
-        console.log("record.original.EndDate",record.original.EndDate);
-        console.log(" record.original.EndDate>=y", moment(record.original.EndDate).format("MM/DD/YY")>=y);
         return (
           <div className="default-input">
           
