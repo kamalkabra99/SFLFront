@@ -41,6 +41,7 @@ import DialogContent from "@material-ui/core/DialogContent";
 import Datetime from "react-datetime";
 import ProjectAllocation from "./ProjectAllocation";
 import zipcelx from "zipcelx";
+import { el } from "date-fns/locale";
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -180,6 +181,10 @@ class ManageProjects extends Component {
       DeleteOption: "",
       tabKey: 1,
       ReportProjectAllocationList: [],
+      IsEdit:false,
+      ProjectServiceStatus:{},
+      ProjectServiceStatusErr: false,
+      ProjectServiceStatusHelperText: "",
     };
   }
   async componentDidMount() {
@@ -767,8 +772,8 @@ class ManageProjects extends Component {
             }
           }
           else {
-            // var newArray = this.state.FinalServiceList.filter((index) => index.ServiceID !== "");
-            // this.setState({FinalServiceList:newArray});
+             var newArray = this.state.FinalServiceList.filter((index) => index.ServiceID !== "");
+             this.setState({FinalServiceList:newArray});
             this.closedeletemodalKeyword();
           }
         }
@@ -1170,6 +1175,34 @@ class ManageProjects extends Component {
         }
       }
     }
+    else if (type === "ProjectServiceStatus") {
+     // this.setState({ ProjectNameCheck: true });
+
+      //   let Val = value.label;
+      if (value != null || value != "") {
+        console.log("value = ", value)
+        if (value.label === "" && value.label === null) {
+          this.setState({
+            ProjectServiceStatus: [],
+            ProjectServiceStatusErr: true,
+            ProjectServiceStatusText: "Please Select Status",
+          });
+        } else {
+          var selectData = {
+            label: value.label,
+            value: value.value
+          }
+          this.setState({
+            ProjectServiceStatus: selectData,
+            ProjectServiceStatusErr: false,
+            ProjectServiceStatusHelperText: "",
+          });
+
+          console.log("ProjectName = ", this.state.ProjectServiceStatus);
+       //   this.getServicesByProject(value.value);
+        }
+      }
+    }
   };
   reset = () => {
 
@@ -1298,8 +1331,9 @@ class ManageProjects extends Component {
                       "ServiceID": this.state.ServiceList[index].ServiceID,
                       "ServiceName": this.state.ServiceList[index].ServiceName,
                       "ServiceType": this.state.ServiceList[index].ServiceType,
-                      "Status":this.state.ServiceList[index].Status,
+                      "Status":result.Data.ProjectService[jindex].Status,
                       "AlreadySelected": true,
+                      "IsEdit":false,
                     }
                     newArray.push(finalServicelist)
                     break;
@@ -1309,6 +1343,8 @@ class ManageProjects extends Component {
                       "ServiceID": this.state.ServiceList[index].ServiceID,
                       "ServiceName": this.state.ServiceList[index].ServiceName,
                       "ServiceType": this.state.ServiceList[index].ServiceType,
+                      "Status":this.state.ServiceList[index].Status,
+                      "IsEdit":false,
                     }
 
                     check = 1;
@@ -1334,7 +1370,9 @@ class ManageProjects extends Component {
                 "ServiceID": "",
                 "ServiceName": "",
                 "ServiceType": "",
+                "Status":"",
                 "AlreadySelected": true,
+                "IsEdit":false,
               }
               newArray.push(finalServicelist)
               this.setState({ FinalServiceList: newArray });
@@ -1517,20 +1555,23 @@ class ManageProjects extends Component {
     debugger
     this.showLoador();
     if (
-      (CommonConfig.isEmpty(this.state.ServiceName) &&
-        CommonConfig.isEmpty(this.state.ProjectName) ||
+      (CommonConfig.isEmpty(this.state.ServiceName) ||
+        CommonConfig.isEmpty(this.state.ProjectName) || CommonConfig.isEmpty(this.state.ProjectServiceStatus) ||
         (this.state.ServiceNameErr === true ||
-          this.state.ProjectNameErr === true)
+          this.state.ProjectNameErr === true||
+          this.state.ProjectServiceStatusErr === true)
       )) {
       this.setState({ saveErr: true });
       cogoToast.error(
         "Please correct the form and resubmit."
       );
+      this.hideLoador();
     } else {
       this.setState({ saveErr: false });
       let data = {
         ProjectID: this.state.ProjectID,
         ServiceID: this.state.ServiceID,
+        Status: this.state.ProjectServiceStatus.value,
         userId: CommonConfig.loggedInUserData().PersonID,
         flag: "I",
       };
@@ -1546,6 +1587,55 @@ class ManageProjects extends Component {
             //   window.location.reload();
             // }
             this.getNonSelectedServicesByProject(this.state.ProjectID, 1);
+
+          } else {
+            this.setState({ loading: false });
+            this.hideLoador();
+            cogoToast.error("Something went wrong");
+          }
+        });
+      } catch (err) {
+        this.hideLoador();
+        console.log("error", err);
+      }
+    }
+  };
+  saveStatusData = (redirect) => {
+    debugger
+    this.showLoador();
+    if (
+      (CommonConfig.isEmpty(this.state.ServiceName) &&
+        CommonConfig.isEmpty(this.state.ProjectName) ||
+        (this.state.ServiceNameErr === true ||
+          this.state.ProjectNameErr === true)
+      )) {
+      this.setState({ saveErr: true });
+      cogoToast.error(
+        "Please correct the form and resubmit."
+      );
+    } else {
+      this.setState({ saveErr: false });
+      let attachments = this.state.FinalServiceList;
+      let index1 = attachments.findIndex((x) => x.IsEdit === true);   
+      let data = {
+        ProjectID: this.state.ProjectID,
+        ServiceID: attachments[index1].ServiceID,
+        Status: this.state.ProjectServiceStatus.value,
+        userId: CommonConfig.loggedInUserData().PersonID,
+        flag: "U",
+      };
+      try {
+
+        api.post("projectManagement/addUpdateServicesAllocation", data).then((result) => {
+          if (result.success) {
+            this.hideLoador();
+            cogoToast.success("Save Sucessfully");
+            // if (redirect) {
+            //   this.props.history.push("/admin/ManageProjects");
+            // } else {
+            //   window.location.reload();
+            // }
+            this.getNonSelectedServicesByProject(this.state.ProjectID, 0);
 
           } else {
             this.setState({ loading: false });
@@ -1623,6 +1713,8 @@ class ManageProjects extends Component {
   AddNewRowData = () => {
     debugger
     let attachments = this.state.FinalServiceList;
+    let index1 = attachments.findIndex((x) => x.IsEdit === true); 
+    if(index1 == -1){
     let IsValid = true;
     for (let i = 0; i < this.state.FinalServiceList.length; i++) {
       if (!attachments[i].hasOwnProperty("ServiceName")) {
@@ -1642,11 +1734,36 @@ class ManageProjects extends Component {
       };
       this.setState({
         FinalServiceList: [...this.state.FinalServiceList, objAttachment], ServiceName: "", ServiceID: ""
-      });
+      ,ProjectServiceStatus:""});
     } else {
       cogoToast.error("Please fill above row first");
     }
+  }
+  else
+  cogoToast.error("Please Save Editable Status First");
   };
+  EditRowData= (e,id,type) => {
+  //  this.setState({IsEdit:true});
+    debugger
+    let attachments = this.state.FinalServiceList;
+    let index1 = attachments.findIndex((x) => x.IsEdit === true); 
+    var AttachmentList = this.state.FinalServiceList.filter(
+      (x) => x.AlreadySelected === true && (x.ServiceName === "" || x.ServiceName === null)
+    );
+    let index = attachments.findIndex((x) => x.ServiceID === id);
+    if(index1 ==-1 &&  AttachmentList.length == 0){
+    attachments[index]["IsEdit"] = true;
+    let status = attachments[index]["Status"];
+    var selectData={
+      label:status,
+      value:status,
+    }
+    this.setState({FinalServiceList:attachments,ProjectServiceStatus:selectData});
+    console.log(index);
+  }
+  else
+    cogoToast.error("Please Save Editable Status First");
+    }
   AddNewRowDataResource = () => {
     debugger
     let attachments = this.state.ProjectServiceResourceList;
@@ -2356,8 +2473,10 @@ class ManageProjects extends Component {
       {
         Header: "Service Name",
         accessor: "ServiceName",
-        width: 580,
-        maxWidth: 580,
+        width: 530,
+        maxWidth: 530,
+      
+      
         Cell: (record) => {
           return (
             <div>
@@ -2408,6 +2527,48 @@ class ManageProjects extends Component {
         sortable: true,
         width: 325,
         maxWidth: 325,
+        Cell: (record) => {
+          return (
+            <div>
+              {record.original.AlreadySelected && record.original.ServiceName != "" && record.original.ServiceName != null && record.original.ServiceName != undefined && record.original.IsEdit == false? (
+                <div>
+                  {record.original.Status}
+                </div>
+              ) : (
+                <div>
+                  <Autocomplete
+                    id="Status"
+                    options={ProjectStatusList}
+                    getOptionLabel={(option) => option.label}
+                    value={this.state.ProjectServiceStatus}
+                    onChange={(event, value) =>
+                      this.handleChange(event, value, "ProjectServiceStatus")
+                    }
+                    // onFocus={() =>
+                    //   this.setState({
+                    //     ServiceNameErr: false,
+                    //     ServiceNameCheck: "",
+                    //   })
+                    // }
+                    renderInput={(params1) => (
+                      <TextField
+                        {...params1}
+                        label="Status"
+                        error={this.state.ProjectServiceStatusErr}
+                        helperText={
+                          this.state.ProjectServiceStatusHelperText
+                        }
+                        margin="normal"
+                        fullWidth
+                      />
+                    )}
+                  />
+
+                </div>
+              )}
+            </div>
+          );
+        },
       },
       {
         width: 250,
@@ -2426,17 +2587,27 @@ class ManageProjects extends Component {
                     onClick={(e) => this.openDeleteRequestModalKeyword(e, record.original.ServiceID, "ServiceAllocation")}
                   />
                 </Button>
+                ) : null
+              }
+              {
                 
-                
-              ) : null}
-
-              {this.state.ProjectServiceList.length != this.state.ServiceList.length ? (
-                <Button justIcon color="Info" >
+                record.original.ServiceID != "" && this.state.FinalServiceList.length != this.state.ServiceList.length ? (
+                this.state.Access.WriteAccess === 1 || this.state.Access.AllAccess ?
+                record.original.IsEdit !=true?
+                <Button justIcon color="info" >
                 <EditIcon
-                  onClick={(e) => this.openDeleteRequestModalKeyword(e, record.original.ServiceID, "ServiceAllocation")}
+                  onClick={(e) => this.EditRowData(e, record.original.ServiceID, "ServiceAllocation")}
                 />
               </Button>
-        ):null}
+              : record.original.IsEdit ==true?
+                <Button justIcon color="info" >
+                  <SaveIcon onClick={() => this.saveStatusData()} />
+                </Button>
+                :null
+              : null) 
+             
+              :null
+              }
               {this.state.FinalServiceList.filter((x) => x.AlreadySelected === true).length === record.index + 1 ? (
 
                 record.original.ServiceID != "" && this.state.FinalServiceList.length != this.state.ServiceList.length ? (
@@ -2446,26 +2617,16 @@ class ManageProjects extends Component {
                     <Button justIcon color="info">
                       <AddIcon onClick={() => this.AddNewRowData()} />
 
-                    </Button>
-                   
-                   
-                  
-                 ): null
-                ) : this.state.ProjectServiceList.length != this.state.ServiceList.length ? (
-                  (
-                    this.state.Access.WriteAccess === 1 || this.state.Access.AllAccess ?
-                      <Button
-                        justIcon
-                        color="info"
-                      >
-
+                    </Button>)
+                    : null)
+                    : this.state.ProjectServiceList.length != this.state.ServiceList.length ? (
+                      this.state.Access.WriteAccess === 1 || this.state.Access.AllAccess ?
+                      <Button justIcon color="info" >
                         <SaveIcon onClick={() => this.saveData()} />
-
-
                       </Button>
+                      : null) 
+                      : null) 
                       : null
-                  )) : null
-              ) : null
               }
 
               
