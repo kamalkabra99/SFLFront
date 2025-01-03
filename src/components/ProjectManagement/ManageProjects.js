@@ -51,11 +51,11 @@ class ManageProjects extends Component {
 
     this.state = {
       Steps: [
-        {
-          stepName: "Client Master",
-          stepId: "ClientMaster",
-          classname: "inactive",
-        },
+        // {
+        //   stepName: "Client Master",
+        //   stepId: "ClientMaster",
+        //   classname: "inactive",
+        // },
         {
           stepName: "Project Master",
           stepId: "ProjectMaster",
@@ -630,7 +630,7 @@ class ManageProjects extends Component {
     }
   };
   showHide() {
-    document.getElementById("ClientMaster").style.display = "none";
+   // document.getElementById("ClientMaster").style.display = "none";
     document.getElementById("ProjectMaster").style.display = "block";
     document.getElementById("ServiceMaster").style.display = "none";
     document.getElementById("ServiceAllocation").style.display = "none";
@@ -2476,78 +2476,78 @@ class ManageProjects extends Component {
         },
       },
     ];
-    const column5 = [
-      {
-        Header: "Client Id",
-        accessor: "ClientID",
-        width: 150,
-        filterable: true,
-        sortable: true,
-        maxWidth: 150,
-      },
-      {
-        Header: "Name",
-        accessor: "ClientName",
-        width: 200,
-        filterable: true,
-        sortable: true,
-        maxWidth: 200,
-      },
-      {
-        Header: "Address",
-        accessor: "Address",
-        width: 200,
-        filterable: true,
-        sortable: true,
-        maxWidth: 200,
-      },
-      {
-        Header: "Email",
-        accessor: "Email",
-        filterable: true,
-        sortable: true,
-        width: 200,
-        maxWidth: 200,
-      },
-      {
-        Header: "Phone",
-        accessor: "Phone",
-        filterable: true,
-        sortable: true,
-        width: 250,
-        maxWidth: 250,
-      },
-      {
-        Header: "Actions",
-        accessor: "actions",
-        sortable: false,
-        width: 200,
-        maxWidth: 200,
-        Cell: (record) => {
-          return (
+    // const column5 = [
+    //   {
+    //     Header: "Client Id",
+    //     accessor: "ClientID",
+    //     width: 150,
+    //     filterable: true,
+    //     sortable: true,
+    //     maxWidth: 150,
+    //   },
+    //   {
+    //     Header: "Name",
+    //     accessor: "ClientName",
+    //     width: 200,
+    //     filterable: true,
+    //     sortable: true,
+    //     maxWidth: 200,
+    //   },
+    //   {
+    //     Header: "Address",
+    //     accessor: "Address",
+    //     width: 200,
+    //     filterable: true,
+    //     sortable: true,
+    //     maxWidth: 200,
+    //   },
+    //   {
+    //     Header: "Email",
+    //     accessor: "Email",
+    //     filterable: true,
+    //     sortable: true,
+    //     width: 200,
+    //     maxWidth: 200,
+    //   },
+    //   {
+    //     Header: "Phone",
+    //     accessor: "Phone",
+    //     filterable: true,
+    //     sortable: true,
+    //     width: 250,
+    //     maxWidth: 250,
+    //   },
+    //   {
+    //     Header: "Actions",
+    //     accessor: "actions",
+    //     sortable: false,
+    //     width: 200,
+    //     maxWidth: 200,
+    //     Cell: (record) => {
+    //       return (
 
-            <div className="table-common-btn">
-              {console.log("this.state.Accessthis.state.Access", this.state.Access)}  {this.state.Access.WriteAccess === 1 || this.state.Access.AllAccess === 1 ? (
-                <Button
-                  justIcon
-                  color="info"
-                  onClick={() => this.handleEdit(record)}
-                >
-                  <i className="fas fa-edit"></i>
-                </Button>) : null}
-              {this.state.Access.DeleteAccess === 1 || this.state.Access.AllAccess === 1 ? (
-                <Button justIcon color="danger" >
-                  <DeleteIcon
-                    onClick={(e) => this.openDeleteRequestModalKeyword(e, record.original.ProjectID, "Project")}
-                  />
-                </Button>
-              ) : null}
-            </div>
-          );
-        },
-        filterable: false,
-      },
-    ];
+    //         <div className="table-common-btn">
+    //           {console.log("this.state.Accessthis.state.Access", this.state.Access)}  {this.state.Access.WriteAccess === 1 || this.state.Access.AllAccess === 1 ? (
+    //             <Button
+    //               justIcon
+    //               color="info"
+    //               onClick={() => this.handleEdit(record)}
+    //             >
+    //               <i className="fas fa-edit"></i>
+    //             </Button>) : null}
+    //           {this.state.Access.DeleteAccess === 1 || this.state.Access.AllAccess === 1 ? (
+    //             <Button justIcon color="danger" >
+    //               <DeleteIcon
+    //                 onClick={(e) => this.openDeleteRequestModalKeyword(e, record.original.ProjectID, "Project")}
+    //               />
+    //             </Button>
+    //           ) : null}
+    //         </div>
+    //       );
+    //     },
+    //     filterable: false,
+    //   },
+    // ];
 
     return (
       <div>
@@ -2576,7 +2576,7 @@ class ManageProjects extends Component {
             </div>
             <div className="shipment-content mt-30">
 
-            <div className="shipment-pane mt-20" id="ClientMaster">
+            {/* <div className="shipment-pane mt-20" id="ClientMaster">
                 <GridContainer className="UserList-outer">
                   {this.state.Loading === true ? (
                     <div className="loading">
@@ -2630,7 +2630,7 @@ class ManageProjects extends Component {
                     </Card>
                   </GridItem>
                 </GridContainer>
-              </div>
+              </div> */}
 
               <div className="shipment-pane mt-20" id="ProjectMaster">
                 <GridContainer className="UserList-outer">

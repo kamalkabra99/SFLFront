@@ -620,6 +620,8 @@ let WeekDateFirst = this.state.WeekDate1;
         {  WeekDateFirst1 ="";WeekDateFirst1 = this.state.WeekDate1;}
         y=moment(WeekDateFirst1).format("MM/DD/YY");
         WeekDateFirst1 =moment(WeekDateFirst1).add(1,"d");
+        let wa =  moment(record.original.EndDate).unix();
+        let aa = moment(y).unix();
         return (
           <div className="default-input">
           
@@ -627,7 +629,7 @@ let WeekDateFirst = this.state.WeekDate1;
             {record.original.ProjectName !="Total" && (CommonConfig.getUserAccess("Project Allocation").WriteAccess === 1||CommonConfig.getUserAccess("Project Allocation").AllAccess === 1)?
             
             record.original.ProjectStatus  =="Closed"?(
-              moment(record.original.EndDate).format("MM/DD/YY")>=y?( 
+              wa>aa?( 
            <input
               type="text"
              
