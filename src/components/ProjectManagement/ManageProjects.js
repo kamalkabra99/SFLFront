@@ -7,6 +7,7 @@ import PhoneCallback from "@material-ui/icons/PhoneCallback";
 import DeleteIcon from "@material-ui/icons/Delete";
 import SaveIcon from '@material-ui/icons/Save';
 import AddIcon from '@material-ui/icons/Add';
+import EditIcon from '@material-ui/icons/Edit';
 import Icon from "@material-ui/core/Icon";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import GridContainer from "components/Grid/GridContainer.js";
@@ -50,11 +51,11 @@ class ManageProjects extends Component {
 
     this.state = {
       Steps: [
-        // {
-        //   stepName: "Client Master",
-        //   stepId: "ClientMaster",
-        //   classname: "inactive",
-        // },
+        {
+          stepName: "Client Master",
+          stepId: "ClientMaster",
+          classname: "inactive",
+        },
         {
           stepName: "Project Master",
           stepId: "ProjectMaster",
@@ -177,12 +178,12 @@ class ManageProjects extends Component {
       NewServiceType: "",
       ReportResourceList: [],
       DeleteOption: "",
-      tabKey: 0,
+      tabKey: 1,
       ReportProjectAllocationList: [],
     };
   }
   async componentDidMount() {
-
+    
     await this.getProjectList();
     await this.getServiceList();
     await this.getResourceList();
@@ -229,6 +230,7 @@ class ManageProjects extends Component {
         previousFilterList: [finalStatus],
         previousSortList: [finalSort],
       });
+      
     }
 
     if (APIcheck) {
@@ -573,7 +575,17 @@ class ManageProjects extends Component {
         filterlist: this.state.filterProps,
         sortlist: this.state.sortProps,
         tabKey: this.state.tabKey,
-        // WorkStatus: this.state.WorkStatus,
+      },
+    });
+  };
+
+  AddClient = () => {debugger
+    this.props.history.push({
+      pathname: "AddClient/",
+      state: {
+        filterlist: this.state.filterProps,
+        sortlist: this.state.sortProps,
+        tabKey: this.state.tabKey,
       },
     });
   };
@@ -610,7 +622,7 @@ class ManageProjects extends Component {
           state: {
             filterlist: this.state.filterProps,
             sortlist: this.state.sortProps,
-            tabKey: this.state.key,
+            tabKey: key,
             //WorkStatus: this.state.WorkStatus,
           },
         });
@@ -618,7 +630,7 @@ class ManageProjects extends Component {
     }
   };
   showHide() {
-   // document.getElementById("ClientMaster").style.display = "none";
+    document.getElementById("ClientMaster").style.display = "none";
     document.getElementById("ProjectMaster").style.display = "block";
     document.getElementById("ServiceMaster").style.display = "none";
     document.getElementById("ServiceAllocation").style.display = "none";
@@ -1286,6 +1298,7 @@ class ManageProjects extends Component {
                       "ServiceID": this.state.ServiceList[index].ServiceID,
                       "ServiceName": this.state.ServiceList[index].ServiceName,
                       "ServiceType": this.state.ServiceList[index].ServiceType,
+                      "Status":this.state.ServiceList[index].Status,
                       "AlreadySelected": true,
                     }
                     newArray.push(finalServicelist)
@@ -2343,8 +2356,8 @@ class ManageProjects extends Component {
       {
         Header: "Service Name",
         accessor: "ServiceName",
-        width: 930,
-        maxWidth: 930,
+        width: 580,
+        maxWidth: 580,
         Cell: (record) => {
           return (
             <div>
@@ -2388,7 +2401,14 @@ class ManageProjects extends Component {
           );
         },
       },
-
+      {
+        Header: "Status",
+        accessor: "Status",
+        filterable: true,
+        sortable: true,
+        width: 325,
+        maxWidth: 325,
+      },
       {
         width: 250,
         filterable: false,
@@ -2400,21 +2420,37 @@ class ManageProjects extends Component {
             <div className="table-common-btn">
 
 
+              {this.state.Access.DeleteAccess === 1 ? (
+                <Button justIcon color="danger" >
+                  <DeleteIcon
+                    onClick={(e) => this.openDeleteRequestModalKeyword(e, record.original.ServiceID, "ServiceAllocation")}
+                  />
+                </Button>
+                
+                
+              ) : null}
 
+              {this.state.ProjectServiceList.length != this.state.ServiceList.length ? (
+                <Button justIcon color="Info" >
+                <EditIcon
+                  onClick={(e) => this.openDeleteRequestModalKeyword(e, record.original.ServiceID, "ServiceAllocation")}
+                />
+              </Button>
+        ):null}
               {this.state.FinalServiceList.filter((x) => x.AlreadySelected === true).length === record.index + 1 ? (
 
                 record.original.ServiceID != "" && this.state.FinalServiceList.length != this.state.ServiceList.length ? (
                   this.state.Access.WriteAccess === 1 || this.state.Access.AllAccess ?
-                    <Button
-                      justIcon
-                      color="info"
-                    >
+                 (
+                  
+                    <Button justIcon color="info">
                       <AddIcon onClick={() => this.AddNewRowData()} />
 
-
-
                     </Button>
-                    : null
+                   
+                   
+                  
+                 ): null
                 ) : this.state.ProjectServiceList.length != this.state.ServiceList.length ? (
                   (
                     this.state.Access.WriteAccess === 1 || this.state.Access.AllAccess ?
@@ -2432,20 +2468,15 @@ class ManageProjects extends Component {
               ) : null
               }
 
-              {this.state.Access.DeleteAccess === 1 ? (
-                <Button justIcon color="danger" >
-                  <DeleteIcon
-                    onClick={(e) => this.openDeleteRequestModalKeyword(e, record.original.ServiceID, "ServiceAllocation")}
-                  />
-                </Button>
-              ) : null}
+              
+              
             </div>
 
           )
         },
       },
     ];
-   /* const column5 = [
+    const column5 = [
       {
         Header: "Client Id",
         accessor: "ClientID",
@@ -2517,7 +2548,7 @@ class ManageProjects extends Component {
         filterable: false,
       },
     ];
-*/
+
     return (
       <div>
         <GridContainer className="MuiGrid-justify-xs-center">
@@ -2545,7 +2576,7 @@ class ManageProjects extends Component {
             </div>
             <div className="shipment-content mt-30">
 
-            {/* <div className="shipment-pane mt-20" id="ClientMaster">
+            <div className="shipment-pane mt-20" id="ClientMaster">
                 <GridContainer className="UserList-outer">
                   {this.state.Loading === true ? (
                     <div className="loading">
@@ -2585,7 +2616,7 @@ class ManageProjects extends Component {
                           data={this.state.ClientListArray}
                           pageText={"Total Count : " + this.state.finalClientLength}
                           getPaginationProps={(e) => this.checkProps(e, "ClientList")}
-                          minRows={0}
+                          minRows={10}
                           filterable
                           textAlign={"left"}
                           defaultFilterMethod={CommonConfig.filterCaseInsensitive}
@@ -2599,7 +2630,7 @@ class ManageProjects extends Component {
                     </Card>
                   </GridItem>
                 </GridContainer>
-              </div> */}
+              </div>
 
               <div className="shipment-pane mt-20" id="ProjectMaster">
                 <GridContainer className="UserList-outer">
@@ -2641,7 +2672,7 @@ class ManageProjects extends Component {
                           data={this.state.ProjectListArray}
                           pageText={"Total Count : " + this.state.finalProjectLength}
                           getPaginationProps={(e) => this.checkProps(e, "ProjectList")}
-                          minRows={0}
+                          minRows={10}
                           filterable
                           textAlign={"left"}
                           defaultFilterMethod={CommonConfig.filterCaseInsensitive}
@@ -2684,7 +2715,7 @@ class ManageProjects extends Component {
                         <ReactTable
                           data={this.state.ServicesList}
                           //   defaultPageSize={10}
-                          minRows={0}
+                          minRows={10}
                           resizable={false}
                           columns={column1}
                           defaultFilterMethod={CommonConfig.filterCaseInsensitive}
@@ -2743,7 +2774,7 @@ class ManageProjects extends Component {
                             (x) => x.AlreadySelected === true
                           )}
                           defaultPageSize={10}
-                          minRows={0}
+                          minRows={10}
                           defaultSorted={this.state.previousSortList}
                           defaultFiltered={this.state.previousFilterList}
                           resizable={false}
@@ -3035,7 +3066,7 @@ class ManageProjects extends Component {
                         
                           getPaginationProps={(e) => this.checkProps(e, "ProjectAllocation")}
                           defaultPageSize={10}
-                          minRows={0}
+                          minRows={10}
                           resizable={false}
                           columns={column2}
                           defaultFilterMethod={CommonConfig.filterCaseInsensitive}
