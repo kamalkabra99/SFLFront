@@ -16,6 +16,7 @@ import BookofWorkList from "components/Management/BookofWorkList";
 import ProjectAllocation from "components/ProjectManagement/ProjectAllocation";
 import ProjectManagement from "components/ProjectManagement/ProjectManagementNavigation";
 import AddProject from "components/ProjectManagement/AddProject";
+import AddClient from "components/ProjectManagement/AddClient";
 import AddServices from "components/ProjectManagement/AddServices";
 import ManageProjects from "components/ProjectManagement/ManageProjects";
 import ServiceAllocationList from "components/ProjectManagement/ServiceAllocationList";
@@ -886,7 +887,7 @@ var dashRoutes = [
   },
   {
     path: "/ProjectManagement",
-    name: "Project tManagement",
+    name: "Project Management",
     icon: EditSalesLeadIcon,
     component: ManageProjects,
     layout: "/admin",
@@ -905,6 +906,14 @@ var dashRoutes = [
     name: "Add Project",
     icon: EditSalesLeadIcon,
     component: AddProject,
+    layout: "/admin",
+    invisible: false,
+  },
+  {
+    path: "/AddClient",
+    name: "Add Client",
+    icon: EditSalesLeadIcon,
+    component: AddClient,
     layout: "/admin",
     invisible: false,
   },
