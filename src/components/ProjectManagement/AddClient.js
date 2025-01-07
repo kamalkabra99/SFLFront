@@ -310,8 +310,9 @@ async getClientDetail() {debugger
         this.hideLoader();
         cogoToast.error("Something Went Wrong");
       }
-    }
+    }else{this.hideLoader();}
     } catch (err) {
+      this.hideLoader();
       console.log("error...", err);
       cogoToast.error("Something went wrong4");
     }
@@ -1544,6 +1545,7 @@ async getClientDetail() {debugger
         cogoToast.error("Something Went Wrong");
       }
     } else {
+      this.hideLoader();
       cogoToast.error("Please correct error and resubmit the form");
     }
   };
@@ -3364,7 +3366,7 @@ async getClientDetail() {debugger
 
             <div className="shipment-submit">
 
-              {CommonConfig.getUserAccess("Project Management").DeleteAccess === 1 ? (
+              {/*CommonConfig.getUserAccess("Project Management").DeleteAccess === 1 ? (
                 <div className="left">
                   <Button
                     justify="center"
@@ -3374,7 +3376,7 @@ async getClientDetail() {debugger
                     Delete
                   </Button>
                 </div>
-              ) : null}
+              ) : null*/}
 
 
               {CommonConfig.getUserAccess("Project Management").WriteAccess === 1 && (CommonConfig.loggedInUserData().PersonID == this.props.location.state) ? (
@@ -3449,7 +3451,7 @@ async getClientDetail() {debugger
                   >
                     Cancel
                   </Button>
-                  {this.state.Access.DeleteAccess === 1 ? (
+                  {/*this.state.Access.DeleteAccess === 1 ? (
                     <Button
                       onClick={() => this.handleDocumentDelete()}
                       color="primary"
@@ -3457,7 +3459,7 @@ async getClientDetail() {debugger
                     >
                       Delete
                     </Button>
-                  ) : null}
+                  ) : null*/}
                 </DialogActions>
               </Dialog>
             </div>
