@@ -240,7 +240,7 @@ class TimeManagement extends React.Component {
           this.state.ReasonsValue = value
           console.log(this.state.ReasonsValue);
           // this.getUserTMSReport()
-      }
+        }
     }
 };
 

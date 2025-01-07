@@ -210,10 +210,26 @@ class CreditCardList extends Component {
 
   save() {
     try {
+      debugger
       this.setState({ Loading: true });
+      console.log("this.state.userList1 = ",this.state.userList)
+      for (let index = 0; index < this.state.userList.length; index++) {
+        if(this.state.userList[index].DailyLimit == null){
+          this.state.userList[index].DailyLimit = 0
+        }
+        if(this.state.userList[index].TotalLimit == null){
+          this.state.userList[index].TotalLimit = 0
+        }
+
+        if(this.state.userList[index].Balance == null){
+          this.state.userList[index].Balance = 0
+        }
+        
+      }
       let Details = {
         Data: this.state.userList,
       };
+      console.log("this.state.userList = ",this.state.userList)
       api
         .post("userManagement/addUpdateCardLimit", Details)
         .then((res) => {

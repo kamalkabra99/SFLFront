@@ -43,6 +43,9 @@ class EditLeadAccess extends Component {
       daylimitErr: false,
       daylimitHelperText: "",
       OpenLimit: 0,
+      AutoLimit:0,
+      AutolimitErr: false,
+      AutolimitHelperText: "",
       openlimitErr: false,
       openlimitHelperText: "",
       NewLimit: 0,
@@ -93,6 +96,7 @@ class EditLeadAccess extends Component {
             this.setState({
               NewLimit: res.data.LeadAssignmentData.NewLimit,
               OpenLimit: res.data.LeadAssignmentData.OpenLimit,
+              AutoLimit:res.data.LeadAssignmentData.AutoLimit,
               DayLimit: res.data.LeadAssignmentData.DayLimit,
               StartDate: res.data.LeadAssignmentData.LeaveStartDate,
               EndDate: res.data.LeadAssignmentData.LeaveEndDate,
@@ -191,6 +195,7 @@ class EditLeadAccess extends Component {
       userId: CommonConfig.loggedInUserData().PersonID,
       DayLimit: this.state.DayLimit,
       OpenLimit: this.state.OpenLimit,
+      AutoLimit:this.state.AutoLimit,
       NewLimit: this.state.NewLimit,
       LeaveStartDate:
         CommonConfig.isEmpty(this.state.StartDate) != true
@@ -308,6 +313,22 @@ class EditLeadAccess extends Component {
         });
       }
     }
+
+    else if (type === "autolimit") {
+      if (CommonConfig.isEmpty(this.state.AutoLimit)) {
+        this.setState({
+          AutoLimit: Val,
+          AutolimitErr: true,
+          AutolimitHelperText: "Please enter auto limit",
+        });
+      } else {
+        this.setState({
+          AutoLimit: Val,
+          AutolimitErr: false,
+          AutolimitHelperText: "",
+        });
+      }
+    }
   };
   cancelLead = () => {
     this.props.history.push({
@@ -329,6 +350,9 @@ class EditLeadAccess extends Component {
       daylimitErr,
       daylimitHelperText,
       OpenLimit,
+      AutolimitErr,
+      AutolimitHelperText,
+      AutoLimit,
       openlimitErr,
       openlimitHelperText,
       NewLimit,
@@ -605,7 +629,7 @@ class EditLeadAccess extends Component {
                 </table>
               </div>
               <GridContainer>
-                <GridItem xs={12} sm={12} md={4}>
+                <GridItem xs={12} sm={12} md={3}>
                   <FormControl className="mb-0" fullWidth>
                     <CustomInput
                       labelText="Max Sales Lead per Day"
@@ -631,7 +655,7 @@ class EditLeadAccess extends Component {
                     />
                   </FormControl>
                 </GridItem>
-                <GridItem xs={12} sm={12} md={4}>
+                <GridItem xs={12} sm={12} md={3}>
                   <FormControl className="mb-0" fullWidth>
                     <CustomInput
                       labelText="Max Sales Lead [ New Request]"
@@ -657,7 +681,7 @@ class EditLeadAccess extends Component {
                     />
                   </FormControl>
                 </GridItem>
-                <GridItem xs={12} sm={12} md={4}>
+                <GridItem xs={12} sm={12} md={3}>
                   <FormControl className="mb-0" fullWidth>
                     <CustomInput
                       labelText="Max Sales Lead [ Open]"
@@ -678,6 +702,33 @@ class EditLeadAccess extends Component {
                           this.setState({
                             openlimitErr: false,
                             openlimitHelperText: "",
+                          }),
+                      }}
+                    />
+                  </FormControl>
+                </GridItem>
+
+                <GridItem xs={12} sm={12} md={3}>
+                  <FormControl className="mb-0" fullWidth>
+                    <CustomInput
+                      labelText="Max Sales Lead [ Auto]"
+                      id="autolimit"
+                      formControlProps={{ fullWidth: true }}
+                      error={AutolimitErr}
+                      helperText={AutolimitHelperText}
+                      inputProps={{
+                        value: AutoLimit,
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <Icon className="requiredicon">perm_identity</Icon>
+                          </InputAdornment>
+                        ),
+                        onChange: (event) =>
+                          this.handleInputChange(event, "autolimit"),
+                        onFocus: () =>
+                          this.setState({
+                            AutolimitErr: false,
+                            AutolimitHelperText: "",
                           }),
                       }}
                     />

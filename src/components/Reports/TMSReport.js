@@ -88,6 +88,11 @@ class TMSReport extends Component {
       deleteID: "",
       updateID: "",
       updateType: "",
+      statusopen:false,
+      updatestatusID:"",
+      UserLeaveName:"",
+      UserLeaveEmail:"",
+      AppliedLeaveDate:"",
       FromDate: new Date(),
       ToDate: new Date(),
       ManagedBy: "",
@@ -98,13 +103,19 @@ class TMSReport extends Component {
       managedByList: [],
       IpAddress: "",
       totalRowCount: "",
+      TimeTypeValue:"",
       LoginType: "",
       open: false,
       updateopen: false,
+      LeaveRejectReasons:"",
       logintype: [
         { value: "Login", label: "Login" },
         { value: "Break", label: "Break" },
         { value: "Leave", label: "Leave" },
+      ],
+      Timetype: [
+        { value: "Approved", label: "Approved" },
+        { value: "Reject", label: "Reject" },
       ],
       logintypevalue: [],
       LoginTypeValue: "",
@@ -591,6 +602,13 @@ class TMSReport extends Component {
 
   selectChange = (event, value, type) => {
     if (value != null) {
+      if (type === "TimeTypeValue") {
+        this.setState({ TimeTypeValue: value });
+        console.log(this.state.TimeTypeValue);
+        this.state.TimeTypeValue = value
+        console.log(this.state.TimeTypeValue);
+        // this.getUserTMSReport()
+    }
       if (type === "ManagedBy") {
         this.setState({ ManagedBy: value });
         console.log(this.state.ManagedBy);
@@ -625,6 +643,20 @@ class TMSReport extends Component {
 
     // }
   };
+
+  UpdateLeaveStatusReport = (record, type) =>{
+
+    this.setState({
+      statusopen: true,
+      updatestatusID: record.original.LeaveId,
+      UserLeaveEmail: record.original.Email,
+      UserLeaveName:record.original.Name,
+      AppliedLeaveDate:record.original.LeaveFromDate,
+      deleteType: type,
+    });
+
+  }
+
 
   deleteLoginReport = (record, type) => {
     console.log(record.original.tmsID);
@@ -697,6 +729,57 @@ class TMSReport extends Component {
       open: false,
     });
   };
+  handleClickCancelUpdate = () => {
+    this.setState({
+      statusopen: false,
+    });
+  };
+
+  handleUpdateLeaveStatus = () =>{
+
+    var statusType = this.state.TimeTypeValue.value
+    var LeaveReason = this.state.LeaveRejectReasons
+    var flagData = 0
+
+    if(statusType == "Reject"){
+      if(LeaveReason == ""){
+        cogoToast.error("Please enter Reject reason")
+        flagData = 1
+      }
+    }
+
+    if(flagData == 0){
+      var logginuser = CommonConfig.loggedInUserData()
+      console.log("logginuser = ",logginuser.Name)
+      console.log("logginuser = ",logginuser.Email)
+      
+      var dataSet = {
+
+        statusType:statusType,
+        LeaveReason:LeaveReason,
+        updatestatusID:this.state.updatestatusID,
+        UserLeaveEmail:this.state.UserLeaveEmail,
+        UserLeaveName:this.state.UserLeaveName,
+        ApplyByName: logginuser.Name,
+        ApplyByEmail:logginuser.Email,
+        AppliedLeaveDate:this.state.AppliedLeaveDate
+
+      }
+      console.log("dataSet = ",dataSet)
+
+      api.post("contactus/updateLeaveStatusReport", dataSet).then((res) => {
+        if (res.success) {
+          this.hideLoador();
+          this.setState({
+            statusopen: false,
+          });
+          this.getUserTMSReport();
+          cogoToast.success("Update Successfully");
+        }
+      });
+    }
+
+  }
 
   handleClickUpdate = () => {
     this.setState({
@@ -754,9 +837,13 @@ class TMSReport extends Component {
     this.showLoador();
     console.log("this.state.updateLogout = ",this.state.updateLogout)
     this.set24hoursformat(this.state.updateLogin, "login");
-    if(this.state.updateLogout != null){
+    if(this.state.updateLogout != ""){
       this.set24hoursformat(this.state.updateLogout, "logout");
+    }else{
+      this.state.updateLogout = null
+      this.state.updateFullLogout = null
     }
+
 
     
     setTimeout(() => {
@@ -792,11 +879,19 @@ class TMSReport extends Component {
   handleChangeFrom = (event, value) => {
     if (value == "logout") {
       this.setState({ updateLogout: event.target.value });
-      this.set24hoursformat(event.target.value, "logout");
+      if(event.target.value !=""){
+        this.set24hoursformat(event.target.value, "logout");
+      }
+      
     }
     if (value == "login") {
       this.setState({ updateLogin: event.target.value });
       this.set24hoursformat(event.target.value, "login");
+    }
+
+    if (value == "LeaveReasons") {
+      this.setState({ LeaveRejectReasons: event.target.value });
+      // this.set24hoursformat(event.target.value, "login");
     }
   };
 
@@ -985,6 +1080,12 @@ class TMSReport extends Component {
       },
 
       {
+        Header: "Leave Status",
+        accessor: "LeaveStatus",
+        width: 100,
+      },
+
+      {
         Header: "Action",
         accessor: "Actions",
         width: 100,
@@ -1008,8 +1109,27 @@ class TMSReport extends Component {
                 ""
               )}
 
+              {this.state.TmsDeleteAccess == "1" && record.original.LeaveStatus == "Pending"  ? (
+                <Button
+                  justIcon
+                  color="primary"
+                  className="Plus-btn"
+                  onClick={() =>
+                    this.UpdateLeaveStatusReport(
+                      record,
+                      this.state.LoginTypeValue.label
+                    )
+                  }
+                >
+                  <i className={"fas fa-check"} />
+                </Button>
+              ) : (
+                ""
+              )}
+
               
             </div>
+            
           );
         },
       },
@@ -1023,6 +1143,10 @@ class TMSReport extends Component {
       return { value: type.PersonId, label: type.LoginID };
     });
 
+    const TimeType = this.state.Timetype.map((x) => {
+      return { value: x.value, label: x.label };
+    });
+
     const {
       ProposalData,
       FromDate,
@@ -1030,6 +1154,7 @@ class TMSReport extends Component {
       ManagedBy,
       LoginTypeValue,
       fileSetName,
+      TimeTypeValue,
     } = this.state;
 
     const handelExportToExcel = (evt) => {
@@ -1258,6 +1383,71 @@ class TMSReport extends Component {
           </Dialog>
 
           <Dialog
+            open={this.state.statusopen}
+            //   onClose={this.state.close}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <DialogTitle id="alert-dialog-title">
+              {"Update Leave Status"}
+            </DialogTitle>
+            <DialogContent>
+              <DialogContentText id="alert-dialog-description">
+                Are you sure want to update leave status?
+              </DialogContentText>
+
+              <GridContainer>
+
+              <GridItem xs={12} sm={12} md={12}>
+                  <div className="spl">
+                    <FormControl fullWidth>
+                      <Autocomplete
+                        id="combo-box-demo"
+                        options={TimeType}
+                        value={TimeTypeValue}
+                          
+                        onChange={(event, value) =>
+                            this.selectChange(event, value, "TimeTypeValue")
+                        }
+                        getOptionLabel={(option) => option.label}
+                        renderInput={(params) => (
+                          <TextField {...params} label="Time" />
+                        )}
+                      />
+                    </FormControl>
+                  </div>
+                </GridItem>
+
+                  <GridItem xs={12} sm={12} md={12}>
+                    <CustomInput
+                      labelText="Reasons"
+                      id="proposaltype"
+                      formControlProps={{
+                        fullWidth: true,
+                      }}
+                      inputProps={{
+                        value: this.state.LeaveRejectReasons
+                          ? this.state.LeaveRejectReasons
+                          : this.state.LeaveRejectReasons,
+                        onChange: (event) =>
+                          this.handleChangeFrom(event, "LeaveReasons"),
+                      }}
+                    />
+                  </GridItem>
+                </GridContainer>
+
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={this.handleClickCancelUpdate} color="primary">
+                Cancel
+              </Button>
+              <Button onClick={this.handleUpdateLeaveStatus} color="primary" autoFocus>
+                Update
+              </Button>
+            </DialogActions>
+          </Dialog>
+
+          <Dialog
             className="test-zIndex"
             open={this.state.updateopen}
             aria-labelledby="alert-dialog-title"
@@ -1420,6 +1610,8 @@ class TMSReport extends Component {
             </DialogActions>
           </Dialog> */}
         </div>
+
+        
       </GridContainer>
     );
   }

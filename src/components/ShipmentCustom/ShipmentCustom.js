@@ -236,6 +236,7 @@ class ShipmentCustom extends React.Component {
       FromEmail: "",
       setPreviousAllClear: "",
       previousAllClear: "",
+      checkPrevAllVlear:"",
       disableFromZip: false,
       disableFromState: false,
       disableToZip: false,
@@ -500,6 +501,7 @@ class ShipmentCustom extends React.Component {
       Access: {},
       VendorAccessForInvoice: 0,
       AllClear: "",
+      // previousAllClear:"",
       viewAllClear: false,
       NewviewAllClear: false,
       IsChanged: false,
@@ -1834,6 +1836,7 @@ class ShipmentCustom extends React.Component {
               ContainerName: containerName,
               setPreviousAllClear: allclearlist,
               AllClear: allclearlist,
+              checkPrevAllVlear:allclearlist,
 
               // res.data[0].AllClear === 3 // ? "Ready for Yes"
               //   ? "Ready for Yes"
@@ -2464,8 +2467,10 @@ class ShipmentCustom extends React.Component {
 
   selectChange = (event, value, type) => {
     if (value != null) {
+      debugger
       if (type === "AllClear") {
-        if (this.state.AllClear !== value.value) {
+        console.log("previousAllClear = ",this.state.checkPrevAllVlear)
+        if (this.state.checkPrevAllVlear.value !== value.value) {
           // value.value === 0 ? ""
           if (
             this.state.AllClear === "Yes" &&
@@ -2543,6 +2548,12 @@ class ShipmentCustom extends React.Component {
               });
             }
           }
+        }else{
+          this.setState({
+            AllClear: this.state.checkPrevAllVlear,
+            IsChanged: true,
+            viewAllClear: this.state.checkPrevAllVlear.value === "Yes" ? true : false,
+          });
         }
       } else if (type === "ServiceType") {
         this.setState({
