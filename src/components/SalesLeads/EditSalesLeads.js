@@ -262,7 +262,7 @@ class EditSalesLeads extends Component {
       tentativedateErr: false,
       tentativedateHelperText: "",
 
-      ReferredBy: "",
+      ReferredBy: {},
       ReferredbyErr: true,
       ReferredbyHelperText: "",
 
@@ -1774,7 +1774,7 @@ if (res.success) {
     }
   };
 
-  async getSalesLeadData() {
+  async getSalesLeadData() {debugger
     try {
       var data = {
         SalesLeadManagementID:
@@ -1970,7 +1970,15 @@ if (res.success) {
             
         //   }
         // }
-        
+        //console.log(result.data.data);
+        var RefBy = this.state.referredby.filter(
+          (x) => x.id == result.data.data.ReferredBy 
+        );
+        var selectedData = {
+          value:RefBy[0].id,
+          label:RefBy[0].label,
+
+        }
         this.setState({
           newurl: result.data.data.newurl,
           ProposalType: result.data.data.SalesLeadsType,
@@ -2008,7 +2016,7 @@ if (res.success) {
           TentativeDate: moment(result.data.data.TentativeMoveDate).isValid()
             ? result.data.data.TentativeMoveDate
             : "",
-          ReferredBy: result.data.data.ReferredBy,
+          ReferredBy:RefBy[0].label,
           LeadIPAddress: result.data.data.IPAddress,
           MACAddress: result.data.data.MACAddress,
           Comment: result.data.data.Comments,
@@ -5087,7 +5095,16 @@ if (res.success) {
           } else {
             dropoffState = this.state.DropoffState.value;
           }
-
+       
+          var RefBy = this.state.referredby.filter(
+            (x) => x.label == this.state.ReferredBy
+          );
+          var selectedData = {
+            value:RefBy[0].id,
+            label:RefBy[0].label,
+  
+          }
+          //this.state.ReferredBy
           let data = {
             userid: CommonConfig.loggedInUserData().PersonID,
             SalesLeadManagementID: this.state.SalesLeadManagementID,
@@ -5121,7 +5138,7 @@ if (res.success) {
                   .format("YYYY-MM-DD HH:mm:ss")
                   .toString()
               : null,
-            ReferredBy: this.state.ReferredBy,
+            ReferredBy: RefBy[0].id,
             IPAddress: this.state.LeadIPAddress,
             MACAddress: null,
             DeliveryType: this.state.DeliveryType,
