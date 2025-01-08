@@ -505,8 +505,9 @@ class ManageProjects extends Component {
       cogoToast.error("Something Went Wrong3");
     }
   }
-  handleEdit(record) {
+  handleEdit(record,type) {
     debugger
+    if(type =="Client"){
     let ClientId = record.original.ClientID;
     this.props.history.push({
       pathname: "AddClient/" + ClientId,
@@ -519,6 +520,20 @@ class ManageProjects extends Component {
       },
     });
   }
+  else if(type =="Project"){
+    let ProjectId = record.original.ProjectID;
+    this.props.history.push({
+      pathname: "AddProject/" + ProjectId,
+      state: {
+        id: ProjectId,
+        filterlist: this.state.filterProps,
+        sortlist: this.state.sortProps,
+        tabKey: this.state.tabKey,
+        //WorkStatus: this.state.WorkStatus,
+      },
+    });
+  }
+}
 
 
 
@@ -2114,7 +2129,7 @@ class ManageProjects extends Component {
                 <Button
                   justIcon
                   color="info"
-                  onClick={() => this.handleEdit(record)}
+                  onClick={() => this.handleEdit(record,"Project")}
                 >
                   <i className="fas fa-edit"></i>
                 </Button>) : null}
@@ -2733,7 +2748,7 @@ class ManageProjects extends Component {
                 <Button
                   justIcon
                   color="info"
-                  onClick={() => this.handleEdit(record)}
+                  onClick={() => this.handleEdit(record,"Client")}
                 >
                   <i className="fas fa-edit"></i>
                 </Button>) : null}
