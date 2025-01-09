@@ -5103,11 +5103,14 @@ if (res.success) {
           var RefBy = this.state.referredby.filter(
             (x) => x.label == this.state.ReferredBy
           );
+          if(RefBy!=""){
           var selectedData = {
             value:RefBy[0].id,
             label:RefBy[0].label,
   
           }
+        }else
+        {RefBy="";}
           //this.state.ReferredBy
           let data = {
             userid: CommonConfig.loggedInUserData().PersonID,
@@ -5142,7 +5145,7 @@ if (res.success) {
                   .format("YYYY-MM-DD HH:mm:ss")
                   .toString()
               : null,
-            ReferredBy: RefBy[0].id,
+            ReferredBy: RefBy==""?"":RefBy[0].id,
             IPAddress: this.state.LeadIPAddress,
             MACAddress: null,
             DeliveryType: this.state.DeliveryType,
