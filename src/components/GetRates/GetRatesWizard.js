@@ -317,7 +317,8 @@ class GetRatesWizard extends React.Component {
     debugger;
     var url = window.location.href;
     console.log("url", url);
-    localStorage.setItem("getRate", data.Rates);
+    var ratesdata = new Intl.NumberFormat().format(Math.ceil(data.Rates))
+    localStorage.setItem("getRate", ratesdata);
     localStorage.setItem("rate url", url);
     // localStorage.setItem("shipping type");
     this.props.props.history.push({

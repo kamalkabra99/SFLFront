@@ -70,7 +70,7 @@ class TimeManagement extends React.Component {
 
       // ManagedBy: "",
       TimeTypeValue:"",
-      ReasonsValue:"",
+      ReasonsValue:{ value: "Travel", label: "Travel" },
       FromDate: new Date(),
       ToDate: new Date(),
 
@@ -375,7 +375,7 @@ class TimeManagement extends React.Component {
     this.showLoador();
     var pData = {
       UserID: CommonConfig.loggedInUserData().PersonID,
-      userTimeZonedata: this.state.userTimeZone.value,
+      userTimeZonedata: CommonConfig.loggedInUserData().userTimeZone,
     };
     api.post("contactus/UserLogin", pData).then((res) => {
       console.log("Res = ", res);
@@ -397,7 +397,7 @@ class TimeManagement extends React.Component {
     this.showLoador();
     var pData = {
       UserID: CommonConfig.loggedInUserData().PersonID,
-      userTimeZonedata: this.state.userTimeZone.value,
+      userTimeZonedata: CommonConfig.loggedInUserData().userTimeZone,
     };
     api.post("contactus/UserBreakResume", pData).then((res) => {
       console.log("Res = ", res);
@@ -676,7 +676,7 @@ class TimeManagement extends React.Component {
     this.showLoador();
     var pData = {
       UserID: CommonConfig.loggedInUserData().PersonID,
-      userTimeZonedata: this.state.userTimeZone.value,
+      userTimeZonedata: CommonConfig.loggedInUserData().userTimeZone,
     };
     api.post("contactus/UserLogout", pData).then((res) => {
       console.log("Res = ", res);

@@ -583,6 +583,11 @@ class billingInvoice extends Component {
               width: 70,
             },
             {
+              Header: "Managed By",
+              accessor: "ManagedBy",
+              width: 70,
+            },
+            {
               Header: "Amount",
               sortMethod: (a, b) => {
                 a = a.split("$ ")[1] !== undefined ? a.split("$ ")[1] : 0;
