@@ -1786,7 +1786,7 @@ if (res.success) {
       this.showLoader();
 
       let result = await api.post("salesLead/getSalesLeadDetailsById", data);
-      if (result.data.success) {
+      if (result.data.success) {debugger
 
         var countryCode = {
           label: "1",
@@ -1970,15 +1970,19 @@ if (res.success) {
             
         //   }
         // }
-        //console.log(result.data.data);
+        console.log(result.data.data);
         var RefBy = this.state.referredby.filter(
           (x) => x.id == result.data.data.ReferredBy 
         );
+        if(RefBy.length!=0){
         var selectedData = {
           value:RefBy[0].id,
           label:RefBy[0].label,
 
         }
+      }
+      else
+      RefBy="";
         this.setState({
           newurl: result.data.data.newurl,
           ProposalType: result.data.data.SalesLeadsType,
@@ -2016,7 +2020,7 @@ if (res.success) {
           TentativeDate: moment(result.data.data.TentativeMoveDate).isValid()
             ? result.data.data.TentativeMoveDate
             : "",
-          ReferredBy:RefBy[0].label,
+          ReferredBy:RefBy==""?"":RefBy[0].label,
           LeadIPAddress: result.data.data.IPAddress,
           MACAddress: result.data.data.MACAddress,
           Comment: result.data.data.Comments,
