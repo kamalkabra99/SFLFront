@@ -1109,7 +1109,7 @@ class TMSReport extends Component {
                 ""
               )}
 
-              {this.state.TmsDeleteAccess == "1" && record.original.LeaveStatus == "Pending"  ? (
+              {this.state.TmsAllAccess == "1" && record.original.LeaveStatus == "Pending"  ? (
                 <Button
                   justIcon
                   color="primary"
