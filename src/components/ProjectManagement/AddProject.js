@@ -88,10 +88,11 @@ class AddProject extends Component {
       TrackingLinkCheck: false,
       trackinglinkErr: false,
       trackinglinkHelperText: "",
+      ClientList:[],
     };
     this.requestChange = this.requestChange.bind(this);
   }
-  componentDidMount() {
+  async componentDidMount() {
 
     this.setState({
       AllAccess: CommonConfig.getUserAccess("Call Back").AllAccess,
@@ -148,7 +149,8 @@ class AddProject extends Component {
     //   this.state.checkdata = newFilter;
     //   this.filterMethod("", newFilter);
     //   this.getStatus();
-    this.getProjectData();
+    await this.getClientList();
+    await this.getProjectData();
     }
     
   
@@ -170,7 +172,8 @@ class AddProject extends Component {
         ProjectID: this.state.ProjectID,
         ProjectName: this.state.ProjectName,
         ProjectStatus:this.state.ProjectStatus.value,
-        ClientName: this.state.clientname,
+        ClientName: this.state.clientname.label,
+        ClientID: this.state.clientname.value,
         userId: CommonConfig.loggedInUserData().PersonID,
         flag:this.state.ProjectID!=null?"U":"I",
       };
@@ -178,7 +181,7 @@ class AddProject extends Component {
         api.post("projectManagement/addUpdateProject", data).then((result) => {
           if (result.success) {
             this.setState({ loading: true });
-            cogoToast.success("Update Sucessfully");
+            cogoToast.success("Save Sucessfully");
             if (redirect) {
               this.props.history.push("/admin/ManageProjects");
             } else {
@@ -222,6 +225,22 @@ class AddProject extends Component {
     }
   }
 
+  getClientList = async () => {debugger
+    try {
+      api
+        .post("projectManagement/getClientList")
+        .then((res) => {
+          if (res.success) {
+            var Client = res.message;
+
+            this.setState({ ClientList: Client });
+          }
+        })
+        .catch((err) => {
+          console.log("err..", err);
+        });
+    } catch (error) { }
+  };
   handleChange = (event, type) => {
     if (type === "ProjectName") {
       this.setState({ ProjectNameCheck: true });
@@ -278,9 +297,13 @@ class AddProject extends Component {
       this.showLoader();
       if(this.state.ProjectID!= null){ 
       let result = await api.post("projectManagement/getProjectDetailsById", data);
+      let selectedData = {
+        value:result.Data[0].ClientDetailID,
+        label:result.Data[0].CompanyName,
+      }
       if (result.success) {
         var selectData = {value:result.Data[0].Status,label:result.Data[0].Status}
-        this.setState({ProjectID:result.Data[0].ProjectID,ProjectName:result.Data[0].ProjectName,clientname:result.Data[0].ClientName, ProjectStatus:selectData}); 
+        this.setState({ProjectID:result.Data[0].ProjectID,ProjectName:result.Data[0].ProjectName,clientname:selectedData, ProjectStatus:selectData}); 
         console.log(this.state.ProjectName);
         console.log(this.state.ProjectID);
         console.log(this.state.clientname); 
@@ -299,7 +322,7 @@ class AddProject extends Component {
 
   selectChange = (event, value, type) => {
     debugger
-
+    let val = event.target.value;
     if (value !== null) {
       if (type === "ProjectStatus") {
         var selectData = {
@@ -308,13 +331,24 @@ class AddProject extends Component {
         }
         this.setState({ ProjectStatus: selectData});
       }
+      else
+      if (type === "ClientName") {
+        var selectData = {
+          label: value.label,
+          value: value.value
+        }
+        this.setState({ clientname: selectData});
+      }
     }
   };
   render() {
-    const { defaultMarkupType,ProjectStatusList } = this.state;
+    const { defaultMarkupType,ProjectStatusList} = this.state;
     const defaultmarkuptype = {
       options: defaultMarkupType.map((option) => option.label),
     };
+    const ClientList1 = this.state.ClientList.map((Client) => {
+      return { value: Client.ClientID, label: Client.CompanyName };
+    });
     return (
       <GridContainer className="UserList-outer">
         <GridItem xs={12} sm={12} md={12}>
@@ -379,8 +413,8 @@ class AddProject extends Component {
                   />
                 </GridItem>
                 <GridItem xs={12} sm={12} md={4}>
-                  <CustomInput
-                    labelText="Client Name"
+                  {/* <CustomInput
+                    labelText="Company Name"
                     id="clientname"
                     error={this.state.clientnameErr}
                     helperText={this.state.clientnameHelperText}
@@ -417,7 +451,19 @@ class AddProject extends Component {
                           </InputAdornment>
                         ),
                     }}
-                  />
+                  /> */}
+                  <Autocomplete
+                      id="combo-box-demo"
+                      options={ClientList1}
+                      value={this.state.clientname}
+                      onChange={(event, value) =>
+                        this.selectChange(event, value, "ClientName")
+                      }
+                      getOptionLabel={(option) => option.label}
+                      renderInput={(params) => (
+                        <TextField {...params} label="Company Name" />
+                      )}
+                    />
                 </GridItem>
                 <GridItem xs={12} sm={12} md={4}>
                     <Autocomplete

@@ -61,15 +61,16 @@ class Step1 extends React.Component {
     this.state = {
       Steps: [
         {
-          stepName: "Social Media Links",
-          stepId: "SocialLinks",
+          stepName: "Contact Details",
+          stepId: "ContactDetails",
           classname: "active",
         },
         {
-          stepName: "Contact Details",
-          stepId: "ContactDetails",
+          stepName: "Web Links",
+          stepId: "SocialLinks",
           classname: "inactive",
         },
+        
 
       ],
       contactList: [],
@@ -83,6 +84,8 @@ class Step1 extends React.Component {
       ClientNameHelperText: "",
       checkClientName: false,
       CompanyName: "",
+      CompanyNameErr: false,
+      CompanyNameHelperText: "",
       checkCompanyName: false,
       AddressLine1: "",
       addressLine1Err: false,
@@ -97,7 +100,7 @@ class Step1 extends React.Component {
       zipCodeHelperText: "",
       checkZipCode: false,
 
-      City: "",
+      City:{},
       cityErr: false,
       cityHelperText: "",
       checkCity: false,
@@ -200,6 +203,15 @@ class Step1 extends React.Component {
       cstateHelperText: "",
       checkcState: false,
       contactListKey:"",
+      ClientStatusList:[        
+        { value: "Active", label: "Active" },
+        { value: "Cancelled", label: "Cancelled" },
+        { value: "Closed", label: "Closed" },
+        { value: "Hold", label: "Hold" },],
+        ClientStatus:{},
+        ClientStatusErr: false,
+        ClientStatusHelperText: "",
+        checkClientStatus: false,
     };
     
   }
@@ -212,6 +224,7 @@ class Step1 extends React.Component {
     setTimeout(() => {
       this.getClientDetail();
     }, 2500);
+  
     var clientID=this.props.history.location.state &&
             this.props.history.location.state.id
             ? this.props.history.location.state.id
@@ -219,8 +232,8 @@ class Step1 extends React.Component {
             this.setState({ClientID:clientID});
             await this.getContacts(clientID);
     document.getElementById("PanelShow").style.display = "block";
-    document.getElementById("SocialLinks").style.display = "block";
-    document.getElementById("ContactDetails").style.display = "none";
+    document.getElementById("SocialLinks").style.display = "none";
+    document.getElementById("ContactDetails").style.display = "Block";
     document.getElementById("ContactAdd").style.display = "none";
   
   }
@@ -307,8 +320,8 @@ getSocialMediaType = () => {
 
         return (
          <tr>
-           <td>
-              <div className="package-select">
+           <td style={{width:"200px"}}>
+              <div className="WebLink-select">
                 <Autocomplete
                   id="SocialMediaType"
                   options={SocialMediaTypeList}
@@ -327,9 +340,11 @@ getSocialMediaType = () => {
            </td>
               
            <td>
-           <div className="package-select">
+              <div className="weblink-select">
               <CustomInput
                 type="text"
+                className="fullwidth-input"
+                fullWidth
                 name="Link"
                 id="Link"
                 inputProps={{
@@ -346,7 +361,7 @@ getSocialMediaType = () => {
               </div>
             </td>
                 
-            <td>
+            <td style={{width:"100px"}}>
               <div className="pck-subbtn">
                 <Button
                   justIcon
@@ -531,9 +546,14 @@ getSocialMediaType = () => {
         let allResult = await api.post("projectManagement/getClientDetailsById", data);
         if (allResult.success) {
             let result = {Data:allResult.Data.ClientDetail};
+            if(result.Data[0].CountryID!="" && result.Data[0].CountryID!=null)
+            {
           let SelectedCountry = this.state.CountryList.filter((x) => x.CountryID === result.Data[0].CountryID);
           var selectData = { value: SelectedCountry[0].CountryID, label: SelectedCountry[0].CountryName }
-
+            }
+            else
+            var selectData="";
+          var selectStatusData = { value: result.Data[0].Status, label: result.Data[0].Status }
           this.setState({
             ClientID: result.Data[0].ClientID,
             ClientName: result.Data[0].ClientName,
@@ -547,7 +567,8 @@ getSocialMediaType = () => {
             Mobile: result.Data[0].Mobile,
             Mobile1: result.Data[0].Mobile1,
             Email: result.Data[0].Email1,
-            Email2: result.Data[0].Email2
+            Email2: result.Data[0].Email2,
+            ClientStatus:selectStatusData,
           });
           let SocialLink = allResult.Data.ClientSocialDetail;
           var i = 0;
@@ -590,10 +611,21 @@ getSocialMediaType = () => {
     }
     else
     {
-      let LinkList = this.state.SocialLinksList;
+      if(LinkVal.length<=200)
+      {let LinkList = this.state.SocialLinksList;
       LinkList[idx].Link = LinkVal;
       this.setState({SocialLinksList:LinkList});
+      }
+      else{
+
+      }
     }
+  };
+  deleteContact = () => {
+    let contacts = this.state.contactList;
+
+    contacts.splice(this.state.contactListKey, 1);
+    this.setState({ contactList: contacts, delDoc: false });
   };
    handleContactBlur = (event, type) => {
       let val = event.target.value;
@@ -1806,30 +1838,20 @@ getSocialMediaType = () => {
       IsFormValid = false;
       this.setState({ ClientNameErr: true, ClientNameHelperText: "Mandatory Field" });
     }
-    else
-      if (this.state.companyName != "" && this.state.companyNameErr == true) {
+   
+      if (this.state.CompanyName == "" || this.state.CompanyNameErr == true) {
         IsFormValid = false;
-        this.setState({ companyNameHelperText: "Enter Valid Company Name" });
+        this.setState({ companyNameHelperText: "Enter Valid Company Name" ,CompanyNameErr:true});
       }
-      else
-        if (this.state.mobileErr === true) {
+   
+        if (this.state.Mobile=="" || this.state.mobileErr === true) {
           IsFormValid = false;
-          this.setState({ mobile1HelperText: "Enter Valid Phone Number" });
+          this.setState({ mobileHelperText: "Enter Valid Phone Number",mobileErr:true });
         }
-        else
-          if (this.state.mobile1Err === true) {
-            IsFormValid = false;
-            this.setState({ mobile1HelperText: "Enter Valid Phone Number" });
-          }
-          else
-            if (this.state.emailErr === true) {
-              IsFormValid = false;
-              this.setState({ emailHelperText: "Enter Valid Email Address" });
-            }
-            else
-              if (this.state.email2Err === true) {
+       
+              if (this.state.ClientStatus ==null || this.state.ClientStatus.value == undefined || this.state.ClientStatus.value == "" || this.state.ClientStatusErr === true) {
                 IsFormValid = false;
-                this.setState({ email2HelperText: "Enter Valid Email Address" });
+                this.setState({ ClientStatusHelperText: "Please Select Client Status",ClientStatusErr:true });
               }
     return IsFormValid;
   }
@@ -2280,16 +2302,17 @@ getSocialMediaType = () => {
           AddressLine1: this.state.AddressLine1,
           AddressLine2: this.state.AddressLine2,
           ZipCode: this.state.ZipCode,
-          City: this.state.City.value ? this.state.City.value : this.state.City,
-          State: this.state.State.value
-            ? this.state.State.value
-            : this.state.State,
-          CountryID: this.state.Country.value,
+          City: this.state.City!= null && this.state.City.value!= undefined && this.state.City.value!=""?this.state.City.value:typeof(this.state.City)!="object" ?this.state.City:"",
+          State: this.state.State !=""
+            ? this.state.State
+            : "",
+          CountryID: this.state.Country!= null && this.state.Country.value!= undefined && this.state.Country.value!=""?this.state.Country.value:typeof(this.state.Country)!="object" ?this.state.Country:"",
           Phone1: this.state.Mobile,
           Phone2: this.state.Mobile1,
           Email1: this.state.Email,
           Email2: this.state.Email2,
           userId: userid,
+          Status:this.state.ClientStatus.value,
           SocialLinksList:SocialLinksFinalList.length>0?SocialLinksFinalList:"",
           contacts:this.state.contactList.length>0?this.state.contactList:"",
           //contactList:
@@ -2307,11 +2330,11 @@ getSocialMediaType = () => {
                 this.props.history.push({
                   pathname: "/admin/ManageProjects",
                   state: {
-                    filterlist: this.props.history.location.filterlist,
-                    sortlist: this.props.history.location.sortlist,
-                    searchCriteria: this.props.history.location.searchCriteria,
-                    tabKey: this.props.history.tabKey,
-                    ClientList: this.props.history.location.ClientList,
+                    filterlist: this.props.history.location.state.filterlist,
+                    sortlist: this.props.history.location.state.sortlist,
+                    searchCriteria: this.props.history.location.state.searchCriteria,
+                    tabKey: this.props.history.location.state.tabKey,
+                    ClientList: this.props.history.location.state.ClientList,
                   },
                 });
               } else {
@@ -3716,7 +3739,28 @@ getSocialMediaType = () => {
       });
   };
 
+  selectChange = (event, value, type) => {
+    debugger
+    let val = event.target.value;
+    if (value !== null) {
+      this.setState({ ClientStatusErr: false,ClientStatusHelperText:"",checkClientStatus:true,});
+      if (type === "ClientStatus") {
+        var selectData = {
+          label: value.label,
+          value: value.value
+        }
+        this.setState({ ClientStatus: selectData});
+      }
+      
+    }
+    else
+    {  
+    this.setState({ ClientStatus: ""});
+  
+    this.setState({ ClientStatusErr: true,ClientStatusHelperText:"Please Select Client Status",checkClientStatus:true,});
 
+    }
+  };
   render() {
     const {
       fullName,
@@ -3759,6 +3803,7 @@ getSocialMediaType = () => {
       BirthDate,
       RelivingDate,
       isSocialLinksVisible,
+      ClientStatusList,
     } = this.state;
 
 
@@ -4089,7 +4134,7 @@ getSocialMediaType = () => {
               {this.state.Access.DeleteAccess === 1 ? (
                 <DeleteIcon
                   onClick={() =>
-                    this.setState({ open: true, contactListKey: record.index })
+                    this.setState({ delDoc: true, contactListKey: record.index })
                   }
                 />
               ) : null}
@@ -4116,12 +4161,35 @@ getSocialMediaType = () => {
                     <h4 className="margin-right-auto text-color-black">
                       Client Management
                     </h4>
+                    <GridItem xs={12} sm={12} md={3}>
+                                        <Autocomplete
+                                          id="combo-box-demo"
+                                          options={ClientStatusList}
+                                          value={this.state.ClientStatus}
+                                          onChange={(event, value) =>
+                                            this.selectChange(event, value, "ClientStatus")
+                                          }
+                                          getOptionLabel={(option) => option.label}
+                                          renderInput={(params) => (
+                                            <TextField {...params} 
+                                            label="Client Status*" 
+                                            error={this.state.ClientStatusErr}
+                                            helperText={
+                                              this.state.ClientStatusHelperText
+                                            }
+                                            
+                                            
+                                            
+                                            />
+                                          )}
+                                        />
+                            </GridItem>        
                   </CardHeader>
                   <Cardbody>
                     <GridContainer>
                       <GridItem xs={12} sm={12} md={3}>
                         <CustomInput
-                          labelText={<span>Contact Name*</span>}
+                          labelText={<span>Website*</span>}
                           id="ClientName"
                           error={this.state.ClientNameErr}
                           helperText={this.state.ClientNameHelperText}
@@ -4167,19 +4235,19 @@ getSocialMediaType = () => {
 
                       <GridItem xs={12} sm={12} md={3}>
                         <CustomInput
-                          labelText={<span>Company Name</span>}
+                          labelText={<span>Company Name*</span>}
                           id="CompanyName"
                           name="CompanyName"
                           variant="outlined"
                           formControlProps={{ fullWidth: true }}
-                          error={this.state.companyNameErr}
-                          helperText={this.state.companyNameHelperText}
+                          error={this.state.CompanyNameErr}
+                          helperText={this.state.CompanyNameHelperText}
                           inputProps={{
                             onFocus: () =>
                               this.setState({
                                 checkcompanyName: false,
-                                companyNameErr: false,
-                                companyNameHelperText: "",
+                                CompanyNameErr: false,
+                                CompanyNameHelperText: "",
                               }),
                             onBlur: (event) =>
                               this.handleChange(event, "companyname"),
@@ -4189,7 +4257,7 @@ getSocialMediaType = () => {
                             endAdornment:
                               this.state.checkCompanyName !== true ? (
                                 <Icon>person</Icon>
-                              ) : this.state.companyNameErr ? (
+                              ) : this.state.CompanyNameErr ? (
                                 <InputAdornment position="end">
                                   <CloseIcon
                                     style={{ color: red[500] }}
@@ -4358,8 +4426,9 @@ getSocialMediaType = () => {
                             labelText="City"
                             id="city"
                             formControlProps={{ fullWidth: true }}
-                            inputProps={{
-                              value: City,
+                            inputProps={
+                              {
+                              value: City!= null && City.value!= undefined && City.value!=""?City.value:typeof(City)!="object" ?City:"",
                               onChange: (event) =>
                                 this.handleChange(event, "City"),
                               endAdornment: (
@@ -4400,7 +4469,7 @@ getSocialMediaType = () => {
                     <GridContainer>
                       <GridItem xs={12} sm={12} md={3}>
                         <CustomInput
-                          labelText={<span>Phone 1</span>}
+                          labelText={<span>Phone 1*</span>}
                           id="mobile"
                           error={this.state.mobileErr}
                           helperText={this.state.mobileHelperText}
@@ -4837,7 +4906,7 @@ getSocialMediaType = () => {
                               />
                             </GridItem>
                             <GridItem xs={12} sm={12} md={4}>
-                              {this.state.cityAutoComplete === false ? (
+                              {this.state.cCityAutoComplete === false ? (
                                 <CustomInput
                                   labelText={<span>City</span>}
                                   id="city"
@@ -4916,7 +4985,7 @@ getSocialMediaType = () => {
                                   id="stateAutoComplete"
                                   autoSelect
                                   getOptionLabel={(option) => option.label}
-                                  value={this.state.state}
+                                  value={this.state.State}
                                   onChange={(event, value) =>
                                     this.ChangeFromState(event, value)
                                   }
@@ -5045,7 +5114,7 @@ getSocialMediaType = () => {
                           <Adduser />
                         </CardIcon> */}
                           <h4 className="margin-right-auto text-color-black">
-                            Social Media Link
+                            Web Links
                           </h4>
                           <GridItem xs={12} sm={12} md={1}>
                                       {this.state.SocialLinksList.length==0 || this.state.SocialLinksList.filter(
@@ -5073,9 +5142,9 @@ getSocialMediaType = () => {
                                             <table id="PackageTable">
                                               <thead>
                                                 <tr>
-                                                  <th>Media Type</th>
+                                                  <th>Web Link Name</th>
                                                   
-                                                  <th>Link</th>
+                                                  <th>Web Link URL</th>
                                                 
                                                   <th>Action</th>
                                                 </tr>
@@ -5188,15 +5257,15 @@ getSocialMediaType = () => {
                   >
                     Cancel
                   </Button>
-                  {/*this.state.Access.DeleteAccess === 1 ? (
+                 { this.state.Access.DeleteAccess === 1 ? (
                     <Button
-                      onClick={() => this.handleDocumentDelete()}
+                      onClick={() => this.deleteContact()}
                       color="primary"
                       autoFocus
                     >
                       Delete
                     </Button>
-                  ) : null*/}
+                  ) : null}
                 </DialogActions>
               </Dialog>
             </div>
