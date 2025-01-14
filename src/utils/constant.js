@@ -293,7 +293,8 @@ export class CommonConfig {
     userNameSpecialCharacter: /[@._-]/g,
     NofirstInputSpecialCharacter: /[a-zA-Z0-9][@._-]/g,
     userErrorSpecial: /[!~`#$%^&*()+<>/:;"',|]/g,
-    exceptCirilic:/^[ A-Za-z0-9[_@.,/!$%^(\]\\){\n\s\t\r}|:;<>?#*&+-=– ‎b]*$/,
+    //exceptCirilic:/^[ A-Za-z0-9[_@.,/!$%^(\]\\){\n\s\t\r}|:;<>?#*&+-=– ‎b]*$/,
+    exceptCirilic:/^[\s\S]*$/,
   };
 //~`@#$%^&*()_+=-{}|:"<>?,;'
   static zipCodeAPIKey = function(zipCode, countryName) {

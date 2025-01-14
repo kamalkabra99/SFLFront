@@ -710,7 +710,7 @@ class Step1 extends React.Component {
             AssignedTo: selectedAssignedTo,
             DateCreated: WorkData.data.DateCreated,
             WorkName: WorkData.data.WorkName,
-            Description:WorkData.data.Description,
+            Description:JSON.parse(WorkData.data.Description),
             Attachment: WorkData.data.AttachmentPath,
             Priority: selectedPriority,
             ETA: WorkData.data.ETA,
@@ -1225,9 +1225,11 @@ class Step1 extends React.Component {
   handleChangeDes = (event) => {
     const { value } = event.target;
     const  value1  = event.target.value;
-    console.log("value1",CommonConfig.RegExp.exceptCirilic.test(value1));
-    if(CommonConfig.RegExp.exceptCirilic.test(value1))
-    this.setState({ Description: value });
+   
+    let normalText =value1.replace("\u200E", "");
+    console.log("value1",CommonConfig.RegExp.exceptCirilic.test(normalText));
+    if(CommonConfig.RegExp.exceptCirilic.test(normalText))
+    this.setState({ Description: normalText });
   };
   handledInput = (e, id, MarkupType, Type) => {
     let MarkupData = this.state.serviceList;
@@ -1811,10 +1813,11 @@ class Step1 extends React.Component {
 
   saveWork = (redirect) => {
     debugger;
+
     if (this.validate()) {
       try {
         this.showLoader();
-
+        
         debugger;
         var data = {};
         var FinalNotes = this.state.notes.filter(
