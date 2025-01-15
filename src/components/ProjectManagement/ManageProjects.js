@@ -188,12 +188,18 @@ class ManageProjects extends Component {
     };
   }
   async componentDidMount() {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'smooth'
+  })
     debugger
     await this.getProjectList();
     await this.getClientList();
     await this.getServiceList();
     await this.getResourceList();
     await this.getAllocationResourceList();
+   
     //this.handleDateChange(this.state.StartDate, "StartDate")
     this.showHide();
     this.setState({ Access: CommonConfig.getUserAccess("Project Management") });
@@ -2703,8 +2709,8 @@ class ManageProjects extends Component {
         maxWidth: 100,
       },
       {
-        Header: "Name",
-        accessor: "ClientName",
+        Header: "Company Name",
+        accessor: "CompanyName",
         width: 200,
         filterable: true,
         sortable: true,

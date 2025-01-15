@@ -105,7 +105,7 @@ class Step1 extends React.Component {
       cityHelperText: "",
       checkCity: false,
 
-      State: "",
+      State: {},
       stateErr: false,
       stateHelperText: "",
       checkState: false,
@@ -217,6 +217,7 @@ class Step1 extends React.Component {
   }
 
   async componentDidMount() {
+    this.showLoader();
     await this.getCountry();
     await this.getSocialMediaType();
     this.setState({ LoginpersonId: CommonConfig.loggedInUserData().PersonID });
@@ -240,6 +241,7 @@ class Step1 extends React.Component {
 
   getCountry = async () => {
     try {
+      this.showLoader();
       api
         .get("location/getCountryList")
         .then((res) => {
@@ -255,6 +257,7 @@ class Step1 extends React.Component {
   };
 getSocialMediaType = () => {
     try {
+      this.showLoader();
       let data = {
         stringMapType: "SOCIALMEDIATYPE",
       };
@@ -321,7 +324,7 @@ getSocialMediaType = () => {
         return (
          <tr>
            <td style={{width:"200px"}}>
-              <div className="WebLink-select">
+              <div className="weblink-select">
                 <Autocomplete
                   id="SocialMediaType"
                   options={SocialMediaTypeList}
@@ -533,7 +536,7 @@ getSocialMediaType = () => {
 
   async getClientDetail() {
     debugger
-    try {
+    try {  this.showLoader();
       var data = {
         ClientID:
           this.props.history.location.state &&
@@ -541,7 +544,7 @@ getSocialMediaType = () => {
             ? this.props.history.location.state.id
             : null,
       };
-      this.showLoader();
+    
       if (this.state.ClientID != null) {
         let allResult = await api.post("projectManagement/getClientDetailsById", data);
         if (allResult.success) {
@@ -1570,7 +1573,7 @@ getSocialMediaType = () => {
         .get("ProjectManagement/getClientContacts/" + ClientId)
         .then((res) => {
           if (res.success) {
-            this.hideLoader();
+            
             var finalContact = res.data;
             //  console.log("cont", this.state.contactList);
             this.setState({ contactList: finalContact });
@@ -2303,9 +2306,7 @@ getSocialMediaType = () => {
           AddressLine2: this.state.AddressLine2,
           ZipCode: this.state.ZipCode,
           City: this.state.City!= null && this.state.City.value!= undefined && this.state.City.value!=""?this.state.City.value:typeof(this.state.City)!="object" ?this.state.City:"",
-          State: this.state.State !=""
-            ? this.state.State
-            : "",
+          State: this.state.State!= null && this.state.State.value!= undefined && this.state.State.value!=""?this.state.State.value:typeof(this.state.State)!="object" ?this.state.State:"",
           CountryID: this.state.Country!= null && this.state.Country.value!= undefined && this.state.Country.value!=""?this.state.Country.value:typeof(this.state.Country)!="object" ?this.state.Country:"",
           Phone1: this.state.Mobile,
           Phone2: this.state.Mobile1,
@@ -4450,7 +4451,7 @@ getSocialMediaType = () => {
                             id="state"
                             formControlProps={{ fullWidth: true }}
                             inputProps={{
-                              value: State,
+                              value: State!= null && State.value!= undefined && State.value!=""?State.value:typeof(State)!="object" ?State:"",
                               onChange: (event) =>
                                 this.handleChange(event, "State"),
                               endAdornment: (
