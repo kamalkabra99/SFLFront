@@ -998,7 +998,7 @@ class AllSalesReport extends Component {
           <center>Monthly Sales <br />(USD)</center>
           </>),
         id: "MonthlySales",
-        accessor: "MonthlySales",
+        accessor: "MonthlySale",
         width: 100,
       },
       {
