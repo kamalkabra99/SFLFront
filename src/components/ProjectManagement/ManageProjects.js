@@ -192,8 +192,7 @@ class ManageProjects extends Component {
       top: 0,
       left: 0,
       behavior: 'smooth'
-  })
-    debugger
+  });
     await this.getProjectList();
     await this.getClientList();
     await this.getServiceList();

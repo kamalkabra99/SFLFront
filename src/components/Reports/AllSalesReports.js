@@ -58,10 +58,46 @@ class AllSalesReport extends Component {
           classname: "inactive",
           Type: "unclearsales",
         },
+        {
+          stepName: "Sales Commission",
+          stepId: "SalesCommissionSlab",
+          classname: "inactive",
+          Type: "SalesCommissionSlab",
+        },
       ],
 
       //All Sales
-
+      monthList:[
+        {value:1,label:"January"},
+        {value:1,label:"February"},
+        {value:1,label:"March"},
+        {value:1,label:"April"},
+        {value:1,label:"May"},
+        {value:1,label:"June"},
+        {value:1,label:"July"},
+        {value:1,label:"August"},
+        {value:1,label:"September"},
+        {value:1,label:"October"},
+        {value:1,label:"November"},
+        {value:1,label:"December"},
+        
+        
+      ],
+      yearList:[
+        {value:2025,label:"2025"},
+        {value:2024,label:"2024"},
+        {value:2023,label:"2023"},
+        {value:2022,label:"2022"},
+        {value:2021,label:"2021"},
+        {value:2020,label:"2020"},
+        {value:2019,label:"2019"},        
+      ],
+      Month:"",
+      monthErr:false,
+      monthHelperText:"",
+      Year:"",
+      YearErr:false,
+      YearHelperText:"",
       AllShipmentByCommissionList: [],
       finalLengthAllSales: 0,
       finalAmountAllSales: 0,
@@ -90,6 +126,7 @@ class AllSalesReport extends Component {
       // Sales Commission
 
       ShipmentByCommissionList: [],
+      SlabWiseCommissionList:[],
       finalLength: 0,
       finalAmount: 0,
       ManagedByList: [],
@@ -101,6 +138,7 @@ class AllSalesReport extends Component {
       ToDate: "",
       Access: {},
       clearSalesSearch: false,
+      commissionSearch:false,
     };
   }
 
@@ -374,16 +412,51 @@ class AllSalesReport extends Component {
       cogoToast.error("Please enter from/to date");
     }
   };
+  searchSlabWiseCommission = (Type) => {debugger
+    if (this.validate()) {
+      this.setState({ commissionSearch: true });
+      this.showLoader();
+      try {
+        let data = {
+          Month: CommonConfig.isEmpty(this.state.Month)
+            ? "":this.state.Month.value,
+          Year: CommonConfig.isEmpty(this.state.Year)
+            ? ""
+            : this.state.Year.value,
+        };
+        api
+          .post("reports/getSlabWiseCommission", data)
+          .then((res) => {
+            this.hideLoader();
+            if (res.success) {
+              this.setState({ SlabWiseCommissionList: res.data });
+             
+            } else {
+              cogoToast.error("Something went wrong");
+            }
+          })
+          .catch((err) => {
+            this.hideLoader();
+            cogoToast.error("Something went wrong");
+            console.log("error...", err);
+          });
+      } catch (err) {
+        this.hideLoader();
+        console.log("error....", err);
+        cogoToast.error("Something went wrong");
+      }
+    } else {
+      cogoToast.error("Please Select Month and  Year");
+    }
+  };
 
   validate() {
     let IsValid = true;
 
     if (
-      (!CommonConfig.isEmpty(this.state.FromDate) &&
-        CommonConfig.isEmpty(this.state.ToDate)) ||
-      (CommonConfig.isEmpty(this.state.FromDate) &&
-        !CommonConfig.isEmpty(this.state.ToDate))
-    ) {
+      CommonConfig.isEmpty(this.state.Month)  ||
+      CommonConfig.isEmpty(this.state.Year))
+     {
       IsValid = false;
     }
     return IsValid;
@@ -422,9 +495,14 @@ class AllSalesReport extends Component {
 
   selectChange = (event, value, type) => {
     if (value !== null) {
-      if (type === "ManagedBy") {
-        this.setState({ ManagedBy: value });
+      if (type === "year") {
+        this.setState({ Year: value });
       }
+      else
+      if (type === "month") {
+        this.setState({ Month: value });
+      }
+      
     }
   };
 
@@ -775,6 +853,11 @@ class AllSalesReport extends Component {
       ManagedByAllSales,
       checkUserNameAllSales,
       currentLoginAllSales,
+      monthList,
+      SlabWiseCommissionList,
+      Year,
+      yearList,
+      Month,
     } = this.state;
 
     const managedByAllSales = this.state.ManagedByListAllSales.map((type) => {
@@ -898,6 +981,78 @@ class AllSalesReport extends Component {
       currentLogin,
     } = this.state;
 
+
+    const commissioncolumns = [
+
+
+      {
+        Header: (<>
+          <center>Name <br /></center>
+          </>),
+        id: "Name",
+        accessor:"Name",
+        width: 150,
+      },
+      {
+        Header: (<>
+          <center>Monthly Sales <br />(USD)</center>
+          </>),
+        id: "MonthlySales",
+        accessor: "MonthlySales",
+        width: 100,
+      },
+      {
+        Header: (<>
+        <center>Bracket(25-50%)<br />(1%)</center>
+        </>),
+        accessor: "Bracket25to50",
+        width: 100,
+      },
+      {
+        Header: (<>
+          <center>Bracket (50-75%)<br />(1.5%)</center>
+          </>),
+        accessor: "Bracket50to75",
+        width: 100,
+      },
+      {
+        Header: (<>
+          <center>Bracket (75-100%) <br />(2%)</center>
+          </>),
+        accessor: "Bracket75to100",
+        width: 100,
+      },
+      {
+        Header: (<>
+          <center>Above 100% <br />(3%)</center>
+          </>),
+        accessor: "Above100",
+        width: 100,
+      },
+      {
+        Header: (<>
+          <center>Bonus for Above 100% =<br />USD 50</center>
+          </>),
+        accessor: "Bonus",
+        width: 100,
+      },
+      {
+        Header: (<>
+          <center>Total Commision =<br />in USD</center>
+          </>),
+        accessor: "TotalCommisionDollar",
+        width: 80,
+      },
+      {
+        Header: (<>
+          <center>Total Commision =<br />in INR</center>
+          </>),
+        accessor: "TotalCommisionINR",
+        width: 73,
+      },
+     
+    ];
+    
     const managedBy = this.state.ManagedByList.map((type) => {
       return { value: type.UserID, label: type.Name };
     });
@@ -1301,6 +1456,92 @@ class AllSalesReport extends Component {
                     </GridContainer>
                   </GridItem>
                 </div>
+                <div className="shipment-pane" id="SalesCommissionSlab">
+                  <GridItem>
+                    {this.state.Loading === true ? (
+                      <div className="loading">
+                        <SimpleBackdrop />
+                      </div>
+                    ) : null}
+                    <GridContainer justify="center">
+                      <GridContainer>
+                        <GridItem xs={12} sm={12} md={4} className="z-index-9">
+                          <div className="date-spl">
+                            <Autocomplete
+                              id="combo-box-demo"
+                              options={monthList}
+                              value={checkUserName ? currentLogin : Month}
+                              disabled={checkUserName}
+                              onChange={(event, value) =>
+                                this.selectChange(event, value, "month")
+                              }
+                              getOptionLabel={(option) => option.label}
+                              renderInput={(params) => (
+                                <TextField {...params} label="Select Month" />
+                              )}
+                            />
+                       
+                          </div>
+                        </GridItem>
+                        <GridItem xs={12} sm={12} md={4} className="z-index-9">
+                          <div className="date-spl">
+                          <Autocomplete
+                              id="combo-box-demo"
+                              options={yearList}
+                              value={checkUserName ? currentLogin : Year}
+                              disabled={checkUserName}
+                              onChange={(event, value) =>
+                                this.selectChange(event, value, "year")
+                              }
+                              getOptionLabel={(option) => option.label}
+                              renderInput={(params) => (
+                                <TextField {...params} label="Select Year" />
+                              )}
+                            />
+                          </div>
+                        </GridItem>
+                        <GridItem xs={12} sm={12} md={3}>
+                        <div className="shipment-submit  mt-20">
+                            <div className="right">
+                              
+                              <Button
+                                color="rose"
+                                onClick={() => this.searchSlabWiseCommission("salescommission")}
+                              >
+                                Search
+                              </Button>
+                              <Button
+                                color="secondary"
+                                onClick={() => this.resetCommission()}
+                              >
+                                Reset
+                              </Button>
+                            </div>
+                          </div>
+                        </GridItem>
+                      </GridContainer>
+
+                   
+                      {this.state.commissionSearch ? (
+                        <ReactTable
+                          data={SlabWiseCommissionList}
+                          minRows={2}
+                          
+                          defaultFilterMethod={
+                            CommonConfig.filterCaseInsensitive
+                          }
+                       
+                          filterable
+                          resizable={false}
+                          columns={commissioncolumns}
+                          defaultPageSize={10}
+                          showPaginationBottom={true}
+                          className="-striped -highlight all-account-react"
+                        />
+                      ) : null}
+                    </GridContainer>
+                  </GridItem>
+                </div>        
               </div>
             </CardBody>
           </Card>

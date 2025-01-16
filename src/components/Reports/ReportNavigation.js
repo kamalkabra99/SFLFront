@@ -66,6 +66,11 @@ class Reports extends Component {
           stepId: "unclearsales",
           classname: "inactive",
         },
+        {
+          stepName: "Sales Commission",
+          stepId: "SalesCommissionSlab",
+          classname: "inactive",
+        },
       ],
       FedExSteps: [
         {
@@ -259,6 +264,15 @@ class Reports extends Component {
         currentSteps.splice(index, 1);
         this.setState({ SalesSteps: currentSteps });
       }
+      if (CommonConfig.getUserAccess("Sales Commission Slab").ReadAccess === 0) {
+        let currentSteps = this.state.SalesSteps;
+        let index = this.state.SalesSteps.findIndex(
+          (x) => x.stepId === "SalesCommissionSlab"
+        );
+        currentSteps.splice(index, 1);
+        this.setState({ SalesSteps: currentSteps });
+      }
+      
     }
   };
 
@@ -477,7 +491,8 @@ class Reports extends Component {
         if (
           CommonConfig.getUserAccess("All Sales").ReadAccess === 1 ||
           CommonConfig.getUserAccess("Sales Commission").ReadAccess === 1 ||
-          CommonConfig.getUserAccess("Shipment Not Cleared").ReadAccess === 1
+          CommonConfig.getUserAccess("Shipment Not Cleared").ReadAccess === 1 ||
+          CommonConfig.getUserAccess("Sales Commission Slab").ReadAccess === 1
         ) {
           this.props.history.push("/admin/AllSalesReports");
         } else {
