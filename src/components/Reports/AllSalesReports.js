@@ -349,7 +349,7 @@ class AllSalesReport extends Component {
   //Sales Commission (Clear Sales) Methods
 
   searchCommission = (Type) => {
-    if (this.validate()) {
+    if (this.validate(Type)) {
       this.setState({ clearSalesSearch: true });
       this.showLoader();
       try {
@@ -413,7 +413,7 @@ class AllSalesReport extends Component {
     }
   };
   searchSlabWiseCommission = (Type) => {debugger
-    if (this.validate()) {
+    if (this.validate(Type)) {
       this.setState({ commissionSearch: true });
       this.showLoader();
       try {
@@ -450,18 +450,33 @@ class AllSalesReport extends Component {
     }
   };
 
-  validate() {
+  validate(type) {
     let IsValid = true;
-
+    if(type == "clearsales")
+    {
+      if (
+        (!CommonConfig.isEmpty(this.state.FromDate) &&
+        CommonConfig.isEmpty(this.state.ToDate)) ||
+      (CommonConfig.isEmpty(this.state.FromDate) &&
+        !CommonConfig.isEmpty(this.state.ToDate))
+    ) {
+       {
+        IsValid = false;
+      }
+    }
+  }
+    else if(type =="salescommission" )
+    {
     if (
       CommonConfig.isEmpty(this.state.Month)  ||
       CommonConfig.isEmpty(this.state.Year))
      {
       IsValid = false;
     }
+  }
     return IsValid;
   }
-
+  
   getManagedBy() {
     try {
       api
@@ -502,6 +517,9 @@ class AllSalesReport extends Component {
       if (type === "month") {
         this.setState({ Month: value });
       }
+      else
+      if (type === "ManagedBy") {
+        this.setState({ ManagedBy: value });}
       
     }
   };
@@ -994,61 +1012,45 @@ class AllSalesReport extends Component {
         width: 150,
       },
       {
-        Header: (<>
-          <center>Monthly Sales <br />(USD)</center>
-          </>),
+        Header: "Monthly Sales(USD)",
         id: "MonthlySales",
         accessor: "MonthlySale",
-        width: 100,
+        width: 150,
       },
       {
-        Header: (<>
-        <center>Bracket(25-50%)<br />(1%)</center>
-        </>),
+        Header: "(25-50%)-1%",
         accessor: "Bracket25to50",
         width: 100,
       },
       {
-        Header: (<>
-          <center>Bracket (50-75%)<br />(1.5%)</center>
-          </>),
+        Header:"(50-75%)-1.5%",
         accessor: "Bracket50to75",
         width: 100,
       },
       {
-        Header: (<>
-          <center>Bracket (75-100%) <br />(2%)</center>
-          </>),
+        Header:"(75-100%)-2%",
         accessor: "Bracket75to100",
         width: 100,
       },
       {
-        Header: (<>
-          <center>Above 100% <br />(3%)</center>
-          </>),
+        Header: "(Above 100%)-3%",
         accessor: "Above100",
         width: 100,
       },
       {
-        Header: (<>
-          <center>Bonus for Above 100% =<br />USD 50</center>
-          </>),
+        Header: "Bonus",
         accessor: "Bonus",
-        width: 100,
-      },
-      {
-        Header: (<>
-          <center>Total Commision =<br />in USD</center>
-          </>),
-        accessor: "TotalCommisionDollar",
         width: 80,
       },
       {
-        Header: (<>
-          <center>Total Commision =<br />in INR</center>
-          </>),
+        Header: "Commision(USD)",
+        accessor: "TotalCommisionDollar",
+        width: 110,
+      },
+      {
+        Header:"Commision(INR)",
         accessor: "TotalCommisionINR",
-        width: 73,
+        width: 100,
       },
      
     ];
