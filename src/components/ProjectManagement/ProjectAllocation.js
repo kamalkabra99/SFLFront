@@ -21,6 +21,7 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import TextField from "@material-ui/core/TextField";
 import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
+import CustomInput from "components/CustomInput/CustomInput.js";
 import Checkbox from "@material-ui/core/Checkbox";
 import InfoIcon from "@material-ui/icons/PriorityHigh";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -576,94 +577,392 @@ console.log("this.state.ResourceName",this.state.ResourceName);
       return false;
     }
   };
+ 
 getColumns= () => {debugger
   var column =[];
-let x,y;
-
+let x,y,WeekDateFirst1,i;
 let WeekDateFirst = this.state.WeekDate1;
- let WeekDateFirst1;
-  for(let i= -1;i<=7;i++)
-  {
-    if(i == -1){
-      column.push({
-        Header: "Project Name",
-        accessor: "ProjectName",
-        width: 150,
-        filterable: true,
-        sortable: true,
-        maxWidth: 150,
-      }) ;
-      x=moment(WeekDateFirst).format("MM/DD/YY")+" ("+moment(WeekDateFirst).format('ddd')+")";
-      y=moment(WeekDateFirst).format("MM/DD/YY");}
-    else
-    if(i == 0)
-      column.push({
-        Header: "Service Name",
-        accessor: "ServiceName",
-        filterable: true,
-        sortable: true,
-        width: 100,
-        maxWidth: 150,
-      }) ;
-    else{
-  
-    column.push({
-      Header: x,
-      accessor: "Day"+i,
-      filterable: true,
-      sortable: true,
-      width: 100,
-      maxWidth: 150,
-      Cell: (record) => {
-       
-        if(i==1)
-        {  WeekDateFirst1 ="";WeekDateFirst1 = this.state.WeekDate1;}
-        y=moment(WeekDateFirst1).format("MM/DD/YY");
-        WeekDateFirst1 =moment(WeekDateFirst1).add(1,"d");
-        let wa =  moment(record.original.EndDate).unix();
+i = 1;
+return this.state.TimeAllocationList.map(
+  (Links, idx) => {
+    
+
+        y=moment(WeekDateFirst).format("MM/DD/YY");
+        let wa =  moment(Links.EndDate).unix();
         let aa = moment(y).unix();
-        return (
-          <div className="default-input">
-          
-           
-            {record.original.ProjectName !="Total" && (CommonConfig.getUserAccess("Project Allocation").WriteAccess === 1||CommonConfig.getUserAccess("Project Allocation").AllAccess === 1)?
-            
-            record.original.ProjectStatus  =="Closed"?(
-              wa>aa?( 
-           <input
-              type="text"
-             
-              disabled="false"
-             
-              name={"Day"+record.original.ProjectID+record.original.ServiceID+i}
-              value={record.original.Day1!="" && i==1?record.original.Day1:record.original.Day2!="" && i==2?record.original.Day2:record.original.Day3!="" && i==3?record.original.Day3:record.original.Day4!="" && i==4?record.original.Day4:record.original.Day5!="" && i==5?record.original.Day5:record.original.Day6!="" && i==6?record.original.Day6:record.original.Day7!="" && i==7?record.original.Day7:0}
-              onChange={(event) =>
-                this.handledInput(event, record.original.ServiceID, record.original.ProjectID, "Day"+i)
-              }
-            />):""
-          ):( 
-          <input
-            type="text"
-            name={"Day"+record.original.ProjectID+record.original.ServiceID+i}
-            value={record.original.Day1!="" && i==1?record.original.Day1:record.original.Day2!="" && i==2?record.original.Day2:record.original.Day3!="" && i==3?record.original.Day3:record.original.Day4!="" && i==4?record.original.Day4:record.original.Day5!="" && i==5?record.original.Day5:record.original.Day6!="" && i==6?record.original.Day6:record.original.Day7!="" && i==7?record.original.Day7:0}
-            onChange={(event) =>
-              this.handledInput(event, record.original.ServiceID, record.original.ProjectID, "Day"+i)
-            }
-          />)
-            :<p class="total-hours">{record.original.Day1!="" && i==1?record.original.Day1:record.original.Day2!="" && i==2?record.original.Day2:record.original.Day3!="" && i==3?record.original.Day3:record.original.Day4!="" && i==4?record.original.Day4:record.original.Day5!="" && i==5?record.original.Day5:record.original.Day6!="" && i==6?record.original.Day6:record.original.Day7!="" && i==7?record.original.Day7:0}</p>}
+    return (
+     <tr>
+       <td style={{width:"100px"}}>
+          <div className="weblink-select">
+            <span>{Links.ProjectName}</span>
           </div>
-        );
-      },
-    }) ;
-
-    WeekDateFirst =moment(WeekDateFirst).add(1,"d");
-    x=moment(WeekDateFirst).format("MM/DD/YY")+" ("+moment(WeekDateFirst).format('ddd')+")";
-    y=moment(WeekDateFirst).format("MM/DD/YY");
+       </td>
+        <td>
+        <span>{Links.ServiceName}</span>
+        </td>
+        
+        <td>
+            <div className="weblink-select">
+            {Links.ProjectName !="Total" && (CommonConfig.getUserAccess("Project Allocation").WriteAccess === 1||CommonConfig.getUserAccess("Project Allocation").AllAccess === 1)?(                  
+             Links.ProjectStatus  =="Closed"?
+                  (
+                    wa>aa?
+                    (<CustomInput
+                          type="text"
+                          className="fullwidth-input"
+                          fullWidth
+                          name="Day1"
+                         
+                          id="Day1"
+                          inputProps={{
+                            value:Links.Day1,
+                            onChange:(event, value) =>
+                              this.handledInput(event, Links.ServiceID, Links.ProjectID, "Day1"),
+                            disabled: true,
+                          }}
+                        
+                      />
+                    )
+                    :("")
+                  )
+                  :
+                  (
+                      <CustomInput
+                        type="text"
+                        className="fullwidth-input"
+                        fullWidth
+                        name="Day1"
+                      
+                        id="Day1"
+                        inputProps={{
+                          value:Links.Day1,
+                          onChange:(event, value) =>
+                            this.handledInput(event, Links.ServiceID, Links.ProjectID, "Day1")
+                          
+                        }}
+                    
+                      />
+                  )
+                ):
+                  (<p>&nbsp;&nbsp;&nbsp;{Links.Day1}</p>)
+                
+              }
+            </div>
+        </td>
+        <td>
+        
+            <div className="weblink-select">
+            {Links.ProjectName !="Total" && (CommonConfig.getUserAccess("Project Allocation").WriteAccess === 1||CommonConfig.getUserAccess("Project Allocation").AllAccess === 1)?(                  
+             Links.ProjectStatus  =="Closed"?
+                  (WeekDateFirst =moment(WeekDateFirst).add(1,"d"),
+                  y=moment(WeekDateFirst).format("MM/DD/YY"),
+                   wa =  moment(Links.EndDate).unix(),
+                   aa = moment(y).unix(),
+                    wa>aa?
+                    (<CustomInput
+                          type="text"
+                          className="fullwidth-input"
+                          fullWidth
+                          name="Day2"
+                          
+                          id="Day2"
+                          inputProps={{
+                            value:Links.Day2,
+                            disabled: true,
+                            onChange:(event, value) =>
+                              this.handledInput(event, Links.ServiceID, Links.ProjectID, "Day2")
+                            
+                          }}
+                        
+                      />
+                    )
+                    :("")
+                  )
+                  :
+                  (
+                      <CustomInput
+                        type="text"
+                        className="fullwidth-input"
+                        fullWidth
+                        name="Day2"
+                        
+                        id="Day2"
+                        inputProps={{
+                          value:Links.Day2,
+                          onChange:(event, value) =>
+                            this.handledInput(event, Links.ServiceID, Links.ProjectID, "Day2")
+                          
+                        }}
+                    
+                      />
+                  )
+                ):
+                  (<p>&nbsp;&nbsp;&nbsp;{Links.Day2}</p>)
+              }
+            </div>
+        </td>
+        <td>
+            <div className="weblink-select">
+            {
+                Links.ProjectName !="Total" && (CommonConfig.getUserAccess("Project Allocation").WriteAccess === 1||CommonConfig.getUserAccess("Project Allocation").AllAccess === 1)?(                  
+                  Links.ProjectStatus  =="Closed"?
+                      (WeekDateFirst =moment(WeekDateFirst).add(1,"d"),
+                      y=moment(WeekDateFirst).format("MM/DD/YY"),
+                       wa =  moment(Links.EndDate).unix(),
+                       aa = moment(y).unix(),
+                        wa>aa?
+                        (<CustomInput
+                              type="text"
+                              className="fullwidth-input"
+                              fullWidth
+                              name="Day3"
+                              
+                              id="Day3"
+                              inputProps={{
+                                value:Links.Day3,
+                                disabled: true,
+                                onChange:(event, value) =>
+                                  this.handledInput(event, Links.ServiceID, Links.ProjectID, "Day3")
+                                
+                              }}
+                            
+                          />
+                        )
+                        :("")
+                      )
+                      :
+                      (
+                          <CustomInput
+                            type="text"
+                            className="fullwidth-input"
+                            fullWidth
+                            name="Day3"
+                           
+                            id="Day3"
+                            inputProps={{
+                              value:Links.Day3,
+                              onChange:(event, value) =>
+                                this.handledInput(event, Links.ServiceID, Links.ProjectID, "Day3")
+                              
+                            }}
+                        
+                          />
+                      )
+                    ):
+                      (<p>&nbsp;&nbsp;&nbsp;{Links.Day3}</p>)}
+            </div>
+        </td>
+        <td>
+            <div className="weblink-select">
+            {Links.ProjectName !="Total" && (CommonConfig.getUserAccess("Project Allocation").WriteAccess === 1||CommonConfig.getUserAccess("Project Allocation").AllAccess === 1)?(                  
+             Links.ProjectStatus  =="Closed"?
+                  (WeekDateFirst =moment(WeekDateFirst).add(1,"d"),
+                  y=moment(WeekDateFirst).format("MM/DD/YY"),
+                   wa =  moment(Links.EndDate).unix(),
+                   aa = moment(y).unix(),
+                    wa>aa?
+                    (<CustomInput
+                          type="text"
+                          className="fullwidth-input"
+                          fullWidth
+                          name="Day4"
+                          
+                          id="Day4"
+                          inputProps={{
+                            value:Links.Day4,
+                            disabled: true,
+                            onChange:(event, value) =>
+                              this.handledInput(event, Links.ServiceID, Links.ProjectID, "Day4")
+                            
+                          }}
+                        
+                      />
+                    )
+                    :("")
+                  )
+                  :
+                  (
+                      <CustomInput
+                        type="text"
+                        className="fullwidth-input"
+                        fullWidth
+                        name="Day4"
+                        
+                        id="Day4"
+                        inputProps={{
+                          value:Links.Day4,
+                          onChange:(event, value) =>
+                            this.handledInput(event, Links.ServiceID, Links.ProjectID, "Day4")
+                          
+                        }}
+                    
+                      />
+                  )
+                ):
+                  (<p>&nbsp;&nbsp;&nbsp;{Links.Day4}</p>)}
+            </div>
+        </td>
+        <td>
+            <div className="weblink-select">
+            {
+                  Links.ProjectName !="Total" && (CommonConfig.getUserAccess("Project Allocation").WriteAccess === 1||CommonConfig.getUserAccess("Project Allocation").AllAccess === 1)?(                  
+                    Links.ProjectStatus  =="Closed"?
+                         (WeekDateFirst =moment(WeekDateFirst).add(1,"d"),
+                         y=moment(WeekDateFirst).format("MM/DD/YY"),
+                          wa =  moment(Links.EndDate).unix(),
+                          aa = moment(y).unix(),
+                           wa>aa?
+                           (<CustomInput
+                                 type="text"
+                                 className="fullwidth-input"
+                                 fullWidth
+                                 name="Day5"
+                                
+                                 id="Day5"
+                                 inputProps={{
+                                   value:Links.Day5,
+                                   disabled: true,
+                                   onChange:(event, value) =>
+                                     this.handledInput(event, Links.ServiceID, Links.ProjectID, "Day5")
+                                   
+                                 }}
+                               
+                             />
+                           )
+                           :("")
+                         )
+                         :
+                         (
+                             <CustomInput
+                               type="text"
+                               className="fullwidth-input"
+                               fullWidth
+                               name="Day5"
+                               
+                               id="Day5"
+                               inputProps={{
+                                 value:Links.Day5,
+                                 
+                                 onChange:(event, value) =>
+                                   this.handledInput(event, Links.ServiceID, Links.ProjectID, "Day5")
+                                 
+                               }}
+                           
+                             />
+                         )
+                       ):
+                         (<p>&nbsp;&nbsp;&nbsp;{Links.Day5}</p>)
+            }
+            </div>
+        </td>
+        <td>
+            <div className="weblink-select">
+            {
+            
+            Links.ProjectName !="Total" && (CommonConfig.getUserAccess("Project Allocation").WriteAccess === 1||CommonConfig.getUserAccess("Project Allocation").AllAccess === 1)?(                  
+              Links.ProjectStatus  =="Closed"?
+                   (WeekDateFirst =moment(WeekDateFirst).add(1,"d"),
+                   y=moment(WeekDateFirst).format("MM/DD/YY"),
+                    wa =  moment(Links.EndDate).unix(),
+                    aa = moment(y).unix(),
+                     wa>aa?
+                     (<CustomInput
+                           type="text"
+                           className="fullwidth-input"
+                           fullWidth
+                           name="Day6"
+                          
+                           id="Day6"
+                           inputProps={{
+                             value:Links.Day6,
+                             disabled: true,
+                             onChange:(event, value) =>
+                               this.handledInput(event, Links.ServiceID, Links.ProjectID, "Day6")
+                             
+                           }}
+                         
+                       />
+                     )
+                     :("")
+                   )
+                   :
+                   (
+                       <CustomInput
+                         type="text"
+                         className="fullwidth-input"
+                         fullWidth
+                         name="Day6"
+                         id="Day6"
+                     
+                         inputProps={{
+                           value:Links.Day6,
+                           onChange:(event, value) =>
+                             this.handledInput(event, Links.ServiceID, Links.ProjectID, "Day6")
+                           
+                         }}
+                     
+                       />
+                   )
+                 ):
+                   (<p>&nbsp;&nbsp;&nbsp;{Links.Day6}</p>)}
+            </div>
+        </td>    
+        <td>
+            <div className="weblink-select">
+            {
+                Links.ProjectName !="Total" && (CommonConfig.getUserAccess("Project Allocation").WriteAccess === 1||CommonConfig.getUserAccess("Project Allocation").AllAccess === 1)?(                  
+                  Links.ProjectStatus  =="Closed"?
+                       (WeekDateFirst =moment(WeekDateFirst).add(1,"d"),
+                       y=moment(WeekDateFirst).format("MM/DD/YY"),
+                        wa =  moment(Links.EndDate).unix(),
+                        aa = moment(y).unix(),
+                         wa>aa?
+                         (<CustomInput
+                               type="text"
+                               className="fullwidth-input"
+                               fullWidth
+                               name="Day7"
+                            
+                               id="Day7"
+                               inputProps={{
+                                 value:Links.Day7,
+                                 disabled: true,
+                                 onChange:(event, value) =>
+                                   this.handledInput(event, Links.ServiceID, Links.ProjectID, "Day7")
+                                 
+                               }}
+                             
+                           />
+                         )
+                         :("")
+                       )
+                       :
+                       (
+                           <CustomInput
+                             type="text"
+                             className="fullwidth-input"
+                             fullWidth
+                             name="Day7"
+                          
+                             id="Day7"
+                             inputProps={{
+                               value:Links.Day7,
+                               onChange:(event, value) =>
+                                 this.handledInput(event, Links.ServiceID, Links.ProjectID, "Day7")
+                               
+                             }}
+                         
+                           />
+                       )
+                     ):
+                       (<p>&nbsp;&nbsp;&nbsp;{Links.Day7}</p>)}
+            </div>
+        </td>
+      </tr>
+    );
   }
-  }
+);
 
-   console.log(column);
-    return(column);
   
 }
 handleDateChange = (date, type) => {
@@ -688,6 +987,12 @@ handleDateChange = (date, type) => {
     const resourceList = this.state.FinalResourceList.map((type) => {
       return { value: type.ResourceID, label: type.ResourceName };
     });
+    const tableHeader=[];
+    for(let WeekDateFirst = this.state.WeekDate1,i=1;i<=7;i++ )
+    {
+        tableHeader[i] =  moment(WeekDateFirst).format("MM/DD/YY")+" ("+moment(WeekDateFirst).format('ddd')+")";
+        WeekDateFirst =moment(WeekDateFirst).add(1,"d");
+    }
     return (
       <GridContainer className="UserList-outer">
         {this.state.Loading === true ? (
@@ -751,8 +1056,8 @@ handleDateChange = (date, type) => {
                     closeOnSelect={true}
                     renderInput={(params) => (
                       <TextField
-                        error={this.state.EndDateErr}
-                        helperText={this.state.EndDateHelperText}
+                        error={this.state.WeekDateErr}
+                        helperText={this.state.WeekDateHelperText}
                         inputProps={{
                           min: moment().format("YYYY-MM-DD"),
                         }}
@@ -770,7 +1075,7 @@ handleDateChange = (date, type) => {
               </div>
             </CardHeader>
             <CardBody>
-              <ReactTable
+              {/* <ReactTable
                 data={TimeAllocationList}
                 defaultPageSize={10}
                 minRows={0}
@@ -779,7 +1084,24 @@ handleDateChange = (date, type) => {
              //   pageText={"Total rows : " + this.state.finalLength}
                 showPaginationBottom={true}
                 className="-striped -highlight"
-              />
+              /> */}
+              <div className="package-table input-full">
+                                            <table id="PackageTable">
+                                              <thead>
+                                                <tr>
+                                                  <th style={{width:"180px"}}>Project Name</th>
+                                                  
+                                                  <th style={{width:"150px"}}>Service Name</th>
+                                                  {tableHeader.map((item, index) =>(<th>{item}</th>))};
+                                                </tr>
+                                              </thead>
+                                              <tbody>
+                                                {this.getColumns()}
+
+                                            
+                                              </tbody>
+                                            </table>
+                                          </div>
             </CardBody>
             <div className="shipment-submit">
             <div className="right">

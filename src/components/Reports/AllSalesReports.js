@@ -1004,23 +1004,21 @@ class AllSalesReport extends Component {
 
 
       {
-        Header: (<>
-          <center>Name <br /></center>
-          </>),
+        Header: "Name",
         id: "Name",
         accessor:"Name",
-        width: 150,
+        width: 120,
       },
       {
         Header: "Monthly Sales(USD)",
         id: "MonthlySales",
         accessor: "MonthlySale",
-        width: 150,
+        width: 135,
       },
       {
         Header: "(25-50%)-1%",
         accessor: "Bracket25to50",
-        width: 100,
+        width: 80,
       },
       {
         Header:"(50-75%)-1.5%",
@@ -1035,22 +1033,22 @@ class AllSalesReport extends Component {
       {
         Header: "(Above 100%)-3%",
         accessor: "Above100",
-        width: 100,
+        width: 120,
       },
       {
         Header: "Bonus",
         accessor: "Bonus",
-        width: 80,
+        width: 60,
       },
       {
         Header: "Commision(USD)",
         accessor: "TotalCommisionDollar",
-        width: 110,
+        width: 120,
       },
       {
         Header:"Commision(INR)",
         accessor: "TotalCommisionINR",
-        width: 100,
+        width: 115,
       },
      
     ];
