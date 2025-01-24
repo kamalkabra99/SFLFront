@@ -5,7 +5,7 @@ const instance = axios.create({
   baseURL: apiBase,
   timeout: 60000,
   responseType: "json",
-  withCredentials: true,
+//  withCredentials: true,
 });
 
 
