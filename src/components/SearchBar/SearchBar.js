@@ -465,16 +465,16 @@ class SearchBar extends Component {
         accessor: "Person_Name",
         width: 100,
       },
-      {
-        Header: "Email",
-        accessor: "Email",
-        width: 200,
-      },
-      {
-        Header: "Phone",
-        accessor: "Phone",
-        width: 100,
-      },
+      // {
+      //   Header: "Email",
+      //   accessor: "Email",
+      //   width: 200,
+      // },
+      // {
+      //   Header: "Phone",
+      //   accessor: "Phone",
+      //   width: 100,
+      // },
       {
         Header: "Tracking/Sales Id",
         accessor: "Tracking/Sales Id",
