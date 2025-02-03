@@ -5,15 +5,15 @@ const instance = axios.create({
   baseURL: apiBase,
   timeout: 60000,
   responseType: "json",
-//  withCredentials: true,
+  withCredentials: true,
 });
 
 
 var headers = {
-  // 'Accept': 'application/json',
+ //'Accept': 'application/json',
   "Content-Type": "application/json",
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "*",
+  // "Access-Control-Allow-Origin": "*",
+  // "Access-Control-Allow-Headers": "*",
 };
 
 const request = (method, url, data) => {
