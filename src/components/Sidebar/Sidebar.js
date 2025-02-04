@@ -241,10 +241,68 @@ class Sidebar extends React.Component {
       uid: CommonConfig.loggedInUserData().PersonID,
     };
     api.post("authentication/expireSession", data).then((res) => {
+      
+
+      if(res.message ==='Unauthorised Access')
+      {
+        this.onLogOut();
+      }
       // console.log("SFL ~ file: Sidebar.js ~ line 191 ~ Sidebar ~ res", res);
     });
 
     // console.log("Keep Alive", this.state.digit);
+  };
+
+   _onLogOut = () => {
+    this.releaseLock();
+    this.inActiveChatStatus();
+    this.setLoading(true);
+    var receiver = document.getElementById("receiver").contentWindow;
+    receiver.postMessage("", "https://www.sflworldwide.com");
+    localStorage.clear();
+
+    api
+      .post("authentication/UserLogout", {})
+      .then((res) => { });
+
+    setTimeout(() => {
+      history.push("/login-page");
+      setLoading(false);
+    }, 3000);
+  };
+  get onLogOut() {
+    return this._onLogOut;
+  }
+  set onLogOut(value) {
+    this._onLogOut = value;
+  }
+
+  releaseLock = () => {
+    let data = {
+      ShippingID: "",
+      UserID: CommonConfig.loggedInUserData().PersonID,
+      ReleaseAll: 1,
+    };
+    api
+      .post("scheduleshipment/releaseShipmentLockByID", data)
+      .then((res) => {
+        if (res.success) {
+        } else {
+        }
+      })
+      .catch((err) => {
+        console.log("setLock err", err);
+      });
+  };
+
+inActiveChatStatus = () => {
+    var chatData = {
+      agentId: CommonConfig.loggedInUserData().PersonID,
+      IsAvailableForChat: 0,
+    };
+    api
+      .post("customerChat/updateAgentChatActiveStatus", chatData)
+      .then((res) => {});
   };
 
   getUserMenu() {
