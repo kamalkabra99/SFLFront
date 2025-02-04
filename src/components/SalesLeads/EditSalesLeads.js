@@ -2223,7 +2223,7 @@ if (res.success) {
       }
       api
       .post(
-        "https://hubapi.sflworldwide.com/contactus/SflPostalCode",
+        "contactus/SflPostalCode",
         citydata
       )
       .then((res) => {
@@ -2575,7 +2575,7 @@ if (res.success) {
                                             console.log("newZipcodedata",newZipcodedata);
                                             api
                                             .post(
-                                              "https://hubapi.sflworldwide.com/contactus/SflInsertPostalCode",
+                                              "contactus/SflInsertPostalCode",
                                               newZipcodedata
                                             )
                                             .then((res) => {debugger
@@ -2636,7 +2636,7 @@ if (res.success) {
     }
     api
     .post(
-      "https://hubapi.sflworldwide.com/contactus/SflPostalCode",
+      "contactus/SflPostalCode",
       citydata
     )
     .then((res) => {
@@ -2993,7 +2993,7 @@ if (res.success) {
                                                 console.log("newZipcodedata",newZipcodedata);
                                                 api
                                                 .post(
-                                                  "https://hubapi.sflworldwide.com/contactus/SflInsertPostalCode",
+                                                  "contactus/SflInsertPostalCode",
                                                   newZipcodedata
                                                 )
                                                 .then((res) => {debugger

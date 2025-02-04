@@ -252,9 +252,13 @@ class OnlinePayment extends Component {
             }
             query = query + StatusQuery;
           }
+
         } else {
           value = [{ label: "All", value: "All" }];
         }
+
+        
+
         this.getPaymentData(query);
       } else {
         this.setState({ PaymentData: [] });

@@ -998,7 +998,7 @@ class Step1 extends React.Component {
         userID: this.props.location.state
       }
       api
-        .post("https://hubapi.sflworldwide.com/userManagement/getServiceListUserMarkupFilter", data)
+        .post("userManagement/getServiceListUserMarkupFilter", data)
         .then((res) => {
           if (res.success) {
             this.setState({ serviceList: [] });
@@ -2943,7 +2943,7 @@ class Step1 extends React.Component {
         }
         api
           .post(
-            "https://hubapi.sflworldwide.com/contactus/SflPostalCode",
+            "contactus/SflPostalCode",
             citydata
           )
           .then((res) => {
@@ -3268,7 +3268,7 @@ class Step1 extends React.Component {
                         console.log("newZipcodedata", newZipcodedata);
                         api
                           .post(
-                            "https://hubapi.sflworldwide.com/contactus/SflInsertPostalCode",
+                            "contactus/SflInsertPostalCode",
                             newZipcodedata
                           )
                           .then((res) => {
@@ -3312,7 +3312,7 @@ class Step1 extends React.Component {
         }
         api
           .post(
-            "https://hubapi.sflworldwide.com/contactus/SflPostalCode",
+            "contactus/SflPostalCode",
             citydata
           )
           .then((res) => {
@@ -3637,7 +3637,7 @@ class Step1 extends React.Component {
                         console.log("newZipcodedata", newZipcodedata);
                         api
                           .post(
-                            "https://hubapi.sflworldwide.com/contactus/SflInsertPostalCode",
+                            "contactus/SflInsertPostalCode",
                             newZipcodedata
                           )
                           .then((res) => {

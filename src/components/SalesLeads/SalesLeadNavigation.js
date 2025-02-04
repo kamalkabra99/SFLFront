@@ -10,6 +10,11 @@ import Icon from "@material-ui/core/Icon";
 import { makeStyles } from "@material-ui/core/styles";
 import CustomInput from "components/CustomInput/CustomInput.js";
 import InputAdornment from "@material-ui/core/InputAdornment";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogContent from "@material-ui/core/DialogContent";
 import api from "../../utils/apiClient";
 import CardIcon from "components/Card/CardIcon.js";
 import CardHeader from "components/Card/CardHeader.js";
@@ -78,8 +83,10 @@ class SalesLeadNavigation extends Component {
       checkfromcity: false,
       checktostate: false,
       checktocity: false,
+      crossopen: false,
       searchField: [],
       refferedsiteData: [],
+      allCleardatachange: [],
       fileSetName:
         "SalesLead" + moment().format(CommonConfig.dateFormat.filename),
       IsDropDownShow: false,
@@ -91,10 +98,15 @@ class SalesLeadNavigation extends Component {
       requestStatus: [
         { label: "All", value: "All", IsSelected: false, Index: 0 },
         { label: "New", value: "New", IsSelected: true, Index: 1 },
-        { label: "Auto Quote", value: "Auto Quote", IsSelected: true, Index: 2 },
+        {
+          label: "Auto Quote",
+          value: "Auto Quote",
+          IsSelected: true,
+          Index: 2,
+        },
         { label: "Booked", value: "Booked", IsSelected: false, Index: 3 },
-        
-        { label: "Open", value: "Open", IsSelected: false, Index: 4 },
+
+        { label: "Open", value: "Open", IsSelected: true, Index: 4 },
         { label: "Closed", value: "Closed", IsSelected: false, Index: 5 },
         { label: "Cancelled", value: "Cancelled", IsSelected: false, Index: 6 },
         {
@@ -132,6 +144,11 @@ class SalesLeadNavigation extends Component {
         filterValue: "",
         Index: 1,
       },
+      NewLimit: 0,
+      currentNewLimit: 0,
+      AutoLimit: 0,
+      currentAutoLimit: 0,
+      crosscountLimit: 0,
       searchAllAccess: [],
       isEdit: true,
       SearchFinalFilter: [],
@@ -164,13 +181,14 @@ class SalesLeadNavigation extends Component {
     };
   }
 
-  async componentDidMount() {debugger
+  async componentDidMount() {
+    
     this.setState({
       AllAccess: CommonConfig.getUserAccess("Sales Lead").AllAccess,
       searchAllAccess: CommonConfig.getUserAccess("Search Sales Lead"),
       loggedUser: CommonConfig.loggedInUserData().PersonID,
     });
-
+    await this.getuserCountData(CommonConfig.loggedInUserData().PersonID);
     await this.getStringMap();
     await this.getReferredSite();
     await this.getCountry();
@@ -215,7 +233,7 @@ class SalesLeadNavigation extends Component {
         },
         function() {
           // this.search();
-          console.log("searchStr = ",searchStr);
+          console.log("searchStr = ", searchStr);
           this.getSearchResults(searchStr);
         }
       );
@@ -260,29 +278,29 @@ class SalesLeadNavigation extends Component {
       ) {
         APIcheck = false;
         this.filterMethod("", this.props.history.location.state.statusList);
-        this.setState({statusList:this.props.history.location.state.statusList});
-        this.setState({checkdata:this.props.history.location.state.statusList});
-        console.log("lok",this.state.checkdata);
-        let index="";
-        if(this.state.checkdata.length >0)
-         {
-            const newRequestStatus = this.state.requestStatus.map(data => {
-              return { ...data, IsSelected: false};
-            });
-        
-            this.setState({requestStatus: newRequestStatus});
-         
-          }
-        for(let i=0;i<this.state.checkdata.length;i++)
-        { let xy= this.state.checkdata[i].value;
-             index = this.state.requestStatus.findIndex(
-              (x) => x.value === xy 
-            );
+        this.setState({
+          statusList: this.props.history.location.state.statusList,
+        });
+        this.setState({
+          checkdata: this.props.history.location.state.statusList,
+        });
+        console.log("lok", this.state.checkdata);
+        let index = "";
+        if (this.state.checkdata.length > 0) {
+          const newRequestStatus = this.state.requestStatus.map((data) => {
+            return { ...data, IsSelected: false };
+          });
 
-            this.state.requestStatus[index].IsSelected = true;
-          }
+          this.setState({ requestStatus: newRequestStatus });
+        }
+        for (let i = 0; i < this.state.checkdata.length; i++) {
+          let xy = this.state.checkdata[i].value;
+          index = this.state.requestStatus.findIndex((x) => x.value === xy);
+
+          this.state.requestStatus[index].IsSelected = true;
+        }
       }
-      console.log("this.state.requestStatus",this.state.requestStatus);
+      console.log("this.state.requestStatus", this.state.requestStatus);
     } else {
       var finalStatus = [
         {
@@ -303,14 +321,15 @@ class SalesLeadNavigation extends Component {
 
     this.setState({ Loading: true });
     if (APIcheck) {
-      let newFilter = [{ label: "New", value: "New" },{ value: "Auto Quote", label: "Auto Quote" }];
-      this.state.checkdata= newFilter;
+      let newFilter = [
+        { label: "New", value: "New" },
+        { label: "Open", value: "Open" },
+        { value: "Auto Quote", label: "Auto Quote" },
+      ];
+      this.state.checkdata = newFilter;
       this.filterMethod("", newFilter);
     }
   }
-
-
-
 
   hideLoader() {
     this.setState({ Loading: false });
@@ -389,6 +408,85 @@ class SalesLeadNavigation extends Component {
     }
   };
 
+  getuserCountData = (managedByIdToCheck) => {
+    if (CommonConfig.getUserAccess("Sales Lead").AllAccess === 1) {
+      managedByIdToCheck = 0;
+    } else {
+      managedByIdToCheck = managedByIdToCheck;
+    }
+
+    let data = { userID: managedByIdToCheck };
+    api
+      .post("stringMap/getManagedyCount", data)
+      .then((result) => {
+        if (result.success) {
+          this.setState({
+            allCleardatachange: [],
+          });
+
+          if (CommonConfig.getUserAccess("Sales Lead").AllAccess === 1) {
+            this.state.crosscountLimit = 1
+            this.setState({
+              allCleardatachange: result.data,
+            });
+
+            console.log("allCleardatachange = ",this.state.allCleardatachange)
+
+          } else {
+            console.log(result.data[0]);
+            var newList = {
+              Status: "New",
+              MaxCount: result.data[0].NewLimit,
+              CurrentCount: result.data[0].CurrentNewRequest,
+            };
+            var autoList = {
+              Status: "Auto",
+              MaxCount: result.data[0].AutoLimit,
+              CurrentCount: result.data[0].CurrentAuto,
+            };
+            var openList = {
+              Status: "Open",
+              MaxCount: result.data[0].OpenLimit,
+              CurrentCount: result.data[0].CurrentOpen,
+            };
+
+            var newArr = [];
+            newArr.push(autoList);
+            newArr.push(newList);
+            newArr.push(openList);
+
+            console.log("newArr = ", newArr);
+            this.setState({
+              allCleardatachange: newArr,
+            });
+            this.state.NewLimit = result.data[0].NewLimit;
+            this.state.currentNewLimit = result.data[0].CurrentNewRequest;
+            this.state.AutoLimit = result.data[0].AutoLimit;
+            this.state.currentAutoLimit = result.data[0].CurrentAuto;
+            var flag = 0;
+            if (this.state.currentNewLimit > this.state.NewLimit) {
+              flag = 1;
+            }
+            if (this.state.currentAutoLimit > this.state.AutoLimit) {
+              flag = 1;
+            }
+
+            if (
+              flag == 1 &&
+              CommonConfig.getUserAccess("Sales Lead").AllAccess === 0
+            ) {
+              this.state.crosscountLimit = 1;
+            }
+          }
+        } else {
+          cogoToast.error("Something Went Wrong");
+        }
+      })
+      .catch((err) => {
+        cogoToast.error("Something Went Wrong");
+      });
+  };
+
   getStringMap = () => {
     let data = { stringMapType: "SEARCHSALESLEADFIELD" };
     api
@@ -421,7 +519,8 @@ class SalesLeadNavigation extends Component {
     });
   };
 
-  getFilterlist = () => {debugger
+  getFilterlist = () => {
+    debugger;
     let data = { stringMapType: "SEARCHSALESLEADFILTER" };
     api
       .post("stringMap/getstringMap", data)
@@ -460,7 +559,7 @@ class SalesLeadNavigation extends Component {
   };
 
   getProposalData(params) {
-    console.log("in logs = ",params);
+    console.log("in logs = ", params);
     if (params !== "") {
       if (params === "All") {
         params = "";
@@ -475,7 +574,7 @@ class SalesLeadNavigation extends Component {
         .then((result) => {
           if (result.success) {
             this.setState({ Loading: false });
-            console.log("this.state.AllAccess = " ,this.state.AllAccess )
+            console.log("this.state.AllAccess = ", this.state.AllAccess);
             if (this.state.AllAccess === 1) {
               this.setState({ ProposalData: result.Data });
             } else {
@@ -497,8 +596,9 @@ class SalesLeadNavigation extends Component {
     }
   }
 
-  handleEdit = (record) => {debugger
-    console.log("this.state.statusList",this.state.statusList)
+  handleEdit = (record) => {
+    debugger;
+    console.log("this.state.statusList", this.state.statusList);
     this.props.history.push({
       pathname: "/admin/EditSalesLeads",
       state: {
@@ -1327,7 +1427,7 @@ class SalesLeadNavigation extends Component {
           this.setState({ AllAccess: 1 });
         }
         // localStorage.setItem("SearchParams",JSON.stringify(FinalStr));
-        console.log("searchStr2 = ",FinalStr);
+        console.log("searchStr2 = ", FinalStr);
         this.getSearchResults(FinalStr);
       } else {
         cogoToast.error(
@@ -1365,15 +1465,17 @@ class SalesLeadNavigation extends Component {
     });
     localStorage.removeItem("SearchCount");
     if (CommonConfig.getUserAccess("Sales Lead").AllAccess === 0) {
-      if(this.state.AllAccess == 1){
+      if (this.state.AllAccess == 1) {
         this.setState({ AllAccess: 0 });
-      }else{
+      } else {
         this.setState({ AllAccess: 0 });
       }
 
-      let newFilter = [{ label: "New", value: "New" },{ value: "Auto Quote", label: "Auto Quote" }];
+      let newFilter = [
+        { label: "New", value: "New" },
+        { value: "Auto Quote", label: "Auto Quote" },
+      ];
       this.filterMethod("", newFilter);
-      
     }
   };
 
@@ -1968,7 +2070,7 @@ class SalesLeadNavigation extends Component {
         });
       return (
         <tr>
-           <td>
+          <td>
             <Autocomplete
               options={searchfield}
               fullWidth={true}
@@ -2136,13 +2238,16 @@ class SalesLeadNavigation extends Component {
       .post("salesLead/getSalesLead", data)
       .then((result) => {
         if (result.success) {
-          console.log("this.state.AllAccess = " , this.state.AllAccess)
+          console.log("this.state.AllAccess = ", this.state.AllAccess);
           this.setState({ Loading: false });
           if (this.state.AllAccess === 1) {
             this.setState({ SearchSalesLeadList: result.Data });
           } else {
             let proposalData = result.Data.filter(
-              (x) => (x.ManagedBy === this.state.loggedUser || x.ManagedBy === 0 || x.ManagedBy === "0")
+              (x) =>
+                x.ManagedBy === this.state.loggedUser ||
+                x.ManagedBy === 0 ||
+                x.ManagedBy === "0"
             );
             this.setState({ SearchSalesLeadList: proposalData });
           }
@@ -2171,7 +2276,7 @@ class SalesLeadNavigation extends Component {
         }
         if (allFilter === -1) {
           for (var j = 0; j < value.length; j++) {
-            debugger
+            debugger;
             if (j === 0) {
               if (value.length === 1) {
                 StatusQuery = `  ( ProposalStatus = "` + value[j].value + `")`;
@@ -2188,7 +2293,7 @@ class SalesLeadNavigation extends Component {
         } else {
           value = [{ label: "All", value: "All" }];
         }
-        console.log("Here que = ",query);
+        console.log("Here que = ", query);
         this.getProposalData(query);
       } else {
         this.setState({ ProposalData: [] });
@@ -2223,7 +2328,16 @@ class SalesLeadNavigation extends Component {
       return false;
     }
   };
-  handleCheckboxChange = (e, record, type) => {debugger
+
+  CloseTimeOff = () => {
+    this.setState({ crossopen: false });
+  };
+  OpenRequestr = () => {
+    this.setState({ crossopen: true });
+  };
+
+  handleCheckboxChange = (e, record, type) => {
+    debugger;
     let checkedArr = this.state.requestStatus;
     if (type !== "All") {
       checkedArr
@@ -2238,7 +2352,7 @@ class SalesLeadNavigation extends Component {
         //StatusList[0].IsSelected:true
       });
       let previousList = checkedArr.filter((x) => x.IsSelected === true);
-      this.setState({ checkdata: previousList,statusList:previousList });
+      this.setState({ checkdata: previousList, statusList: previousList });
     } else {
       checkedArr.map((OBJ) => {
         OBJ.IsSelected = e.target.checked;
@@ -2255,13 +2369,15 @@ class SalesLeadNavigation extends Component {
       } else {
         this.state.checkdata = `All`;
       }
-    
+
       this.setState({
-        requestStatus: checkedArr,statusList:previousList 
+        requestStatus: checkedArr,
+        statusList: previousList,
       });
     }
   };
-  searchfilter = () => {debugger
+  searchfilter = () => {
+    debugger;
     this.setState({ IsDropDownShow: false });
     try {
       let Query = "";
@@ -2560,7 +2676,8 @@ class SalesLeadNavigation extends Component {
                 <i className="fas fa-edit"></i>
               </Button>
             </div>
-          ) : record.original.ManagedBy === this.state.loggedUser  || record.original.ManagedBy == 0  ? (
+          ) : record.original.ManagedBy === this.state.loggedUser ||
+            record.original.ManagedBy == 0 ? (
             <div className="table-common-btn">
               <Button
                 justIcon
@@ -2581,9 +2698,74 @@ class SalesLeadNavigation extends Component {
         sortable: false,
       },
     ];
+    const KeywordListDataTest = [
+      {
+        Header: "UserID",
+        accessor: "LoginID",
+        width: 150,
+      },
+
+      {
+        Header: "Auto Max",
+        accessor: "AutoLimit",
+        width: 150,
+      },
+
+      {
+        Header: "Auto Limit",
+        accessor: "AutoQuote",
+        width: 120,
+      },
+
+      {
+        Header: "New Max",
+        accessor: "NewLimit",
+        width: 150,
+      },
+
+      {
+        Header: "New Limit",
+        accessor: "NewLead",
+        width: 120,
+      },
+
+      {
+        Header: "Open Max",
+        accessor: "OpenLimit",
+        width: 150,
+      },
+
+      {
+        Header: "Open Limit",
+        accessor: "OpenQuote",
+        width: 120,
+      },
+
+
+    ];
+    const KeywordListData = [
+      {
+        Header: "Status",
+        accessor: "Status",
+        width: 150,
+      },
+
+      {
+        Header: "Max Count",
+        accessor: "MaxCount",
+        width: 150,
+      },
+
+      {
+        Header: "Current Count",
+        accessor: "CurrentCount",
+        width: 120,
+      },
+    ];
 
     const {
       ProposalData,
+      allCleardatachange,
       searchAllAccess,
       searchFinalLength,
       SearchSalesLeadList,
@@ -2603,6 +2785,14 @@ class SalesLeadNavigation extends Component {
                 <SalesLeadIcon />
               </CardIcon>
               <h4 className="margin-right-auto text-color-black">Sales Lead</h4>
+
+              {this.state.crosscountLimit == 1 ? (
+                <div className="buttonW">
+                  <Button color="danger" onClick={() => this.OpenRequestr()}>
+                    New Lead Stopped
+                  </Button>
+                </div>
+              ) : null}
               {this.state.Steps.findIndex((x) => x.classname === "active") !==
               -1 ? (
                 this.state.Steps[
@@ -2781,6 +2971,46 @@ class SalesLeadNavigation extends Component {
                     </GridItem>
                   ) : null}
                 </div>
+                <Dialog
+                  open={this.state.crossopen}
+                  aria-labelledby="alert-dialog-title"
+                  aria-describedby="alert-dialog-description"
+                  fullWidth={true}
+                  className="Leave-Modal setMaxWidth"
+                >
+                  <DialogTitle id="alert-dialog-title">
+                    {/* Commercial Invoice Information */}
+                    Lead Management Report
+                  </DialogTitle>
+                  <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                      <div className="shipment-pane" id="keywordnotfound">
+                        <ReactTable
+                          data={allCleardatachange}
+                          minRows={0}
+                          filterable
+                          textAlign={"left"}
+                          defaultFilterMethod={
+                            CommonConfig.filterCaseInsensitive
+                          }
+                          resizable={false}
+                          columns={CommonConfig.getUserAccess("Sales Lead").AllAccess === 0 ? KeywordListData : KeywordListDataTest}
+                          defaultPageSize={10}
+                          showPaginationBottom={true}
+                          className="-striped -highlight chatMgtList1 Allclear-table"
+                        />
+                      </div>
+                    </DialogContentText>
+                  </DialogContent>
+                  <DialogActions>
+                    <Button
+                      onClick={() => this.CloseTimeOff()}
+                      color="secondary"
+                    >
+                      Cancel
+                    </Button>
+                  </DialogActions>
+                </Dialog>
               </div>
             </CardBody>
           </Card>

@@ -26,9 +26,10 @@ import {
 import CustomInput from "components/CustomInput/CustomInput";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import cogoToast from "cogo-toast";
+import { apiBase } from "../../utils/config";
 
 // const backendurl = "https://hubuatapi.sflworldwide.com/"; //cloud production
-const backendurl = "https://hubapi.sflworldwide.com/"; //Hostgater production
+const backendurl = apiBase; //Hostgater production
 class ReferredBy extends Component {
   constructor(props) {
     super(props);
@@ -98,7 +99,7 @@ class ReferredBy extends Component {
 
     api
       .post(
-        "https://hubapi.sflworldwide.com/contactus/AddSaleLeadReff",
+        "contactus/AddSaleLeadReff",
         reviewSiteData
       )
       .then((res) => {
@@ -162,7 +163,7 @@ class ReferredBy extends Component {
     };
 
     api
-      .post("https://hubapi.sflworldwide.com/contactus/AddSaleLeadReff", data)
+      .post("contactus/AddSaleLeadReff", data)
       .then((res) => {
         this.getReferredSite();
       });

@@ -14,6 +14,7 @@ import CardHeader from "components/Card/CardHeader.js";
 import SimpleBackdrop from "utils/general";
 import CKEditor from "ckeditor4-react";
 import ReviewsIcon from "@material-ui/icons/People";
+import { apiBase } from "../../utils/config";
 
 import {
   Dialog,
@@ -28,7 +29,7 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import cogoToast from "cogo-toast";
 
 // const backendurl = "https://hubuatapi.sflworldwide.com/"; //cloud production
-const backendurl = "https://hubapi.sflworldwide.com/"; //Hostgater production
+const backendurl = apiBase; //Hostgater production
 class invoiceservices extends Component {
   constructor(props) {
     super(props);
@@ -100,7 +101,7 @@ class invoiceservices extends Component {
 
     api
       .post(
-        "https://hubapi.sflworldwide.com/contactus/spUpdateInvoiceService",
+        "contactus/spUpdateInvoiceService",
         reviewSiteData
       )
       .then((res) => {
@@ -158,7 +159,7 @@ class invoiceservices extends Component {
     };
 
     api
-      .post("https://hubapi.sflworldwide.com/contactus/AddSaleLeadReff", data)
+      .post("contactus/AddSaleLeadReff", data)
       .then((res) => {
         this.getReferredSite();
       });

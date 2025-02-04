@@ -70,6 +70,32 @@
 
   <script type="text/javascript">
 
+    // Disable right-click (context menu)
+  document.addEventListener('contextmenu', function (e) {
+    e.preventDefault();
+  });
+
+  // Disable F12 key (Developer Tools key)
+  document.addEventListener('keydown', function (e) {
+
+    // console.log("e.keyCode = ",e.keyCode)
+    if (e.keyCode == 123) { // F12
+      e.preventDefault();
+    }
+    // Disable Ctrl+Shift+I (open DevTools in some browsers)
+    if (e.ctrlKey && e.shiftKey && e.keyCode == 73) {
+      e.preventDefault();
+    }
+
+    if (e.ctrlKey && e.shiftKey && e.keyCode == 74) {
+      e.preventDefault();
+    }
+    // Disable Ctrl+U (view source)
+    if (e.ctrlKey && e.keyCode == 85) {
+      e.preventDefault();
+    }
+  });
+
     let cancelRequestArr = [];
     let userType;
     var closeActiveModel = 0;

@@ -26,6 +26,9 @@ import Card from "components/Card/Card.js";
 import momentTimezone from "moment-timezone";
 import CardHeader from "components/Card/CardHeader.js";
 import SimpleBackdrop from "../../utils/general";
+// import { apiBase } from "../utils/config";
+import { apiBase } from "../../utils/config";
+
 import { format } from "date-fns";
 import _ from "lodash";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
@@ -153,7 +156,9 @@ class ShipmentCustom extends React.Component {
       isallclearopen: false,
       EncShippingID: "",
       EncUrl:"",
-      //-----------------------------  Tab 1 and Common Tab Data -------------------------------------------//
+      LogoURL: apiBase+ "document/logo.png",
+      FileMailLogo:apiBase+ "mailImage.png",
+      //       //-----------------------------  Tab 1 and Common Tab Data -------------------------------------------//
       shipmentTypeList: [],
       ManagedBy: "",
       managedByList: [],
@@ -843,7 +848,7 @@ class ShipmentCustom extends React.Component {
     };
     api.post("fedexETDApi/getEtdDetails", etdGetData).then((res) => {
       if (res.data.length > 0) {
-        var baseUrl = "https://hubapi.sflworldwide.com/";
+        var baseUrl = apiBase;
         var Url = res.data[0].Path;
         var i = Url.indexOf(baseUrl);
         Url = Url.substring(0, i) + Url.substring(i + baseUrl.length);
@@ -3980,7 +3985,7 @@ class ShipmentCustom extends React.Component {
       CountryID: countryValue,
     };
     api
-      .post("https://hubapi.sflworldwide.com/contactus/SflPostalCode", citydata)
+      .post("contactus/SflPostalCode", citydata)
       .then((res) => {
         if (res.success) {
           if (res.success === true) {
@@ -4402,7 +4407,7 @@ class ShipmentCustom extends React.Component {
                         console.log("newZipcodedata", newZipcodedata);
                         api
                           .post(
-                            "https://hubapi.sflworldwide.com/contactus/SflInsertPostalCode",
+                            "contactus/SflInsertPostalCode",
                             newZipcodedata
                           )
                           .then((res) => {
@@ -4475,7 +4480,7 @@ class ShipmentCustom extends React.Component {
       CountryID: countryValue,
     };
     api
-      .post("https://hubapi.sflworldwide.com/contactus/SflPostalCode", citydata)
+      .post("contactus/SflPostalCode", citydata)
       .then((res) => {
         if (res.success) {
           if (res.success === true) {
@@ -4908,7 +4913,7 @@ class ShipmentCustom extends React.Component {
                         console.log("newZipcodedata", newZipcodedata);
                         api
                           .post(
-                            "https://hubapi.sflworldwide.com/contactus/SflInsertPostalCode",
+                            "contactus/SflInsertPostalCode",
                             newZipcodedata
                           )
                           .then((res) => {
@@ -17337,7 +17342,7 @@ class ShipmentCustom extends React.Component {
                                       <table style={{width: "100%"}}>
                                           <tr>
                                           <td style={{width: "20%", border: "1px solid #000", padding: "10px"}}>
-                                              <img style={{width: "170px"}} src="https://hubapi.sflworldwide.com/document/logo.png" />
+                                              <img style={{width: "170px"}} src={this.state.LogoURL} />
                                           </td>
                                           <td style={{textAlign:"center",width: "80%", border: "1px solid #000", fontSize: "18px", fontWeight: "600", padding: "10px"}}>
                                               Your commercial Invoice form is ready to fill
@@ -17398,7 +17403,7 @@ class ShipmentCustom extends React.Component {
                               </tr>
                               <tr>
                                   <td style={{width: "20%"}}>
-                                      <img style={{width: "140px"}} src="https://hubapi.sflworldwide.com/document/logo.png" />
+                                      <img style={{width: "140px"}} src={this.state.LogoURL} />
                                   </td>
                               </tr>
                               <tr>
@@ -17413,7 +17418,7 @@ class ShipmentCustom extends React.Component {
                               </tr>
                               <tr>
                                   <td>
-                                      <img style = {{width: "400px"}} src="https://hubapi.sflworldwide.com/mailImage.png" />
+                                      <img style = {{width: "400px"}} src={this.state.FileMailLogo} />
                                   </td>
                               </tr>
                               <tr>

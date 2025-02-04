@@ -359,14 +359,14 @@ class ReviewReport extends Component {
     const viewAllcolumns = [
       {
         Header: "Date",
-        // accessor: "DateTime",
+        accessor: "DateTime",
         id: "DateTime",
         // sortMethod: (a, b) => {
         //     return CommonConfig.dateSortMethod(a, b);
         //   },
-        accessor: (data) => {
-          return moment(data.DateTime).format("MM/DD/YYYY");
-        },
+        // accessor: (data) => {
+        //   return moment(data.DateTime).format("MM/DD/YYYY");
+        // },
 
         maxWidth: 80,
       },

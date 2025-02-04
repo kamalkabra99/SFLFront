@@ -527,7 +527,7 @@ class AddEditVendors extends Component {
       }
       api
       .post(
-        "https://hubapi.sflworldwide.com/contactus/SflPostalCode",
+        "contactus/SflPostalCode",
         citydata
       )
       .then((res) => {debugger
@@ -886,7 +886,7 @@ class AddEditVendors extends Component {
               console.log("newZipcodedata",newZipcodedata);
               api
               .post(
-                "https://hubapi.sflworldwide.com/contactus/SflInsertPostalCode",
+                "contactus/SflInsertPostalCode",
                 newZipcodedata
               )
               .then((res) => {

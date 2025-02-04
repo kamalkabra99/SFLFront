@@ -127,8 +127,6 @@ class UserLoginReport extends Component {
     this.setState({
       logintypevalue: getSiteData,
     });
-
-    // https://hubapi.sflworldwide.com/contactus/getUserReport
   }
   LoginTypeOption = () => {
     return this.state.logintypevalue.map((content) => {

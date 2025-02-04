@@ -79,6 +79,11 @@ export default function HeaderLinks(props) {
     var receiver = document.getElementById("receiver").contentWindow;
     receiver.postMessage("", "https://www.sflworldwide.com");
     localStorage.clear();
+
+    api
+      .post("authentication/UserLogout", {})
+      .then((res) => {});
+
     setTimeout(() => {
       history.push("/login-page");
       setLoading(false);

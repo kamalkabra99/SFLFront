@@ -2414,7 +2414,7 @@ getSocialMediaType = () => {
         }
         api
           .post(
-            "https://hubapi.sflworldwide.com/contactus/SflPostalCode",
+            "contactus/SflPostalCode",
             citydata
           )
           .then((res) => {
@@ -2739,7 +2739,7 @@ getSocialMediaType = () => {
                           console.log("newZipcodedata", newZipcodedata);
                           api
                             .post(
-                              "https://hubapi.sflworldwide.com/contactus/SflInsertPostalCode",
+                              "contactus/SflInsertPostalCode",
                               newZipcodedata
                             )
                             .then((res) => {
@@ -2783,7 +2783,7 @@ getSocialMediaType = () => {
         }
         api
           .post(
-            "https://hubapi.sflworldwide.com/contactus/SflPostalCode",
+            "contactus/SflPostalCode",
             citydata
           )
           .then((res) => {
@@ -3108,7 +3108,7 @@ getSocialMediaType = () => {
                           console.log("newZipcodedata", newZipcodedata);
                           api
                             .post(
-                              "https://hubapi.sflworldwide.com/contactus/SflInsertPostalCode",
+                              "contactus/SflInsertPostalCode",
                               newZipcodedata
                             )
                             .then((res) => {
@@ -3158,7 +3158,7 @@ getSocialMediaType = () => {
         }
         api
           .post(
-            "https://hubapi.sflworldwide.com/contactus/SflPostalCode",
+            "contactus/SflPostalCode",
             citydata
           )
           .then((res) => {
@@ -3483,7 +3483,7 @@ getSocialMediaType = () => {
                           console.log("newZipcodedata", newZipcodedata);
                           api
                             .post(
-                              "https://hubapi.sflworldwide.com/contactus/SflInsertPostalCode",
+                              "contactus/SflInsertPostalCode",
                               newZipcodedata
                             )
                             .then((res) => {

@@ -6995,3 +6995,9 @@ button.file-doc {
 
   margin-top: 0;
 }
+
+
+.setMaxWidth .MuiPaper-root.MuiDialog-paper.MuiDialog-paperFullWidth {
+  overflow: unset;
+  max-width: 100%;
+}

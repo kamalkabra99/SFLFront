@@ -751,7 +751,7 @@ class Scheduleshipment extends React.Component {
         }
         api
         .post(
-          "https://hubapi.sflworldwide.com/contactus/SflPostalCode",
+          "contactus/SflPostalCode",
           citydata
         )
         .then((res) => {
@@ -1135,7 +1135,7 @@ class Scheduleshipment extends React.Component {
                 console.log("newZipcodedata",newZipcodedata);
                 api
                 .post(
-                  "https://hubapi.sflworldwide.com/contactus/SflInsertPostalCode",
+                  "contactus/SflInsertPostalCode",
                   newZipcodedata
                 )
                 .then((res) => {

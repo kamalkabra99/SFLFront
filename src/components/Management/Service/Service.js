@@ -221,7 +221,7 @@ class Service extends Component {
         CountryIds :CountryParam,
       }
       api
-        .post("https://hubapi.sflworldwide.com/userManagement/getServiceListFilter",data)
+        .post("userManagement/getServiceListFilter",data)
         .then((res) => {
           if (res.success) {
             var i = 0;
