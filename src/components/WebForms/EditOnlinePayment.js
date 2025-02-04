@@ -250,14 +250,14 @@ class EditOnlinePayment extends Component {
               InvoiceAmount: "$ " + invoice,
               CardType: result.data.data[0].CardType,
               NameOnCard: result.data.data[0].CardName,
-              CardNumber: result.data.data[0].CardNumber,
+              CardNumber: result.data.data[0].CardNumber !="" ? atob(result.data.data[0].CardNumber) :"",
               CardExpDate: result.data.data[0].CardExpiry,
               BillingZipCode: result.data.data[0].CardZipCode,
-              CVV: result.data.data[0].CardCVV,
+              CVV: result.data.data[0].CardCVV !="" ? atob(result.data.data[0].CardCVV) :"",
               NameonAccount: result.data.data[0].NameonAccount,
               BankName: result.data.data[0].BankName,
-              RoutingNumber: result.data.data[0].RoutingNumber,
-              AccountNumber: result.data.data[0].AccountNumber,
+              RoutingNumber: result.data.data[0].RoutingNumber  !="" ? atob(result.data.data[0].RoutingNumber) :"",
+              AccountNumber: result.data.data[0].AccountNumber  !="" ? atob(result.data.data[0].AccountNumber) :"",
               PaidList: trackingList,
             });
             this.hideLoader();

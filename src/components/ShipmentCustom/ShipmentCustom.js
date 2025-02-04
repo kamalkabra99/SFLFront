@@ -6756,9 +6756,26 @@ class ShipmentCustom extends React.Component {
               this.setState({
                 isPaymentMethodBank: true,
               });
+
+              for (let cardindex = 0; cardindex < bankObj.length; cardindex++) {
+                // const element = array[cardindex];
+                bankObj[cardindex].RoutingNumber = bankObj[cardindex].RoutingNumber !="" ? atob(bankObj[cardindex].RoutingNumber) :""
+                bankObj[cardindex].AccountNumber = bankObj[cardindex].AccountNumber !="" ?atob(bankObj[cardindex].AccountNumber) :""
+                
+                
+              }
+
             }
+            console.log("creditCardObj" ,creditCardObj)
             if (creditCardObj.length > 0) {
               this.setState({ isPaymentMethod: true });
+              for (let cardindex = 0; cardindex < creditCardObj.length; cardindex++) {
+                // const element = array[cardindex];
+                creditCardObj[cardindex].CardNumber = creditCardObj[cardindex].CardNumber !="" ? atob(creditCardObj[cardindex].CardNumber) :""
+                creditCardObj[cardindex].CardCVV = creditCardObj[cardindex].CardCVV !="" ?atob(creditCardObj[cardindex].CardCVV) :""
+                
+                
+              }
             }
             if (res.data.PaymentIssuedData.length > 0) {
               this.setState({
@@ -6770,6 +6787,8 @@ class ShipmentCustom extends React.Component {
                 isPaymentReceived: true,
               });
             }
+
+            
 
             this.setState({
               PaymentList: res.data.InvoiceData,
