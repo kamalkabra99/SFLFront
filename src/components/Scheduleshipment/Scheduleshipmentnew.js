@@ -2594,7 +2594,7 @@ class Scheduleshipmentnew extends React.Component {
       };
 
       const apiUrl =
-        "https://api.sflworldwide.com/scheduleshipment/addshipments";
+        "https://hubapi.sflworldwide.com/scheduleshipment/addshipments";
       const myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
 

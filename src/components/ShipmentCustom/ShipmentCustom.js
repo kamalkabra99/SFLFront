@@ -6757,10 +6757,10 @@ class ShipmentCustom extends React.Component {
                 isPaymentMethodBank: true,
               });
 
-              for (let cardindex = 0; cardindex < bankObj.length; cardindex++) {
-                // const element = array[cardindex];
-                bankObj[cardindex].RoutingNumber = bankObj[cardindex].RoutingNumber !="" ? atob(bankObj[cardindex].RoutingNumber) :""
-                bankObj[cardindex].AccountNumber = bankObj[cardindex].AccountNumber !="" ?atob(bankObj[cardindex].AccountNumber) :""
+              for (let bankindex = 0; bankindex < bankObj.length; bankindex++) {
+                // const element = array[bankindex];
+                bankObj[bankindex].RoutingNumber = bankObj[bankindex].RoutingNumber !="" ? atob(bankObj[bankindex].RoutingNumber) :""
+                bankObj[bankindex].AccountNumber = bankObj[bankindex].AccountNumber !="" ?atob(bankObj[bankindex].AccountNumber) :""
                 
                 
               }
