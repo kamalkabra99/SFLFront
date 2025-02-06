@@ -2293,6 +2293,8 @@ class SalesLeadNavigation extends Component {
         } else {
           value = [{ label: "All", value: "All" }];
         }
+        if(CommonConfig.getUserAccess("Sales Lead").AllAccess === 0)
+        query = query + " and ManagedBy ="+CommonConfig.loggedInUserData().PersonID;
         console.log("Here que = ", query);
         this.getProposalData(query);
       } else {
@@ -2401,6 +2403,8 @@ class SalesLeadNavigation extends Component {
           Query = Query + `)`;
         }
       }
+      if(CommonConfig.getUserAccess("Sales Lead").AllAccess === 0)
+      Query = Query + " and ManagedBy ="+CommonConfig.loggedInUserData().PersonID;
       this.getProposalData(Query);
     } catch (err) {
       cogoToast.error("Something went wrong 3");

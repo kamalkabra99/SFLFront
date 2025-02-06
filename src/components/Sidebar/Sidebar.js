@@ -170,7 +170,7 @@ class Sidebar extends React.Component {
     let resLength = await this.getCallBackList();
     let contactUsLength = await this.getContactUsList();
     let salesLeadLength = await this.getSalesLeadList(
-      ' ProposalStatus IN ("New","Open","Auto Quote") '
+      ' ProposalStatus IN ("New","Open","Auto Quote") and ManagedBy ='+CommonConfig.loggedInUserData().PersonID
     );
     this.state.mounted = true;
     let shipmentLength = await this.getShipmentList();
