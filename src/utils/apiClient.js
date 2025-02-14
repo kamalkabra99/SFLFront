@@ -15,26 +15,39 @@ var headers = {
   // "Access-Control-Allow-Origin": "*",
   // "Access-Control-Allow-Headers": "*",
 };
-
-const request = (method, url, data) => {
+const getAuthToken = () => localStorage.getItem("token") || null;
+const request = (method, url, data) => {debugger
   return new Promise((resolve, reject) => {
     (() => {
       window.addEventListener("beforeunload", function() {
         CommonConfig.releaseLockShipment();
       });
+      const token = getAuthToken();
       if (method === "get") {
+       // data.token=localStorage.getItem("token");
+      //  console.log("data get",data);
+        //data.token=localStorage.getItem("token");
+        if(data!= undefined)
+        data.token = token;
+      else
+      data={token:token};
         return instance.request({
           url,
           method,
           params: data,
           headers: headers,
+      //    token: localStorage.getItem("token"),
         });
       } else {
+        //data.token=localStorage.getItem("token");
+       // console.log("data post",data);
+       data = { ...data, token };
         return instance.request({
           url,
           method,
           data,
           headers: headers,
+        //  token: localStorage.getItem("token"),
         });
       }
     })()

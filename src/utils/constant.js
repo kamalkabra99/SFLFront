@@ -181,7 +181,7 @@ export class CommonConfig {
       let data = JSON.parse(localStorage.getItem("loggedInUserData"))
         .userModuleAccess;
 
-      let moduleAccess = data.find((x) => x.MenuKey === moduleName);
+      let moduleAccess = data.find((x) => x.MenuKey === moduleName || x.ModuleName === moduleName);
 
       return moduleAccess;
     } else {

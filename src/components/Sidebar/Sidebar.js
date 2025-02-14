@@ -56,6 +56,7 @@ import LocalMoviesIcon from "@material-ui/icons/LocalMovies";
 import AssignmentIcon from "@material-ui/icons/Assignment";
 import { Tooltip } from "@material-ui/core";
 import { Howl } from "howler";
+import cogoToast from "cogo-toast";
 const msgsound = require("../../messageSound/ChatRequest.mp3");
 
 var ps;
@@ -114,7 +115,9 @@ class SidebarWrapper extends React.Component {
       ps.destroy();
     }
   }
-
+ 
+ 
+  
   render() {
     const { className, user, headerLinks, links } = this.props;
 
@@ -174,7 +177,7 @@ class Sidebar extends React.Component {
     );
     this.state.mounted = true;
     let shipmentLength = await this.getShipmentList();
-    let bookOfWorkLength = await this.getBookofWorkData();
+    let bookOfWorkLength = 0;//await this.getBookofWorkData();
 
     // console.log("Welcome =- ",CommonConfig.loggedInUserData().PersonID)
 
@@ -252,6 +255,10 @@ class Sidebar extends React.Component {
 
     // console.log("Keep Alive", this.state.digit);
   };
+
+  
+
+
 
    _onLogOut = () => {
     this.releaseLock();
@@ -678,50 +685,50 @@ inActiveChatStatus = () => {
     }
   }
 
-  async getBookofWorkData() {
-    let whereClause = ' AND ( bw.WorkStatus = "New" OR bw.WorkStatus = "Open") AND (bw.AssignedBy = '+CommonConfig.loggedInUserData().PersonID+' OR bw.AssignedTo = '+CommonConfig.loggedInUserData().PersonID+')'
-    if (whereClause !== "") {
-      // console.log("whereclause", whereClause);
-      let data = {};
-      if (!CommonConfig.isEmpty(whereClause)) {
-        data.StatusQuery = whereClause;
-      }
-      try {
-        // this.showLoador();
-        api
-          .post("contactUs/getBookofWorkList", data)
-          .then((result) => {
-            if (result.success) {
-              // this.hideLoador();
+  // async getBookofWorkData() {
+  //   let whereClause = ' AND ( bw.WorkStatus = "New" OR bw.WorkStatus = "Open") AND (bw.AssignedBy = '+CommonConfig.loggedInUserData().PersonID+' OR bw.AssignedTo = '+CommonConfig.loggedInUserData().PersonID+')'
+  //   if (whereClause !== "") {
+  //     // console.log("whereclause", whereClause);
+  //     let data = {};
+  //     if (!CommonConfig.isEmpty(whereClause)) {
+  //       data.StatusQuery = whereClause;
+  //     }
+  //     try {
+  //       // this.showLoador();
+  //       api
+  //         .post("contactUs/getBookofWorkList", data)
+  //         .then((result) => {
+  //           if (result.success) {
+  //             // this.hideLoador();
 
 
-              if(CommonConfig.getUserAccess("Book of Work").AllAccess == 1){
-                this.state.bookOfWorkLengthRec = result.Data.length
-              }
-              else {
-                let finalData = result.Data.filter(
-                  (x) => x.AssignedBy === CommonConfig.loggedInUserData().PersonID || x.AssignedTo === CommonConfig.loggedInUserData().PersonID
-                );
-                this.state.bookOfWorkLengthRec = finalData.length
-                // this.setState({ BookofWorkData: finalData });
-              }
-            } else {
-              // this.hideLoador();
-              cogoToast.error("Something went wrong1");
-            }
-          })
-          .catch((err) => {
-            // this.hideLoador();
-            cogoToast.error("Something went wrong2");
-          });
-      } catch (err) {
-        // this.hideLoador();
-        cogoToast.error("Something Went Wrong3");
-      }
-    } else {
-      // this.setState({ BookofWorkData: [] });
-    }
-  }
+  //             if(CommonConfig.getUserAccess("Book of Work").AllAccess == 1){
+  //               this.state.bookOfWorkLengthRec = result.Data.length
+  //             }
+  //             else {
+  //               let finalData = result.Data.filter(
+  //                 (x) => x.AssignedBy === CommonConfig.loggedInUserData().PersonID || x.AssignedTo === CommonConfig.loggedInUserData().PersonID
+  //               );
+  //               this.state.bookOfWorkLengthRec = finalData.length
+  //               // this.setState({ BookofWorkData: finalData });
+  //             }
+  //           } else {
+  //             // this.hideLoador();
+  //             cogoToast.error("Something went wrong1");
+  //           }
+  //         })
+  //         .catch((err) => {
+  //           // this.hideLoador();
+  //           cogoToast.error("Something went wrong2(gBWD)");
+  //         });
+  //     } catch (err) {
+  //       // this.hideLoador();
+  //       cogoToast.error("Something Went Wrong3");
+  //     }
+  //   } else {
+  //     // this.setState({ BookofWorkData: [] });
+  //   }
+  // }
 
   async getTimeAllocation() {
     let whereClause = ' AND ( bw.WorkStatus = "New" OR bw.WorkStatus = "Open") AND (bw.AssignedBy = '+CommonConfig.loggedInUserData().PersonID+' OR bw.AssignedTo = '+CommonConfig.loggedInUserData().PersonID+')'

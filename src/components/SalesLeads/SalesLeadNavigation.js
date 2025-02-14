@@ -383,6 +383,7 @@ class SalesLeadNavigation extends Component {
         let currentSteps = this.state.Steps;
         let index = this.state.Steps.findIndex((x) => x.stepId === "saleslead");
         currentSteps.splice(index, 1);
+        if(currentSteps[0]!== undefined)
         currentSteps[0]["classname"] = "active";
         this.setState({ Steps: currentSteps });
         document.getElementById("saleslead").style.display = "none";
@@ -584,8 +585,15 @@ class SalesLeadNavigation extends Component {
               this.setState({ ProposalData: proposalData });
             }
           } else {
-            this.setState({ Loading: false });
-            cogoToast.error("Something went wrong");
+            if(result.message != undefined && result.message ==="Access Denied")
+              {
+                this.setState({ Loading: true  });
+                cogoToast.error("Access Denied");
+              }  
+              else
+              {
+            this.setState({ Loading: false  });
+            cogoToast.error("Something went wrong");}
           }
         })
         .catch((err) => {
@@ -2385,7 +2393,7 @@ class SalesLeadNavigation extends Component {
       let Query = "";
       let inputdata = this.state.checkdata;
       if (inputdata === "All") {
-        Query = inputdata;
+        Query = "";
       } else if (inputdata === "") {
         this.setState({ ProposalData: [] });
       } else if (inputdata.length === 1) {
@@ -2404,6 +2412,9 @@ class SalesLeadNavigation extends Component {
         }
       }
       if(CommonConfig.getUserAccess("Sales Lead").AllAccess === 0)
+        if(Query == "")
+          Query = Query + " ManagedBy ="+CommonConfig.loggedInUserData().PersonID;
+        else    
       Query = Query + " and ManagedBy ="+CommonConfig.loggedInUserData().PersonID;
       this.getProposalData(Query);
     } catch (err) {

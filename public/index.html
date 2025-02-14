@@ -75,6 +75,19 @@
     e.preventDefault();
   });
 
+  document.addEventListener('popstate', function (event) {
+
+    console.log("document",window.location.href);
+
+
+
+
+
+});
+
+
+
+
   // Disable F12 key (Developer Tools key)
   document.addEventListener('keydown', function (e) {
 
@@ -105,18 +118,22 @@
     var currentheight = window.innerHeight
     var currentWidth = window.innerWidth
     
-    console.log("lastheight = ",lastheight)
-    console.log("lastWidth = ",lastWidth);
+ //   console.log("lastheight = ",lastheight)
+ //   console.log("lastWidth = ",lastWidth);
 
-    console.log("currentheight = ",currentheight)
-    console.log("currentWidth = ",currentWidth);
+  //  console.log("currentheight = ",currentheight)
+   // console.log("currentWidth = ",currentWidth);
     if (!isMobile) { // Only apply detection for desktops
     if (Math.abs(lastWidth - currentWidth) > 200 || 
     Math.abs(lastheight - currentheight) > 100) {
-      console.log("Dev open2")
+ //     console.log("Dev open2")
       window.close();
       window.history.pushState(null, "", window.location.href);
       window.location.href = 'about:blank';
+      setTimeout(() => {
+      window.location.replace(window.location.href);
+    }, 5);
+      
     }
   }
 
@@ -132,7 +149,7 @@
     //   console.log("Not open ")
     // }
 
-    }, 1000);
+    }, 100);
 
     let cancelRequestArr = [];
     let userType;
@@ -142,8 +159,8 @@
     var cusid;
     var currentCusId;
     // let hostURL = "http://localhost:4000";
-     let hostURL = "https://hubapi.sflworldwide.com"; // Production
-    // let hostURL = "https://api.sflworldwide.net"; // Staging
+    // let hostURL = "https://hubapi.sflworldwide.com"; // Production
+     let hostURL = "https://api.sflworldwide.net"; // Staging
     //let hostURL = "http://phpstack-773983-2633738.cloudwaysapps.com:4443"
     //let hostURL = "https://uatapi.sflworldwide.com:3434/"; // UAT
     //let hostURL = "https://phpstack-773983-2633738.cloudwaysapps.com/"; // cloud production

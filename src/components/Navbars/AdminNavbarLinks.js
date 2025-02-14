@@ -29,6 +29,8 @@ export default function HeaderLinks(props) {
     setSearch(keyword);
   };
 
+
+
   const handleClickProfile = (event) => {
     if (openProfile && openProfile.contains(event.target)) {
       setOpenProfile(null);
@@ -83,12 +85,20 @@ export default function HeaderLinks(props) {
     api
       .post("authentication/UserLogout", {})
       .then((res) => {});
-
-    setTimeout(() => {
       history.push("/login-page");
       setLoading(false);
-    }, 3000);
+   
   };
+
+
+
+  // var pagename  = window.location.href.split("/")[4];
+  // console.log("pagenamepagenamepagenamepagename",pagename);
+  // var moduleaccess = CommonConfig.getUserAccess(pagename);
+  // console.log("pageAccesspageAccesspageAccesspageAccess",moduleaccess);
+  // if(moduleaccess.ReadAccess === 0)
+  //  onLogOut();
+
 
   if (props.props && props.props.location) {
     if (props.props.location.isLogOut && isLogOut) {

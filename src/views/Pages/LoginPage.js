@@ -168,7 +168,10 @@ class LoginPage extends Component {
               "loggedInUserData",
               JSON.stringify(res.Data, this.state.isloggedIn)
             );
-
+            localStorage.setItem(
+              "token",
+              JSON.stringify(res.token, this.state.isloggedIn)
+            );
             var receiver = document.getElementById("receiver").contentWindow;
             receiver.postMessage(
               JSON.stringify(res.Data),
