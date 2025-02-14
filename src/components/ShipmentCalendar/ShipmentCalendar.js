@@ -174,6 +174,9 @@ function ShipmentCalender(props) {
   const [Loading, setLoading] = React.useState(false);
 
   useEffect(() => {
+    if(CommonConfig.getUserAccess("Shipment Calendar").ReadAccess === 0){
+      CommonConfig.logoutUserdata()
+    }
     setAccess(CommonConfig.getUserAccess("Shipment Calendar"));
     getShipmentType();
     getStatusList();

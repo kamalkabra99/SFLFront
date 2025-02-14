@@ -114,6 +114,9 @@ class UserLoginReport extends Component {
     }
   }
   componentDidMount() {
+    if(CommonConfig.getUserAccess("User Login Report").ReadAccess === 0){
+          CommonConfig.logoutUserdata()
+    }
     this.validate1();
     this.getManagedBy();
     var element = document.getElementById("myDIVcloseOpen");

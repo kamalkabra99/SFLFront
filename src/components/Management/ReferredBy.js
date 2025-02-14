@@ -67,6 +67,9 @@ class ReferredBy extends Component {
 
   componentDidMount() {
     // document.getElementById("customizeMSG").style.display = "none";
+    if(CommonConfig.getUserAccess("Sales Lead Reffered").ReadAccess === 0){
+      CommonConfig.logoutUserdata()
+    }
     this.getReviewSites();
     this.getReviewTemplate();
     this.getReferredSite();

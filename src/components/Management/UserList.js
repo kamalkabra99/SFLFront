@@ -90,6 +90,9 @@ class UserLists extends Component {
   }
 
   componentDidMount() {
+    if(CommonConfig.getUserAccess("User Management").ReadAccess === 0){
+      CommonConfig.logoutUserdata()
+    }
   //  this.getUserList();
   this.getManagedBy();
   this.reset();

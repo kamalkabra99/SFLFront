@@ -60,6 +60,9 @@ class OnlinePayment extends Component {
   };
 
   componentDidMount() {
+    if(CommonConfig.getUserAccess("Online Payment").ReadAccess === 0){
+              CommonConfig.logoutUserdata()
+    }
     this.setState({
       AllAccess: CommonConfig.getUserAccess("Online Payment").AllAccess,
       WriteAccess: CommonConfig.getUserAccess("Online Payment").WriteAccess,

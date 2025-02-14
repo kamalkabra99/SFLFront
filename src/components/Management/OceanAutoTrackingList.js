@@ -34,6 +34,9 @@ class OceanAutoTrackingList extends Component {
   }
 
   componentDidMount() {
+    if(CommonConfig.getUserAccess("Ocean Tracking Management").ReadAccess === 0){
+      CommonConfig.logoutUserdata()
+    }
     this.getOceanTrackingList();
     if (localStorage.getItem("loggedInUserData")) {
       var dataTest = JSON.parse(localStorage.getItem("loggedInUserData"));

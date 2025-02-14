@@ -166,6 +166,9 @@ class AddConsolidationCenter extends React.Component {
   }
 
   componentDidMount() {
+    if(CommonConfig.getUserAccess("Consolidation Center Management").ReadAccess === 0){
+      CommonConfig.logoutUserdata()
+    }
     this.showHide();
     this.getCountry();
     this.getCenterList();

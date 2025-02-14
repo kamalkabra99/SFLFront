@@ -83,7 +83,11 @@ class AddaClaim extends Component {
   }
 
   componentDidMount() {
+    if(CommonConfig.getUserAccess("File a Claim").WriteAccess === 0){
+      CommonConfig.logoutUserdata()
+    }
     this.stringMapstatus();
+
     this.setState({ Access: CommonConfig.getUserAccess("File a Claim") });
     this.stringMapAPI();
   }

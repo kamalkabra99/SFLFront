@@ -95,6 +95,9 @@ class Step2 extends React.Component {
     };
   }
   componentDidMount() {
+    if(CommonConfig.getUserAccess("Get Rates").ReadAccess === 0){
+      CommonConfig.logoutUserdata()
+    }
     this.GetCountry();
     this.setState({ PackageDetails: [this.state.ObjPackage] });
   }

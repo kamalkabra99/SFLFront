@@ -44,6 +44,9 @@ class zebraPrintOutput extends Component {
   }
 
   async componentDidMount() {
+    if(CommonConfig.getUserAccess("Label printing").ReadAccess === 0){
+      CommonConfig.logoutUserdata()
+    }
     debugger;
     var Startnumber = parseInt(this.props.match.params.start);
     var Endnumber = parseInt(this.props.match.params.end);

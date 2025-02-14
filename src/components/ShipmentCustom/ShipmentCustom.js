@@ -658,6 +658,9 @@ class ShipmentCustom extends React.Component {
   }
 
   async componentDidMount() {
+    if(CommonConfig.getUserAccess("Shipment").ReadAccess === 0){
+      CommonConfig.logoutUserdata()
+    }
     this.state.userLockinAllAccess = CommonConfig.getUserAccess(
       "Locked Shipment Report"
     ).AllAccess;
@@ -1136,9 +1139,9 @@ class ShipmentCustom extends React.Component {
         .then((result) => {
           this.setState({ AllClearStatusList: result.data });
           if (
-            this.state.useraccess.userModuleAccess[15].ModuleID === 18 &&
-            this.state.useraccess.userModuleAccess[15].WriteAccess === 1 &&
-            this.state.useraccess.userModuleAccess[15].DeleteAccess === 0
+            CommonConfig.getUserAccess("Shipment").ModuleID === 18 &&
+            CommonConfig.getUserAccess("Shipment").WriteAccess === 1 &&
+            CommonConfig.getUserAccess("Shipment").DeleteAccess === 0
           ) {
             this.state.AllClearStatusList.splice(3);
             console.log("allclear..", this.state.AllClearStatusList);
@@ -1881,9 +1884,9 @@ class ShipmentCustom extends React.Component {
         }
 
         if (
-          this.state.useraccess.userModuleAccess[15].ModuleID === 18 &&
-          this.state.useraccess.userModuleAccess[15].WriteAccess === 1 &&
-          this.state.useraccess.userModuleAccess[15].DeleteAccess === 0
+          CommonConfig.getUserAccess("Shipment").ModuleID === 18 &&
+          CommonConfig.getUserAccess("Shipment").WriteAccess === 1 &&
+          CommonConfig.getUserAccess("Shipment").DeleteAccess === 0
         ) {
           if (this.state.AllClear.value == "No") {
             this.state.AllClearStatusList.splice(1, 1);
@@ -2480,38 +2483,38 @@ class ShipmentCustom extends React.Component {
           if (
             this.state.AllClear === "Yes" &&
             value.value === "No" &&
-            this.state.useraccess.userModuleAccess[15].ModuleID === 18 &&
-            this.state.useraccess.userModuleAccess[15].WriteAccess === 1 &&
-            this.state.useraccess.userModuleAccess[15].DeleteAccess === 0
+            CommonConfig.getUserAccess("Shipment").ModuleID === 18 &&
+            CommonConfig.getUserAccess("Shipment").WriteAccess === 1 &&
+            CommonConfig.getUserAccess("Shipment").DeleteAccess === 0
           ) {
             this.setState({ IsChanged: false });
           } else if (
             this.state.AllClear === "Yes" &&
             value.value === "No" &&
-            this.state.useraccess.userModuleAccess[15].ModuleID === 18 &&
-            this.state.useraccess.userModuleAccess[15].WriteAccess === 1 &&
-            this.state.useraccess.userModuleAccess[15].DeleteAccess === 1
+            CommonConfig.getUserAccess("Shipment").ModuleID === 18 &&
+            CommonConfig.getUserAccess("Shipment").WriteAccess === 1 &&
+            CommonConfig.getUserAccess("Shipment").DeleteAccess === 1
           ) {
             this.openConfirmAllClear();
           } else {
             // let useraccess = JSON.parse(localStorage.getItem("loggedInUserData"));
             // console.log(
             //   "useraccess",
-            //   this.state.useraccess.userModuleAccess[15]
+            //   CommonConfig.getUserAccess("Shipment")
             // );
             if (
-              this.state.useraccess.userModuleAccess[15].ModuleID === 18 &&
-              this.state.useraccess.userModuleAccess[15].WriteAccess === 1 &&
-              this.state.useraccess.userModuleAccess[15].DeleteAccess === 0
+              CommonConfig.getUserAccess("Shipment").ModuleID === 18 &&
+              CommonConfig.getUserAccess("Shipment").WriteAccess === 1 &&
+              CommonConfig.getUserAccess("Shipment").DeleteAccess === 0
             ) {
               if (value.value === "Yes" || value.value === "Not Ready") {
                 this.setState({ IsChanged: false });
               } else {
                 if (
-                  this.state.useraccess.userModuleAccess[15].ModuleID === 18 &&
-                  this.state.useraccess.userModuleAccess[15].WriteAccess ===
+                  CommonConfig.getUserAccess("Shipment").ModuleID === 18 &&
+                  CommonConfig.getUserAccess("Shipment").WriteAccess ===
                     1 &&
-                  this.state.useraccess.userModuleAccess[15].DeleteAccess ===
+                  CommonConfig.getUserAccess("Shipment").DeleteAccess ===
                     0 &&
                   this.state.AllClear != "Yes"
                 ) {
@@ -3908,11 +3911,11 @@ class ShipmentCustom extends React.Component {
   };
 
   allClearMenu = () => {
-    // console.log("useraccess", this.state.useraccess.userModuleAccess[15]);
+    // console.log("useraccess", CommonConfig.getUserAccess("Shipment"));
     if (
-      this.state.useraccess.userModuleAccess[15].ModuleID === 18 &&
-      this.state.useraccess.userModuleAccess[15].WriteAccess === 1 &&
-      this.state.useraccess.userModuleAccess[15].DeleteAccess === 0
+      CommonConfig.getUserAccess("Shipment").ModuleID === 18 &&
+      CommonConfig.getUserAccess("Shipment").WriteAccess === 1 &&
+      CommonConfig.getUserAccess("Shipment").DeleteAccess === 0
     ) {
       return this.state.AllClearStatusList.map((yn) => {
         // if (yn.StringMapName === "Ready for Yes" || yn.StringMapName === "No") {
@@ -6196,25 +6199,25 @@ class ShipmentCustom extends React.Component {
         if (
           this.state.AllClear === true &&
           event.target.value === false &&
-          this.state.useraccess.userModuleAccess[15].ModuleID === 18 &&
-          this.state.useraccess.userModuleAccess[15].WriteAccess === 1 &&
-          this.state.useraccess.userModuleAccess[15].DeleteAccess === 0
+          CommonConfig.getUserAccess("Shipment").ModuleID === 18 &&
+          CommonConfig.getUserAccess("Shipment").WriteAccess === 1 &&
+          CommonConfig.getUserAccess("Shipment").DeleteAccess === 0
         ) {
           this.setState({ IsChanged: false });
         } else if (
           this.state.AllClear === true &&
           event.target.value === false &&
-          this.state.useraccess.userModuleAccess[15].ModuleID === 18 &&
-          this.state.useraccess.userModuleAccess[15].WriteAccess === 1 &&
-          this.state.useraccess.userModuleAccess[15].DeleteAccess === 1
+          CommonConfig.getUserAccess("Shipment").ModuleID === 18 &&
+          CommonConfig.getUserAccess("Shipment").WriteAccess === 1 &&
+          CommonConfig.getUserAccess("Shipment").DeleteAccess === 1
         ) {
           this.openConfirmAllClear();
         } else {
           // let useraccess = JSON.parse(localStorage.getItem("loggedInUserData"));
           if (
-            this.state.useraccess.userModuleAccess[15].ModuleID === 18 &&
-            this.state.useraccess.userModuleAccess[15].WriteAccess === 1 &&
-            this.state.useraccess.userModuleAccess[15].DeleteAccess === 0
+            CommonConfig.getUserAccess("Shipment").ModuleID === 18 &&
+            CommonConfig.getUserAccess("Shipment").WriteAccess === 1 &&
+            CommonConfig.getUserAccess("Shipment").DeleteAccess === 0
           ) {
             if (
               event.target.value === true ||
@@ -6223,9 +6226,9 @@ class ShipmentCustom extends React.Component {
               this.setState({ IsChanged: false });
             } else {
               if (
-                this.state.useraccess.userModuleAccess[15].ModuleID === 18 &&
-                this.state.useraccess.userModuleAccess[15].WriteAccess === 1 &&
-                this.state.useraccess.userModuleAccess[15].DeleteAccess === 0 &&
+                CommonConfig.getUserAccess("Shipment").ModuleID === 18 &&
+                CommonConfig.getUserAccess("Shipment").WriteAccess === 1 &&
+                CommonConfig.getUserAccess("Shipment").DeleteAccess === 0 &&
                 this.state.AllClear != true
               ) {
                 this.setState({
@@ -8107,8 +8110,8 @@ class ShipmentCustom extends React.Component {
               />
             </td>
             <td className="pck-action-column">
-              {this.state.useraccess.userModuleAccess[15].WriteAccess === 1 &&
-              this.state.useraccess.userModuleAccess[15].DeleteAccess === 1 ? (
+              {CommonConfig.getUserAccess("Shipment").WriteAccess === 1 &&
+              CommonConfig.getUserAccess("Shipment").DeleteAccess === 1 ? (
                 // {/* {!ReadOnly && !viewAllClear ? ( */}
                 <Button
                   justIcon
@@ -8122,8 +8125,8 @@ class ShipmentCustom extends React.Component {
               {this.state.paymentReceived.filter((x) => x.Status === "Active")
                 .length ===
                 idx + 1 &&
-              this.state.useraccess.userModuleAccess[15].WriteAccess === 1 &&
-              this.state.useraccess.userModuleAccess[15].DeleteAccess === 1 ? (
+              CommonConfig.getUserAccess("Shipment").WriteAccess === 1 &&
+              CommonConfig.getUserAccess("Shipment").DeleteAccess === 1 ? (
                 // !ReadOnly &&
                 // !viewAllClear ? (
                 <Button
@@ -10617,10 +10620,10 @@ class ShipmentCustom extends React.Component {
                 };
                 if (
                   objdata.AllClear === "Yes" &&
-                  this.state.useraccess.userModuleAccess[15].ModuleID === 18 &&
-                  this.state.useraccess.userModuleAccess[15].WriteAccess ===
+                  CommonConfig.getUserAccess("Shipment").ModuleID === 18 &&
+                  CommonConfig.getUserAccess("Shipment").WriteAccess ===
                     1 &&
-                  this.state.useraccess.userModuleAccess[15].DeleteAccess === 1
+                  CommonConfig.getUserAccess("Shipment").DeleteAccess === 1
                 ) {
                   this.setState({ IsChanged: false });
                 }
@@ -13344,11 +13347,11 @@ class ShipmentCustom extends React.Component {
                       <GridItem xs={12} sm={10} md={10}>
                         {(this.state.AllClear.value === "Yes" ||
                           this.state.AllClear.value === "Collections") &&
-                        (this.state.useraccess.userModuleAccess[15].ModuleID ===
+                        (CommonConfig.getUserAccess("Shipment").ModuleID ===
                           18 &&
-                          this.state.useraccess.userModuleAccess[15]
+                          CommonConfig.getUserAccess("Shipment")
                             .WriteAccess === 1 &&
-                          this.state.useraccess.userModuleAccess[15]
+                          CommonConfig.getUserAccess("Shipment")
                             .DeleteAccess === 0) ? (
                           <CustomInput
                             labelText="All Clear"
@@ -13369,11 +13372,11 @@ class ShipmentCustom extends React.Component {
                             // disabled={viewAllClear === false ? false : true}
                             // disabled={
                             //   AllClear === "Yes" &&
-                            //   this.state.useraccess.userModuleAccess[15].ModuleID ===
+                            //   CommonConfig.getUserAccess("Shipment").ModuleID ===
                             //     18 &&
-                            //   this.state.useraccess.userModuleAccess[15]
+                            //   CommonConfig.getUserAccess("Shipment")
                             //     .WriteAccess === 1 &&
-                            //   this.state.useraccess.userModuleAccess[15]
+                            //   CommonConfig.getUserAccess("Shipment")
                             //     .DeleteAccess === 0
                             //     ? false
                             //     : true
@@ -13416,22 +13419,22 @@ class ShipmentCustom extends React.Component {
                       <Select
                         // readOnly={
                         //   AllClear === "Yes" &&
-                        //   (this.state.useraccess.userModuleAccess[15]
+                        //   (CommonConfig.getUserAccess("Shipment")
                         //     .ModuleID === 18 &&
-                        //     this.state.useraccess.userModuleAccess[15]
+                        //     CommonConfig.getUserAccess("Shipment")
                         //       .WriteAccess === 1 &&
-                        //     this.state.useraccess.userModuleAccess[15]
+                        //     CommonConfig.getUserAccess("Shipment")
                         //       .DeleteAccess === 0)
                         //     ? true
                         //     : false
                         // }
                         disabled={
                           AllClear === "Yes" &&
-                          this.state.useraccess.userModuleAccess[15]
+                          CommonConfig.getUserAccess("Shipment")
                             .ModuleID === 18 &&
-                          this.state.useraccess.userModuleAccess[15]
+                          CommonConfig.getUserAccess("Shipment")
                             .WriteAccess === 1 &&
-                          this.state.useraccess.userModuleAccess[15]
+                          CommonConfig.getUserAccess("Shipment")
                             .DeleteAccess === 0
                             ? false
                             : true
@@ -16832,7 +16835,7 @@ class ShipmentCustom extends React.Component {
                       value: this.state.sendMailInfo.Frommail,
                       disabled:
                         this.state.sendMailInfo.Type === "InvoiceMessage" ||
-                        this.state.useraccess.userModuleAccess[15]
+                        CommonConfig.getUserAccess("Shipment")
                           .DeleteAccess === 0
                           ? true
                           : false,
@@ -16865,7 +16868,7 @@ class ShipmentCustom extends React.Component {
                       value: this.state.sendMailInfo.TOmail,
                       disabled:
                         this.state.sendMailInfo.Type === "InvoiceMessage" ||
-                        this.state.useraccess.userModuleAccess[15]
+                        CommonConfig.getUserAccess("Shipment")
                           .DeleteAccess === 0
                           ? true
                           : false,
@@ -16900,7 +16903,7 @@ class ShipmentCustom extends React.Component {
                       },
                       disabled:
                         this.state.sendMailInfo.Type === "InvoiceMessage" ||
-                        this.state.useraccess.userModuleAccess[15]
+                        CommonConfig.getUserAccess("Shipment")
                           .DeleteAccess === 0
                           ? true
                           : false,

@@ -70,6 +70,9 @@ class Scheduleshipment extends React.Component {
 
   
   async componentDidMount() {
+    if(CommonConfig.getUserAccess("Schedule Shipment").ReadAccess === 0){
+      CommonConfig.logoutUserdata()
+    }
     // await this.getuserDetails();
     await this.GetCountry();
     this.showLoader();

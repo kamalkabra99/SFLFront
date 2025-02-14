@@ -46,7 +46,11 @@ class AddUpdateSFLfetcherRates extends React.Component {
   }
 
   componentDidMount() {
+    if(CommonConfig.getUserAccess("Fetcher Management").ReadAccess === 0){
+      CommonConfig.logoutUserdata()
+    }
     this.getData();
+
   }
 
   getData() {

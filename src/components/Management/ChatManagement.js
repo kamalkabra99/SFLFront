@@ -75,6 +75,9 @@ class ChatManagement extends Component {
   }
 
   componentDidMount() {
+    if(CommonConfig.getUserAccess("Chat Management").ReadAccess === 0){
+      CommonConfig.logoutUserdata()
+    }
     document.getElementById("keywordnotfound").style.display = "none";
     document.getElementById("keywordmanage").style.display = "none";
     this.getAgentList();

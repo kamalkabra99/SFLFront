@@ -161,6 +161,12 @@ class AllSalesReport extends Component {
   }
 
   async componentDidMount() {
+    if(CommonConfig.getUserAccess("Sales Commission").ReadAccess === 0 &&
+          CommonConfig.getUserAccess("All Sales").ReadAccess &&
+          CommonConfig.getUserAccess("Shipment Not Cleared").ReadAccess &&
+          CommonConfig.getUserAccess("Sales Commission Slab").ReadAccess ){
+            CommonConfig.logoutUserdata()
+          }
     this.setState({
       AllSalesAccess: CommonConfig.getUserAccess("All Sales"),
       SalesClearDeleteAccess: CommonConfig.getUserAccess("Sales Commission"),

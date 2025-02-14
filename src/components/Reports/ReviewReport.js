@@ -70,6 +70,9 @@ class ReviewReport extends Component {
   }
 
   async componentDidMount() {
+    if(CommonConfig.getUserAccess("Review Report").ReadAccess === 0){
+      CommonConfig.logoutUserdata()
+    }
     document.getElementById("passedfilter").style.display = "none";
     document.getElementById("capturedbyfilter").style.display = "none";
     if (!CommonConfig.isEmpty(this.props.location.state)) {

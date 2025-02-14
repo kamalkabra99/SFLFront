@@ -70,6 +70,10 @@ class Review extends Component {
   }
 
   componentDidMount() {
+
+    if(CommonConfig.getUserAccess("Review Management").ReadAccess === 0){
+      CommonConfig.logoutUserdata()
+    }
     document.getElementById("customizeMSG").style.display = "none";
     this.getReviewSites();
     this.getReviewTemplate();

@@ -74,6 +74,9 @@ class zebraPrint extends Component {
   }
 
   componentDidMount() {
+    if(CommonConfig.getUserAccess("Label printing").ReadAccess === 0){
+      CommonConfig.logoutUserdata()
+    }
     this.setState({ Base: CommonConfig.BaseUrl });
     //this.setState({ Base: "http://localhost:3000/" });
 

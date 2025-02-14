@@ -1698,8 +1698,13 @@ if (res.success) {
   };
 
   async componentDidMount() {
+ 
    // console.log("this.props.history.location.state.statusList = ",this.props.history.location.state.statusList)
-    this.setState({
+    if(CommonConfig.getUserAccess("Sales Lead").WriteAccess === 0){
+      CommonConfig.logoutUserdata()
+    } 
+   
+   this.setState({
       fromEmailAddress: CommonConfig.loggedInUserData().Email,
       ReadAccess: CommonConfig.getUserAccess("Sales Lead").ReadAccess,
       WriteAccess: CommonConfig.getUserAccess("Sales Lead").WriteAccess,

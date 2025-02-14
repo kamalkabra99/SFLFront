@@ -174,6 +174,9 @@ class EditOnlinePayment extends Component {
   }
 
   componentDidMount() {
+    if(CommonConfig.getUserAccess("Online Payment").ReadAccess === 0){
+                  CommonConfig.logoutUserdata()
+        }
     this.setState({
       ReadAccess: CommonConfig.getUserAccess("Online Payment").ReadAccess,
       WriteAccess: CommonConfig.getUserAccess("Online Payment").WriteAccess,

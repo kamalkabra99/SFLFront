@@ -66,7 +66,11 @@ class AddDownloadForms extends Component {
     };
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    if(CommonConfig.getUserAccess("Download Forms").ReadAccess === 0){
+              CommonConfig.logoutUserdata()
+    }
+  }
 
   validate = (event) => {
     let IsFormValid = true;

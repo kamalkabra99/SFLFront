@@ -64,6 +64,9 @@ class InvoiceUpload extends Component {
   }
 
   componentDidMount() {
+    if(CommonConfig.getUserAccess("Vendor Invoice Upload").ReadAccess === 0){
+      CommonConfig.logoutUserdata()
+    }
     debugger;
     console.log("first", CommonConfig.getUserAccess("Vendor Invoice Upload"));
     this.setState({

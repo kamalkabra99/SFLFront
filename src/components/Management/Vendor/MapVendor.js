@@ -43,6 +43,9 @@ export class MapVendor extends Component {
     };
   }
   componentDidMount() {
+    if(CommonConfig.getUserAccess("Vendor Management").ReadAccess === 0){
+      CommonConfig.logoutUserdata()
+    }
     if (this.props.location.state) {
       this.getMapData(this.props.location.state);
       this.setState({

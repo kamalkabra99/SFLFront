@@ -87,6 +87,9 @@ class EmailReports extends Component {
     };
   }
   componentDidMount() {
+    if(CommonConfig.getUserAccess("Email Report").ReadAccess === 0){
+      CommonConfig.logoutUserdata()
+    }
     this.getCountry();
   }
   getCountry() {

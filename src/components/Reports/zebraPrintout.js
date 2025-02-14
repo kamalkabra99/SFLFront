@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 
 import { makeStyles } from "@material-ui/core/styles";
+import { CommonConfig } from "utils/constant.js";
 import styles from "assets/jss/material-dashboard-pro-react/views/validationFormsStyle.js";
 
 const useStyles = () => makeStyles(styles);
@@ -19,6 +20,9 @@ class zebraPrintOut extends Component {
   }
 
   async componentDidMount() {
+    if(CommonConfig.getUserAccess("Label printing").ReadAccess === 0){
+      CommonConfig.logoutUserdata()
+    }
     // var Startnumber = this.props.match.params.start;
     var Endnumber = parseInt(this.props.match.params.end);
     var customerName = this.props.match.params.name;

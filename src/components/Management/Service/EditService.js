@@ -85,6 +85,9 @@ class EditService extends Component {
   }
 
   componentDidMount() {
+    if(CommonConfig.getUserAccess("Service Management").ReadAccess === 0){
+          CommonConfig.logoutUserdata()
+        }
     this.getEditServiceData();
   }
 

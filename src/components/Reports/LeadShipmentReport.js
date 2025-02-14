@@ -38,6 +38,9 @@ class LeadShipmentReport extends Component {
     };
   }
   componentDidMount() {
+    if(CommonConfig.getUserAccess("Lead v/s Shipment Report").ReadAccess === 0){
+      CommonConfig.logoutUserdata()
+    }
     this.getCountry();
   }
   getCountry() {

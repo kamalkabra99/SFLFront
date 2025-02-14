@@ -72,6 +72,10 @@ class GetRatesWizard extends React.Component {
   wizard = React.createRef();
 
   componentDidMount() {
+    if(CommonConfig.getUserAccess("Get Rates").ReadAccess === 0){
+      CommonConfig.logoutUserdata()
+    }
+  
     this.refreshAnimation(0);
     window.addEventListener("resize", this.updateWidth);
 

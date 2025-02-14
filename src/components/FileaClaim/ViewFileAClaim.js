@@ -77,6 +77,9 @@ class ViewFileAClaim extends Component {
   }
 
   async componentDidMount() {
+    if(CommonConfig.getUserAccess("File a Claim").ReadAccess === 0){
+      CommonConfig.logoutUserdata()
+    }
     await this.stringMapAPI();
     await this.persontypeList();
     await this.setState({

@@ -103,12 +103,7 @@ class Reports extends Component {
           Icon: "fas fa-power-off",
           classname: "inactive",
         },
-        {
-          stepName: "Time Booking Report",
-          stepId: "TMSReport",
-          Icon: "fas fa-clipboard-check",
-          classname: "inactive",
-        },
+        
         {
           stepName: "Console Split Invoice",
           stepId: "ConsoleSplitInvoice",
@@ -298,16 +293,7 @@ class Reports extends Component {
         this.setState({ FedExSteps: currentSteps });
       }
     }
-    if (CommonConfig.getUserAccess("Time Booking Report")) {
-      if (CommonConfig.getUserAccess("Time Booking Report").ReadAccess === 0) {
-        let currentSteps = this.state.FedExSteps;
-        let index = this.state.FedExSteps.findIndex(
-          (x) => x.stepId === "TMSReport"
-        );
-        currentSteps.splice(index, 1);
-        this.setState({ FedExSteps: currentSteps });
-      }
-    }
+    
 
     if (CommonConfig.getUserAccess("Standard Invoice Upload")) {
       if (

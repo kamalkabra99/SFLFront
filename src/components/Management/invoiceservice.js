@@ -68,7 +68,11 @@ class invoiceservices extends Component {
     // document.getElementById("customizeMSG").style.display = "none";
     // this.getReviewSites();
     // this.getReviewTemplate();
+    if(CommonConfig.getUserAccess("Invoices services").ReadAccess === 0){
+      CommonConfig.logoutUserdata()
+    }
     this.getReferredSite();
+
   }
 
   getReviewSites = () => {

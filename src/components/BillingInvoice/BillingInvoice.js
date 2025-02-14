@@ -80,6 +80,12 @@ class billingInvoice extends Component {
   }
 
   componentDidMount() {
+    console.log("testBill = ",CommonConfig.getUserAccess("Billing Report").ReadAccess);
+    
+    if(CommonConfig.getUserAccess("Billing Report").ReadAccess === 0){
+      CommonConfig.logoutUserdata()
+    }
+
     this.setState({
       Access: CommonConfig.getUserAccess("Billing Report"),
       currentTab: "OpenPastDue",

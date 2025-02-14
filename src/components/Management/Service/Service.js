@@ -66,6 +66,9 @@ class Service extends Component {
     } catch (error) {}
   };
   componentDidMount() {
+    if(CommonConfig.getUserAccess("Service Management").ReadAccess === 0){
+      CommonConfig.logoutUserdata()
+    }
     //this.getServiceList();
     this.getServiceListFiltered(89);
     if (

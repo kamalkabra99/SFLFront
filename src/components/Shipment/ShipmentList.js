@@ -102,6 +102,9 @@ class ShipmentList extends Component {
   }
 
   async componentDidMount() {
+    if(CommonConfig.getUserAccess("Shipment").ReadAccess === 0){
+      CommonConfig.logoutUserdata()
+    }
     this.setState({
       Access: CommonConfig.getUserAccess("Shipment"),
       loggedUser: CommonConfig.loggedInUserData().PersonID,

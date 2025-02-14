@@ -236,6 +236,9 @@ class AddEditVendors extends Component {
   }
 
   async componentDidMount() {
+    if(CommonConfig.getUserAccess("Vendor Management").ReadAccess === 0){
+          CommonConfig.logoutUserdata()
+        }
     this.setState({ Access: CommonConfig.getUserAccess("Vendor Management") });
     if (CommonConfig.isEmpty(this.state.vendorId)) {
       this.setState({ Attachments: [this.state.objAttachment] });

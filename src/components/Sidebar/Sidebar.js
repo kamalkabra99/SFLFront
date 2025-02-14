@@ -25,14 +25,12 @@ import EditSalesLeadIcon from "@material-ui/icons/Edit";
 import VendorListIcon from "@material-ui/icons/FormatListBulleted";
 import GateRatesIcon from "@material-ui/icons/AttachMoney";
 import WebForms from "@material-ui/icons/Public";
-import ContactUsIcon from "@material-ui/icons/Contacts";
-import CallBackIcon from "@material-ui/icons/Call";
+
 import PaymentIcon from "@material-ui/icons/Payment";
 import FileaClaim from "@material-ui/icons/NoteAdd";
 import ScheduleshipmentIcon from "@material-ui/icons/LocalShippingTwoTone";
 import Shipment from "components/Shipment/Shipment";
-import ContactUs from "components/WebForms/ContactUs";
-import CallBack from "components/WebForms/CallBack";
+
 import OnlinePayment from "components/WebForms/OnlinePayment";
 import FileaClaimList from "components/FileaClaim/FileaClaimList";
 import AddaClaim from "components/FileaClaim/AddaClaim";
@@ -50,13 +48,12 @@ import sidebarStyle from "assets/jss/material-dashboard-pro-react/components/sid
 
 import DirectionsBoatIcon from "@material-ui/icons/DirectionsBoat";
 import BeenhereIcon from "@material-ui/icons/Beenhere";
-import ChatIcon from "@material-ui/icons/Chat";
+
 import ArchiveIcon from "@material-ui/icons/Archive";
 import LocalMoviesIcon from "@material-ui/icons/LocalMovies";
 import AssignmentIcon from "@material-ui/icons/Assignment";
 import { Tooltip } from "@material-ui/core";
 import { Howl } from "howler";
-import cogoToast from "cogo-toast";
 const msgsound = require("../../messageSound/ChatRequest.mp3");
 
 var ps;
@@ -67,8 +64,7 @@ const Components = {
   Service: Service,
   //VendorList: VendorList,
   Scheduleshipment: Scheduleshipment,
-  ContactUs: ContactUs,
-  CallBack: CallBack,
+
   OnlinePayment: OnlinePayment,
   FileaClaimList: FileaClaimList,
   SalesLeads: SalesLeads,
@@ -84,8 +80,7 @@ const Icons = {
   GateRatesIcon: GateRatesIcon,
   ScheduleshipmentIcon: ScheduleshipmentIcon,
   WebForms: WebForms,
-  ContactUsIcon: ContactUsIcon,
-  CallBackIcon: CallBackIcon,
+
   PaymentIcon: PaymentIcon,
   FileaClaim: FileaClaim,
   SalesLeadIcon: SalesLeadIcon,
@@ -96,7 +91,7 @@ const Icons = {
   AssignmentIcon: AssignmentIcon,
   ReceiptIcon: ReceiptIcon,
   TodayIcon: TodayIcon,
-  ChatIcon: ChatIcon,
+  
 };
 
 class SidebarWrapper extends React.Component {
@@ -115,9 +110,7 @@ class SidebarWrapper extends React.Component {
       ps.destroy();
     }
   }
- 
- 
-  
+
   render() {
     const { className, user, headerLinks, links } = this.props;
 
@@ -137,27 +130,23 @@ class Sidebar extends React.Component {
     this.state = {
       dynamicRoutes: [],
       miniActive: true,
-      CallBackList: [],
-      callbackLength: 0,
+
       contactUsLength: 0,
       mounted: true,
       ContactUsList: [],
       salesLeadLength: 0,
       salesLeadList: [],
       shipmentLength: 0,
-      bookOfWorkLengthRec:0,
-      timeAllocationLengthRec:0,
+     
       shipmentList: [],
-      chatCount: 0,
-      chatList: [],
+    
       digit: 0,
       id: null,
       tempRequestId: [],
       ...this.getCollapseStates(props.routes),
     };
     this.getUserMenu();
-    this.getChatCount();
-    this.getGlobalSoundforChat();
+  
   }
   mainPanel = React.createRef();
 
@@ -165,25 +154,23 @@ class Sidebar extends React.Component {
     this.state.id = window.setInterval(() => {
       this.setState({ digit: this.state.digit + 1 });
       this.keepAlive();
-      this.traceBreak();
+      
     }, 5000);
 
     await this.checkLoginStatus();
 
-    let resLength = await this.getCallBackList();
-    let contactUsLength = await this.getContactUsList();
+  
     let salesLeadLength = await this.getSalesLeadList(
       ' ProposalStatus IN ("New","Open","Auto Quote") and ManagedBy ='+CommonConfig.loggedInUserData().PersonID
     );
     this.state.mounted = true;
     let shipmentLength = await this.getShipmentList();
-    let bookOfWorkLength = 0;//await this.getBookofWorkData();
+    
 
     // console.log("Welcome =- ",CommonConfig.loggedInUserData().PersonID)
 
     this.setState({
-      callbackLength: resLength,
-      contactUsLength: contactUsLength,
+     
       salesLeadLength: salesLeadLength,
       shipmentLength: shipmentLength,
     });
@@ -214,30 +201,7 @@ class Sidebar extends React.Component {
     }
   };
 
-  traceBreak = () =>{
 
-    var pData = {
-      UserID: CommonConfig.loggedInUserData().PersonID,
-      userTimeZonedata: CommonConfig.loggedInUserData().userTimeZone,
-    };
-    api.post("contactus/CheckUserLoginBreak", pData).then((res) => {
-      // console.log("Res = ",res)
-      // console.log("Res = ", localStorage.getItem("UserBreakData"));
-
-      if(localStorage.getItem("UserBreakData") == 1 && res.Data[0][0].BreakCount == 0){
-        localStorage.setItem("UserBreakData", 0);
-      }
-      if(localStorage.getItem("UserBreakData") == 0){
-        if(res.Data[0][0].BreakCount > 0){
-          localStorage.clear();
-          setTimeout(() => {
-            window.location.reload();
-          }, 1000);
-        }
-      }
-    });
-
-  }
 
   keepAlive = () => {
     var data = {
@@ -256,13 +220,9 @@ class Sidebar extends React.Component {
     // console.log("Keep Alive", this.state.digit);
   };
 
-  
-
-
-
    _onLogOut = () => {
     this.releaseLock();
-    this.inActiveChatStatus();
+    
     this.setLoading(true);
     var receiver = document.getElementById("receiver").contentWindow;
     receiver.postMessage("", "https://www.sflworldwide.com");
@@ -273,7 +233,8 @@ class Sidebar extends React.Component {
       .then((res) => { });
 
     setTimeout(() => {
-      history.push("/login-page");
+      // history.push("/login-page");
+      window.location.href = "https://hub.sflworldwide.com/auth/login-page"
       setLoading(false);
     }, 3000);
   };
@@ -302,15 +263,7 @@ class Sidebar extends React.Component {
       });
   };
 
-inActiveChatStatus = () => {
-    var chatData = {
-      agentId: CommonConfig.loggedInUserData().PersonID,
-      IsAvailableForChat: 0,
-    };
-    api
-      .post("customerChat/updateAgentChatActiveStatus", chatData)
-      .then((res) => {});
-  };
+
 
   getUserMenu() {
     let data = {
@@ -467,39 +420,7 @@ inActiveChatStatus = () => {
     return this.state.ContactUsList.length;
   }
 
-  async getCallBackList() {
-    if (!CommonConfig.isEmpty(CommonConfig.getUserAccess("Call Back"))) {
-      try {
-        await api
-          .post("callback/getCallBackList")
-          .then((result) => {
-            if (result.data.success) {
-              if (CommonConfig.getUserAccess("Call Back").AllAccess === 1) {
-                if (this.state.CallBackList !== result.data.data) {
-                  this.setState({
-                    CallBackList: result.data.data.filter(
-                      (x) => x.RequestStatus === "New"
-                    ),
-                  });
-                }
-              } else {
-                let finalData = result.data.data.filter(
-                  (x) =>
-                    x.WorkingOnRequest ===
-                      CommonConfig.loggedInUserData().PersonID &&
-                    x.RequestStatus === "New"
-                );
-                if (this.state.CallBackList !== finalData) {
-                  this.setState({ CallBackList: finalData });
-                }
-              }
-            }
-          })
-          .catch((err) => {});
-      } catch (err) {}
-    }
-    return this.state.CallBackList.length;
-  }
+
 
   async getSalesLeadList(params) {
     let data = {
@@ -538,242 +459,10 @@ inActiveChatStatus = () => {
     sound.play();
   };
 
-  async getGlobalSoundforChat() {
-    try {
-      if (localStorage.getItem("loggedInUserData")) {
-        var sessionData = JSON.parse(localStorage.getItem("loggedInUserData"));
-
-        let userType = CommonConfig.loggedInUserData().UserType;
-        let userTypeArray = [];
-        if (userType != undefined) {
-          userTypeArray = userType.split(",");
-        }
-
-        var url = window.location.href;
-
-        if (
-          sessionData != null &&
-          sessionData.IsAvailableForChat == 1 &&
-          userType != ""
-        ) {
-          if (!url.includes("Chatbot")) {
-            await api
-              .get("customerChat/getChatCustomerRequest", {})
-              .then((res) => {
-                // console.log("sidebar...");
-                if (res.success) {
-                  let requestData = res.Data[0];
-
-                  if (requestData.length > 0) {
-                    for (var i = 0; i < requestData.length; i++) {
-                      let userTypeIndex = userTypeArray.indexOf(
-                        requestData[i].SelectedCategory
-                      );
-
-                      let localobj = JSON.parse(
-                        localStorage.getItem("cancelReqData")
-                      );
-                      let localobjidx;
-
-                      if (localobj != null && localobj != undefined) {
-                        localobjidx = localobj.findIndex(
-                          (val) => val.id == requestData[i].ID
-                        );
-                        if (
-                          localobjidx != undefined &&
-                          localobjidx != -1 &&
-                          localobj[localobjidx].id == requestData[i].ID &&
-                          localobj[localobjidx].decline == false
-                        ) {
-                          if (
-                            userTypeIndex != undefined &&
-                            userTypeIndex != null &&
-                            userTypeIndex != -1
-                          ) {
-                            this.soundPlay();
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              });
-          }
-        }
-        // if (
-        //   sessionData != null &&
-        //   sessionData.IsAvailableForChat == 1 &&
-        //   userType != ""
-        // ) {
-        //   if (!url.includes("Chatbot")) {
-        //     let data = { AgentId: CommonConfig.loggedInUserData().PersonID };
-
-        //     await api
-        //       .post("customerChat/getChatCustomerRequestToAgentId", data)
-        //       .then((res) => {
-        //         if (res.success) {
-        //           var requestData = [];
-        //           requestData = res.Data;
-        //           if (requestData.length > 0) {
-        //             for (var i = 0; i < requestData.length; i++) {
-        //               let userTypeIndex = userTypeArray.indexOf(
-        //                 requestData[i].SelectedCategory
-        //               );
-
-        //               let localobj = JSON.parse(
-        //                 localStorage.getItem("cancelReqData")
-        //               );
-        //               let localobjidx;
-
-        //               if (localobj != null && localobj != undefined) {
-        //                 localobjidx = localobj.findIndex(
-        //                   (val) => val.id == requestData[i].ID
-        //                 );
-        //                 if (
-        //                   localobjidx != undefined &&
-        //                   localobjidx != -1 &&
-        //                   localobj[localobjidx].id == requestData[i].ID &&
-        //                   localobj[localobjidx].decline == false
-        //                 ) {
-        //                   if (
-        //                     userTypeIndex != undefined &&
-        //                     userTypeIndex != null &&
-        //                     userTypeIndex != -1
-        //                   ) {
-        //                     this.soundPlay();
-        //                   }
-        //                 }
-        //               }
-        //             }
-        //           }
-        //         }
-        //       });
-        //   }
-        // }
-      }
-    } catch (err) {}
-
-    setTimeout(() => {
-      this.getGlobalSoundforChat(); // Comment By Anshul For slow performance
-    }, 4000);
-  }
-
-  async getChatCount() {
-    try {
-      if (localStorage.getItem("loggedInUserData")) {
-        var sessionData = JSON.parse(localStorage.getItem("loggedInUserData"));
-
-        let userType = CommonConfig.loggedInUserData().UserType;
-
-        if (
-          sessionData != null &&
-          sessionData.IsAvailableForChat == 1 &&
-          userType != ""
-        ) {
-          await api.post("customerChat/sidebarChatCount", {}).then((res) => {
-            this.setState({
-              chatCount: res.Data[0].sideCount,
-            });
-          });
-        }
-      }
-    } catch (err) {}
-    if (this.state.mounted) {
-      setTimeout(() => {
-        this.getChatCount(); // Comment By Anshul For slow performance
-      }, 2000);
-    }
-  }
-
-  // async getBookofWorkData() {
-  //   let whereClause = ' AND ( bw.WorkStatus = "New" OR bw.WorkStatus = "Open") AND (bw.AssignedBy = '+CommonConfig.loggedInUserData().PersonID+' OR bw.AssignedTo = '+CommonConfig.loggedInUserData().PersonID+')'
-  //   if (whereClause !== "") {
-  //     // console.log("whereclause", whereClause);
-  //     let data = {};
-  //     if (!CommonConfig.isEmpty(whereClause)) {
-  //       data.StatusQuery = whereClause;
-  //     }
-  //     try {
-  //       // this.showLoador();
-  //       api
-  //         .post("contactUs/getBookofWorkList", data)
-  //         .then((result) => {
-  //           if (result.success) {
-  //             // this.hideLoador();
 
 
-  //             if(CommonConfig.getUserAccess("Book of Work").AllAccess == 1){
-  //               this.state.bookOfWorkLengthRec = result.Data.length
-  //             }
-  //             else {
-  //               let finalData = result.Data.filter(
-  //                 (x) => x.AssignedBy === CommonConfig.loggedInUserData().PersonID || x.AssignedTo === CommonConfig.loggedInUserData().PersonID
-  //               );
-  //               this.state.bookOfWorkLengthRec = finalData.length
-  //               // this.setState({ BookofWorkData: finalData });
-  //             }
-  //           } else {
-  //             // this.hideLoador();
-  //             cogoToast.error("Something went wrong1");
-  //           }
-  //         })
-  //         .catch((err) => {
-  //           // this.hideLoador();
-  //           cogoToast.error("Something went wrong2(gBWD)");
-  //         });
-  //     } catch (err) {
-  //       // this.hideLoador();
-  //       cogoToast.error("Something Went Wrong3");
-  //     }
-  //   } else {
-  //     // this.setState({ BookofWorkData: [] });
-  //   }
-  // }
 
-  async getTimeAllocation() {
-    let whereClause = ' AND ( bw.WorkStatus = "New" OR bw.WorkStatus = "Open") AND (bw.AssignedBy = '+CommonConfig.loggedInUserData().PersonID+' OR bw.AssignedTo = '+CommonConfig.loggedInUserData().PersonID+')'
-    if (whereClause !== "") {
-      // console.log("whereclause", whereClause);
-      let data = {};
-      if (!CommonConfig.isEmpty(whereClause)) {
-        data.StatusQuery = whereClause;
-      }
-      try {
-        // this.showLoador();
-        api
-          .post("contactUs/getTimeAllocation", data)
-          .then((result) => {
-            if (result.success) {
-              // this.hideLoador();
-
-
-              if(CommonConfig.getUserAccess("Book of Work").AllAccess == 1){
-                this.state.timeAllocationLengthRec = result.Data.length
-              }
-              else {
-                let finalData = result.Data.filter(
-                  (x) => x.AssignedBy === CommonConfig.loggedInUserData().PersonID || x.AssignedTo === CommonConfig.loggedInUserData().PersonID
-                );
-                this.state.timeAllocationLengthRec = finalData.length
-                // this.setState({ BookofWorkData: finalData });
-              }
-            } else {
-              // this.hideLoador();
-              cogoToast.error("Something went wrong1");
-            }
-          })
-          .catch((err) => {
-            // this.hideLoador();
-            cogoToast.error("Something went wrong2");
-          });
-      } catch (err) {
-        // this.hideLoador();
-        cogoToast.error("Something Went Wrong3");
-      }
-    } else {
-      // this.setState({ BookofWorkData: [] });
-    }
-  }
+ 
 
   async getShipmentList() {
     try {
@@ -942,16 +631,7 @@ inActiveChatStatus = () => {
 
       // console.log("Props = ",prop)
 
-      if (prop.name === "Call Back") {
-        prop.infoIcon = true;
-        prop.length = this.state.callbackLength;
-      }
-
-      if (prop.name === "Contact Us") {
-        prop.infoIcon = true;
-        prop.length = this.state.contactUsLength;
-      }
-
+      
       if (prop.name === "Sales Lead") {
         prop.infoIcon = true;
         prop.length = this.state.salesLeadLength;
@@ -962,20 +642,11 @@ inActiveChatStatus = () => {
         prop.length = this.state.shipmentLength;
       }
 
-      if (prop.name == "Chat") {
-        prop.infoIcon = true;
-        prop.length = this.state.chatCount;
-      }
+      
 
-      if (prop.name == "Book of Work") {
-        prop.infoIcon = true;
-        prop.length = this.state.bookOfWorkLengthRec;
-      }
+      
 
-      if (prop.name == "Time Allocation") {
-        prop.infoIcon = true;
-        prop.length = this.state.timeAllocationLengthRec;
-      }
+      
       const innerNavLinkClasses =
         classes.collapseItemLink +
         " " +

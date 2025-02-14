@@ -54,6 +54,9 @@ class ConsoleSplitInvoice extends Component {
   }
 
   componentDidMount() {
+    if(CommonConfig.getUserAccess("Console Split Invoice").ReadAccess === 0){
+      CommonConfig.logoutUserdata()
+    }
     this.getContainerName();
     this.getVendorName();
   }

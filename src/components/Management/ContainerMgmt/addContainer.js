@@ -153,6 +153,9 @@ class addContainer extends Component {
   }
 
   componentDidMount() {
+    if(CommonConfig.getUserAccess("Container Management").ReadAccess === 0){
+          CommonConfig.logoutUserdata()
+        }
     this.stringMapSize();
     this.stringmapStatus();
     this.vendorList();

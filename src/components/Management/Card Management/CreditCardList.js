@@ -34,6 +34,9 @@ class CreditCardList extends Component {
   }
 
   componentDidMount() {
+    if(CommonConfig.getUserAccess("Credit Card Management").ReadAccess === 0){
+      CommonConfig.logoutUserdata()
+    }
     this.getUserList();
     if (localStorage.getItem("loggedInUserData")) {
       debugger;

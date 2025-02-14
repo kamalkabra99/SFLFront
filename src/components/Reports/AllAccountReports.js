@@ -163,6 +163,14 @@ class AllAccountReports extends Component {
   }
 
   async componentDidMount() {
+    
+      if(CommonConfig.getUserAccess("Account Receivable").ReadAccess === 0 &&
+      CommonConfig.getUserAccess("Account Payable").ReadAccess &&
+      CommonConfig.getUserAccess("Profit and Loss Report").ReadAccess &&
+      CommonConfig.getUserAccess("Payment Received").ReadAccess ){
+        CommonConfig.logoutUserdata()
+      }
+    
     this.setState({
       AccessReceivable: CommonConfig.getUserAccess("Account Receivable"),
       AccessPayable: CommonConfig.getUserAccess("Account Payable"),

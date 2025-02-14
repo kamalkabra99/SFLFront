@@ -32,6 +32,12 @@ class FedExReport extends Component {
          }
     }
 
+    componentDidMount() {
+            if(CommonConfig.getUserAccess("FedEx Invoice Upload").ReadAccess === 0){
+              CommonConfig.logoutUserdata()
+            }
+          }
+
     fileUpload = (e) => {
         var fileName = document.getElementById('file').value.toLowerCase();
         if(!fileName.endsWith('.xlsx') && !fileName.endsWith('.xls')){

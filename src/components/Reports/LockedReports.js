@@ -25,6 +25,9 @@ class LockedReports extends Component {
   }
 
   componentDidMount() {
+    if(CommonConfig.getUserAccess("Locked Shipment Report").ReadAccess === 0){
+      CommonConfig.logoutUserdata()
+    }
     this.getLockedShipmentReport();
   }
 

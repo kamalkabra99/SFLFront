@@ -345,7 +345,9 @@ class MyShipmentNew extends React.Component {
   }
 
   async componentDidMount() {
+    
     await this.getCountry();
+    
     this.setState({
       Access: CommonConfig.getUserAccess("My Shipment"),
       IsDisabled:

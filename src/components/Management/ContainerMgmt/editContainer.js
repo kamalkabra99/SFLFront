@@ -327,6 +327,9 @@ class editContainer extends Component {
   }
 
   async componentDidMount() {
+    if(CommonConfig.getUserAccess("Container Management").ReadAccess === 0){
+          CommonConfig.logoutUserdata()
+        }
     this.setState({ Base: CommonConfig.BaseUrl });
     //  this.setState({ Base: "http://localhost:3000/" });
     await this.showHide();

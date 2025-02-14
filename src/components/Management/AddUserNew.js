@@ -413,6 +413,9 @@ class Step1 extends React.Component {
 
   componentDidMount() {
     debugger
+    if(CommonConfig.getUserAccess("User Management").ReadAccess === 0){
+          CommonConfig.logoutUserdata()
+        }
     this.getDepartment();
     this.getAccountType();
     this.setState({ Access: CommonConfig.getUserAccess("User Management") });

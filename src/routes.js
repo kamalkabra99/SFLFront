@@ -11,34 +11,19 @@ import Scheduleshipment from "components/Scheduleshipment/Scheduleshipment.js";
 import UserList from "components/Management/UserList";
 // import AddUser from "components/Management/Adduser";
 import AddUserNew from "components/Management/AddUserNew";
-import BookofWork from "components/Management/BookofWork";
-import BookofWorkList from "components/Management/BookofWorkList";
-import ProjectAllocation from "components/ProjectManagement/ProjectAllocation";
-import ProjectManagement from "components/ProjectManagement/ProjectManagementNavigation";
-import AddProject from "components/ProjectManagement/AddProject";
-import AddClient from "components/ProjectManagement/AddClient";
-import AddServices from "components/ProjectManagement/AddServices";
-import ManageProjects from "components/ProjectManagement/ManageProjects";
-import ServiceAllocationList from "components/ProjectManagement/ServiceAllocationList";
-import ResourceAllocationList from "components/ProjectManagement/ResourceAllocationList";
-import AddServicesToProject from "components/ProjectManagement/AddServicesToProject";
-import AddResourceToService from "components/ProjectManagement/AddResourceToService";
-import AddTimeAllocation from "components/ProjectManagement/AddTimeAllocation";
-import Notification from "components/Notifications/Notifications"
 
-import ServiceList from "components/ProjectManagement/ServiceList";
 //import VendorSearch from "components/Management/VendorSearch";
 import Vendor from "components/Management/Vendor/Vendor";
 //import EditVendor from "components/Management/EditVendor";
 import AddEditVendors from "components/Management/AddEditVendors";
-import ContactUs from "components/WebForms/ContactUs";
-import CallBack from "components/WebForms/CallBack";
+
+
 import AddaClaim from "components/FileaClaim/AddaClaim";
 import FileaClaimList from "components/FileaClaim/FileaClaimList";
 import OnlinePayment from "components/WebForms/OnlinePayment";
 import EditOnlinePayment from "components/WebForms/EditOnlinePayment";
-import EditContactUs from "components/WebForms/EditContactUs";
-import EditCallBack from "components/WebForms/EditCallBack";
+
+
 import GetRates from "components/GetRates/GetRates";
 import ReceiptIcon from "@material-ui/icons/Receipt";
 import addclaimconformation from "components/FileaClaim/addclaimconformation";
@@ -78,7 +63,7 @@ import AllAccountReports from "components/Reports/AllAccountReports";
 import ReviewReports from "components/Reports/ReviewReport";
 import BulkShipmentImport from "components/Reports/BulkShipmentImport";
 import UserLoginReport from "components/Reports/UserLoginReport";
-import TMSReport from "components/Reports/TMSReport";
+
 import ConsoleSplitInvoice from "components/Reports/ConsoleSplitInvoice";
 import HHNInvoice from "components/ShipmentDocumentation/HHN";
 import CommercialInvoice from "components/ShipmentDocumentation/CommercialInvoice";
@@ -111,8 +96,7 @@ import esign_employee_temp from "components/Esign/esign_employee_temp";
 import FedExReport from "components/Reports/FedExReport";
 import LockedReport from "components/Reports/LockedReports";
 import StandardInvoiceReport from "components/Reports/StandardInvoice";
-import ChatbotReport from "components/Chatbot/ChatReport";
-import TimeManagement from "components/TimeManagement/TimeManagement";
+
 // import Chatbot from "components/Chatbot/Chatbot";
 import Review from "components/Management/Review/Review";
 import ReviewTemplate from "components/Management/Review/ReviewTemplate";
@@ -127,8 +111,6 @@ import FileaClaim from "@material-ui/icons/NoteAdd";
 import SalesLeadIcon from "@material-ui/icons/Assessment";
 import EditSalesLeadIcon from "@material-ui/icons/Edit";
 import Search from "@material-ui/icons/Search";
-import ContactUsIcon from "@material-ui/icons/Contacts";
-import CallBackIcon from "@material-ui/icons/Call";
 import PaymentIcon from "@material-ui/icons/Payment";
 import User from "@material-ui/icons/AccountBox";
 import DirectionsBoatIcon from "@material-ui/icons/DirectionsBoat";
@@ -229,23 +211,7 @@ var dashRoutes = [
     layout: "/admin",
     invisible: true,
   },
-  {
-    path: "/Chatbot",
-    name: "Chat",
-    icon: ChatIcon,
-    component: ChatbotReport,
-    layout: "/admin",
-    invisible: true,
-  },
-
-  {
-    path: "/TimeManagement",
-    name: "Chat",
-    icon: ChatIcon,
-    component: TimeManagement,
-    layout: "/admin",
-    invisible: true,
-  },
+  
   // {
   //   path: "/ShowChat",
   //   name: "Show Chat",
@@ -338,40 +304,7 @@ var dashRoutes = [
     icon: WebForms,
     state: "Web Forms",
     views: [
-      {
-        path: "/ContactUs",
-        name: "Contact Us",
-        mini: "PP",
-        icon: ContactUsIcon,
-        component: ContactUs,
-        layout: "/admin",
-        invisible: true,
-      },
-      {
-        path: "/EditContactUs/:id",
-        name: "Edit Contact Us",
-        mini: "PP",
-        icon: EditSalesLeadIcon,
-        component: EditContactUs,
-        layout: "/admin",
-        invisible: false,
-      },
-      {
-        path: "/CallBack",
-        name: "Call Back",
-        icon: CallBackIcon,
-        component: CallBack,
-        layout: "/admin",
-        invisible: true,
-      },
-      {
-        path: "/EditCallBack/:id",
-        name: "Edit Call Back",
-        icon: EditSalesLeadIcon,
-        component: EditCallBack,
-        layout: "/admin",
-        invisible: false,
-      },
+      
       {
         path: "/OnlinePayment",
         name: "Online Payment",
@@ -456,14 +389,7 @@ var dashRoutes = [
     layout: "/admin",
     invisible: true,
   },
-  {
-    path: "/TMSReport",
-    name: "Time Management Report",
-    icon: User,
-    component: TMSReport,
-    layout: "/admin",
-    invisible: true,
-  },
+  
   {
     path: "/ConsoleSplitInvoice",
     name: "Console Split Invoice",
@@ -869,126 +795,7 @@ var dashRoutes = [
     layout: "/admin",
     invisible: false,
   },
-  {
-    path: "/BookofWorkList",
-    name: "Book Of Work",
-    icon: VendorListIcon,
-    component: BookofWorkList,
-    layout: "/admin",
-    invisible: false,
-  },
-  {
-    path: "/BookofWork",
-    name: "Book Of Wor",
-    icon: EditSalesLeadIcon,
-    component: BookofWork,
-    layout: "/admin",
-    invisible: false,
-  },
-  {
-    path: "/ProjectManagement",
-    name: "Project Management",
-    icon: EditSalesLeadIcon,
-    component: ManageProjects,
-    layout: "/admin",
-    invisible: false,
-  },
-  {
-    path: "/ProjectAllocation",
-    name: "Project Allocation",
-    icon: EditSalesLeadIcon,
-    component: ProjectAllocation,
-    layout: "/admin",
-    invisible: false,
-  },
-  {
-    path: "/AddProject",
-    name: "Add Project",
-    icon: EditSalesLeadIcon,
-    component: AddProject,
-    layout: "/admin",
-    invisible: false,
-  },
-  {
-    path: "/AddClient",
-    name: "Add Client",
-    icon: EditSalesLeadIcon,
-    component: AddClient,
-    layout: "/admin",
-    invisible: false,
-  },
-  {
-    path: "/AddServices",
-    name: "Add Services",
-    icon: EditSalesLeadIcon,
-    component:  AddServices,
-    layout: "/admin",
-    invisible: false,
-  },
-  {
-    path: "/ServiceList",
-    name: "Service List",
-    icon: EditSalesLeadIcon,
-    component: ServiceList,
-    layout: "/admin",
-    invisible: false,
-  },
-  {
-    path: "/ManageProjects",
-    name: "Manage Projects",
-    icon: EditSalesLeadIcon,
-    component: ManageProjects,
-    layout: "/admin",
-    invisible: false,
-  },
-  {
-    path: "/AddServicesToProject",
-    name: "Add Services To Project",
-    icon: EditSalesLeadIcon,
-    component: AddServicesToProject,
-    layout: "/admin",
-    invisible: false,
-  },
-  {
-    path: "/AddResourceToService",
-    name: "Add Resource To Service",
-    icon: EditSalesLeadIcon,
-    component: AddResourceToService,
-    layout: "/admin",
-    invisible: false,
-  },
-  {
-    path: "/AddTimeAllocation",
-    name: "Add Time Allocation",
-    icon: EditSalesLeadIcon,
-    component: AddTimeAllocation,
-    layout: "/admin",
-    invisible: false,
-  },
-  {
-    path: "/Notification",
-    name: "Notification",
-    icon: EditSalesLeadIcon,
-    component: Notification,
-    layout: "/admin",
-    invisible: false,
-  },
-  {
-    path: "/ServiceAllocationList",
-    name: "Service Allocation List",
-    icon: EditSalesLeadIcon,
-    component: ServiceAllocationList,
-    layout: "/admin",
-    invisible: false,
-  },
-  {
-    path: "/ResourceAllocationList",
-    name: "Resource Allocation List",
-    icon: EditSalesLeadIcon,
-    component: ResourceAllocationList,
-    layout: "/admin",
-    invisible: false,
-  },
+  
   {
     path: "/AddaClaim",
     name: "Add a Claim",
@@ -1024,20 +831,7 @@ var dashRoutes = [
     layout: "/auth",
     invisible: false,
   },
-  // {
-  //   path: "/get-quote",
-  //   name: "Get Quote",
-  //   component: GetQuoteLive,
-  //   layout: "/auth",
-  //   invisible: false,
-  // },
-  // {
-  //   path: "/get-quote-thanks",
-  //   name: "Get Quote Thank you",
-  //   component: GetQuoteThankyou,
-  //   layout: "/auth",
-  //   invisible: false,
-  // },
+
   {
     path: "/SalesLeadsRedirect-page/:id",
     name: "SalesLeadsRedirect Page",

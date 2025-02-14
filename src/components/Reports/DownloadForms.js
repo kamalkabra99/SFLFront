@@ -36,6 +36,9 @@ class DownloadForms extends Component {
   }
 
   async componentDidMount() {
+    if(CommonConfig.getUserAccess("Download Forms").ReadAccess === 0){
+          CommonConfig.logoutUserdata()
+        }
     debugger;
     var WriteAccess = CommonConfig.getUserAccess("Download Forms").WriteAccess;
 

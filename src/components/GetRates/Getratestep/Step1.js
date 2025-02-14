@@ -201,6 +201,9 @@ class Step1 extends React.Component {
   }
 
   componentDidMount() {
+    if(CommonConfig.getUserAccess("Get Rates").ReadAccess === 0){
+      CommonConfig.logoutUserdata()
+    }
     this.getData();
 
     if (!CommonConfig.isEmpty(this.props.props.history.location.state)) {

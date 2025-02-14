@@ -116,6 +116,9 @@ class Vendor extends Component {
   };
 
   componentDidMount() {
+    if(CommonConfig.getUserAccess("Vendor Management").ReadAccess === 0){
+      CommonConfig.logoutUserdata()
+    }
     this.setState({ Access: CommonConfig.getUserAccess("Vendor Management") });
     this.serviceOffered();
     this.getVendorList();

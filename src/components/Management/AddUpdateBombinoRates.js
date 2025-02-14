@@ -151,6 +151,9 @@ class AddUpdateBombinoRates extends React.Component {
   }
 
   componentDidMount() {
+    if(CommonConfig.getUserAccess("Bombino Rates Management").ReadAccess === 0){
+      CommonConfig.logoutUserdata()
+    }
     this.getCountry();
     this.getBombinoData();
   }

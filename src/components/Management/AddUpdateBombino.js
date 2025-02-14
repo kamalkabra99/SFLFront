@@ -39,6 +39,10 @@ class AddupdateBombino extends Component {
 
   }
   async componentDidMount() {
+
+    if(CommonConfig.getUserAccess("Bombino Rates Management UStoIN").ReadAccess === 0){
+      CommonConfig.logoutUserdata()
+    }
     await this.showHide();
     this.getZoneList();
     this.getZoneRates();

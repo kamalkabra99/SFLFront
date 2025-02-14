@@ -30,6 +30,9 @@ class AddUpdateMarkupRate extends Component {
     }
 
     componentDidMount() {
+        if(CommonConfig.getUserAccess("Consolidation Center Management").ReadAccess === 0){
+            CommonConfig.logoutUserdata()
+          }
         this.getMarkupList();
         if (
             this.props.history.location.state !== undefined &&

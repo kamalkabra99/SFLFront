@@ -40,6 +40,9 @@ class Container extends Component {
   };
 
   componentDidMount() {
+    if(CommonConfig.getUserAccess("Container Management").ReadAccess === 0){
+      CommonConfig.logoutUserdata()
+    }
     this.setState({
       Access: CommonConfig.getUserAccess("Container Management"),
     });

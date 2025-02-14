@@ -29,6 +29,9 @@ class UserLists extends Component {
   }
 
   componentDidMount() {
+    if(CommonConfig.getUserAccess("Lead Assignment").ReadAccess === 0){
+      CommonConfig.logoutUserdata()
+    }
     this.getUserList();
     this.setState({
       Access: CommonConfig.getUserAccess("Lead Assignment"),

@@ -55,6 +55,9 @@ class FileaClaim extends Component {
     };
   }
   componentDidMount() {
+     if(CommonConfig.getUserAccess("File a Claim").ReadAccess === 0){
+          CommonConfig.logoutUserdata()
+        }
     this.setState({
       AllAccess: CommonConfig.getUserAccess("File a Claim").AllAccess,
       ReadAccess: CommonConfig.getUserAccess("File a Claim").ReadAccess,

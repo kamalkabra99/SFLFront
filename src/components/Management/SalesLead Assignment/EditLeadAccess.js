@@ -68,6 +68,9 @@ class EditLeadAccess extends Component {
   }
 
   componentDidMount() {
+     if(CommonConfig.getUserAccess("Lead Assignment").ReadAccess === 0){
+          CommonConfig.logoutUserdata()
+        }
     this.getAccessDetail();
     this.setState({
       Access: CommonConfig.getUserAccess("Lead Assignment"),
