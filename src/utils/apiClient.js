@@ -16,7 +16,7 @@ var headers = {
   // "Access-Control-Allow-Headers": "*",
 };
 const getAuthToken = () => localStorage.getItem("token") || null;
-const request = (method, url, data) => {debugger
+const request = (method, url, data) => {
   return new Promise((resolve, reject) => {
     (() => {
       window.addEventListener("beforeunload", function() {
@@ -41,7 +41,11 @@ const request = (method, url, data) => {debugger
       } else {
         //data.token=localStorage.getItem("token");
        // console.log("data post",data);
-       data = { ...data, token };
+      
+       if(data instanceof FormData)
+        data.token = token;
+        else
+        data = { ...data, token };
         return instance.request({
           url,
           method,
