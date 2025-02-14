@@ -113,9 +113,7 @@ export default function HeaderLinks(props) {
     }
   };
 
-  const onNotification = () =>{
-    history.push("/admin/Notification");
-  }
+ 
 
   const onSearch = () => {
     if (search !== null && search.length > 3) {
@@ -165,21 +163,7 @@ export default function HeaderLinks(props) {
         </div>
       ) : null}
 
-      {CommonConfig.loggedInUserData().SFLUsers == "Employee" ?(
-        <div className="notification">
-          
-          <Button
-            color="transparent"
-            aria-haspopup="true"
-            className={classes.buttonLink}
-            onClick={onNotification}
-            style={{paddingLeft:"16px",paddingRight:"0px"
-              }}
-          >
-            <i className="bell-icon fa fa-bell" aria-hidden="true"></i>
-          </Button>
-        </div>
-      ):null}
+      
 
       <div className={managerClasses}>
         <div className="top-right-user-icon">

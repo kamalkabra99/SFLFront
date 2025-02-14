@@ -182,7 +182,9 @@ class SalesLeadNavigation extends Component {
   }
 
   async componentDidMount() {
-    
+    if(CommonConfig.getUserAccess("Sales Lead") == 0){
+      CommonConfig.logoutUserdata()
+    }
     this.setState({
       AllAccess: CommonConfig.getUserAccess("Sales Lead").AllAccess,
       searchAllAccess: CommonConfig.getUserAccess("Search Sales Lead"),

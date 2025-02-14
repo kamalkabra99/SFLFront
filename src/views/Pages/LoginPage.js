@@ -147,11 +147,7 @@ class LoginPage extends Component {
               UserID: res.Data.PersonID,
               userTimeZonedata: res.Data.userTimeZone,
             };
-            api.post("contactus/CheckUserLoginBreak", pData).then((res) => {
-              console.log("Res = ", res);
-
-              localStorage.setItem("UserBreakData", res.Data[0][0].BreakCount);
-            });
+            
 
             let timeZone = moment.tz.guess();
 

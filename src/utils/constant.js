@@ -334,4 +334,11 @@ export class CommonConfig {
   static apiKey = {
     geoCodeAPI: "AIzaSyDIU6hx3WQi16Xd-5HlRgT6_QtLgpv1KKQ",
   };
+
+  static logoutUserdata = function() {
+    localStorage.clear();
+    // history.push("/login-page");
+    // window.location.href = "http://localhost:3000/auth/login-page"
+    window.location.href = "https://hub.sflworldwide.com/auth/login-page"
+  };
 }
