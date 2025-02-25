@@ -895,7 +895,7 @@ class EditOnlinePayment extends Component {
               : "$ 0.00"}
           </td>
           <td>ACH Collection</td>
-          <td>{pay.AccountNumber}</td>
+          <td>{pay.AccountNumber !="" ?atob(pay.AccountNumber) :""}</td>
           <td>
             <TextField
               onChange={(event) =>

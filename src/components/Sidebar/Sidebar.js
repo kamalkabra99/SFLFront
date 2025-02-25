@@ -210,9 +210,10 @@ class Sidebar extends React.Component {
     api.post("authentication/expireSession", data).then((res) => {
       
 
-      if(res.message ==='Unauthorised Access')
+      if(res.message ==='Token Expired')
       {
-        this.onLogOut();
+        // this.onLogOut();
+        CommonConfig.logoutUserdata()
       }
       // console.log("SFL ~ file: Sidebar.js ~ line 191 ~ Sidebar ~ res", res);
     });

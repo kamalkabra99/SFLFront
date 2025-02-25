@@ -42,10 +42,10 @@ const request = (method, url, data) => {
         //data.token=localStorage.getItem("token");
        // console.log("data post",data);
       
-       if(data instanceof FormData)
-        data.token = token;
-        else
-        data = { ...data, token };
+      //  if(data instanceof FormData)
+      //   data.token = token;
+      //   else
+      //   data = { ...data, token };
         return instance.request({
           url,
           method,

@@ -1700,7 +1700,7 @@ if (res.success) {
   async componentDidMount() {
  
    // console.log("this.props.history.location.state.statusList = ",this.props.history.location.state.statusList)
-    if(CommonConfig.getUserAccess("Sales Lead").WriteAccess === 0){
+    if(CommonConfig.getUserAccess("Sales Lead").ReadAccess === 0){
       CommonConfig.logoutUserdata()
     } 
    

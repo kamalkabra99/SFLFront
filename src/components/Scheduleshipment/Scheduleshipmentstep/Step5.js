@@ -1360,30 +1360,30 @@ class Scheduleshipment extends React.Component {
             };
 
             var EtdDocID = "";
-            if (objdata.shipments.ServiceName == "FedEx") {
-              if (from_address.country_id != to_address.country_id) {
-                await api
-                  .post("fedexETDApi/fedexETD", shipmentdata)
-                  .then((res) => {
-                    console.log("checkdatttaaa", res);
-                    EtdDocID = res.data.result[0].DocumentId;
-                    var ETDDocInsert = {
-                      LineNumber: res.data.result[0].LineNumber,
-                      SFLTrackingNumber: shipmentdata.trackingNumber,
-                      DocumentProducer: res.data.result[0].DocumentProducer,
-                      DocumentType: res.data.result[0].DocumentType,
-                      FileName: res.data.result[0].FileName,
-                      Status: res.data.result[0].Status,
-                      DocumentId: res.data.result[0].DocumentId,
-                      Path: res.data.Path,
-                    };
+            // if (objdata.shipments.ServiceName == "FedEx") {
+            //   if (from_address.country_id != to_address.country_id) {
+            //     await api
+            //       .post("fedexETDApi/fedexETD", shipmentdata)
+            //       .then((res) => {
+            //         console.log("checkdatttaaa", res);
+            //         EtdDocID = res.data.result[0].DocumentId;
+            //         var ETDDocInsert = {
+            //           LineNumber: res.data.result[0].LineNumber,
+            //           SFLTrackingNumber: shipmentdata.trackingNumber,
+            //           DocumentProducer: res.data.result[0].DocumentProducer,
+            //           DocumentType: res.data.result[0].DocumentType,
+            //           FileName: res.data.result[0].FileName,
+            //           Status: res.data.result[0].Status,
+            //           DocumentId: res.data.result[0].DocumentId,
+            //           Path: res.data.Path,
+            //         };
 
-                    api
-                      .post("fedexETDApi/insertFedexETDData", ETDDocInsert)
-                      .then((res) => {});
-                  });
-              }
-            }
+            //         api
+            //           .post("fedexETDApi/insertFedexETDData", ETDDocInsert)
+            //           .then((res) => {});
+            //       });
+            //   }
+            // }
             if (objdata.shipments.shipment_type == "Ocean") {
               var data = {
                 ShippingID: res.data.ShippingID,
@@ -1432,7 +1432,7 @@ class Scheduleshipment extends React.Component {
               objdata.shipments.ServiceName === "FedEx" &&
               objdata.from_address.country_name != "Canada" &&
               !CommonConfig.isEmpty(objdata.shipments.SubServiceName) &&
-              this.state.GetRateAccess.WriteAccess === 1
+              this.state.GetRateAccess.WriteAccess === 5
             ) {
               var labelSize = localStorage.getItem("selectedPaperSize");
               try {
